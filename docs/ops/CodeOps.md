@@ -10,13 +10,12 @@ hide:
 > **Version** 1.0<br>
 
 1. [Overview](#overview)
-2. [Technology Platforms](#Technology-Platforms)
-3. [GitHub Repo Types](#github-repo-types)
-4. [GitHub templates for PRs, features and bugs](#github-templates-for-prs-features-and-bugs)
-5. [Coding practices](#coding-practices)
-6. [Testing locally](#testing-locally)
-7. [Keywords in commit messages](#keywords-in-commit-messages)
-8. [Resources](#resources)
+2. [GitHub Repo Types](#github-repo-types)
+3. [GitHub templates for PRs, features and bugs](#github-templates-for-prs-features-and-bugs)
+4. [Coding practices](#coding-practices)
+5. [Testing locally](#testing-locally)
+6. [Keywords in commit messages](#keywords-in-commit-messages)
+7. [Resources](#resources)
 
 <hr>
 

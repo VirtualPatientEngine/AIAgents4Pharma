@@ -6,7 +6,7 @@ hide:
 
 # <font color=black>DevOps</font>
 > <font color=black>ℹ️</font><br>
-> **Date** 2024-09-19<br>
+> **Date** 2024-11-02<br>
 > **Version** 1.0<br>
 
 1. [Introduction](#Introduction)
@@ -30,26 +30,24 @@ Welcome to Team VPE's DevOps document! This document serves as a guide to our te
 Please provide feedback directly in the document for documentation improvements. For new features or bug reports in the repositories, please submit them via GitHub Issues. I’ll get back to you as soon as your input is resolved. Thanks 😊.
 
 ## GitHub Repo Creation Workflow
-In the table and schema below, you will find step-by-step instructions on how to create a repository on VPE team account, fork it to your private account, and then clone it onto your local machine for coding/development purposes.
+In the table and schema below, you will find step-by-step instructions on how to fork a repo from the VPE team account to your private account, and then clone it onto your local machine for coding/development purposes.
 
 ![GitFlow](./devops_1.jpg)
 
 | Step | How to do? |
 | ---- | ---------- |
-| 1. Create a repo in VPE | On GitHub |
-| 2. Create a “develop” branch | On GitHub |
-| 3. Fork the repo to your private account | On GitHub |
-| 4. Clone the forked repo to your local machine | `git clone https://github.com/fork/repo`1️⃣ |
-| 5. Configure Git to sync your fork (i.e. private account) with the original repo (i.e. VPE account) | `git remote add upstream https://github.com/original.git`1️⃣<br>`git remote -v` |
-| 6. Create new feature/fix branch | `git checkout -b feat` OR<br>`git checkout -b fix` |
-| 7. Add changes to the new branch and commit the changes | `git add .`<br>`git commit -m ‘feat: added new changes’` |
-| 8. Push the changes to your fork (i.e. private account) | `git push origin feat` OR<br>`git push origin fix` |
-| 9. Create a new pull-request (PR) on GitHub (private account) | Follow PR template.<br>Merge “feat/fix” on private account with “develop” on VPE account |
-| 10. Continue to make changes on your branch during code review (steps 6-8) | Min 1 approving review and pass all CI tests required to merge |
-| 11. Create a new pull-request (PR) on GitHub (VPE account) | Follow PR template.<br>Merge “develop” on VPE account with “main” on VPE account |
-| 12a. Update your local feat/fix branch with recent changes from dev branch on VPE account | `git checkout feat` OR `git checkout fix`<br>`git fetch upstream –prune`2️⃣<br>`git merge upstream/feat` OR `git merge upstream/fix` |
-| 12b. Update your local develop branch with recent changes from develop branch on VPE account (and then create a feat/fix branch out of it) | `git checkout develop`<br>`git fetch upstream --prune`<br>`git merge upstream/develop` |
-| 13. Delete the local feat/fix branch (optional) | `git checkout develop`<br>`git branch -d feat` OR `git branch -d fix` |
+| 1. Fork the repo to your private account | On GitHub |
+| 2. Clone the forked repo to your local machine | `git clone https://github.com/fork/repo`1️⃣ |
+| 3. Configure Git to sync your fork (i.e. private account) with the original repo (i.e. VPE account) | `git remote add upstream https://github.com/original.git`1️⃣<br>`git remote -v` |
+| 4. Create new feature/fix branch | `git checkout -b feat` OR<br>`git checkout -b fix` |
+| 5. Add changes to the new branch and commit the changes | `git add .`<br>`git commit -m ‘feat: added new changes’` |
+| 6. Push the changes to your fork (i.e. private account) | `git push origin feat` OR<br>`git push origin fix` |
+| 7. Create a new pull-request (PR) on GitHub (private account) | Follow PR template.<br>Merge “feat/fix” on private account with “develop” on VPE account |
+| 8. Continue to make changes on your branch during code review (steps 6-8) | Min 1 approving review and pass all CI tests required to merge |
+| 9. Create a new pull-request (PR) on GitHub (VPE account) | Follow PR template.<br>Merge “develop” on VPE account with “main” on VPE account |
+| 10a. Update your local feat/fix branch with recent changes from dev branch on VPE account | `git checkout feat` OR `git checkout fix`<br>`git fetch upstream –prune`2️⃣<br>`git merge upstream/feat` OR `git merge upstream/fix` |
+| 10b. Update your local develop branch with recent changes from develop branch on VPE account (and then create a feat/fix branch out of it) | `git checkout develop`<br>`git fetch upstream --prune`<br>`git merge upstream/develop` |
+| 11. Delete the local feat/fix branch (optional) | `git checkout develop`<br>`git branch -d feat` OR `git branch -d fix` |
 
 1️⃣ Set this based on your cloning method (HTTPS or SSH)<br>
 2️⃣ Typically used to update your local repository with changes from all remotes while also removing any local references to branches that have been deleted on the remote repository.
