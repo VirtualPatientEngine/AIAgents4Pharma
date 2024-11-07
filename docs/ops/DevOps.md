@@ -42,17 +42,16 @@ In the table and schema below, you will find step-by-step instructions on how to
 | 4. Create new feature/fix branch | `git checkout -b feat` OR<br>`git checkout -b fix` |
 | 5. Add changes to the new branch and commit the changes | `git add .`<br>`git commit -m ‘feat: added new changes’` |
 | 6. Push the changes to your fork (i.e. private account) | `git push origin feat` OR<br>`git push origin fix` |
-| 7. Create a new pull-request (PR) on GitHub (private account) | See [creating a pull request](https://help.github.com/articles/creating-a-pull-request/). Follow the PR template.<br>Merge “feat/fix” on private account with “develop” on VPE account |
+| 7. Create a new pull-request (PR) on GitHub (private account) | See [creating a pull request](https://help.github.com/articles/creating-a-pull-request/). Follow the PR template.<br>Merge “feat/fix” on private account with “main” on VPE account |
 | 8. Continue to make changes on your branch during code review (steps 6-8) | Min 1 approving review and pass all CI tests required to merge |
-| 9. Create a new pull-request (PR) on GitHub (VPE account) | Follow PR template.<br>Merge “develop” on VPE account with “main” on VPE account |
-| 10a. Update your local feat/fix branch with recent changes from dev branch on VPE account | `git checkout feat` OR `git checkout fix`<br>`git fetch upstream –prune`2️⃣<br>`git merge upstream/feat` OR `git merge upstream/fix` |
-| 10b. Update your local develop branch with recent changes from develop branch on VPE account (and then create a feat/fix branch out of it) | `git checkout develop`<br>`git fetch upstream --prune`<br>`git merge upstream/develop` |
-| 11. Delete the local feat/fix branch (optional) | `git checkout develop`<br>`git branch -d feat` OR `git branch -d fix` |
+| 9. Create a new Release on GitHub (VPE account) | Create a new tag based on the main branch on GitHub |
+| 10a. Update your local feat/fix branch with recent changes from main branch on VPE account | `git checkout feat` OR `git checkout fix`<br>`git fetch upstream –prune`2️⃣<br>`git merge upstream/feat` OR `git merge upstream/fix` |
+| 10b. Update your local main branch with recent changes from main branch on VPE account (and then create a feat/fix branch out of it) | `git checkout main`<br>`git fetch upstream --prune`<br>`git merge upstream/main` |
+| 11. Delete the local feat/fix branch (optional) | `git checkout main`<br>`git branch -d feat` OR `git branch -d fix` |
 
 1️⃣ Set this based on your cloning method (HTTPS or SSH)<br>
 2️⃣ Typically used to update your local repository with changes from all remotes while also removing any local references to branches that have been deleted on the remote repository.
- 
-*Note: When forking a repository, you can choose to clone just the main branch or all branches including the development branch. If you wish to develop the repository further, it's recommended to clone the main and develop branches. If you are not the owner of the repository, it's advisable to communicate with the repository owner before making significant changes.*
+
 
 ## How to open and close a Pull request (PR)
 ### Some general recommendations
@@ -72,7 +71,7 @@ In the table and schema below, you will find step-by-step instructions on how to
 ### To close a PR, reviewers are required to:
 1. Make sure the PR passes the automated tests (if applicable).
 2. Make sure every item mentioned on your checklist in the template is addressed.
-3. If the PR merges develop into main, please make sure to add a prefix (feat:/fix:/chore:) and/or a suffix BREAKING CHANGE (if it's a major release) to your commit message.
+3. Please make sure to add a prefix (feat:/fix:/chore:) and/or a suffix BREAKING CHANGE (if it's a major release) to your commit message.
 
 ![1](./devops_2.png)<br>
 For instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the minor version (e.g., 2.1.1 changes to 2.2.0). 
@@ -85,7 +84,7 @@ Another instance, the commit message triggers a merge followed by the automated 
 ![4](./devops_4.png)<br>
 For instance, the commit message below triggers a merge followed by the automated activation of the versioning tool (semantics-release) and automatically closes issue #24.
  
-5. If the PR merges develop into main and it is supposed to run an automated release workflow, please make sure to check under the Actions tab to see if the workflow has been initiated and return later to verify that it has completed successfully.
+5. Merging into main is supposed to run an automated release workflow, please make sure to check under the Actions tab to see if the workflow has been initiated and return later to verify that it has completed successfully.
 
 ## Environment
 Here's a quick documentation on how to install a Python environment using venv:
@@ -107,7 +106,7 @@ Here's a quick documentation on how to install a Python environment using venv:
 5. Save dependencies to `requirements.txt` (useful when setting up a project for the first time after installing several libraries via pip): `pip freeze > requirements.txt`
 6. Install a distributable package (.whl file) from another Team VPE repository if it's not yet released on PyPI: `git clone https://github.com/VirtualPatientEngine/demo.git` and `cd demo/dist/ && pip3 install demo-latest-py3-none-any.whl`
 
-*NOTE: By default, when you run git clone, it clones the entire repository, including all branches. However, it typically checks out the main branch after cloning*. If you want to install the package from a specific branch, either simply checkout to the branch: `git checkout develop`. Or use the -b flag followed by the branch name during git clone: `git clone -b develop https://github.com/VirtualPatientEngine/demo.git`. In Code Ocean, to implement the commands mentioned above, include them in the postInstall script.
+*NOTE: By default, when you run git clone, it clones the entire repository, including all branches. However, it typically checks out the main branch after cloning*. If you want to install the package from a specific branch, either simply checkout to the branch: `git checkout develop`. Or use the -b flag followed by the branch name during git clone: `git clone -b develop https://github.com/VirtualPatientEngine/demo.git`.
 
 7. Verify installation: `pip list`
 8. Deactivate the Virtual Environment and return to the global Python environment, simply run: `deactivate`
@@ -193,20 +192,20 @@ This workflow will run three jobs:
 
 #### pytest:
 - Job: test scripts in the tests/ folder
-- Triggered by: pull_request on main or develop
+- Triggered by: pull_request on main
 
 ```
 pytest
 ```
 
 - Passing-criteria: pass all the tests
-- Branches: main, develop
+- Branches: main
 
 NOTE: Running pytest without any options can sometimes execute all the python files, including unintended ones. To avoid this, you can specify the folders you want to test. For example, running > pytest tests/ will execute pytest only on the tests/ folder. It is important to ensure that pytest is run on at least the app/ and tests/ folders. Additionally, if you choose to run pytest on specific folders in the automated workflows, you must also do the same while testing locally (see the section on Testing locally in the CodeOps guide).
 
 #### pylint:
 - Action: lint all *.py scripts in the specified folder
-- Triggered by: pull_request on main or develop
+- Triggered by: pull_request on main
 
 ```
 pylint app/
@@ -214,13 +213,13 @@ pylint tests/
 ```
 
 - Passing-criteria: code rating must be 10.00/10.00
-- Branches: main, develop
+- Branches: main
 
 *NOTE: If you want to disable a particular warning, use the disable option in pylint.* For example, running pylint --disable=R0801,W0613 app/ will ignore the warnings with codes R0801 and W0613. Choose to disable warnings wisely. Additionally, if you choose to disable a warning in the automated workflows, you must also disable it while testing locally (see the section on Testing locally in the CodeOps guide).
 
 #### coverage:
 - Job: makes sure every method is called at least once in the tests/ folder
-- Triggered by: pull_request on main or develop
+- Triggered by: pull_request on main
 
 ```
 coverage run –m pytest
@@ -228,7 +227,7 @@ coverage report –m
 ```
 
 - Passing-criteria: 100% score
-- Branches: main, develop
+- Branches: main
 - Note: Lines to be excluded should be specified in .coveragerc
 
 ### RELEASE (release.yml): 
