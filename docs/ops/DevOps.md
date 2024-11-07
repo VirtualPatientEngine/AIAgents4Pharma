@@ -12,7 +12,7 @@ hide:
 1. [Introduction](#Introduction)
 2. [Feedback and Issue Reporting](#feedback-and-issue-reporting)
 3. [GitHub Repo Creation Workflow](#github-repo-creation-workflow)
-4. [How to open and close a Pull request (PR)?](#how-to-open-and-close-a-pull-request-pr)
+4. [How to open and close a Pull request (PR)](#how-to-open-and-close-a-pull-request-pr)
 5. [Environment](#environment)
 6. [CI/CD pipeline](#cicd-pipeline)
 7. [MkDocs for Documentation](#mkdocs-for-documentation)
@@ -36,13 +36,13 @@ In the table and schema below, you will find step-by-step instructions on how to
 
 | Step | How to do? |
 | ---- | ---------- |
-| 1. Fork the repo to your private account | On GitHub |
+| 1. Fork the repo to your private account | On GitHub see [forking a repository](https://help.github.com/articles/fork-a-repo/) |
 | 2. Clone the forked repo to your local machine | `git clone https://github.com/fork/repo`1️⃣ |
 | 3. Configure Git to sync your fork (i.e. private account) with the original repo (i.e. VPE account) | `git remote add upstream https://github.com/original.git`1️⃣<br>`git remote -v` |
 | 4. Create new feature/fix branch | `git checkout -b feat` OR<br>`git checkout -b fix` |
 | 5. Add changes to the new branch and commit the changes | `git add .`<br>`git commit -m ‘feat: added new changes’` |
 | 6. Push the changes to your fork (i.e. private account) | `git push origin feat` OR<br>`git push origin fix` |
-| 7. Create a new pull-request (PR) on GitHub (private account) | Follow PR template.<br>Merge “feat/fix” on private account with “develop” on VPE account |
+| 7. Create a new pull-request (PR) on GitHub (private account) | See [creating a pull request](https://help.github.com/articles/creating-a-pull-request/). Follow the PR template.<br>Merge “feat/fix” on private account with “develop” on VPE account |
 | 8. Continue to make changes on your branch during code review (steps 6-8) | Min 1 approving review and pass all CI tests required to merge |
 | 9. Create a new pull-request (PR) on GitHub (VPE account) | Follow PR template.<br>Merge “develop” on VPE account with “main” on VPE account |
 | 10a. Update your local feat/fix branch with recent changes from dev branch on VPE account | `git checkout feat` OR `git checkout fix`<br>`git fetch upstream –prune`2️⃣<br>`git merge upstream/feat` OR `git merge upstream/fix` |
@@ -54,7 +54,7 @@ In the table and schema below, you will find step-by-step instructions on how to
  
 *Note: When forking a repository, you can choose to clone just the main branch or all branches including the development branch. If you wish to develop the repository further, it's recommended to clone the main and develop branches. If you are not the owner of the repository, it's advisable to communicate with the repository owner before making significant changes.*
 
-## How to open and close a Pull request (PR)?
+## How to open and close a Pull request (PR)
 ### Some general recommendations
 1. Assign a single PR to each task. Avoid including unrelated changes in the same pull request to maintain focus and clarity.
 2. Follow the Pull Request templates for both shareable code and experiments conducted on Code Ocean (provided alongside most of the templates on our GitHub Teams page).
