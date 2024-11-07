@@ -80,12 +80,12 @@ Upon opening an issue on GitHub, users are prompted to select the appropriate te
 
 ## Coding practices
 ### Branching model
-1. GitFlow: [A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)
+1. [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow)
 2. How to use branches:
-    1. Main branch (on VPE account) for releases.
-    2. Develop branch (on VPE account) to start all Feature/Fix branches (on private account).
-    3. Merge of Feature/Fix branches (on private account) into Develop (on VPE account) following a successful PR.
-    4. Merging of Develop into Main (on VPE accounts) for a new release.
+    1. Tagged branches (on VPE account) for releases.
+    2. Main branch (on VPE account) to start all Feature/Fix branches (on private account).
+    3. Merge of Feature/Fix branches (on private account) into Main (on VPE account) following a successful PR.
+    4. Tag the Main (on VPE accounts) for a new release.
 
 ### Unit Tests
 1. Each class/method should have a [unit test](https://en.wikipedia.org/wiki/Unit_testing)
