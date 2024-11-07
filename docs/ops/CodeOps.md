@@ -44,7 +44,7 @@ This repository is intended to be public facing, encouraging easy collaboration,
 | app/<frontend or backend>/src/ | Code related to the client web UI or server backend, respectively |
 | app/<frontend or backend>/tests/ | All pytests for the frontend or backend |
 | app/<frontend or backend>/docs/ | All documentation for the frontend or backend |
-| app/<frontend or backend>/requirements.txt | List all the packages required for the front-end or backend |
+| app/<frontend or backend>/pyproject.toml | List all the packages required for the front-end or backend |
 | app/<frontend or backend>/LICENSE | If differing for the frontend or backend compared to the LICENSE of the repo |
 | app/<frontend or backend>/README.md | Description of the frontend or backend |
 | agents/ | Where the AI agents code sits |
