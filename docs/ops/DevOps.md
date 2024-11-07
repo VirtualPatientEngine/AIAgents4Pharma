@@ -277,4 +277,3 @@ mkdocs gh-deploy --force
 5. To save time, you can type in the following the commands as a comment to automate the merging and closing of the relevant PR:
 
 ![11](./devops_11.png)
-
