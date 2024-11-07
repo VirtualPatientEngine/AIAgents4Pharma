@@ -41,21 +41,21 @@ This repository is intended to be public facing, encouraging easy collaboration,
 | .gitignore | Path to files and folders to be ignored |
 | .github/ | Workflows for continuous integration (CI) and templates (Bug/Feature/PR) |
 | app/ | Where the application code sits |
-| app/<frontend or backend>/ | code related to the client web UI or server backend, respectively |
+| app/<frontend or backend>/src/ | Code related to the client web UI or server backend, respectively |
 | app/<frontend or backend>/tests/ | All pytests for the frontend or backend |
 | app/<frontend or backend>/docs/ | All documentation for the frontend or backend |
 | app/<frontend or backend>/requirements.txt | List all the packages required for the front-end or backend |
 | app/<frontend or backend>/LICENSE | If differing for the frontend or backend compared to the LICENSE of the repo |
 | app/<frontend or backend>/README.md | Description of the frontend or backend |
 | agents/ | Where the AI agents code sits |
-| agents/<agent>/models/ | All code that is specific to defining the decision making of a particular <agent> |
-| agents/<agent>/tools/ | All code that is specific to defining functionality of tools available to a particular <agent> |
-| agents/<agent>/prompts/ | Prompts that are specific to a particular <agent> |
+| agents/<agent>/src/ |Code related to a particular <agent> |
+| agents/<agent>/src/models/ | All code that is specific to defining the decision making of a particular <agent> |
+| agents/<agent>/src/tools/ | All code that is specific to defining functionality of tools available to a particular <agent> |
+| agents/<agent>/src/prompts/ | Prompts that are specific to a particular <agent> |
 | agents/<agent>/tests/ | All pytests for a particular <agent> |
 | agents/<agent>/docs/ | All documentation for a particular <agent> |
 | agents/<agent>/examples/ | Notebooks exemplifying how to use a particular <agent> |
-| agents/<agent>/setup.py | Python installation script for a particular <agent> |
-| agents/<agent>/requirements.txt | List all the packages required for a particular <agent> |
+| agents/<agent>/pyproject.toml | Python installation script for a particular <agent> |
 | agents/<agent>/LICENSE | If differing for a particular <agent> compared to the LICENSE of the repo |
 | agents/<agent>/README.md | Description of a particular <agent> |
 | docs/ | Where you write .md files for MkDocs for the repository website |
