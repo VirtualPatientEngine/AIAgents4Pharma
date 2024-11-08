@@ -4,7 +4,7 @@ hide:
   - toc
 ---
 
-<img src='../VPE.png' height="30" width="30"></img>
+<img src='../VPE.png' height="50" width="50"></img>
 
 # <font color=black>CodeOps</font>
 > <font color=black>ℹ️</font><br>
