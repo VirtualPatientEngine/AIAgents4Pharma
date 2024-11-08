@@ -4,6 +4,8 @@ hide:
   - toc
 ---
 
+<img src='../VPE.png' height="30" width="30"></img>
+
 # <font color=black>CodeOps</font>
 > <font color=black>ℹ️</font><br>
 > **Date** 2024-11-02<br>
@@ -22,7 +24,7 @@ hide:
 ## Overview
 Welcome to Team VPE’s CodeOps document!
 
-This document serves as a guide to our team's approach to managing code. Your insights and feedback are highly encouraged 😊 Please provide feedback via GitHub Issues. Thanks 😊.
+This document serves as a guide to our team's approach to managing code. Your insights and feedback are highly encouraged 😊. Please provide feedback via [GitHub Issues](https://github.com/VirtualPatientEngine/AIAgents4Pharma/issues). Thanks 😊.
 
 This guide will cover the following topics relevant for our CodeOps:.
 
@@ -41,23 +43,23 @@ This repository is intended to be public facing, encouraging easy collaboration,
 | .gitignore | Path to files and folders to be ignored |
 | .github/ | Workflows for continuous integration (CI) and templates (Bug/Feature/PR) |
 | app/ | Where the application code sits |
-| app/<frontend or backend>/src/ | Code related to the client web UI or server backend, respectively |
-| app/<frontend or backend>/tests/ | All pytests for the frontend or backend |
-| app/<frontend or backend>/docs/ | All documentation for the frontend or backend |
-| app/<frontend or backend>/pyproject.toml | List all the packages required for the front-end or backend |
-| app/<frontend or backend>/LICENSE | If differing for the frontend or backend compared to the LICENSE of the repo |
-| app/<frontend or backend>/README.md | Description of the frontend or backend |
+| app/\<frontend or backend\>/src/ | Code related to the client web UI or server backend, respectively |
+| app/\<frontend or backend\>/tests/ | All pytests for the frontend or backend |
+| app/\<frontend or backend\>/docs/ | All documentation for the frontend or backend |
+| app/\<frontend or backend\>/pyproject.toml | List all the packages required for the front-end or backend |
+| app/\<frontend or backend\>/LICENSE | If differing for the frontend or backend compared to the LICENSE of the repo |
+| app/\<frontend or backend\>/README.md | Description of the frontend or backend |
 | agents/ | Where the AI agents code sits |
-| agents/<agent>/src/ |Code related to a particular <agent> |
-| agents/<agent>/src/models/ | All code that is specific to defining the decision making of a particular <agent> |
-| agents/<agent>/src/tools/ | All code that is specific to defining functionality of tools available to a particular <agent> |
-| agents/<agent>/src/prompts/ | Prompts that are specific to a particular <agent> |
-| agents/<agent>/tests/ | All pytests for a particular <agent> |
-| agents/<agent>/docs/ | All documentation for a particular <agent> |
-| agents/<agent>/examples/ | Notebooks exemplifying how to use a particular <agent> |
-| agents/<agent>/pyproject.toml | Python installation script for a particular <agent> |
-| agents/<agent>/LICENSE | If differing for a particular <agent> compared to the LICENSE of the repo |
-| agents/<agent>/README.md | Description of a particular <agent> |
+| agents/\<agent\>/src/ |Code related to a particular <agent> |
+| agents/\<agent\>/src/models/ | All code that is specific to defining the decision making of a particular \<agent\> |
+| agents/\<agent\>/src/tools/ | All code that is specific to defining functionality of tools available to a particular \<agent\> |
+| agents/\<agent\>/src/prompts/ | Prompts that are specific to a particular \<agent\> |
+| agents/\<agent\>/tests/ | All pytests for a particular \<agent\> |
+| agents/\<agent\>/docs/ | All documentation for a particular \<agent\> |
+| agents/\<agent\>/examples/ | Notebooks exemplifying how to use a particular \<agent\> |
+| agents/\<agent\>/pyproject.toml | Python installation script for a particular \<agent\> |
+| agents/\<agent\>/LICENSE | If differing for a particular \<agent\> compared to the LICENSE of the repo |
+| agents/\<agent\>/README.md | Description of a particular \<agent\> |
 | docs/ | Where you write .md files for MkDocs for the repository website |
 | env/ | Dockerfiles or scripts for setting up a virtual environment for development or deployment |
 | node_modules | Packages required by sematic-release (do not modify/delete) |
@@ -72,9 +74,9 @@ This repository is intended to be public facing, encouraging easy collaboration,
 ## GitHub templates for PRs, features, and bugs
 We have created three essential templates: the Pull Request (PR) template, the Feature Request template, and the Bug Report template (all present in the .github/ folder). Each serves a distinct purpose in streamlining our workflow and ensuring effective communication among team members and contributors.
 
-1. The PR template serves as a structured guide for anyone submitting a pull request. It outlines essential details such as the purpose of the changes, any associated issues or feature requests, testing instructions, and any necessary documentation updates. By adhering to this template, contributors provide comprehensive context, making the review process smoother and more efficient.
-2. The Feature Request template offers a standardized format for suggesting new functionalities or enhancements to our projects. It prompts users to describe the desired feature, its rationale, and any potential challenges or considerations.
-3. The Bug Report template assists users in reporting issues or bugs encountered within our projects. It encourages clear and concise descriptions of the problem, including steps to reproduce, expected behavior, and any relevant screenshots or error messages.
+1. The **PR template** serves as a structured guide for anyone submitting a pull request. It outlines essential details such as the purpose of the changes, any associated issues or feature requests, testing instructions, and any necessary documentation updates. By adhering to this template, contributors provide comprehensive context, making the review process smoother and more efficient.
+2. The **Feature Request** template offers a standardized format for suggesting new functionalities or enhancements to our projects. It prompts users to describe the desired feature, its rationale, and any potential challenges or considerations.
+3. The **Bug Report** template assists users in reporting issues or bugs encountered within our projects. It encourages clear and concise descriptions of the problem, including steps to reproduce, expected behavior, and any relevant screenshots or error messages.
 
 Upon opening an issue on GitHub, users are prompted to select the appropriate template based on their specific needs—whether it's a bug report, or a feature request. Likewise, when initiating a pull request, the PR template automatically loads, guiding contributors through the necessary steps to ensure thorough documentation and review of their proposed changes.
 
@@ -97,17 +99,18 @@ Upon opening an issue on GitHub, users are prompted to select the appropriate te
 
 *NOTE: All tests must be written in the tests/ folder (this is where pytest will search by default)*
 
-*Pro-tips: a. Use the GitHub co-pilot to write docstrings (though not always accurate). b. Install PyLint on VS code to spot the linting errors on the fly.*
+*Pro-tips:
+  - Use the GitHub co-pilot to write docstrings (though not always accurate).
+  - Install PyLint on VS code to spot the linting errors on the fly.*
 
 ### PR policies
 1. Number of approving reviewers on a PR: >= 1
 2. Passing unit testing (pytest)
 3. Passing linting (pylint)
 4. Passing coverage (coverage)
-5. Passing documentation build
 
 ### Documentation of classes, methods, and APIs
-use [MkDocs](https://www.mkdocs.org/)
+Use [MkDocs](https://www.mkdocs.org/). Refer to the DevOps guide for more details.
 
 ### Best practices in Python
 1. Choose your preferred Python version, but ensure your repository's environment passes tests on Windows, macOS, and Linux (you should be able to test that via GitHub actions).
@@ -152,9 +155,12 @@ def sum(a: int, b: int) -> int:
     """
     Function to return sum of 2 integers
 
-    Keyword arguments:
-    a -- integer 1
-    b -- integer 2
+    Args:
+        a: first number
+        b: second number
+
+    Returns:
+        int: sum of 2 integers
     """
     return (a + b)
 ```
@@ -167,7 +173,7 @@ def sum(a: int, b: int) -> int:
     3. Documentation of the analysis so that another team member could reproduce the results in your absence.
  
 ## Testing locally
-To streamline our development process and save time, we've implemented a CI/CD pipeline that includes automated testing through GitHub Actions (see the DevOps document for details). Essentially, each time code is pushed to GitHub, a TESTS workflow is triggered to test the code automatically. However, running these tests on GitHub Actions can be time-consuming. To optimize efficiency and catch issues early, it's recommended to run the tests locally before committing changes to GitHub. This involves executing pytest, pylint, and coverage tests (which are the core of the TESTS workflow) locally to ensure code quality and test coverage meet our standards. Below are the commands to execute these tests locally:
+To streamline our development process and save time, we've implemented a CI/CD pipeline that includes automated testing through GitHub Actions (see the DevOps document for details). Essentially, each time code is pushed to GitHub, a TESTS workflow is triggered to test the code automatically. However, running these tests on GitHub Actions can be time-consuming. To optimize efficiency and catch issues early, **it's recommended to run the tests locally before committing changes to GitHub**. This involves executing pytest, pylint, and coverage tests (which are the core of the TESTS workflow) locally to ensure code quality and test coverage meet our standards. Below are the commands to execute these tests locally:
 
 ### pytest:
 **Job**: test scripts in the tests/ folder<br>
@@ -183,32 +189,33 @@ pytest
 pytest tests/
 ```
 
-*will execute pytest only on the tests/ folder. It is important to ensure that pytest is run on at least the app/ and tests/ folders. Additionally, if you choose to run pytest on specific folders while testing locally, you must also do the same in the workflow files for GitHub actions (see the section on Automated workflows in the DevOps guide).*
+*will execute pytest only on the tests/ folder. It is important to ensure that pytest is run on at least the app/ and agents/ folders. Additionally, if you choose to run pytest on specific folders while testing locally, you must also do the same in the workflow files for GitHub actions (see the section on Automated workflows in the DevOps guide).*
 
 ### pylint:
 **Action**: lint all *.py scripts in the specified folder<br>
-**Passing-criteria**: code rating must be 10.00/10.00<br>
+**Passing-criteria**: code rating must be **10.00/10.00**<br>
 
 ```
 pylint app/
-pylint tests/
+pylint agents/
 ```
 
 *Note: If you want to disable a particular warning, use the disable option in pylint.
 For example, running*
 
 ```
-pylint --disable=R0801,W0613 app/ 
+pylint --disable=R0801,W0613 app/
+pylint --disable=R0801,W0613 agents/
 ```
 
-*will ignore the warnings with codes [R0801](https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/duplicate-code.html) and [W0613](https://pylint.readthedocs.io/en/latest/user_guide/messages/warning/unused-argument.html). Choose to disable warnings wisely. Additionally, if you choose to disable a warning while testing locally, you must also disable it in the workflow files for GitHub Actions (see the section on Automated workflows in the DevOps guide).*
+*will ignore the warnings with codes [R0801](https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/duplicate-code.html) and [W0613](https://pylint.readthedocs.io/en/latest/user_guide/messages/warning/unused-argument.html). Choose to disable warnings wisely. Additionally, if you choose to disable a warning while testing locally, you must also disable it in the workflow files for GitHub Actions (see the section on Automated workflows in the DevOps guide). We have already disabled a few warnings. Please look at the [tests.yml](https://github.com/VirtualPatientEngine/AIAgents4Pharma/main/.github/workflows/tests.yml) to know the warnings we have currently disabled.*
 
 ### coverage:
 **Job**: makes sure every method is called at least once in the tests/ folder<br>
 **Passing-criteria**: 100% score<br>
 
 ```
-coverage run –m pytest
+coverage run –m pytest agents app
 coverage report –m
 ```
 
