@@ -1,0 +1,1832 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../CodeOps/">
+      
+      
+        <link rel="next" href="../../CONTRIBUTING/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+    
+    
+      
+        <title>DevOps - AIAgents4Pharma</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../VPE.png">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#devops" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AIAgents4Pharma" class="md-header__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../robot.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AIAgents4Pharma
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DevOps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2biomodels/models/intro/" class="md-tabs__link">
+          
+  
+  Talk2Biomodels
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2cells/intro/" class="md-tabs__link">
+          
+  
+  Talk2Cells
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Talk2KnowledgeGraphs/intro/" class="md-tabs__link">
+          
+  
+  Talk2Knowledgegraphs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../Documentation_intro/" class="md-tabs__link">
+          
+  
+  Documentation
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AIAgents4Pharma" class="md-nav__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../robot.png" alt="logo">
+
+    </a>
+    AIAgents4Pharma
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Talk2Biomodels
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Biomodels
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/models/intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2biomodels/tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Models
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/models/sys_bio_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Bio Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/models/basico_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basico Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/search_models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Search models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/model_description/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model description
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/fetch_parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fetch parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/simulate_model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Simulate model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/ask_question/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ask questions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/custom_plotter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom figures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Cells
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Talk2Knowledgegraphs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Knowledgegraphs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Talk2KnowledgeGraphs/intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Talk2Knowledgegraphs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Ops
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            Ops
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Documentation_intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CodeOps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CodeOps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback-and-issue-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feedback and Issue Reporting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-repo-creation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Repo Creation Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-open-and-close-a-pull-request-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to open and close a Pull request (PR)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to open and close a Pull request (PR)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#some-general-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Some general recommendations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-open-a-pr-authors-are-required-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      To open a PR, authors are required to:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-close-a-pr-reviewers-are-required-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      To close a PR, reviewers are required to:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Actions:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mkdocs-for-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      MkDocs for Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MkDocs for Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why MkDocs?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-implement-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to implement MkDocs?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to implement MkDocs?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docstrings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-docs-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the docs/ folder:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-view-it-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      To view it locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automated-workflows-for-testing-documentation-and-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated workflows for testing, documentation, and release
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback-and-issue-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feedback and Issue Reporting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-repo-creation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Repo Creation Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-open-and-close-a-pull-request-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to open and close a Pull request (PR)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to open and close a Pull request (PR)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#some-general-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Some general recommendations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-open-a-pr-authors-are-required-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      To open a PR, authors are required to:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-close-a-pr-reviewers-are-required-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      To close a PR, reviewers are required to:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Actions:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mkdocs-for-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      MkDocs for Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MkDocs for Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why MkDocs?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-implement-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to implement MkDocs?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to implement MkDocs?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docstrings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-docs-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the docs/ folder:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-view-it-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      To view it locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automated-workflows-for-testing-documentation-and-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated workflows for testing, documentation, and release
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<p><img src='../VPE.png' height="50" width="50"></img></p>
+<h1 id="devops"><font color=black>DevOps</font></h1>
+<blockquote>
+<p><font color=black>ℹ️</font><br>
+<strong>Date</strong> 2024-11-02<br>
+<strong>Version</strong> 1.0<br></p>
+</blockquote>
+<ol>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#feedback-and-issue-reporting">Feedback and Issue Reporting</a></li>
+<li><a href="#github-repo-creation-workflow">GitHub Repo Creation Workflow</a></li>
+<li><a href="#how-to-open-and-close-a-pull-request-pr">How to open and close a Pull request (PR)</a></li>
+<li><a href="#environment">Environment</a></li>
+<li><a href="#cicd-pipeline">CI/CD pipeline</a></li>
+<li><a href="#mkdocs-for-documentation">MkDocs for Documentation</a></li>
+<li><a href="#automated-workflows-for-testing-documentation-and-release">Automated workflows for testing, documentation, and release</a>
+ </li>
+</ol>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to Team VPE's DevOps document! This document serves as a guide to our team's approach to managing the DevOps practices within our projects. Your insights and feedback are highly encouraged 😊<br></p>
+<p>🗸 <strong>GitHub repo creation &amp; workflow</strong>: A table on repo operation on GitHub<br>
+🗸 <strong>Environment</strong>: How to create a virtual environment for your projects.<br>
+🗸 <strong>CI/CD pipeline</strong>: Workflow about our software development cycle.<br>
+🗸 <strong>MkDocs for Documentation</strong>: How we leverage MkDocs for automating the documentation process.<br>
+🗸 <strong>Automated Workflows with GitHub Actions</strong>: About the implementation of automated workflows using GitHub Actions, streamlining tasks such as testing, linting, code coverage, and version releases.<br></p>
+<h2 id="feedback-and-issue-reporting">Feedback and Issue Reporting</h2>
+<p>For new features or bug reports in the repositories, please submit them via <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma/issues">GitHub Issues</a>. Thanks 😊.</p>
+<h2 id="github-repo-creation-workflow">GitHub Repo Creation Workflow</h2>
+<p>In the table, you will find step-by-step instructions on how to fork a repo from the VPE team account to your private account, and then clone it onto your local machine for coding/development purposes.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>How to do?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Fork the repo to your private account</td>
+<td>On GitHub see <a href="https://help.github.com/articles/fork-a-repo/">forking a repository</a></td>
+</tr>
+<tr>
+<td>2. Clone the forked repo to your local machine</td>
+<td><code>git clone https://github.com/fork/repo</code>1️⃣</td>
+</tr>
+<tr>
+<td>3. Configure Git to sync your fork (i.e. private account) with the original repo (i.e. VPE account)</td>
+<td>&gt; <code>git remote add upstream https://github.com/original.git</code>1️⃣<br>&gt; <code>git remote -v</code></td>
+</tr>
+<tr>
+<td>4. Create new feature/fix branch</td>
+<td>&gt; <code>git checkout -b feat/&lt;feature-name&gt;</code> OR<br> <code>git checkout -b fix/&lt;fix-name&gt;</code></td>
+</tr>
+<tr>
+<td>5. Add changes to the new branch and commit the changes</td>
+<td>&gt; <code>git add .</code><br>&gt; <code>git commit -m ‘feat: add new changes’</code></td>
+</tr>
+<tr>
+<td>6. Push the changes to your fork (i.e. private account)</td>
+<td>&gt; <code>git push origin feat/&lt;feat-name&gt;</code> OR<br><code>git push origin fix/&lt;fix-name&gt;</code></td>
+</tr>
+<tr>
+<td>7. Create a new pull-request (PR) on GitHub (private account)</td>
+<td>See <a href="https://help.github.com/articles/creating-a-pull-request/">creating a pull request</a>. Follow the PR template.<br>Merge “feat/fix” on private account with “main” on VPE account</td>
+</tr>
+<tr>
+<td>8. Continue to make changes on your branch during code review (steps 6-8)</td>
+<td>Min 1 approving review and pass all CI tests required to merge</td>
+</tr>
+<tr>
+<td>9a. Update your local feat/fix branch with recent changes from main branch on VPE account</td>
+<td>&gt; <code>git checkout feat/&lt;feat-name&gt;</code> OR <code>git checkout fix/&lt;fix-name&gt;</code><br>&gt; <code>git fetch upstream –prune</code>2️⃣<br>&gt; <code>git merge upstream/feat/&lt;feat-name&gt;</code> OR <code>git merge upstream/fix/&lt;fix-name&gt;</code></td>
+</tr>
+<tr>
+<td>9b. Update your local main branch with recent changes from main branch on VPE account (and then create a feat/fix branch out of it)</td>
+<td>&gt; <code>git checkout main</code><br>&gt; <code>git fetch upstream --prune</code><br>&gt; <code>git merge upstream/main</code></td>
+</tr>
+<tr>
+<td>10. Delete the local feat/fix branch (optional)</td>
+<td>&gt; <code>git checkout main</code><br>&gt; <code>git branch -d feat</code> OR <code>git branch -d fix</code></td>
+</tr>
+</tbody>
+</table>
+<p>1️⃣ Set this based on your cloning method (HTTPS or SSH)<br>
+2️⃣ Typically used to update your local repository with changes from all remotes while also removing any local references to branches that have been deleted on the remote repository.</p>
+<h2 id="how-to-open-and-close-a-pull-request-pr">How to open and close a Pull request (PR)</h2>
+<h3 id="some-general-recommendations">Some general recommendations</h3>
+<ol>
+<li>Assign a single PR to each task. Avoid including unrelated changes in the same pull request to maintain focus and clarity.</li>
+<li>Title and description serve as the initial means to explain the rationale behind each change.</li>
+<li>Clearly state the purpose and objectives of the pull request to provide context for reviewers.</li>
+<li>Break down changes into logically organized, bite-sized commits for easier review.</li>
+<li>Ensure that each commit follows consistent coding conventions and standards (see the section on Coding practices in the CodeOps guide).</li>
+<li>Include comprehensive test cases that cover both positive and negative scenarios (and edge/corner cases) and run them locally before creating the PR (see the section on Automated workflows for testing, documentation, and release in this guide).</li>
+<li>Provide documentation updates alongside code changes to keep it synchronized (see the section on MkDocs for documentation in this guide)</li>
+</ol>
+<h3 id="to-open-a-pr-authors-are-required-to">To open a PR, authors are required to:</h3>
+<ol>
+<li>Provide a title and description of the PR.</li>
+<li>Make sure the change checks every item mentioned on the checklist in the PR template. If not, please specify the reasons in your PR.</li>
+</ol>
+<h3 id="to-close-a-pr-reviewers-are-required-to">To close a PR, reviewers are required to:</h3>
+<ol>
+<li>Make sure the PR passes the automated tests (if applicable).</li>
+<li>Make sure every item mentioned on your checklist in the template is addressed.</li>
+<li>Please make sure to add a prefix (feat:/fix:/chore:) and/or a suffix BREAKING CHANGE (if it's a major release) to your commit message.</li>
+</ol>
+<p><img alt="1" src="../devops_2.png" /><br>
+For instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the minor version (e.g., 2.1.1 changes to 2.2.0). </p>
+<p><img alt="3" src="../devops_3.png" /><br>
+Another instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the major version (e.g., 2.1.1 changes to 3.0.0).</p>
+<ol>
+<li>If the PR closes an issue(s), please make sure to state it in your commit message. </li>
+</ol>
+<p><img alt="4" src="../devops_4.png" /><br>
+For instance, the commit message below triggers a merge followed by the automated activation of the versioning tool (semantics-release) and automatically closes issue #24.</p>
+<ol>
+<li>Merging into main is supposed to run an automated release workflow, please make sure to check under the Actions tab to see if the workflow has been initiated and return later to verify that it has completed successfully.</li>
+</ol>
+<h2 id="environment">Environment</h2>
+<p>Here's a quick documentation on how to install a Python environment using venv:</p>
+<ol>
+<li>
+<p>Create a Virtual Environment:</p>
+<div class="highlight"><pre><span></span><code>1. Open a terminal or command prompt.
+2. Navigate to your project directory.
+3. Run the following command to create a virtual environment: `python -m venv env`
+4. This command creates a folder named `env` which contains the isolated Python environment.
+</code></pre></div>
+</li>
+<li>
+<p>Activate the Virtual Environment:</p>
+<div class="highlight"><pre><span></span><code>1. Activate the virtual environment by running the appropriate command based on your operating system: `.\env\Scripts\activate` (Windows) `source env/bin/activate` (MacOS and Linux)
+2. After activation, you&#39;ll notice `(env)` at the beginning of your command prompt, indicating that you are now working within the virtual environment.
+</code></pre></div>
+</li>
+<li>
+<p>Install dependencies: with the virtual environment activated, you can now install Python packages without affecting the global Python installation. Install the required packages using <code>pip</code>. For example: <code>pip install package1 package2</code></p>
+</li>
+<li>Install dependencies from <code>requirements.txt</code>: <code>pip install -r requirements.txt</code></li>
+<li>Save dependencies to <code>requirements.txt</code> (useful when setting up a project for the first time after installing several libraries via pip): <code>pip freeze &gt; requirements.txt</code></li>
+</ol>
+<p><em>NOTE: By default, when you run git clone, it clones the entire repository, including all branches. However, it typically checks out the main branch after cloning</em>. If you want to install the package from a specific branch, either simply checkout to the branch: <code>git checkout develop</code>. Or use the -b flag followed by the branch name during git clone: <code>git clone -b develop https://github.com/VirtualPatientEngine/demo.git</code>.</p>
+<ol>
+<li>Verify installation: <code>pip list</code></li>
+<li>Deactivate the Virtual Environment and return to the global Python environment, simply run: <code>deactivate</code></li>
+</ol>
+<p>That's it! You've successfully installed a Python environment using <code>venv</code> and recreated an existing environment from <code>requirements.txt</code>.</p>
+<h2 id="cicd-pipeline">CI/CD pipeline</h2>
+<p>A Continuous Integration/Continuous Deployment (CI/CD) pipeline is crucial for streamlining the software development lifecycle and delivering reliable and high-quality code.</p>
+<p><img alt="5" src="../devops_5.jpg" /><br>
+The schema above provides an overview of the two phases of our CI/CD pipeline. It's essential to note that the CI/CD pipeline applies exclusively to code/shareable repositories.</p>
+<h3 id="development">Development:</h3>
+<p>The process begins with developers writing and committing code to GitHub</p>
+<h3 id="github-actions">GitHub Actions:</h3>
+<p>This phase involves:
+1. Automating the setup of the environment, conducting tests, linting, and assessing code coverage. This is essential for maintaining code quality and ensuring that the code adheres to predefined standards.
+2. Additionally, automatic document deployment (via MkDocs and GitHub pages) is initiated during this stage.
+3. The final steps involve the release of the code through GitHub assets and wheel packages, facilitating seamless distribution of the shareable code.</p>
+<h2 id="mkdocs-for-documentation">MkDocs for Documentation</h2>
+<h3 id="why-mkdocs">Why MkDocs?</h3>
+<ol>
+<li>MkDocs produces static pages from Markdown.</li>
+<li>It pulls in code documentation from docstrings using a plug-in mkdocstrings.</li>
+<li>Offers various themes to make your documentation look pretty.</li>
+<li>Host your documentation on GitHub Pages</li>
+<li>Automate code documentation using GitHub Actions</li>
+</ol>
+<h3 id="how-to-implement-mkdocs">How to implement MkDocs?</h3>
+<h4 id="docstrings">Docstrings</h4>
+<p>Make sure for every method and class you define, there is a docstring (would be awesome if you specify the examples, arguments and returns in the docstring – mkdocs can fetch that info too!)</p>
+<div class="highlight"><pre><span></span><code>def __init__(self, gnn_model,
+               training_data,
+               validation_data
+               ) -&gt; None:
+       &#39;&#39;&#39;
+       Initializes the link predictor model
+
+       Args:
+           gnn_model(GCNConv): The GNN model to be used for training (GraphAutoEncoder)
+           training_data(torch_geometric.data.Data): The training data (PyG Data)
+           validation_data(torch_geometric.data.Data): The validation data (PyG Data)
+
+       Returns:
+           None
+       &#39;&#39;&#39;
+</code></pre></div>
+<p><img alt="6" src="../devops_6.png" /><br>
+The above docstring should produce the image in the documentation. </p>
+<h4 id="in-the-docs-folder">In the docs/ folder:</h4>
+<ol>
+<li>Create an index.md file that contains information to be shown on the index page of the documentation.</li>
+<li>Next, create a markdown file for every class or set of methods you want to document.</li>
+<li>Within each markdown file, specify the name of the class or set of methods you want to be automatically read <code>:::folderName.module</code> e.g.: <code>:::tests.uniprot</code> where tests is a folder that contains the module <em>uniprot.py</em>. Note: You can also add additional text (in markdown format) in the file besides the syntax above</li>
+<li>Open the file mkdocs.yml Add the paths to folders that contain the python code you want to document under the plugins (“app” &amp; “tests” are added by default)</li>
+<li>Under nav (navigation), set <code>&lt;pageName&gt;: &lt;file.md&gt;</code> where pageName is the name of the page you’d like to assign and <em>file.md</em> is the file you created for the corresponding class/methods in the previous step. NOTE: You'll need to create the markdown files initially to set up a template. Afterwards, you'll only need to do this again if you've added a new script file or made significant modifications.</li>
+</ol>
+<h4 id="to-view-it-locally">To view it locally</h4>
+<p>run <code>&gt; mkdocs serve</code> in your terminal.</p>
+<h2 id="automated-workflows-for-testing-documentation-and-release">Automated workflows for testing, documentation, and release</h2>
+<ul>
+<li>In the repository, workflows are automated, configurable processes that execute one or more jobs.</li>
+<li>Each workflow is defined by a YAML file located in the repository and can be triggered by an event, manually, or on a defined schedule.</li>
+<li>We store our workflows in the <code>.github/workflows</code> directory, consistent with the workflows described in the <em>Testing Locally</em> section of the CodeOps guide.\</li>
+<li>These workflows are automatically triggered when a pull request (PR) is opened.</li>
+<li>To save resources and time, <strong>we encourage you to run them locally before opening a PR.</strong></li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "navigation.scrollable"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>
