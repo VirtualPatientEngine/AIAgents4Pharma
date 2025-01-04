@@ -2,20 +2,21 @@
 Test cases for simulate_model.py
 '''
 
-from time import sleep
 import pytest
 import streamlit as st
 from ..tools.simulate_model import (SimulateModelTool,
                                     ModelData,
                                     TimeData,
-                                    SpeciesData)
+                                    SpeciesData,
+                                    TimeSpeciesNameConcentration,
+                                    RecurringData)
 
 @pytest.fixture(name="simulate_model_tool")
 def simulate_model_tool_fixture():
     '''
     Fixture for creating an instance of SimulateModelTool.
     '''
-    return SimulateModelTool()
+    return SimulateModelTool(st_session_key="test_key")
 
 def test_run_with_valid_modelid(simulate_model_tool):
     '''
@@ -24,95 +25,87 @@ def test_run_with_valid_modelid(simulate_model_tool):
     model_data=ModelData(modelid=64)
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="test_key"
+    time_species_name_concentration=TimeSpeciesNameConcentration(time=10.0,
+                                                                species_name="Pyruvate",
+                                                                species_concentration=10.0)
+    recurring_data=RecurringData(data=[time_species_name_concentration])
     st.session_state["test_key"] = None
-    result = simulate_model_tool.call_run(model_data=model_data,
-                                          time_data=time_data,
-                                          species_data=species_data,
-                                          st_session_key=st_session_key)
-    assert result == f"Simulation results for the model {model_data.modelid}."
+    result = simulate_model_tool.invoke(input={'model_data':model_data,
+                                        'time_data':time_data,
+                                        'species_data':species_data,
+                                        'recurring_data':recurring_data})
+    assert result == "Simulation results for the model."
 
 def test_run_with_invalid_modelid(simulate_model_tool):
     '''
     Test the _run method of the SimulateModelTool class with an invalid model ID.
     '''
-    sleep(5)
+    # sleep(5)
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="test_key"
     st.session_state["test_key"] = None
-    result = simulate_model_tool.call_run(model_data=None,
-                                        time_data=time_data,
-                                        species_data=species_data,
-                                        st_session_key=st_session_key)
+    result = simulate_model_tool.invoke(input={
+                                          'time_data':time_data,
+                                          'species_data':species_data})
     assert result == "Please provide a BioModels ID or an SBML file path for simulation."
-    slice(5)
+    # slice(5)
     model_data=ModelData(modelid=64)
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="test_key"
-    simulate_model_tool.call_run(model_data=model_data,
-                                time_data=time_data,
-                                species_data=species_data,
-                                st_session_key=st_session_key)
-    result = simulate_model_tool.call_run(model_data=None,
-                                        time_data=time_data,
-                                        species_data=species_data,
-                                        st_session_key=st_session_key)
-    assert result == "Simulation results for the model 64."
+    simulate_model_tool.invoke(input={'model_data':model_data,
+                                          'time_data':time_data,
+                                          'species_data':species_data})
+    result = simulate_model_tool.invoke(input={'time_data':time_data,
+                                          'species_data':species_data})
+    assert result == "Simulation results for the model."
 
 def test_run_with_missing_session_key(simulate_model_tool):
     '''
-    Test the _run method of the SimulateModelTool class with a missing session key.
+    Test the _run method of the SimulateModelTool class 
+    with a missing session key.
     '''
     model_data=ModelData(modelid=64)
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="new_test_key"
-    result = simulate_model_tool.call_run(model_data=model_data,
-                                        time_data=time_data,
-                                        species_data=species_data,
-                                        st_session_key=st_session_key)
-    assert result == f"Session key {st_session_key} not found in Streamlit session state."
+    # Delete existing session key, if any
+    del st.session_state["test_key"]
+    result = simulate_model_tool.invoke(input={'model_data':model_data,
+                                          'time_data':time_data,
+                                          'species_data':species_data})
+    expected_result = f"Session key {simulate_model_tool.st_session_key} "
+    expected_result += "not found in Streamlit session state."
+    assert result == expected_result
 
 def test_run_with_valid_sbml_file_path(simulate_model_tool):
     '''
-    Test the _run method of the SimulateModelTool class with a valid SBML file path.
+    Test the _run method of the SimulateModelTool class 
+    with a valid SBML file path.
     '''
-    sbml_file_path="./BIOMD0000000064.xml"
+    sbml_file_path="aiagents4pharma/talk2biomodels/tests/BIOMD0000000064.xml"
     model_data=ModelData(sbml_file_path=sbml_file_path)
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="test_key"
     st.session_state["test_key"] = None
-
-    result = simulate_model_tool.call_run(model_data=model_data,
-                                          time_data=time_data,
-                                          species_data=species_data,
-                                          st_session_key=st_session_key)
-    assert result == "Simulation results for the model internal."
-    st.session_state["sbml_file_path"] = model_data.sbml_file_path
-    result = simulate_model_tool.call_run(time_data=time_data,
-                                          species_data=species_data,
-                                          st_session_key=st_session_key)
-    assert result == "Simulation results for the model internal."
+    result = simulate_model_tool.invoke(input={'model_data':model_data,
+                                          'time_data':time_data,
+                                          'species_data':species_data})
+    assert result == "Simulation results for the model."
 
 def test_run_with_no_modelid_or_sbml_file_path(simulate_model_tool):
     '''
-    Test the _run method of the SimulateModelTool class with a missing model ID and SBML file path.
+    Test the _run method of the SimulateModelTool class 
+    with a missing model ID and SBML file path.
     '''
     time_data=TimeData(duration=100.0, interval=10)
     species_data=SpeciesData(species_name=["Pyruvate"], species_concentration=[1.0])
-    st_session_key="test_key"
     st.session_state["test_key"] = None
     st.session_state["sbml_file_path"] = None
-    result = simulate_model_tool.call_run(time_data=time_data,
-                                          species_data=species_data,
-                                          st_session_key=st_session_key)
+    result = simulate_model_tool.invoke(input={'time_data':time_data,
+                                          'species_data':species_data})
     assert result == "Please provide a BioModels ID or an SBML file path for simulation."
-    result = simulate_model_tool.call_run(time_data=time_data,
-                                          species_data=species_data,
-                                          st_session_key=None)
+    simulate_model_tool.st_session_key = None
+    result = simulate_model_tool.invoke(input={'time_data':time_data,
+                                          'species_data':species_data})
     assert result == "Please provide a BioModels ID or an SBML file path for simulation."
 
 def test_get_metadata(simulate_model_tool):
@@ -121,5 +114,4 @@ def test_get_metadata(simulate_model_tool):
     '''
     metadata = simulate_model_tool.get_metadata()
     assert metadata["name"] == "simulate_model"
-    assert metadata["description"] == "A tool for simulating a model."
-    assert metadata["return_direct"] == simulate_model_tool.return_direct
+    assert metadata["description"] == "A tool to simulate a model."
