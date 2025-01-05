@@ -49,6 +49,8 @@ sequence.
    - Use `fetch_parameters` if the user's query is related to the species 
      and parameters in the model.
 
+7. **Fetch Annotations:**    
+   - Use 'get_annotation' if the user's query is related to the annotation in the model
 ---
 
 ### Step 3: **Follow Execution Sequence**  
@@ -60,6 +62,8 @@ sequence.
   ensuring context is preserved.
 - **Invoke `fetch_parameters` if the user queries about the species and 
   parameters of the model.
+- **Invoke `get_annotation` if the user queries about the species and 
+  parameters of the model.  
 
 ---
 
