@@ -60,10 +60,9 @@ sequence.
 - **Invoke `custom_plotter`** if the user requests a visualization.
 - **Invoke `model_description`** or **`search_models`** when requested, 
   ensuring context is preserved.
-- **Invoke `fetch_parameters` if the user queries about the species and 
+- **Invoke `fetch_parameters`** if the user queries about the species and 
   parameters of the model.
-- **Invoke `get_annotation` if the user queries about the species and 
-  parameters of the model.  
+- **Invoke `get_annotation`** if the user queries about the species and annotations of the model.  
 
 ---
 

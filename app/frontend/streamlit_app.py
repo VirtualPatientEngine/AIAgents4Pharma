@@ -29,7 +29,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 ST_SYS_BIOMODEL_KEY = "last_model_object"
 
 st.set_page_config(page_title="Talk2BioModels", page_icon="🤖", layout="wide")
-st.logo(image="./app/frontend/VPE.png", link="https://www.github.com/virtualpatientengine")
+st.logo(image='./app/frontend/VPE.png', link="https://www.github.com/virtualpatientengine")
 
 # Define tools and their metadata
 simulate_model = SimulateModelTool(st_session_key=ST_SYS_BIOMODEL_KEY)
@@ -204,7 +204,7 @@ with main_col2:
                 st.empty()
 
             with st.chat_message("assistant", avatar="🤖"):
-    # with st.spinner("Fetching response ..."):
+            # with st.spinner("Fetching response ..."):
                 with st.spinner(get_random_spinner_text()):
                     history = [(m["content"].role, m["content"].content)
                                         for m in st.session_state.messages
@@ -240,19 +240,46 @@ with main_col2:
                     st.markdown(output_content)
                     st.empty()
 
+                    # Initialize session state if not already initialized
+                    # if "species_data" not in st.session_state:
+                    #     st.session_state.species_data = []
+
+                    # # Function to combine the data dynamically
+                    # def combine_species_data():
+                    #     # Check if we have data for each species in session state
+                    #     if len(st.session_state.species_data) > 0:
+                    #         # Concatenate all species' data into a single DataFrame
+                    #         combined_df = pd.concat(st.session_state.species_data, ignore_index=True)
+                    #         return combined_df
+                    #     else:
+                    #         return None
+        
                     # Check for intermediate steps and handle them
                     # Check for intermediate steps and handle them
                     if "intermediate_steps" in response and len(response["intermediate_steps"]) > 0:
                         for r in response["intermediate_steps"]:
                                 
-                            # Ensure we only try to access 'result' if it exists
                                 # if r[0].tool == 'get_annotation':
-                                #     # The result should be in the tool call, formatted as a dataframe
-                                #     annotations_df = pd.DataFrame(r[0].result)  # Assuming 'result' is a list of dicts
-                                #     # Display DataFrame in the frontend
-                                #     st.session_state.messages.append({"type": "dataframe", 
-                                #                                     "content": annotations_df})
-                                #     st.dataframe(annotations_df, use_container_width=True)
+                                #     if hasattr(r[0], 'result'):
+                                #     # If the tool is 'get_annotation', extract and process the annotation results
+                                #         annotations_df = pd.DataFrame(r[0].result)  # Assuming 'result' is a list of dicts
+                                        
+                                #         # Add the annotations data to session state
+                                #         st.session_state.species_data.append(annotations_df)
+
+                                #         # Display the individual species data as it comes in (optional)
+                                #         st.dataframe(annotations_df, use_container_width=True)
+
+                                #     combined_df = combine_species_data()
+                                #     if combined_df is not None:
+                                #         # Display the combined DataFrame
+                                #         st.session_state.messages.append({
+                                #             "type": "dataframe",
+                                #             "content": combined_df
+                                #         })
+                                #         st.dataframe(combined_df, use_container_width=True)
+                                #     else:
+                                        # st.warning("No data available to combine.")
 
                                 if r[0].tool == 'simulate_model':
                                     model_obj = st.session_state[ST_SYS_BIOMODEL_KEY]
@@ -300,3 +327,4 @@ with main_col2:
                     else:
                         # If intermediate_steps is empty, show a message
                         st.warning("No intermediate steps were found in the response.")
+
