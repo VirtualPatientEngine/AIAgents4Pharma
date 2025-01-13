@@ -6,6 +6,8 @@ using the basico package.
 """
 
 from typing import Optional, Dict, Union
+from time import sleep
+from urllib.error import URLError
 from pydantic import Field, model_validator
 import pandas as pd
 import basico
@@ -33,7 +35,17 @@ class BasicoModel(SysBioModel):
         if not self.model_id and not self.sbml_file_path:
             raise ValueError("Either model_id or sbml_file_path must be provided.")
         if self.model_id:
-            self.copasi_model = basico.load_biomodel(self.model_id)
+            attempts = 0
+            max_retries = 5
+            while attempts < max_retries:
+                try:
+                    self.copasi_model = basico.load_biomodel(self.model_id)
+                    break
+                except URLError as e:
+                    attempts += 1
+                    sleep(10*attempts)
+                    if attempts >= max_retries:
+                        raise e
             self.description = basico.biomodels.get_model_info(self.model_id)["description"]
         elif self.sbml_file_path:
             self.copasi_model = basico.load_model(self.sbml_file_path)

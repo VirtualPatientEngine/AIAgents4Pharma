@@ -32,8 +32,10 @@ def test_with_sbml_file():
     """
     Test initialization of BasicoModel with sbml_file_path.
     """
-    model_object = BasicoModel(sbml_file_path="./BIOMD0000000064_url.xml")
-    assert model_object.sbml_file_path == "./BIOMD0000000064_url.xml"
+    model_object = BasicoModel(
+        sbml_file_path="aiagents4pharma/talk2biomodels/tests/BIOMD0000000064_url.xml")
+    assert model_object.sbml_file_path == \
+        "aiagents4pharma/talk2biomodels/tests/BIOMD0000000064_url.xml"
     assert isinstance(model_object.simulate(duration=2, interval=2), pd.DataFrame)
     assert isinstance(model_object.simulate(parameters={'NADH': 0.5}, duration=2, interval=2),
                       pd.DataFrame)

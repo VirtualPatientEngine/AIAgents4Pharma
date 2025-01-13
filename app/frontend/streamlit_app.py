@@ -13,7 +13,6 @@ import plotly.express as px
 sys.path.append('./')
 from aiagents4pharma.talk2biomodels.tools.ask_question import AskQuestionTool
 from aiagents4pharma.talk2biomodels.tools.simulate_model import SimulateModelTool
-from aiagents4pharma.talk2biomodels.tools.plot_figure import PlotImageTool
 from aiagents4pharma.talk2biomodels.tools.model_description import ModelDescriptionTool
 from aiagents4pharma.talk2biomodels.tools.search_models import SearchModelsTool
 from aiagents4pharma.talk2biomodels.tools.custom_plotter import CustomPlotterTool
@@ -39,7 +38,7 @@ with open('./app/frontend/prompts/prompt_ask_question.txt', 'r', encoding='utf-8
 ask_question.metadata = {
     "prompt": prompt_content
 }
-plot_figure = PlotImageTool(st_session_key=ST_SYS_BIOMODEL_KEY)
+# plot_figure = PlotImageTool(st_session_key=ST_SYS_BIOMODEL_KEY)
 model_description = ModelDescriptionTool(st_session_key=ST_SYS_BIOMODEL_KEY)
 with open('./app/frontend/prompts/prompt_model_description.txt', 'r', encoding='utf-8') as file:
     prompt_content = file.read()

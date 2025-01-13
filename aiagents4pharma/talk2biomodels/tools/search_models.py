@@ -4,6 +4,8 @@
 Tool for searching models based on search query.
 """
 
+from urllib.error import URLError
+from time import sleep
 from typing import Type
 from pydantic import BaseModel, Field
 from basico import biomodels
@@ -39,7 +41,17 @@ class SearchModelsTool(BaseTool):
         Returns:
             str: The answer to the question.
         """
-        search_results = biomodels.search_for_model(query)
+        attempts = 0
+        max_retries = 3
+        while attempts < max_retries:
+            try:
+                search_results = biomodels.search_for_model(query)
+                break
+            except URLError as e:
+                attempts += 1
+                sleep(10)
+                if attempts >= max_retries:
+                    raise e
         llm = ChatOpenAI(model="gpt-4o-mini")
         # Check if run_manager's metadata has the key 'prompt_content'
         prompt_content = f'''

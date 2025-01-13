@@ -1,24 +1,25 @@
 
 """
-Tool for fetching species annotations from the simulation results.
+Tool for fetching species annotations from the model.
 """
 
-from typing import Type, Optional, List
+from typing import Type, Optional
 from dataclasses import dataclass
 import streamlit as st
 from pydantic import BaseModel, Field
-from langchain.agents.agent_types import AgentType
+# from langchain.agents.agent_types import AgentType
 from langchain_core.tools.base import BaseTool
 from langchain_core.callbacks import CallbackManagerForToolRun
-from ..models.basico_model import BasicoModel
-from pydantic import ValidationError
+
+# from pydantic import ValidationError
 from langchain_openai import ChatOpenAI
 import basico
 import pandas as pd
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.tools import ToolException
-from langchain_core.tools import StructuredTool
+# from langchain_core.tools import ToolException
+# from langchain_core.tools import StructuredTool
+from ..models.basico_model import BasicoModel
 
 @dataclass
 class ModelData:
@@ -52,7 +53,7 @@ class GetAnnotationTool(BaseTool):
     def _run(self,
              species_names:  list = None,
              sys_bio_model: ModelData = None,    # Adding species_name as an optional argument
-             run_manager: Optional[CallbackManagerForToolRun] = None) -> dict:
+             _run_manager: Optional[CallbackManagerForToolRun] = None) -> dict:
         """
         Run the tool to fetch species annotations.
 
@@ -121,30 +122,41 @@ class GetAnnotationTool(BaseTool):
             for desc in descriptions:
                 data.append({
                     'species name': species,
-                    'id': desc['id'],
+                    'link': desc['id'],
                     'qualifier': desc['qualifier']
                 })  
         # Convert to DataFrame for consistent formatting
         annotations_df = pd.DataFrame(data)
+        print(annotations_df)
+        # After fetching the annotations, add the column to the DataFrame
+        annotations_df['Id'] = annotations_df['link'].str.split('/').str[-1]
+        annotations_df['database_name'] = annotations_df['link'].str.split('/').str[-2]
 
-        # Create the prompt content for formatting
+    # Create the prompt content for formatting
         prompt_content = f'''
                         Convert the input data into a single table:
 
                         The table must contain the following columns:
                         - #
                         - Species Name
-                        - ID (Clickable)
-                        - URI (Clickable)
+                        - Link (Clickable)
+                        - Id
+                        - Database Name
+                        - Protein name
                         - Qualifier
 
                         Additional Guidelines:
                         - The column # must contain the row number starting from 1.
-                        - Embed the URL for each ID and URI in the table in the markdown format.
-                        - Keep the ID and URI columns clickable as it is in df.
-                        - Combine all the tables into a single table.
-                        - Put all the data in one table.
-
+                        - Embed the URL for each Link in the table in the markdown format.
+                        - Keep the Link columns clickable as it is in df.
+                        - Using the given data, fetch the correct entity names corresponding to the IDs from the associated database (e.g., UniProt or other linked resources). Follow these steps:
+                            - What protein does the {annotations_df['database_name']} ID {annotations_df['Id']} correspond to? Please provide the full name based on {annotations_df['database_name']}.
+                            - If the name is not present return N/A
+                            - Use the extracted identifier to query the relevant database for the associated enity name.
+                            - Ensure that the enity name corresponds accurately to the extracted identifier number and database.
+                            - Double-check for accuracy, especially for ambiguous or generic terms, and replace incorrect entries.
+                        - Return only table without additonal texts.    
+                        
                         Input:
                         {input}
                         '''
@@ -156,12 +168,60 @@ class GetAnnotationTool(BaseTool):
         )
 
         # Set up the LLM and output parser
-        llm = ChatOpenAI(model="gpt-4o-mini")
+        llm = ChatOpenAI(model="gpt-4-turbo")
         parser = StrOutputParser()
         chain = prompt_template | llm | parser
 
             # Invoke the chain to format the annotations_df
-        return chain.invoke({"input": annotations_df})       
+        return chain.invoke({"input": annotations_df})   
+        #Create a detailed list of instructions for each row
+        # rows = []
+        # for idx, row in annotations_df.iterrows():
+        #     species_name = row['species name']
+        #     database_name = row['database_name']
+        #     db_id = row['Id']
+            
+        #     rows.append(f"Can you provide the entity name for species '{species_name}' with ID '{db_id}' from the {database_name} database? If the entity is not found, return 'N/A'.")
+
+        # # Join all row-specific queries into a single prompt
+        # rows_prompt = "\n".join(rows)
+
+        # prompt_content = f'''
+        # Convert the input data into a single table with the following columns:
+        # - #
+        # - Species Name
+        # - Link (Clickable)
+        # - Id
+        # - Database Name
+        # - Protein name
+        # - Qualifier
+
+        # The table must follow these guidelines:
+        # - The column # must contain the row number starting from 1.
+        # - Embed the URL for each Link in the table in the markdown format.
+        # - Ensure that the Protein Name for each row is queried correctly from the database corresponding to the provided ID.
+        # - If the entity name cannot be found, return 'N/A' for the Protein Name.
+
+        # Here are the queries for each row:
+        # {rows_prompt}
+
+        # Input Data:
+        # {annotations_df.to_string(index=False)}
+        # '''
+
+        # # Create the prompt template
+        # prompt_template = ChatPromptTemplate.from_messages(
+        #     [("system", prompt_content),
+        #     ("user", "{input}")]
+        # )
+
+        # # Set up the LLM and output parser
+        # llm = ChatOpenAI(model="gpt-4o-mini")
+        # parser = StrOutputParser()
+        # chain = prompt_template | llm | parser
+
+        # # Invoke the chain to process the prompt
+        # return chain.invoke({"input": annotations_df})    
 
     def get_metadata(self):
         """
@@ -174,3 +234,4 @@ class GetAnnotationTool(BaseTool):
             "name": self.name,
             "description": self.description
          }
+    

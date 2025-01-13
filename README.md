@@ -55,7 +55,7 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 2. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install .
    ```
 
 3. **Initialize OPENAI_API_KEY**
