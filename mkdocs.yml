@@ -3,12 +3,12 @@ site_name: AIAgents4Pharma
 nav:
   - Home: index.md
 
-  - Talk2Biomodels: 
+  - Talk2Biomodels:
       - Introduction: talk2biomodels/models/intro.md
       - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
       - Models:
         - System Bio Model: talk2biomodels/models/sys_bio_model.md
-        - Basico Model : talk2biomodels/models/basico_model.md 
+        - Basico Model : talk2biomodels/models/basico_model.md
       - Tools:
         - Search models: talk2biomodels/tools/search_models.md
         - Model description: talk2biomodels/tools/model_description.md
@@ -16,20 +16,29 @@ nav:
         - Simulate model: talk2biomodels/tools/simulate_model.md
         - Ask questions: talk2biomodels/tools/ask_question.md
         - Custom figures: talk2biomodels/tools/custom_plotter.md
-        
+
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
 
-  - Talk2Knowledgegraphs :
-      - Talk2Knowledgegraphs: Talk2KnowledgeGraphs/intro.md 
+  - Talk2KnowledgeGraphs :
+      - Introduction: talk2knowledgegraphs/intro.md
+      - Tutorials:
+        - PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_primekg_loader.ipynb
+        - StarkQA-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader.ipynb
+        - BioBridge-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_loader.ipynb
+      - Datasets:
+        - Dataset: talk2knowledgegraphs/datasets/dataset.md
+        - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
+        - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
+        - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
 
-  - Documentation : 
+  - Documentation :
     - Ops:
         - Introduction: ops/Documentation_intro.md
         - CodeOps : ops/CodeOps.md
         - DevOps : ops/DevOps.md
     - Contributing:
-        - Contributing : CONTRIBUTING.md 
+        - Contributing : CONTRIBUTING.md
 
 repo_url: https://github.com/VirtualPatientEngine/AIAgents4Pharma
 repo_name: VPE/AIAgents4Pharma

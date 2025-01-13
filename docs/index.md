@@ -8,7 +8,7 @@ Our toolkit currently consists of three agents, each designed to simplify and en
 
 - [**Talk2Cells**](talk2cells/intro.md) *(Coming soon)*: Query and analyze sequencing data with ease.
 
-- [**Talk2KnowledgeGraphs**](Talk2KnowledgeGraphs/intro.md) *(Coming soon)*: Access and explore complex biological knowledge graphs for insightful data connections.
+- [**Talk2KnowledgeGraphs**](talk2knowledgegraphs/intro.md) *(Coming soon)*: Access and explore complex biological knowledge graphs for insightful data connections.
 
 ### Prerequisites
 
@@ -60,7 +60,7 @@ Check out the tutorials on each agent for detailed instrcutions.
    Please note that this will create a new tracing project in your Langsmith 
    account with the name `<user_name>@<uuid>`, where `user_name` is the name 
    you provided in the previous step. If you skip the previous step, it will 
-   default to `default`.
+   default to `default` (a 128 bit unique ID created for the session).
 
 6. **Launch the app:**
    ```bash

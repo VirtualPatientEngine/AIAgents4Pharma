@@ -25,10 +25,7 @@ sequence.
 **Follow these guidelines:**
 1. **Model Simulation:**  
    - If the request involves running a computational model or generating 
-     a new dataset, invoke `simulate_model`.  
-   - Ensure all parameters such as model ID, duration, species, and 
-     concentration are provided by the user or clarified beforehand. Do 
-     not assume or hallucinate these details.
+     a new dataset, invoke `simulate_model`.
 
 2. **Data Query:**  
    - Invoke `ask_question` to answer specific queries about the data.  

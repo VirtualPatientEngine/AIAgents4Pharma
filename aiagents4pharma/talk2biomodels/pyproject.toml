@@ -17,6 +17,7 @@ classifiers = [
 
 dependencies = [
     "copasi_basico==0.78",
+    "openai==1.59.4",
     "pandas==2.2.3",
     "langchain==0.3.7",
     "langchain-community==0.3.5",

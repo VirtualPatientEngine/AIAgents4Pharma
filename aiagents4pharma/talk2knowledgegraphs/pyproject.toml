@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aiagents4pharma"
+name = "aiagents4pharma-talk2knowledgegraphs"
 description = "AI Agents for drug discovery, drug development, and other pharmaceutical R&D"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,25 +13,14 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "copasi_basico==0.78",
     "coverage==7.6.4",
     "gdown==5.2.0",
     "huggingface_hub==0.26.5",
     "joblib==1.4.2",
-    "langchain==0.3.7",
-    "langchain-community==0.3.5",
-    "langchain-core==0.3.15",
-    "langchain-experimental==0.3.3",
-    "langchain-openai==0.2.5",
-    "matplotlib==3.9.2",
-    "openai==1.59.4",
     "pandas==2.2.3",
-    "plotly==5.24.1",
     "pydantic==2.9.2",
     "pylint==3.3.1",
     "pytest==8.3.3",
-    "streamlit==1.39.0",
-    "tabulate==0.9.0",
     "torch==2.5.1",
     "tqdm==4.66.6",
     "mkdocs==1.6.1",
@@ -39,8 +28,7 @@ dependencies = [
     "mkdocs-material==9.5.47",
     "mkdocstrings-python==1.12.2",
     "mkdocs-include-markdown-plugin==7.1.2",
-    "mkdocstrings==0.27.0",
-    "streamlit-feedback"
+    "mkdocstrings==0.27.0"
 ]
 dynamic = ["version"]
 
@@ -50,13 +38,5 @@ version = {file = "release_version.txt"}
 # find packages
 [tool.setuptools]
 packages = ["aiagents4pharma",
-            "aiagents4pharma.talk2biomodels",
-            "aiagents4pharma.talk2biomodels.models",
-            "aiagents4pharma.talk2biomodels.tools",
             "aiagents4pharma.talk2knowledgegraphs",
             "aiagents4pharma.talk2knowledgegraphs.datasets"]
-
-# [tool.setuptools.packages.find]
-# where = ["aiagents4pharma", "aiagents4pharma.talk2biomodels"]
-# Include all modules in app, app1, and app2
-# include = ["aiagents4pharma*", "aiagents4pharma.talk2biomodels"]

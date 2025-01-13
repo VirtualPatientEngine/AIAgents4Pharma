@@ -1,11 +1,13 @@
 # This is a basic workflow to help you get started with GitHub Actions
-name: TESTS
+name: TESTS Talk2Cells
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events
   pull_request:
     branches: [ main ]
+    paths:
+      - 'aiagents4pharma/talk2cells/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -13,10 +15,7 @@ on:
 env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-# This workflow contains 3 jobs called:
-# 1. pylint-windows-ubuntu-macos
-# 2. code-cov-ubuntu-macos
-# 3. code-cov-windows
+# This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
   pylint-windows-ubuntu-macos:
     # The type of runner that the job will run on
@@ -39,16 +38,14 @@ jobs:
 
       # install requirements
       - name: Install the requirements
-        shell: bash -l {0}
         run: |
           pip3 install --break-system-packages -r requirements.txt
-      
+
       # pylint
       - name: Run pylint
-        shell: bash -l {0}
         run: |
-          pylint --disable=R0801,W0221,W0122 aiagents4pharma
-  
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2cells
+
   # code coverage job for ubuntu and macos
   code-cov-ubuntu-macos:
     name: code-coverage-ubuntu-macos
@@ -70,7 +67,7 @@ jobs:
       run: pip3 install -r requirements.txt  # Adjust this according to your project
 
     - name: Run tests with coverage
-      run: coverage run -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      run: coverage run --include=aiagents4pharma/talk2cells/* -m pytest --cache-clear aiagents4pharma/talk2cells/tests/
 
     - name: Check coverage
       run: |
@@ -82,7 +79,7 @@ jobs:
         fi
       env:
         COVERAGE_FILE: './.coverage'
-  
+
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage-windows
@@ -105,7 +102,7 @@ jobs:
       run: pip3 install -r requirements.txt  # Adjust this according to your project
 
     - name: Run tests with coverage
-      run: coverage run -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      run: coverage run --include=aiagents4pharma/talk2cells/* -m pytest --cache-clear aiagents4pharma/talk2cells/tests/
 
     - name: Check coverage
       run: |
@@ -125,4 +122,3 @@ jobs:
         }
       env:
         COVERAGE_FILE: './.coverage'
-    
