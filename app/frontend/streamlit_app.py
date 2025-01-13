@@ -241,6 +241,15 @@ with main_col2:
 
                     if "intermediate_steps" in response and len(response["intermediate_steps"]) > 0:
                         for r in response["intermediate_steps"]:
+                                # if r[0].tool == 'get_annotation':
+                                #     model_obj = st.session_state[ST_SYS_BIOMODEL_KEY]
+                                #     df = model_obj.response
+                                #     # Add data to the chat history
+                                #     st.session_state.messages.append({
+                                #         "type": "dataframe",
+                                #         "content": df
+                                #     })
+                                #     st.dataframe(df, use_container_width=True)
                                 if r[0].tool == 'simulate_model':
                                     model_obj = st.session_state[ST_SYS_BIOMODEL_KEY]
                                     df_sim_results = model_obj.simulation_results

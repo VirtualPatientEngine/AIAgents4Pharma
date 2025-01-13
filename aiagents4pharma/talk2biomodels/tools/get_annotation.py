@@ -142,7 +142,7 @@ class GetAnnotationTool(BaseTool):
                         - Link (Clickable)
                         - Id
                         - Database Name
-                        - Protein name
+                        - Suggested Name 
                         - Qualifier
 
                         Additional Guidelines:
@@ -150,7 +150,7 @@ class GetAnnotationTool(BaseTool):
                         - Embed the URL for each Link in the table in the markdown format.
                         - Keep the Link columns clickable as it is in df.
                         - Using the given data, fetch the correct entity names corresponding to the IDs from the associated database (e.g., UniProt or other linked resources). Follow these steps:
-                            - What protein does the {annotations_df['database_name']} ID {annotations_df['Id']} correspond to? Please provide the full name based on {annotations_df['database_name']}.
+                            - What entity name does the {annotations_df['database_name']} ID {annotations_df['Id']} correspond to? Please provide the full entity name based on {annotations_df['database_name']}.
                             - If the name is not present return N/A
                             - Use the extracted identifier to query the relevant database for the associated enity name.
                             - Ensure that the enity name corresponds accurately to the extracted identifier number and database.
@@ -158,7 +158,7 @@ class GetAnnotationTool(BaseTool):
                         - Return only table without additonal texts.    
                         
                         Input:
-                        {input}
+                        {input} 
                         '''
 
         # Create the prompt template
@@ -173,7 +173,10 @@ class GetAnnotationTool(BaseTool):
         chain = prompt_template | llm | parser
 
             # Invoke the chain to format the annotations_df
-        return chain.invoke({"input": annotations_df})   
+        response = chain.invoke({"input": annotations_df}) 
+        if st_session_key:
+            st.session_state[st_session_key] = response  
+        return response
         #Create a detailed list of instructions for each row
         # rows = []
         # for idx, row in annotations_df.iterrows():
