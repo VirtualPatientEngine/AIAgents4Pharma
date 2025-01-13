@@ -2,7 +2,8 @@
 """
 Tool for fetching species annotations from the model.
 """
-
+import requests
+import json
 from typing import Type, Optional
 from dataclasses import dataclass
 import streamlit as st
@@ -40,6 +41,38 @@ class GetAnnotationInput(BaseModel):
 def _handle_error(error: str) -> str:
     return f"Error: {error}"
 
+def get_protein_name_or_label(identifier):
+    # Check if the identifier is for Uniprot or PATO
+    if identifier.startswith('P0'):  # Assuming Uniprot ID starts with 'P'
+        # Uniprot API request
+        url = f"https://www.uniprot.org/uniprot/{identifier}.json"
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            Suggested_Name = data.get('proteinDescription', {}).get('recommendedName', {}).get('fullName', {}).get('value', 'Name not found')
+            return Suggested_Name
+        else:
+            return "Error: Unable to fetch data from Uniprot."
+    
+    elif identifier.startswith("PATO"):  # Assuming PATO ID starts with 'PATO'
+        formatted_pato_id = identifier.replace(":", "_")
+        # OLS API request for PATO
+        url = f"https://www.ebi.ac.uk/ols4/api/ontologies/pato/terms?iri=http://purl.obolibrary.org/obo/{formatted_pato_id}"
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            #print(data)
+            Suggested_Name = data['_embedded']['terms'][0].get('label', 'Label not found')
+            print(Suggested_Name)
+            return Suggested_Name
+        else:
+            return "Error: Unable to fetch data from OLS."
+    
+    else:
+        return "Error: Unrecognized ID format." 
+
 class GetAnnotationTool(BaseTool):
     """
     Tool for fetching species annotations based on the provided annotation type.
@@ -48,7 +81,8 @@ class GetAnnotationTool(BaseTool):
     description: str = "Fetches species annotated from the model."
     args_schema: Type[BaseModel] = GetAnnotationInput  # Define schema for inputs
     return_direct: bool = True
-    st_session_key: str = None
+    st_session_key: str = None   
+    st_session_df: str = None
 
     def _run(self,
              species_names:  list = None,
@@ -101,7 +135,7 @@ class GetAnnotationTool(BaseTool):
             modelid = model_object.model_id
             # Save the model object in the Streamlit session state
             st.session_state[st_session_key] = model_object
-
+    
         # try:
         df_species = basico.model_info.get_species(model=model_object.copasi_model)
         data = []
@@ -131,52 +165,21 @@ class GetAnnotationTool(BaseTool):
         # After fetching the annotations, add the column to the DataFrame
         annotations_df['Id'] = annotations_df['link'].str.split('/').str[-1]
         annotations_df['database_name'] = annotations_df['link'].str.split('/').str[-2]
+        annotations_df['Suggested Name'] = annotations_df['Id'].apply(get_protein_name_or_label)
 
-    # Create the prompt content for formatting
-        prompt_content = f'''
-                        Convert the input data into a single table:
+        st_session_df = self.st_session_df
+        st.session_state[st_session_df] = annotations_df
 
-                        The table must contain the following columns:
-                        - #
-                        - Species Name
-                        - Link (Clickable)
-                        - Id
-                        - Database Name
-                        - Suggested Name 
-                        - Qualifier
+        # return {"annotations_df": annotations_df.to_dict(orient="records")}
 
-                        Additional Guidelines:
-                        - The column # must contain the row number starting from 1.
-                        - Embed the URL for each Link in the table in the markdown format.
-                        - Keep the Link columns clickable as it is in df.
-                        - Using the given data, fetch the correct entity names corresponding to the IDs from the associated database (e.g., UniProt or other linked resources). Follow these steps:
-                            - What entity name does the {annotations_df['database_name']} ID {annotations_df['Id']} correspond to? Please provide the full entity name based on {annotations_df['database_name']}.
-                            - If the name is not present return N/A
-                            - Use the extracted identifier to query the relevant database for the associated enity name.
-                            - Ensure that the enity name corresponds accurately to the extracted identifier number and database.
-                            - Double-check for accuracy, especially for ambiguous or generic terms, and replace incorrect entries.
-                        - Return only table without additonal texts.    
-                        
-                        Input:
-                        {input} 
-                        '''
+        # st_session_df = self.st_session_df
+#         st_session_df = 'annotations_df'
 
-        # Create the prompt template
-        prompt_template = ChatPromptTemplate.from_messages(
-            [("system", prompt_content),
-            ("user", "{input}")]
-        )
-
-        # Set up the LLM and output parser
-        llm = ChatOpenAI(model="gpt-4-turbo")
-        parser = StrOutputParser()
-        chain = prompt_template | llm | parser
-
-            # Invoke the chain to format the annotations_df
-        response = chain.invoke({"input": annotations_df}) 
-        if st_session_key:
-            st.session_state[st_session_key] = response  
-        return response
+# # Store the DataFrame in Streamlit's session state
+#         st.session_state[st_session_df] = annotations_df
+        # if st_session_df:
+        #     st.session_state[st_session_df] = annotations_df
+        # return df
         #Create a detailed list of instructions for each row
         # rows = []
         # for idx, row in annotations_df.iterrows():
@@ -204,12 +207,11 @@ class GetAnnotationTool(BaseTool):
         # - Embed the URL for each Link in the table in the markdown format.
         # - Ensure that the Protein Name for each row is queried correctly from the database corresponding to the provided ID.
         # - If the entity name cannot be found, return 'N/A' for the Protein Name.
-
-        # Here are the queries for each row:
-        # {rows_prompt}
+        # - Give me only a single table combining everything.
+        # - Don't add any extra text or explanations.
 
         # Input Data:
-        # {annotations_df.to_string(index=False)}
+        # {input}
         # '''
 
         # # Create the prompt template
@@ -223,18 +225,8 @@ class GetAnnotationTool(BaseTool):
         # parser = StrOutputParser()
         # chain = prompt_template | llm | parser
 
-        # # Invoke the chain to process the prompt
-        # return chain.invoke({"input": annotations_df})    
+        # Invoke the chain to process the prompt
+        return annotations_df.to_markdown()
 
-    def get_metadata(self):
-        """
-        Get metadata for the tool.
 
-        Returns:
-            dict: The metadata for the tool.
-        """
-        return {
-            "name": self.name,
-            "description": self.description
-         }
     

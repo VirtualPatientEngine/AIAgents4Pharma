@@ -26,6 +26,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 # Set the streamlit session key for the sys bio model
 ST_SYS_BIOMODEL_KEY = "last_model_object"
+ST_SESSION_DF = "last_annotations_df"
 
 st.set_page_config(page_title="Talk2BioModels", page_icon="🤖", layout="wide")
 st.logo(image='./app/frontend/VPE.png', link="https://www.github.com/virtualpatientengine")
@@ -48,7 +49,9 @@ model_description.metadata = {
 search_models = SearchModelsTool()
 custom_plotter = CustomPlotterTool(st_session_key=ST_SYS_BIOMODEL_KEY)
 fetch_parameters = FetchParametersTool(st_session_key=ST_SYS_BIOMODEL_KEY)
-get_annotation = GetAnnotationTool(st_session_key=ST_SYS_BIOMODEL_KEY)
+get_annotation = GetAnnotationTool(st_session_key=ST_SYS_BIOMODEL_KEY,
+                                   st_session_df=ST_SESSION_DF)
+
 tools = [simulate_model,
         ask_question,
         #  plot_figure,
@@ -186,6 +189,9 @@ with main_col2:
             if ST_SYS_BIOMODEL_KEY not in st.session_state:
                 st.session_state[ST_SYS_BIOMODEL_KEY] = None
 
+            if ST_SESSION_DF not in st.session_state:
+                st.session_state[ST_SESSION_DF] = None
+
             # Create a key 'uploaded_file' to read the uploaded file
             if uploaded_file:
                 st.session_state.sbml_file_path = uploaded_file.read().decode("utf-8")
@@ -238,19 +244,21 @@ with main_col2:
                     # Display the response
                     st.markdown(output_content)
                     st.empty()
-
+                    print(response)
                     if "intermediate_steps" in response and len(response["intermediate_steps"]) > 0:
                         for r in response["intermediate_steps"]:
-                                # if r[0].tool == 'get_annotation':
-                                #     model_obj = st.session_state[ST_SYS_BIOMODEL_KEY]
-                                #     df = model_obj.response
-                                #     # Add data to the chat history
-                                #     st.session_state.messages.append({
-                                #         "type": "dataframe",
-                                #         "content": df
-                                #     })
-                                #     st.dataframe(df, use_container_width=True)
-                                if r[0].tool == 'simulate_model':
+# Inside the agent_executor chain:
+                                if r[0].tool == 'get_annotations':
+                                    annotations_df = st.session_state[ST_SESSION_DF]
+                                    # Display the DataFrame in Streamlit frontend
+                                    st.dataframe(annotations_df, use_container_width=True)
+                                    # Append the DataFrame to chat history (if necessary)
+                                    st.session_state.messages.append({
+                                        "type": "dataframe",
+                                        "content": annotations_df
+                                    })
+
+                                elif r[0].tool == 'simulate_model':
                                     model_obj = st.session_state[ST_SYS_BIOMODEL_KEY]
                                     df_sim_results = model_obj.simulation_results
                                     # Add data to the chat history
