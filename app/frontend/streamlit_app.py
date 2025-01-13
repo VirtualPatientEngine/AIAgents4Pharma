@@ -248,7 +248,7 @@ with main_col2:
                     if "intermediate_steps" in response and len(response["intermediate_steps"]) > 0:
                         for r in response["intermediate_steps"]:
 # Inside the agent_executor chain:
-                                if r[0].tool == 'get_annotations':
+                                if r[0].tool == 'get_annotation':
                                     annotations_df = st.session_state[ST_SESSION_DF]
                                     # Display the DataFrame in Streamlit frontend
                                     st.dataframe(annotations_df, use_container_width=True)
