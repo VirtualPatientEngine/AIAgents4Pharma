@@ -42,7 +42,7 @@ def search_studies(search_term: str,
     # with the selected columns
     df = pd.DataFrame(search_response.json()['studies'])[selected_columns]
 
-    # Convert column 'Study Name' into clickable 
+    # Convert column 'Study Name' into clickable
     # hyperlinks from the column 'Study URL'
     scp_api_url = 'https://singlecell.broadinstitute.org'
     df['name'] = df.apply(

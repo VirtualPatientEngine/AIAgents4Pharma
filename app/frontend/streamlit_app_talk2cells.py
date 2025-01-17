@@ -4,14 +4,15 @@
 Talk2Cells: A Streamlit app for the Talk2Cells graph.
 '''
 
-from langchain_core.messages import HumanMessage
-from agents.agent_scp import get_app
 import os
-import streamlit as st
+import sys
 import random
+import streamlit as st
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+sys.path.append('./')
+from aiagents4pharma.talk2cells.agents.agent_scp import get_app
 
 st.set_page_config(page_title="Talk2Cells", page_icon="🤖", layout="wide")
 

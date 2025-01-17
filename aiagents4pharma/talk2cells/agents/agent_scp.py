@@ -5,13 +5,11 @@ This is the agent file for the Talk2Cells graph.
 '''
 
 import os
-import sys
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import ToolNode
+# from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import create_react_agent
-sys.path.append('..')
 from ..tools.search_studies import search_studies
 from ..tools.display_studies import display_studies
 from ..states.state_talk2cells import Talk2Cells
@@ -44,7 +42,7 @@ def get_app(uniq_id):
     # Create a ToolNode
     # This node will call the tools based
     # on the response from the LLM
-    tool_node = ToolNode(tools)
+    # tool_node = ToolNode(tools)
 
     # Create the LLM
     # And bind the tools to it
