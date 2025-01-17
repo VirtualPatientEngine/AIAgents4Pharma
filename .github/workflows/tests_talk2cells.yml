@@ -19,7 +19,7 @@ env:
 jobs:
   pylint-windows-ubuntu-macos:
     # The type of runner that the job will run on
-    name: pylint-windows-ubuntu-macos
+    name: pylint
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -48,7 +48,7 @@ jobs:
 
   # code coverage job for ubuntu and macos
   code-cov-ubuntu-macos:
-    name: code-coverage-ubuntu-macos
+    name: code-coverage
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -82,7 +82,7 @@ jobs:
 
   # code coverage job for windows
   code-cov-windows:
-    name: code-coverage-windows
+    name: code-coverage
     runs-on: ${{ matrix.os }}
 
     strategy:
