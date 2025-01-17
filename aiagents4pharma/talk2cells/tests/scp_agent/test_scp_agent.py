@@ -3,7 +3,7 @@ Test cases for the search_studies
 '''
 
 # from ..tools.search_studies import search_studies
-from aiagents4pharma.talk2cells.agents.agent_scp import get_app
+from aiagents4pharma.talk2cells.agents.scp_agent import get_app
 from langchain_core.messages import HumanMessage
 
 def test_agent_scp():

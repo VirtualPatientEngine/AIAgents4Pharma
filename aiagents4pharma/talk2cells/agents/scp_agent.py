@@ -8,10 +8,9 @@ import os
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-# from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import create_react_agent
-from ..tools.search_studies import search_studies
-from ..tools.display_studies import display_studies
+from ..tools.scp_agent.search_studies import search_studies
+from ..tools.scp_agent.display_studies import display_studies
 from ..states.state_talk2cells import Talk2Cells
 
 def get_app(uniq_id):
@@ -25,11 +24,8 @@ def get_app(uniq_id):
         ############################################
         # Get the messages from the state
         messages = state['messages']
-        # print (state['llm_model'])
         # Call the model
-        # response = model.invoke(messages)
         inputs = {'messages': messages}
-        # response = model.invoke(inputs)
         response = model.invoke(inputs, {"configurable": {"thread_id": uniq_id}})
         # The response is a list of messages and may contain `tool calls`
         # We return a list, because this will get added to the existing list
@@ -38,11 +34,6 @@ def get_app(uniq_id):
 
     # Define the tools
     tools = [search_studies, display_studies]
-
-    # Create a ToolNode
-    # This node will call the tools based
-    # on the response from the LLM
-    # tool_node = ToolNode(tools)
 
     # Create the LLM
     # And bind the tools to it
