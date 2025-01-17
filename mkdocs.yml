@@ -19,6 +19,14 @@ nav:
 
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
+      - Agents:
+        - SCP Agent: talk2cells/agents/scp_agent.md
+      - States:
+        - Talk2Cells: talk2cells/states/state_talk2cells.md
+      - Tools:
+        - Search studies: talk2cells/tools/search_studies.md
+        - Display studies: talk2cells/tools/display_studies.md
+        
 
   - Talk2KnowledgeGraphs :
       - Introduction: talk2knowledgegraphs/intro.md

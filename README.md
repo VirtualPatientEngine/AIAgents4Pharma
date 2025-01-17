@@ -7,8 +7,8 @@ Welcome to **AIAgents4Pharma** – an open-source project by [Team VPE](https://
 Our toolkit currently consists of three intelligent agents, each designed to simplify and enhance access to specialized data in biology:
 
 - **Talk2BioModels**: Engage directly with mathematical models in systems biology.
-- **Talk2Cells** *(Coming soon)*: Query and analyze sequencing data with ease.
-- **Talk2KnowledgeGraphs** *(Coming soon)*: Access and explore complex biological knowledge graphs for insightful data connections.
+- **Talk2Cells** *(Work in progress)*: Query and analyze sequencing data with ease.
+- **Talk2KnowledgeGraphs** *(Work in progress)*: Access and explore complex biological knowledge graphs for insightful data connections.
 
 ---
 
@@ -22,7 +22,7 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 - Adjust parameters within the model to simulate different conditions.
 - Query simulation results.
 
-### 2. Talk2Cells *(Coming soon)*
+### 2. Talk2Cells *(Work in Progress)*
 
 **Talk2Cells** is being developed to provide direct access to and analysis of sequencing data, such as RNA-Seq or DNA-Seq, using natural language.
 

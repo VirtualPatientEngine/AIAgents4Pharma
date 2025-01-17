@@ -6,7 +6,7 @@ Our toolkit currently consists of three agents, each designed to simplify and en
 
 - [**Talk2BioModels**](talk2biomodels/models/intro.md): Engage directly with mathematical models in systems biology.
 
-- [**Talk2Cells**](talk2cells/intro.md) *(Coming soon)*: Query and analyze sequencing data with ease.
+- [**Talk2Cells**](talk2cells/intro.md) *(Work in progress)*: Query and analyze sequencing data with ease.
 
 - [**Talk2KnowledgeGraphs**](talk2knowledgegraphs/intro.md) *(Coming soon)*: Access and explore complex biological knowledge graphs for insightful data connections.
 
