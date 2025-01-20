@@ -9,9 +9,11 @@ langchain-community==0.3.5
 langchain-core==0.3.29
 langchain-experimental==0.3.3
 langchain-openai==0.3.0
+langchain_ollama==0.2.2
 langgraph==0.2.62
 matplotlib==3.9.2
 openai==1.59.4
+ollama==0.4.6
 pandas==2.2.3
 plotly==5.24.1
 pydantic==2.9.2
