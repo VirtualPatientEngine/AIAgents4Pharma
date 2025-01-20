@@ -8,13 +8,23 @@ import os
 import sys
 import random
 import streamlit as st
+from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.tracers.context import collect_runs
+from langchain.callbacks.tracers import LangChainTracer
+from langsmith import Client
 sys.path.append('./')
 from aiagents4pharma.talk2cells.agents.scp_agent import get_app
 
 st.set_page_config(page_title="Talk2Cells", page_icon="🤖", layout="wide")
+
+# Check if env variable OPENAI_API_KEY exists
+if "OPENAI_API_KEY" not in os.environ:
+    st.error("Please set the OPENAI_API_KEY environment \
+        variable in the terminal where you run the app.")
+    st.stop()
 
 # Create a chat prompt template
 prompt = ChatPromptTemplate.from_messages([
@@ -28,6 +38,15 @@ prompt = ChatPromptTemplate.from_messages([
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Initialize project_name for Langsmith
+if "project_name" not in st.session_state:
+    # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
+    st.session_state.project_name = 'Talk2Cells-' + str(random.randint(1000, 9999))
+
+# Initialize run_id for Langsmith
+if "run_id" not in st.session_state:
+    st.session_state.run_id = None
+
 # Initialize graph
 if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
@@ -37,11 +56,18 @@ if "app" not in st.session_state:
 # Get the app
 app = st.session_state.app
 
-# Check if env variable OPENAI_API_KEY exists
-if "OPENAI_API_KEY" not in os.environ:
-    st.error("Please set the OPENAI_API_KEY environment \
-        variable in the terminal where you run the app.")
-    st.stop()
+def _submit_feedback(user_response):
+    '''
+    Function to submit feedback to the developers.
+    '''
+    client = Client()
+    client.create_feedback(
+        st.session_state.run_id,
+        key="feedback",
+        score=1 if user_response['score'] == "👍" else 0,
+        comment=user_response['text']
+    )
+    st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
@@ -137,11 +163,23 @@ with main_col2:
                     # Set the environment variable AIAGENTS4PHARMA_LLM_MODEL
                     os.environ["AIAGENTS4PHARMA_LLM_MODEL"] = llm_option
 
-                    # Get response from the agent
-                    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
+                    # # Get response from the agent
+                    # response = app.invoke(
+                    #     {"messages": [HumanMessage(content=prompt)]},
+                    #     config=config
+                    # )
+                    ERROR_FLAG = False
+                    with collect_runs() as cb:
+                        # Add Langsmith tracer
+                        tracer = LangChainTracer(
+                            project_name=st.session_state.project_name
+                            )
+                        # Get response from the agent
+                        response = app.invoke(
+                            {"messages": [HumanMessage(content=prompt)]},
+                            config=config|{"callbacks": [tracer]}
+                        )
+                        st.session_state.run_id = cb.traced_runs[-1].id
                     # Print the response
                     # print (response)
 
@@ -155,3 +193,11 @@ with main_col2:
                     # Display the response in the chat
                     st.markdown(response["messages"][-1].content)
                     st.empty()
+        # Collect feedback and display the thumbs feedback
+        if st.session_state.get("run_id"):
+            feedback = streamlit_feedback(
+                feedback_type="thumbs",
+                optional_text_label="[Optional] Please provide an explanation",
+                on_submit=_submit_feedback,
+                key=f"feedback_{st.session_state.run_id}"
+            )
