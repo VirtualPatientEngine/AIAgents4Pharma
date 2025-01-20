@@ -4,14 +4,19 @@
 This is the agent file for the Talk2Cells graph.
 '''
 
+import logging
 import os
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import create_react_agent
+from langgraph.prebuilt import create_react_agent, ToolNode
 from ..tools.scp_agent.search_studies import search_studies
 from ..tools.scp_agent.display_studies import display_studies
 from ..states.state_talk2cells import Talk2Cells
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_app(uniq_id):
     '''
@@ -21,19 +26,20 @@ def get_app(uniq_id):
         '''
         This function calls the model.
         '''
-        ############################################
+        logger.log(logging.INFO, "Creating SCP_Agent node with thread_id %s", uniq_id)
         # Get the messages from the state
-        messages = state['messages']
+        # messages = state['messages']
         # Call the model
-        inputs = {'messages': messages}
-        response = model.invoke(inputs, {"configurable": {"thread_id": uniq_id}})
+        # inputs = {'messages': messages}
+        response = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
         # The response is a list of messages and may contain `tool calls`
         # We return a list, because this will get added to the existing list
         # return {"messages": [response]}
         return response
 
     # Define the tools
-    tools = [search_studies, display_studies]
+    # tools = [search_studies, display_studies]
+    tools = ToolNode([search_studies, display_studies])
 
     # Create the LLM
     # And bind the tools to it
@@ -74,5 +80,6 @@ def get_app(uniq_id):
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory when compiling the graph
     app = workflow.compile(checkpointer=checkpointer)
+    logger.log(logging.INFO, "Compiled the graph")
 
     return app

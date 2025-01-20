@@ -4,9 +4,14 @@
 This tool is used to display the table of studies.
 '''
 
+import logging
 from typing import Annotated
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @tool('display_studies')
 def display_studies(state: Annotated[dict, InjectedState]):
@@ -16,5 +21,5 @@ def display_studies(state: Annotated[dict, InjectedState]):
     Args:
         state (dict): The state of the agent.
     """
-    # print ('Called display_studies')
+    logger.log(logging.INFO, "Calling the tool display_studies")
     return state["search_table"]

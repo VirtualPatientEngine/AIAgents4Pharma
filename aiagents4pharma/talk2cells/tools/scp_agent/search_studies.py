@@ -4,6 +4,7 @@
 A tool to fetch studies from the Single Cell Portal.
 '''
 
+import logging
 from typing import Annotated
 import requests
 from langchain_core.tools import tool
@@ -11,6 +12,10 @@ from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 import pandas as pd
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @tool('search_studies')
 def search_studies(search_term: str,
@@ -24,16 +29,19 @@ def search_studies(search_term: str,
         limit (int): The number of papers to return. Default is 5.
 
     """
-    # print ('Called search_studies')
-    endpoint = 'https://singlecell.broadinstitute.org/single_cell/api/v1/search?type=study'
+    logger.log(logging.INFO, "Calling the tool search_studies")
+    scp_endpoint = 'https://singlecell.broadinstitute.org/single_cell/api/v1/search?type=study'
     # params = {'terms': search_term, 'facets': 'MONDO_0005011'}
     params = {'terms': search_term}
     status_code = 0
     while status_code != 200:
         # Make a GET request to the single cell portal
-        search_response = requests.get(endpoint, params=params, timeout=10, verify=False)
+        search_response = requests.get(scp_endpoint,
+                                       params=params,
+                                       timeout=10,
+                                       verify=False)
         status_code = search_response.status_code
-        print(status_code)
+        logger.log(logging.INFO, "Status code %s received from SCP")
 
     # Select the columns to display in the table
     selected_columns = ["study_source", "name", "study_url", "gene_count", "cell_count"]
