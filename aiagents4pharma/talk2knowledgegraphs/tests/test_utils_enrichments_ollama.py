@@ -11,7 +11,7 @@ from ..utils.enrichments.ollama import EnrichmentWithOllama
 def fixture_ollama_config():
     """Return a dictionary with Ollama configuration."""
     return {
-        "model_name": "gemma2:2b",
+        "model_name": "llama3.1",
         "prompt_enrichment": """
             You are a helpful expert in biomedical knowledge graph analysis.
             Your role is to enrich the inputs (nodes or relations) using textual description.

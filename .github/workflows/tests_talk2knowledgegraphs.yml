@@ -89,7 +89,7 @@ jobs:
         ollama serve &
         sleep 10
         ollama pull nomic-embed-text
-        ollama pull gemma2:2b
+        ollama pull llama3.1
 
     - name: Reading cached Ollama models
       run: |
@@ -147,7 +147,7 @@ jobs:
         ollama serve &
         sleep 10
         ollama pull nomic-embed-text
-        ollama pull gemma2:2b
+        ollama pull llama3.1
 
     - name: Reading cached Ollama models
       run: |
@@ -207,7 +207,7 @@ jobs:
         start ollama serve
         sleep 10
         cmd /k ollama pull nomic-embed-text
-        cmd /k ollama pull gemma2:2b
+        cmd /k ollama pull llama3.1
 
     - name: Reading cached Ollama models
       run: |
