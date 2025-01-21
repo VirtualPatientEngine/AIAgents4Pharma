@@ -38,6 +38,7 @@ jobs:
 
       - name: Cache files
         uses: actions/cache@v4
+        id: cache
         with:
           path: |
             ${{env.pythonLocation}}/lib/python3.12/site-packages/*
@@ -73,10 +74,11 @@ jobs:
 
     - name: Cache files
       uses: actions/cache@v4
+      id: cache
       with:
         path: |
           ${{env.pythonLocation}}/lib/python3.12/site-packages/*
-          /usr/share/ollama/.ollama/models/*
+          ~/.ollama/models/*
         key: ${{ runner.os }}-pip
 
     - name: Install dependencies
@@ -95,7 +97,6 @@ jobs:
         brew install ollama
         ollama serve &
         sleep 10
-        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
 
     - name: Run tests with coverage
@@ -131,6 +132,7 @@ jobs:
 
     - name: Cache files
       uses: actions/cache@v4
+      id: cache
       with:
         path: |
           ${{env.pythonLocation}}/lib/python3.12/site-packages/*
@@ -153,7 +155,6 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
-        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
 
     - name: Run tests with coverage
@@ -190,10 +191,11 @@ jobs:
 
     - name: Cache files
       uses: actions/cache@v4
+      id: cache
       with:
         path: |
           ${{env.pythonLocation}}/lib/python3.12/site-packages/*
-          /usr/share/ollama/.ollama/models/*
+          C:\Users\%username%\.ollama\models\*
         key: ${{ runner.os }}-pip
 
     - name: Install dependencies
@@ -214,7 +216,6 @@ jobs:
         tar -xzf .\ollama-windows-amd64.zip
         start ollama serve
         sleep 10
-        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
 
     - name: Run tests with coverage
