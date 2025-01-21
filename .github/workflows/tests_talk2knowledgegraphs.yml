@@ -4,7 +4,7 @@ name: TESTS Talk2KnowledgeGraphs
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events
-  pull_request_target:
+  pull_request:
     branches: [ main ]
     paths:
       - 'aiagents4pharma/talk2knowledgegraphs/**'
