@@ -17,6 +17,7 @@ env:
 
 # This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
+  # pylint job for windows, ubuntu, and macos
   pylint-windows-ubuntu-macos:
     # The type of runner that the job will run on
     name: pylint
@@ -44,31 +45,47 @@ jobs:
             ${{ github.workspace }}/venv/*
           key: ${{ runner.os }}-pip-pylint
 
-      # install requirements
+      # install requirements for ubuntu and macos
       - name: Install the requirements
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
           python3 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
+      
+      # install requirements for windows
+      - name: Install the requirements
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        working-directory: ${{ github.workspace }}
+        run: |
+          python3 -m venv venv
+          venv\Scripts\activate
+          pip install --upgrade pip
+          pip3 install --break-system-packages -r requirements.txt
 
-      # pylint
+      # pylint for ubuntu and macos
       - name: Run pylint
+        if: matrix.os != 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
           source venv/bin/activate
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+      
+      # pylint for windows
+      - name: Run pylint
+        if: matrix.os == 'windows-latest'
+        working-directory: ${{ github.workspace }}
+        run: |
+          venv\Scripts\activate
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
 
   # code coverage job for macos
   code-cov-macos:
     name: code-coverage
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-13
 
-    strategy:
-        matrix:
-          os: [macos-13]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -84,7 +101,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
-          ~/.ollama/models/*
+          ${{ github.workspace }}/ollama-models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -96,10 +113,12 @@ jobs:
         pip install --upgrade pip
         pip3 install -r requirements.txt
         brew install ollama
+        mkdir ${{ github.workspace }}/ollama-models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         ollama serve &
         sleep 10
         ollama pull nomic-embed-text
-        ollama pull llama3.1
+        ollama pull llama3.2
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -107,6 +126,7 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
         source venv/bin/activate
         brew install ollama
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         ollama serve &
         sleep 10
         ollama list
@@ -133,11 +153,8 @@ jobs:
   # code coverage job for ubuntu
   code-cov-ubuntu:
     name: code-coverage
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
-    strategy:
-        matrix:
-          os: [ubuntu-latest]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -153,7 +170,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
-          /usr/share/ollama/.ollama/models/*
+          ${{ github.workspace }}/ollama-models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -165,10 +182,12 @@ jobs:
         pip install --upgrade pip
         pip3 install -r requirements.txt
         curl -fsSL https://ollama.com/install.sh | sh
+        mkdir ${{ github.workspace }}/ollama-models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         ollama serve &
         sleep 10
         ollama pull nomic-embed-text
-        ollama pull llama3.1
+        ollama pull llama3.2
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -176,6 +195,7 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         ollama serve &
         sleep 10
         ollama list
@@ -202,11 +222,7 @@ jobs:
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-        matrix:
-          os: [windows-latest]
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -223,7 +239,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
-          C:\Users\%username%\.ollama\models\*
+          ${{ github.workspace }}/ollama-models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -236,10 +252,12 @@ jobs:
         pip3 install -r requirements.txt
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
+        mkdir ${{ github.workspace }}/ollama-models
+        set OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         start ollama serve
         sleep 10
         cmd /k ollama pull nomic-embed-text
-        cmd /k ollama pull llama3.1
+        cmd /k ollama pull llama3.2
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -248,6 +266,7 @@ jobs:
         venv\Scripts\activate
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
+        set OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         start ollama serve
         sleep 10
         cmd /k ollama list

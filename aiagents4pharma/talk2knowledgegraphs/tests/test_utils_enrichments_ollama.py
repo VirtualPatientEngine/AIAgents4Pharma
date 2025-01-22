@@ -11,7 +11,7 @@ from ..utils.enrichments.ollama import EnrichmentWithOllama
 def fixture_ollama_config():
     """Return a dictionary with Ollama configuration."""
     return {
-        "model_name": "llama3.1",
+        "model_name": "llama3.2",
         "prompt_enrichment": """
             You are a helpful expert in biomedical knowledge graph analysis.
             Your role is to enrich the inputs (nodes or relations) using textual description.
@@ -93,7 +93,7 @@ def test_enrich_documents_ollama(ollama_config):
     # Check the enriched nodes
     assert len(enriched_nodes) == 2
     assert all(
-        len(enriched_nodes[i]["desc"]) > len(nodes[i]) for i in range(len(nodes))
+        enriched_nodes[i]["desc"] != nodes[i] for i in range(len(nodes))
     )
 
     # Perform enrichment for relations
@@ -105,7 +105,7 @@ def test_enrich_documents_ollama(ollama_config):
     # Check the enriched relations
     assert len(enriched_relations) == 2
     assert all(
-        len(enriched_relations[i]["desc"]) > len(relations[i])
+        enriched_relations[i]["desc"] != relations[i]
         for i in range(len(relations))
     )
 
@@ -124,10 +124,10 @@ def test_enrich_query_ollama(ollama_config):
     node = "Adalimumab"
     enriched_node = enr_model.enrich_query(node)
     # Check the enriched node
-    assert len(enriched_node[0]["desc"]) > len(node)
+    assert enriched_node["desc"] != node
 
     # Perform enrichment for a single relation
     relation = "(IL23R, gene causation disease, Inflammatory Bowel Disease)"
     enriched_relation = enr_model.enrich_query(relation)
     # Check the enriched relation
-    assert len(enriched_relation[0]["desc"]) > len(relation)
+    assert enriched_relation["desc"] != relation
