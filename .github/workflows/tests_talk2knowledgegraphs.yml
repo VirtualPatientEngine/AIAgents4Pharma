@@ -105,7 +105,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
-          ~/.ollama/models/*
+          /Users/runner/.ollama/models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -120,6 +120,8 @@ jobs:
         ollama serve &
         sleep 10
         ollama pull llama3.2
+        ollama list
+        ls -l /Users/runner/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -130,6 +132,7 @@ jobs:
         ollama serve &
         sleep 10
         ollama list
+        ls -l /Users/runner/.ollama/models
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
@@ -174,7 +177,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
-          /usr/share/ollama/.ollama/models/*
+          /home/runner/.ollama/models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -189,6 +192,8 @@ jobs:
         ollama serve &
         sleep 10
         ollama pull llama3.2
+        ollama list
+        ls -l /home/runner/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -199,6 +204,7 @@ jobs:
         ollama serve &
         sleep 10
         ollama list
+        ls -l /home/runner/.ollama/models        
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
@@ -243,7 +249,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}\venv\*
-          C:\Users\%username%\.ollama\models
+          C:\Users\runneradmin\.ollama\models
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -259,9 +265,8 @@ jobs:
         start ollama serve
         sleep 10
         cmd /k ollama pull llama3.2
-        cd C:\Users\
-        dir
-        whoami
+        cmd /k ollama list
+        dir C:\Users\runneradmin\.ollama\models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -273,6 +278,7 @@ jobs:
         start ollama serve
         sleep 10
         cmd /k ollama list
+        dir C:\Users\runneradmin\.ollama\models
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
