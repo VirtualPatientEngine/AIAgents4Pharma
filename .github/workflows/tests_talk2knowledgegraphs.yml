@@ -84,7 +84,11 @@ jobs:
   # code coverage job for macos
   code-cov-macos:
     name: code-coverage
-    runs-on: macos-13
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [macos-13]
 
     steps:
     - name: Checkout code
@@ -153,7 +157,11 @@ jobs:
   # code coverage job for ubuntu
   code-cov-ubuntu:
     name: code-coverage
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [ubuntu-latest]
 
     steps:
     - name: Checkout code
@@ -222,7 +230,11 @@ jobs:
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [windows-latest]
 
     steps:
     - name: Checkout code
