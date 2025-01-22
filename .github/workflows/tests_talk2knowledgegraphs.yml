@@ -41,19 +41,24 @@ jobs:
         id: cache
         with:
           path: |
-            ${{env.pythonLocation}}/lib/python3.12/site-packages/*
-          key: ${{ runner.os }}-pip
+            ${{ github.workspace }}/venv/*
+          key: ${{ runner.os }}-pip-pylint
 
       # install requirements
       - name: Install the requirements
         if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ${{ github.workspace }}
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
 
       # pylint
       - name: Run pylint
+        working-directory: ${{ github.workspace }}
         run: |
-          pip3 install pylint
+          source venv/bin/activate
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
 
   # code coverage job for macos
@@ -78,13 +83,17 @@ jobs:
       id: cache
       with:
         path: |
-          ${{env.pythonLocation}}/lib/python3.12/site-packages/*
+          ${{ github.workspace }}/venv/*
           ~/.ollama/models/*
-        key: ${{ runner.os }}-pip
+        key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
+      working-directory: ${{ github.workspace }}
       run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
         pip3 install -r requirements.txt
         brew install ollama
         ollama serve &
@@ -93,18 +102,25 @@ jobs:
         ollama pull llama3.1
 
     - name: Reading cached Ollama models
+      working-directory: ${{ github.workspace }}
       run: |
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
+        source venv/bin/activate
         brew install ollama
         ollama serve &
         sleep 10
         ollama list
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
+      working-directory: ${{ github.workspace }}
+      run: |
+        source venv/bin/activate
+        coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
 
     - name: Check coverage
+      working-directory: ${{ github.workspace }}
       run: |
+        source venv/bin/activate
         coverage report -m
         TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
         if [[ $TOTAL_COVERAGE -ne 100 ]]; then
@@ -136,13 +152,17 @@ jobs:
       id: cache
       with:
         path: |
-          ${{env.pythonLocation}}/lib/python3.12/site-packages/*
+          ${{ github.workspace }}/venv/*
           /usr/share/ollama/.ollama/models/*
-        key: ${{ runner.os }}-pip
+        key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
+      working-directory: ${{ github.workspace }}
       run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
         pip3 install -r requirements.txt
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
@@ -151,18 +171,25 @@ jobs:
         ollama pull llama3.1
 
     - name: Reading cached Ollama models
+      working-directory: ${{ github.workspace }}
       run: |
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
+        source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
         ollama list
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
+      working-directory: ${{ github.workspace }}
+      run: |
+        source venv/bin/activate
+        coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
 
     - name: Check coverage
+      working-directory: ${{ github.workspace }}
       run: |
+        source venv/bin/activate
         coverage report -m
         TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
         if [[ $TOTAL_COVERAGE -ne 100 ]]; then
@@ -195,13 +222,17 @@ jobs:
       id: cache
       with:
         path: |
-          ${{env.pythonLocation}}/lib/python3.12/site-packages/*
+          ${{ github.workspace }}/venv/*
           C:\Users\%username%\.ollama\models\*
-        key: ${{ runner.os }}-pip
+        key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
+      working-directory: ${{ github.workspace }}
       run: |
+        python3 -m venv venv
+        venv\Scripts\activate
+        pip install --upgrade pip
         pip3 install -r requirements.txt
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
@@ -211,8 +242,10 @@ jobs:
         cmd /k ollama pull llama3.1
 
     - name: Reading cached Ollama models
+      working-directory: ${{ github.workspace }}
       run: |
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
+        venv\Scripts\activate
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
         start ollama serve
@@ -220,10 +253,15 @@ jobs:
         cmd /k ollama list
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
+      working-directory: ${{ github.workspace }}
+      run: |
+        venv\Scripts\activate
+        coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
 
     - name: Check coverage
+      working-directory: ${{ github.workspace }}
       run: |
+        venv\Scripts\activate
         coverage report -m
         # $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1) -replace "[^\d]"  # Extract the last line and remove non-numeric characters
         $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1)
