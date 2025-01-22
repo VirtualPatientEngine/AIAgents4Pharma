@@ -46,7 +46,7 @@ jobs:
           key: ${{ runner.os }}-pip-pylint
 
       # install requirements for ubuntu and macos
-      - name: Install the requirements
+      - name: Install the requirements (ubuntu and macos)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
@@ -56,7 +56,7 @@ jobs:
           pip3 install --break-system-packages -r requirements.txt
       
       # install requirements for windows
-      - name: Install the requirements
+      - name: Install the requirements (windows)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
@@ -66,7 +66,7 @@ jobs:
           pip3 install --break-system-packages -r requirements.txt
 
       # pylint for ubuntu and macos
-      - name: Run pylint
+      - name: Run pylint (ubuntu and macos)
         if: matrix.os != 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
@@ -74,7 +74,7 @@ jobs:
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
       
       # pylint for windows
-      - name: Run pylint
+      - name: Run pylint (windows)
         if: matrix.os == 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |

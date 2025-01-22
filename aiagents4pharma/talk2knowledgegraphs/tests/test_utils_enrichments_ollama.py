@@ -2,7 +2,6 @@
 Test cases for utils/enrichments/ollama.py
 """
 
-import time
 import pytest
 import ollama
 from ..utils.enrichments.ollama import EnrichmentWithOllama
