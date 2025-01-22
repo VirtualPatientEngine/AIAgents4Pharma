@@ -104,8 +104,8 @@ jobs:
       id: cache
       with:
         path: |
+          ${{ github.workspace }}/ollama_models/*
           ${{ github.workspace }}/venv/*
-          ${{ github.workspace }}/ollama-models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -117,11 +117,10 @@ jobs:
         pip install --upgrade pip
         pip3 install -r requirements.txt
         brew install ollama
-        mkdir ${{ github.workspace }}/ollama-models
-        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        mkdir ${{ github.workspace }}/ollama_models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama_models
         ollama serve &
         sleep 10
-        ollama pull nomic-embed-text
         ollama pull llama3.2
 
     - name: Reading cached Ollama models
@@ -130,7 +129,7 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
         source venv/bin/activate
         brew install ollama
-        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama_models
         ollama serve &
         sleep 10
         ollama list
@@ -177,8 +176,8 @@ jobs:
       id: cache
       with:
         path: |
+          ${{ github.workspace }}/ollama_models/*
           ${{ github.workspace }}/venv/*
-          ${{ github.workspace }}/ollama-models/*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -190,11 +189,10 @@ jobs:
         pip install --upgrade pip
         pip3 install -r requirements.txt
         curl -fsSL https://ollama.com/install.sh | sh
-        mkdir ${{ github.workspace }}/ollama-models
-        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        mkdir ${{ github.workspace }}/ollama_models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama_models
         ollama serve &
         sleep 10
-        ollama pull nomic-embed-text
         ollama pull llama3.2
 
     - name: Reading cached Ollama models
@@ -203,7 +201,7 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
-        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        export OLLAMA_MODELS=${{ github.workspace }}/ollama_models
         ollama serve &
         sleep 10
         ollama list
@@ -250,8 +248,8 @@ jobs:
       id: cache
       with:
         path: |
-          ${{ github.workspace }}/venv/*
-          ${{ github.workspace }}/ollama-models/*
+          ${{ github.workspace }}\ollama_models\*
+          ${{ github.workspace }}\venv\*
         key: ${{ runner.os }}-pip-code-cov
 
     - name: Install dependencies
@@ -264,11 +262,10 @@ jobs:
         pip3 install -r requirements.txt
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
-        mkdir ${{ github.workspace }}/ollama-models
-        set OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        mkdir ${{ github.workspace }}\ollama_models
+        set OLLAMA_MODELS=${{ github.workspace }}\ollama_models
         start ollama serve
         sleep 10
-        cmd /k ollama pull nomic-embed-text
         cmd /k ollama pull llama3.2
 
     - name: Reading cached Ollama models
@@ -278,7 +275,7 @@ jobs:
         venv\Scripts\activate
         curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
         tar -xzf .\ollama-windows-amd64.zip
-        set OLLAMA_MODELS=${{ github.workspace }}/ollama-models
+        set OLLAMA_MODELS=${{ github.workspace }}\ollama_models
         start ollama serve
         sleep 10
         cmd /k ollama list

@@ -74,6 +74,7 @@ def test_no_model_ollama(ollama_config):
             temperature=cfg["temperature"],
             streaming=cfg["streaming"],
         )
+    ollama.delete(cfg_model)
 
 def test_enrich_documents_ollama(ollama_config):
     """Test the Ollama textual enrichment class."""
