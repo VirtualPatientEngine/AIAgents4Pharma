@@ -1,50 +1,9 @@
 class Config:
-    # LLM Configuration
-    LLM_MODEL = "gpt-4o-mini"  # Updated to GPT-4-mini
-    TEMPERATURE = 0.7
-
     # API Endpoints
     SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"
 
     # API Keys
     SEMANTIC_SCHOLAR_API_KEY = "YOUR_API_KEY"  # Get this from Semantic Scholar
-
-    # State Keys
-    class StateKeys:
-        PAPERS = "papers"
-        SELECTED_PAPERS = "selected_papers"
-        CURRENT_TOOL = "current_tool"
-        CURRENT_AGENT = "current_agent"
-        RESPONSE = "response"
-        ERROR = "error"
-        CHAT_HISTORY = "chat_history"
-        USER_INFO = "user_info"
-        MEMORY = "memory"
-
-    # Agent Names
-    class AgentNames:
-        MAIN = "main_agent"
-        S2 = "semantic_scholar_agent"
-        ZOTERO = "zotero_agent"
-        PDF = "pdf_agent"
-        ARXIV = "arxiv_agent"
-
-    # Tool Names (Keeping for reference)
-    class ToolNames:
-        # S2 Tools
-        S2_SEARCH = "search_papers"
-        S2_SINGLE_REC = "single_paper_recommendation"
-        S2_MULTI_REC = "multi_paper_recommendation"
-
-        # Zotero Tools
-        ZOTERO_READ = "zotero_read"
-        ZOTERO_WRITE = "zotero_write"
-
-        # PDF Tools
-        PDF_RAG = "pdf_rag"
-
-        # arXiv Tools
-        ARXIV_DOWNLOAD = "arxiv_download"
 
     # Updated System Prompts
     MAIN_AGENT_PROMPT = """You are a supervisory AI agent that routes user queries to specialized tools.
