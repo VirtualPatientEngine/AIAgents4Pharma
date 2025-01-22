@@ -7,11 +7,12 @@ import os
 import random
 import sys
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 import streamlit as st
 from langchain_core.messages import ChatMessage, HumanMessage
 
-from agents.main_agent import get_app
+# from agents.main_agent import get_app
+sys.path.append('./')
+from aiagents4pharma.talk2competitors.agents.main_agent import get_app
 
 # Page configuration
 st.set_page_config(page_title="talk2comp", page_icon="📚", layout="wide")
