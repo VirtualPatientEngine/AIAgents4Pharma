@@ -53,6 +53,7 @@ jobs:
       # pylint
       - name: Run pylint
         run: |
+          pip3 install pylint
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
 
   # code coverage job for macos
@@ -216,7 +217,7 @@ jobs:
         tar -xzf .\ollama-windows-amd64.zip
         start ollama serve
         sleep 10
-        ollama list
+        cmd /k ollama list
 
     - name: Run tests with coverage
       run: coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/

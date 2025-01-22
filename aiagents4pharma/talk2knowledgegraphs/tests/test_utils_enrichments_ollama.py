@@ -62,7 +62,6 @@ def test_no_model_ollama(ollama_config):
     # Delete the Ollama model
     try:
         ollama.delete(cfg_model)
-        time.sleep(10)
     except ollama.ResponseError:
         pass
 
