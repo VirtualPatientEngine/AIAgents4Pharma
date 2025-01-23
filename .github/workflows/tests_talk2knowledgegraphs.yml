@@ -274,6 +274,8 @@ jobs:
         sleep 10
         ollama pull gemma2:2b
         ollama list
+        ls -l ${{ github.workspace }}/ollama-models
+        ls -l ~/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -285,7 +287,9 @@ jobs:
         ollama serve &
         sleep 10
         ollama list
-
+        ls -l ${{ github.workspace }}/ollama-models
+        ls -l ~/.ollama/models
+        
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
       run: |
