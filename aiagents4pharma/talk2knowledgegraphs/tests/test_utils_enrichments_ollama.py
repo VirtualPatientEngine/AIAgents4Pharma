@@ -10,16 +10,12 @@ from ..utils.enrichments.ollama import EnrichmentWithOllama
 def fixture_ollama_config():
     """Return a dictionary with Ollama configuration."""
     return {
-        "model_name": "llama3.2",
+        "model_name": "gemma2:2b",
         "prompt_enrichment": """
             You are a helpful expert in biomedical knowledge graph analysis.
             Your role is to enrich the inputs (nodes or relations) using textual description.
             A node is represented as string, e.g., "ADAM17" in the input list, while a relation is
             represented as tuples, e.g., "(NOD2, gene causation disease, Crohn disease)".
-            DO NOT mistake one for the other. If the input is a list of nodes, treat each node as
-            a unique entity, and provide a description. If the input is a list of relations,
-            treat each tuple in the relation list as a unique relation between nodes,
-            and provide a description for each tuple.
             All provided information about the node or relations should be concise
             (a single sentence), informative, factual, and relevant in the biomedical domain.
 
@@ -124,10 +120,10 @@ def test_enrich_query_ollama(ollama_config):
     node = "Adalimumab"
     enriched_node = enr_model.enrich_query(node)
     # Check the enriched node
-    assert enriched_node["desc"] != node
+    assert enriched_node[0]["desc"] != node
 
     # Perform enrichment for a single relation
     relation = "(IL23R, gene causation disease, Inflammatory Bowel Disease)"
     enriched_relation = enr_model.enrich_query(relation)
     # Check the enriched relation
-    assert enriched_relation["desc"] != relation
+    assert enriched_relation[0]["desc"] != relation
