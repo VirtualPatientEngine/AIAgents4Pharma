@@ -259,7 +259,7 @@ jobs:
       id: cache_ollama
       with:
         path: |
-          /usr/share/ollama/.ollama/models
+          /usr/share/ollama/.ollama/models/*
         key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
@@ -279,6 +279,7 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
+        cp -r /usr/share/ollama/.ollama/models/* /home/runner/.ollama/models/
         ollama serve &
         sleep 10
         ollama list    
