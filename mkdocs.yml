@@ -6,16 +6,20 @@ nav:
   - Talk2Biomodels:
       - Introduction: talk2biomodels/models/intro.md
       - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
+      - Agents:
+        - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
+      - States:
+        - Talk2Biomodels state: talk2biomodels/states/state_talk2biomodels.md
       - Models:
         - System Bio Model: talk2biomodels/models/sys_bio_model.md
         - Basico Model : talk2biomodels/models/basico_model.md
       - Tools:
         - Search models: talk2biomodels/tools/search_models.md
-        - Model description: talk2biomodels/tools/model_description.md
-        - Fetch parameters: talk2biomodels/tools/fetch_parameters.md
+        - Model information: talk2biomodels/tools/get_modelinfo.md
         - Simulate model: talk2biomodels/tools/simulate_model.md
         - Ask questions: talk2biomodels/tools/ask_question.md
-        - Custom figures: talk2biomodels/tools/custom_plotter.md
+        - Custom plots: talk2biomodels/tools/custom_plotter.md
+        - Load biomodel: talk2biomodels/tools/load_biomodel.md
 
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
