@@ -273,8 +273,6 @@ jobs:
         sleep 10
         ollama pull gemma2:2b
         ollama list
-        ls -l ~/.ollama/models
-        ls -l /usr/share/ollama/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
