@@ -5,7 +5,9 @@ nav:
 
   - Talk2Biomodels:
       - Introduction: talk2biomodels/models/intro.md
-      - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
+      - Tutorials: 
+        - ./notebooks/talk2biomodels/tutorial.ipynb
+        - ./notebooks/talk2biomodels/Questions_case_1.md
       - Models:
         - System Bio Model: talk2biomodels/models/sys_bio_model.md
         - Basico Model : talk2biomodels/models/basico_model.md
