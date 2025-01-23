@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with GitHub Actions
-name: TESTS Talk2BioModels
+name: TESTS Talk2Competitors
 
 # Controls when the workflow will run
 on:
@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'aiagents4pharma/talk2biomodels/**'
+      - 'aiagents4pharma/talk2competitors/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -44,7 +44,7 @@ jobs:
       # pylint
       - name: Run pylint
         run: |
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2biomodels
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2competitors
 
   # code coverage job for ubuntu and macos
   code-cov-ubuntu-macos:
@@ -67,7 +67,7 @@ jobs:
       run: pip3 install -r requirements.txt  # Adjust this according to your project
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      run: coverage run --include=aiagents4pharma/talk2competitors/* -m pytest --cache-clear aiagents4pharma/talk2competitors/tests/
 
     - name: Check coverage
       run: |
@@ -102,7 +102,7 @@ jobs:
       run: pip3 install -r requirements.txt  # Adjust this according to your project
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      run: coverage run --include=aiagents4pharma/talk2competitors/* -m pytest --cache-clear aiagents4pharma/talk2competitors/tests/
 
     - name: Check coverage
       run: |

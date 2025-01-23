@@ -1,1 +1,0 @@
-::: aiagents4pharma.talk2biomodels.tools.model_description

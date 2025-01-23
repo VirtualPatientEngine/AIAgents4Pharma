@@ -4,21 +4,21 @@
 Tool for searching models based on search query.
 """
 
-from urllib.error import URLError
-from time import sleep
-from typing import Type
+from typing import Type, Annotated
 from pydantic import BaseModel, Field
 from basico import biomodels
 from langchain_core.tools import BaseTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import InjectedState
 
 class SearchModelsInput(BaseModel):
     """
     Input schema for the search models tool.
     """
     query: str = Field(description="Search models query", default=None)
+    state: Annotated[dict, InjectedState]
 
 # Note: It's important that every field has type hints. BaseTool is a
 # Pydantic class and not having type hints can lead to unexpected behavior.
@@ -27,11 +27,13 @@ class SearchModelsTool(BaseTool):
     Tool for returning the search results based on the search query.
     """
     name: str = "search_models"
-    description: str = "Search models based on search query."
+    description: str = "Search models in the BioMmodels database based on keywords."
     args_schema: Type[BaseModel] = SearchModelsInput
     return_direct: bool = True
 
-    def _run(self, query: str) -> str:
+    def _run(self,
+             query: str,
+             state: Annotated[dict, InjectedState]) -> dict:
         """
         Run the tool.
 
@@ -39,20 +41,10 @@ class SearchModelsTool(BaseTool):
             query (str): The search query.
 
         Returns:
-            str: The answer to the question.
+            dict: The answer to the question in the form of a dictionary.
         """
-        attempts = 0
-        max_retries = 3
-        while attempts < max_retries:
-            try:
-                search_results = biomodels.search_for_model(query)
-                break
-            except URLError as e:
-                attempts += 1
-                sleep(10)
-                if attempts >= max_retries:
-                    raise e
-        llm = ChatOpenAI(model="gpt-4o-mini")
+        search_results = biomodels.search_for_model(query)
+        llm = ChatOpenAI(model=state['llm_model'])
         # Check if run_manager's metadata has the key 'prompt_content'
         prompt_content = f'''
                         Convert the input into a table.
@@ -80,15 +72,3 @@ class SearchModelsTool(BaseTool):
         parser = StrOutputParser()
         chain = prompt_template | llm | parser
         return chain.invoke({"input": search_results})
-
-    def get_metadata(self):
-        """
-        Get metadata for the tool.
-
-        Returns:
-            dict: The metadata for the tool.
-        """
-        return {
-            "name": self.name,
-            "description": self.description
-        }

@@ -1,4 +1,7 @@
-[![TESTS](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests.yml/badge.svg?branch=feat%2Finitial-setup)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests.yml)
+[![Talk2BioModels](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml)
+[![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
+[![Talk2KnowledgeGraphs](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml)
+[![Talk2Competitors](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2competitors.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2competitors.yml)
 
 <h1 align="center" style="border-bottom: none;">🤖 AIAgents4Pharma</h1>
 
@@ -9,6 +12,7 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 - **Talk2BioModels**: Engage directly with mathematical models in systems biology.
 - **Talk2Cells** *(Work in progress)*: Query and analyze sequencing data with ease.
 - **Talk2KnowledgeGraphs** *(Work in progress)*: Access and explore complex biological knowledge graphs for insightful data connections.
+- **Talk2Competitors** *(Coming soon)*: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 
 ---
 
@@ -29,6 +33,8 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 ### 3. Talk2KnowledgeGraphs *(Work in Progress)*
 
 **Talk2KnowledgeGraphs** is an agent designed to enable interaction with biological knowledge graphs (KGs). KGs integrate vast amounts of structured biological data into a format that highlights relationships between entities, such as proteins, genes, and diseases.
+
+### 4. Talk2KnowledgeGraphs *(Coming soon)*
 
 ## Getting Started
 
@@ -128,6 +134,7 @@ Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 - **User Interface**: Interactive web UI for all agents.
 - **Talk2Cells**: Integration of sequencing data analysis tools.
 - **Talk2KnowledgeGraphs**: Interface for biological knowledge graph interaction.
+- **Talk2Competitors**
 
 We’re excited to bring AIAgents4Pharma to the bioinformatics and pharmaceutical research community. Together, let’s make data-driven biological research more accessible and insightful. 
 
