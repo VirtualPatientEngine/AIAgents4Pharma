@@ -17,15 +17,15 @@ env:
 
 # This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  # pylint job for windows, ubuntu, and macos
-  pylint-windows-ubuntu-macos:
+  # pylint job for macos
+  pylint-macos:
     # The type of runner that the job will run on
     name: pylint
     runs-on: ${{ matrix.os }}
 
     strategy:
         matrix:
-            os: [windows-latest, ubuntu-latest, macos-13]
+            os: [macos-13]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -45,9 +45,9 @@ jobs:
             ${{ github.workspace }}/venv/*
           key: ${{ runner.os }}-venv
 
-      # install requirements for ubuntu and macos
-      - name: Install the requirements (ubuntu and macos)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+      # install requirements
+      - name: Install the requirements
+        if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ${{ github.workspace }}
         run: |
           python3 -m venv venv
@@ -55,27 +55,98 @@ jobs:
           pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
       
-      # install requirements for windows
-      - name: Install the requirements (windows)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+      # pylint
+      - name: Run pylint
+        working-directory: ${{ github.workspace }}
+        run: |
+          source venv/bin/activate
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+      
+  # pylint job for ubuntu
+  pylint-ubuntu:
+    # The type of runner that the job will run on
+    name: pylint
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+            os: [ubuntu-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Cache files
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ${{ github.workspace }}/venv/*
+          key: ${{ runner.os }}-venv
+
+      # install requirements
+      - name: Install the requirements
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ${{ github.workspace }}
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip3 install --break-system-packages -r requirements.txt
+
+      # pylint
+      - name: Run pylint
+        working-directory: ${{ github.workspace }}
+        run: |
+          source venv/bin/activate
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+      
+  # pylint job for windows
+  pylint-windows:
+    # The type of runner that the job will run on
+    name: pylint
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+            os: [windows-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Cache files
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ${{ github.workspace }}\venv\*
+          key: ${{ runner.os }}-venv
+      
+      # install requirements
+      - name: Install the requirements
+        if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ${{ github.workspace }}
         run: |
           python3 -m venv venv
           venv\Scripts\activate
           pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
-
-      # pylint for ubuntu and macos
-      - name: Run pylint (ubuntu and macos)
-        if: matrix.os != 'windows-latest'
-        working-directory: ${{ github.workspace }}
-        run: |
-          source venv/bin/activate
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
       
-      # pylint for windows
-      - name: Run pylint (windows)
-        if: matrix.os == 'windows-latest'
+      # pylint
+      - name: Run pylint
         working-directory: ${{ github.workspace }}
         run: |
           venv\Scripts\activate
@@ -84,7 +155,7 @@ jobs:
   # code coverage job for macos
   code-cov-macos:
     name: code-coverage
-    needs: pylint-windows-ubuntu-macos
+    needs: pylint-macos
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -126,7 +197,6 @@ jobs:
         sleep 10
         ollama pull gemma2:2b
         ollama list
-        ls -l /Users/runner/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -137,7 +207,6 @@ jobs:
         ollama serve &
         sleep 10
         ollama list
-        ls -l /Users/runner/.ollama/models
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
@@ -161,7 +230,7 @@ jobs:
   # code coverage job for ubuntu
   code-cov-ubuntu:
     name: code-coverage
-    needs: pylint-windows-ubuntu-macos
+    needs: pylint-ubuntu
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -203,7 +272,6 @@ jobs:
         sleep 10
         ollama pull gemma2:2b
         ollama list
-        ls -l /home/runner/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -213,8 +281,7 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
-        ollama list
-        ls -l /home/runner/.ollama/models        
+        ollama list    
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
@@ -238,7 +305,7 @@ jobs:
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage
-    needs: pylint-windows-ubuntu-macos
+    needs: pylint-windows
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -281,7 +348,6 @@ jobs:
         sleep 10
         cmd /k ollama pull gemma2:2b
         cmd /k ollama list
-        dir C:\Users\runneradmin\.ollama\models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -293,7 +359,6 @@ jobs:
         start ollama serve
         sleep 10
         cmd /k ollama list
-        dir C:\Users\runneradmin\.ollama\models
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
