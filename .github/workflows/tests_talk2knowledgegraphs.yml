@@ -259,7 +259,7 @@ jobs:
       id: cache_ollama
       with:
         path: |
-          /home/runner/.ollama/models/*
+          /usr/share/ollama/.ollama/models
         key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
