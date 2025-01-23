@@ -272,6 +272,8 @@ jobs:
         sleep 10
         ollama pull gemma2:2b
         ollama list
+        ls -l ~/.ollama/models
+        ls -l /usr/share/ollama/.ollama/models
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
@@ -279,10 +281,11 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
-        cp -r /usr/share/ollama/.ollama/models/* /home/runner/.ollama/models/
+        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models
+        export OLLAMA_MODELS=~/.ollama/models
         ollama serve &
         sleep 10
-        ollama list    
+        ollama list
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
