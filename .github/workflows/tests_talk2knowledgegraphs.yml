@@ -260,7 +260,7 @@ jobs:
       with:
         path: |
           /home/runner/.ollama/models/*
-        key: ${{ runner.os }}-venv
+        key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
       if: steps.cache_ollama.outputs.cache-hit != 'true'
