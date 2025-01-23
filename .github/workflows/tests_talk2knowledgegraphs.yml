@@ -54,14 +54,14 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
-      
+
       # pylint
       - name: Run pylint
         working-directory: ${{ github.workspace }}
         run: |
           source venv/bin/activate
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
-      
+
   # pylint job for ubuntu
   pylint-ubuntu:
     # The type of runner that the job will run on
@@ -106,7 +106,7 @@ jobs:
         run: |
           source venv/bin/activate
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
-      
+
   # pylint job for windows
   pylint-windows:
     # The type of runner that the job will run on
@@ -134,7 +134,7 @@ jobs:
           path: |
             ${{ github.workspace }}\venv\*
           key: ${{ runner.os }}-venv
-      
+
       # install requirements
       - name: Install the requirements
         if: steps.cache.outputs.cache-hit != 'true'
@@ -144,7 +144,7 @@ jobs:
           venv\Scripts\activate
           pip install --upgrade pip
           pip3 install --break-system-packages -r requirements.txt
-      
+
       # pylint
       - name: Run pylint
         working-directory: ${{ github.workspace }}
@@ -259,34 +259,37 @@ jobs:
       id: cache_ollama
       with:
         path: |
-          ${{ github.workspace }}/ollama-models/*
+          /usr/share/ollama/.ollama/models/*
+          test
         key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
       if: steps.cache_ollama.outputs.cache-hit != 'true'
       working-directory: ${{ github.workspace }}
       run: |
+        mkdir test
+        echo "Hello, World!" > test/hello.txt
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
-        mkdir ollama-models
-        export OLLAMA_MODELS=${{ github.workspace }}/ollama-models
         ollama serve &
         sleep 10
         ollama pull gemma2:2b
-        ollama list
-        ls -l ${{ github.workspace }}/ollama-models/
+        ls -l ~/.ollama/
+        ls -l /usr/share/ollama/.ollama/
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
       run: |
+        cat test/hello.txt
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
-        export OLLAMA_MODELS=~/.ollama/models
         ollama serve &
         sleep 10
+        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
-        ls -l ${{ github.workspace }}/ollama-models
+        du -sh ~/.ollama/
+        du -sh /usr/share/ollama/.ollama/
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
