@@ -18,15 +18,16 @@ from langchain.callbacks.tracers import LangChainTracer
 from utils import streamlit_utils
 sys.path.append('./')
 from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
+# from talk2biomodels.agents.t2b_agent import get_app
 
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
 
 
-st.logo(
-    image='docs/VPE.png',
-    size='large',
-    link='https://github.com/VirtualPatientEngine'
-)
+# st.logo(
+#     image='docs/VPE.png',
+#     size='large',
+#     link='https://github.com/VirtualPatientEngine'
+# )
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
@@ -106,8 +107,8 @@ with main_col1:
             )
 
         # Help text
-        st.button("Help button",
-                  icon="ℹ️",
+        st.button("Know more ↗",
+                #   icon="ℹ️",
                   on_click=streamlit_utils.help_button,
                   use_container_width=False)
 
