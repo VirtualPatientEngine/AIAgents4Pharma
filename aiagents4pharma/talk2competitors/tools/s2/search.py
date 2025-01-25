@@ -28,7 +28,8 @@ class SearchInput(BaseModel):
     )
     year: Optional[str] = Field(
         default=None,
-        description="Year range in format: YYYY for specific year, YYYY- for papers after year, -YYYY for papers before year, or YYYY:YYYY for range",
+        description="Year range in format: YYYY for specific year, "
+        "YYYY- for papers after year, -YYYY for papers before year, or YYYY:YYYY for range",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -47,7 +48,8 @@ def search_tool(
         query (str): The search query string to find academic papers.
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
         limit (int, optional): The maximum number of results to return. Defaults to 2.
-        year (str, optional): Year range for papers. Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
+        year (str, optional): Year range for papers.
+        Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
 
     Returns:
         Dict[str, Any]: The search results and related information.
@@ -57,7 +59,8 @@ def search_tool(
     params = {
         "query": query,
         "limit": min(limit, 100),
-        # "fields": "paperId,title,abstract,year,authors,citationCount,url,publicationTypes,openAccessPdf",
+        # "fields": "paperId,title,abstract,year,authors,
+        # citationCount,url,publicationTypes,openAccessPdf",
         "fields": "paperId,title,abstract,year,authors,citationCount,url",
     }
 

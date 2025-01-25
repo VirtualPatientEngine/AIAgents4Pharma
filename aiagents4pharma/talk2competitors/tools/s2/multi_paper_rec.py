@@ -32,7 +32,8 @@ class MultiPaperRecInput(BaseModel):
     )
     year: Optional[str] = Field(
         default=None,
-        description="Year range in format: YYYY for specific year, YYYY- for papers after year, -YYYY for papers before year, or YYYY:YYYY for range",
+        description="Year range in format: YYYY for specific year, "
+        "YYYY- for papers after year, -YYYY for papers before year, or YYYY:YYYY for range",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -53,7 +54,8 @@ def get_multi_paper_recommendations(
         paper_ids (List[str]): The list of paper IDs to base recommendations on.
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
         limit (int, optional): The maximum number of recommendations to return. Defaults to 2.
-        year (str, optional): Year range for papers. Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
+        year (str, optional): Year range for papers.
+        Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
 
     Returns:
         Dict[str, Any]: The recommendations and related information.
