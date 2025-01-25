@@ -164,3 +164,6 @@ experiment/web/vectordb
 
 # Streamlit
 .streamlit/secrets.toml
+
+# macOS metadata file
+.DS_Store
