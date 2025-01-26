@@ -20,5 +20,5 @@ class Talk2Biomodels(AgentState):
     # the operator for the sbml_file_path field.
     # https://langchain-ai.github.io/langgraph/troubleshooting/errors/INVALID_CONCURRENT_GRAPH_UPDATE/
     sbml_file_path: Annotated[list, operator.add]
-    dic_simulated_data: dict
+    dic_simulated_data: Annotated[list[dict], operator.add]
     llm_model: str

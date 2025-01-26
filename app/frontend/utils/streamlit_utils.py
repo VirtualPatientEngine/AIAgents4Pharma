@@ -47,7 +47,8 @@ def render_toggle(key: str,
 
 def render_plotly(df: pd.DataFrame,
                 key: str,
-                tool_name: str,
+                title: str,
+                # tool_name: str,
                 save_chart: bool = False
                 ):
     """
@@ -56,7 +57,8 @@ def render_plotly(df: pd.DataFrame,
     Args:
         df: pd.DataFrame: The input dataframe
     """
-    toggle_state = st.session_state[f'toggle_plotly_{tool_name}_{key.split("_")[-1]}']
+    # toggle_state = st.session_state[f'toggle_plotly_{tool_name}_{key.split("_")[-1]}']\
+    toggle_state = st.session_state[f'toggle_plotly_{key.split("plotly_")[1]}']
     if toggle_state:
         df_simulation_results = df.melt(
                                     id_vars='Time',
@@ -66,7 +68,7 @@ def render_plotly(df: pd.DataFrame,
                         x='Time',
                         y='Concentration',
                         color='Species',
-                        title="Concentration of species over time",
+                        title=title,
                         height=500,
                         width=600
                 )
@@ -80,11 +82,12 @@ def render_plotly(df: pd.DataFrame,
                 "type": "plotly",
                 "content": df,
                 "key": key,
-                "tool_name": tool_name
+                "title": title,
+                # "tool_name": tool_name
             })
 
 def render_table(df: pd.DataFrame,
-                 tool_name: str,
+                #  tool_name: str,
                  key: str,
                  save_table: bool = False
                 ):
@@ -92,7 +95,8 @@ def render_table(df: pd.DataFrame,
     Function to render the table in the chat.
     """
     # print (st.session_state['toggle_simulate_model_'+key.split("_")[-1]])
-    toggle_state = st.session_state[f'toggle_table_{tool_name}_{key.split("_")[-1]}']
+    # toggle_state = st.session_state[f'toggle_table_{tool_name}_{key.split("_")[-1]}']
+    toggle_state = st.session_state[f'toggle_table_{key.split("dataframe_")[1]}']
     if toggle_state:
         st.dataframe(df,
                     use_container_width=True,
@@ -103,7 +107,7 @@ def render_table(df: pd.DataFrame,
                 "type": "dataframe",
                 "content": df,
                 "key": key,
-                "tool_name": tool_name
+                # "tool_name": tool_name
             })
 
 @st.dialog("Warning ⚠️")

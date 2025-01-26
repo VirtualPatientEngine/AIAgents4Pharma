@@ -1,7 +1,8 @@
 '''
-Test cases
+Test cases for Talk2Biomodels.
 '''
 
+import pandas as pd
 from langchain_core.messages import HumanMessage, ToolMessage
 from ..agents.t2b_agent import get_app
 
@@ -56,22 +57,33 @@ def test_ask_question_tool():
 
     ##########################################
     # Test ask_question tool when simulation
-    # results are not available
+    # results are not available i.e. the
+    # simulation has not been run. In this
+    # case, the tool should return an error
     ##########################################
     # Update state
     app.update_state(config, {"llm_model": "gpt-4o-mini"})
+    # Define the prompt
     prompt = "Call the ask_question tool to answer the "
     prompt += "question: What is the concentration of CRP "
-    prompt += "in serum at 1000 hours?"
-
-    # Test the tool get_modelinfo
-    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
-    assistant_msg = response["messages"][-1].content
-    # Check if the assistant message is a string
-    assert isinstance(assistant_msg, str)
+    prompt += "in serum at 1000 hours? The simulation name "
+    prompt += "is `simulation_name`."
+    # Invoke the tool
+    app.invoke(
+            {"messages": [HumanMessage(content=prompt)]},
+            config=config
+        )
+    # Get the messages from the current state
+    # and reverse the order
+    current_state = app.get_state(config)
+    reversed_messages = current_state.values["messages"][::-1]
+    # Loop through the reversed messages until a
+    # ToolMessage is found.
+    for msg in reversed_messages:
+        # Assert that the message is a ToolMessage
+        # and its status is "error"
+        if isinstance(msg, ToolMessage):
+            assert msg.status == "error"
 
 def test_simulate_model_tool():
     '''
@@ -138,9 +150,9 @@ def test_simulate_model_tool():
     reversed_messages = current_state.values["messages"][::-1]
     # Loop through the reversed messages
     # until a ToolMessage is found.
-    expected_artifact = ['CRP[serum]', 'CRPExtracellular']
-    expected_artifact += ['CRP Suppression (%)', 'CRP (% of baseline)']
-    expected_artifact += ['CRP[liver]']
+    expected_header = ['Time', 'CRP[serum]', 'CRPExtracellular']
+    expected_header += ['CRP Suppression (%)', 'CRP (% of baseline)']
+    expected_header += ['CRP[liver]']
     predicted_artifact = []
     for msg in reversed_messages:
         if isinstance(msg, ToolMessage):
@@ -150,9 +162,14 @@ def test_simulate_model_tool():
             if msg.name == "custom_plotter":
                 predicted_artifact = msg.artifact
                 break
-    # Check if the two artifacts are equal
-    # assert expected_artifact in predicted_artifact
-    assert set(expected_artifact).issubset(set(predicted_artifact))
+    # Convert the artifact into a pandas dataframe
+    # for easy comparison
+    df = pd.DataFrame(predicted_artifact)
+    # Extract the headers from the dataframe
+    predicted_header = df.columns.tolist()
+    # Check if the header is in the expected_header
+    # assert expected_header in predicted_artifact
+    assert set(expected_header).issubset(set(predicted_header))
     ##########################################
     # Test custom_plotter tool when the
     # simulation results are available but
