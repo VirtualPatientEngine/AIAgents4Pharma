@@ -52,10 +52,10 @@ class TimeSpeciesNameConcentration:
 class RecurringData:
     """
     Dataclass for storing the species and time data 
-    on recurring basis.
+    on reocurring basis.
     """
     data: List[TimeSpeciesNameConcentration] = Field(
-        description="species and time data on recurring basis",
+        description="species and time data on reocurring basis",
         default=None)
 
 @dataclass
@@ -68,7 +68,7 @@ class ArgumentData:
         description="species name and initial concentration data",
         default=None)
     recurring_data: RecurringData = Field(
-        description="species and time data on recurring basis",
+        description="species and time data on reocurring basis",
         default=None)
     simulation_name: str = Field(
         description="""An AI assigned `_` separated name of
@@ -76,7 +76,7 @@ class ArgumentData:
 
 def add_rec_events(model_object, recurring_data):
     """
-    Add recurring events to the model.
+    Add reocurring events to the model.
     """
     for row in recurring_data.data:
         tp, sn, sc = row.time, row.species_name, row.species_concentration
@@ -92,7 +92,7 @@ class SimulateModelInput(BaseModel):
     sys_bio_model: ModelData = Field(description="model data",
                                      default=None)
     arg_data: ArgumentData = Field(description=
-                                   """time, species, and recurring data
+                                   """time, species, and reocurring data
                                    as well as the simulation name""",
                                    default=None)
     tool_call_id: Annotated[str, InjectedToolCallId]

@@ -250,6 +250,10 @@ with main_col2:
                         # These may contain additional visuals that
                         # need to be displayed to the user.
                         print("ToolMessage", msg)
+                        # Create a unique message id to identify the tool call
+                        # msg.name is the name of the tool
+                        # msg.tool_call_id is the unique id of the tool call
+                        # st.session_state.run_id is the unique id of the run
                         uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
                         if msg.name in ["simulate_model", "custom_plotter"]:
                             if msg.name == "simulate_model":
