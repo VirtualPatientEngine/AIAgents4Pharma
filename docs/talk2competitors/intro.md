@@ -8,11 +8,13 @@
 
 Academic literature search can be overwhelming, with millions of papers published yearly across diverse fields. **Talk2Competitors** transforms this experience by offering an intelligent, conversation-driven approach to academic research. Our system acts as a knowledgeable research assistant that understands context and provides targeted recommendations.
 
-At its core, Talk2Competitors uses a sophisticated hierarchical agent architecture. The main supervisor agent intelligently routes queries to specialized sub-agents, ensuring that each request is handled by the most appropriate tool. Currently, our Semantic Scholar integration provides deep access to academic literature, with plans to expand to additional databases and features.
+At its core, Talk2Competitors uses a sophisticated hierarchical agent architecture. The main supervisor agent intelligently routes queries to specialized sub-agents, ensuring that each request is handled by the most appropriate tool. Currently, our Semantic Scholar integration provides access to academic literature, which we plan to expand in the future.
 
 ### Key Capabilities
 
 The system excels at understanding natural language queries and translating them into precise academic searches. When you find interesting papers, Talk2Competitors can analyze them to discover related research, either based on a single paper or by finding connections between multiple papers. This helps researchers uncover hidden connections in literature and stay current with relevant publications.
+
+We are in the process integrating [Zotero](https://www.zotero.org/) to enable researchers to better organize their literature searchers, get automated recommendations based on categories of papers, and cite saved papers when asking questions about one or more saved papers or generating text based on a starting prompt.
 
 ### How to Access Talk2Competitors
 
