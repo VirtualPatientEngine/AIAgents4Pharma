@@ -271,6 +271,8 @@ jobs:
         echo "Hello, World!" > test/hello.txt
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
+        systemctl stop ollama
+        export OLLAMA_HOST=localhost:8888
         ollama serve &
         sleep 10
         ollama pull smollm2:360m
@@ -284,6 +286,8 @@ jobs:
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
+        systemctl stop ollama
+        export OLLAMA_HOST=localhost:8888
         ollama serve &
         sleep 10
         cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
