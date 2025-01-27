@@ -17,6 +17,7 @@ from ..tools.simulate_model import SimulateModelTool
 from ..tools.custom_plotter import CustomPlotterTool
 from ..tools.ask_question import AskQuestionTool
 from ..tools.parameter_scan import ParameterScanTool
+from ..tools.steady_state import SteadyStateTool
 from ..states.state_talk2biomodels import Talk2Biomodels
 
 # Initialize logger
@@ -42,7 +43,8 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
                     CustomPlotterTool(),
                     SearchModelsTool(),
                     GetModelInfoTool(),
-                    ParameterScanTool()
+                    ParameterScanTool(),
+                    SteadyStateTool()
                     ])
 
     # Define the model
