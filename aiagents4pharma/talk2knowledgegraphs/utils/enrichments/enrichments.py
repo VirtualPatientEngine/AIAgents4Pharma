@@ -22,3 +22,15 @@ class Enrichments(ABC):
         Returns:
             List of enriched documents.
         """
+
+    @abstractmethod
+    def enrich_documents_with_rag(self, texts: list[str], docs: list[str]) -> list[str]:
+        """Enrich documents with RAG.
+
+        Args:
+            texts: List of documents to enrich.
+            docs: List of reference documents to enrich the input texts.
+
+        Returns:
+            List of enriched documents with RAG.
+        """

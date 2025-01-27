@@ -52,7 +52,7 @@ def test_no_model_ollama(ollama_config):
     ollama.delete(cfg_model)
 
 def test_enrich_nodes_ollama(ollama_config):
-    """Test the Ollama textual enrichment class."""
+    """Test the Ollama textual enrichment class for node enrichment."""
     # Prepare enrichment model
     cfg = ollama_config
     enr_model = EnrichmentWithOllama(
@@ -72,7 +72,7 @@ def test_enrich_nodes_ollama(ollama_config):
     )
 
 def test_enrich_relations_ollama(ollama_config):
-    """Test the Ollama textual enrichment class."""
+    """Test the Ollama textual enrichment class for relation enrichment."""
     # Prepare enrichment model
     cfg = ollama_config
     enr_model = EnrichmentWithOllama(

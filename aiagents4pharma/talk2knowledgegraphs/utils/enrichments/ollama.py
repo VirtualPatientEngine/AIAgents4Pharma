@@ -106,3 +106,18 @@ class EnrichmentWithOllama(Enrichments):
         assert len(enriched_texts) == len(texts)
 
         return enriched_texts
+
+    def enrich_documents_with_rag(self, texts, docs):
+        """
+        Enrich a list of input texts with additional textual features using OLLAMA model with RAG.
+        As of now, we don't have a RAG model to test this method yet.
+        Thus, we will just call the enrich_documents method instead.
+
+        Args:
+            texts: The list of texts to be enriched.
+            docs: The list of reference documents to enrich the input texts.
+        
+        Returns:
+            The list of enriched texts
+        """
+        return self.enrich_documents(texts)

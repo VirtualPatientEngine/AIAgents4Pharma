@@ -12,8 +12,10 @@ class TestEnrichments(Enrichments):
             f"Additional text description of {text} as the input." for text in texts
         ]
 
-    def enrich_query(self, text: str) -> list[float]:
-        return f"Additional text description of {text} as the input."
+    def enrich_documents_with_rag(self, texts, docs):
+        # Currently we don't have a RAG model to test this method.
+        # Thus, we will just call the enrich_documents method instead.
+        return self.enrich_documents(texts)
 
 def test_enrich_documents():
     """Test enriching documents using the Enrichments interface."""
@@ -25,9 +27,13 @@ def test_enrich_documents():
         "Additional text description of text2 as the input.",
     ]
 
-def test_enrich_query():
-    """Test enriching a query using the Enrichments interface."""
+def test_enrich_documents_with_rag():
+    """Test enriching documents with RAG using the Enrichments interface."""
     enrichments = TestEnrichments()
-    text = "query"
-    result = enrichments.enrich_query(text)
-    assert result == "Additional text description of query as the input."
+    texts = ["text1", "text2"]
+    docs = ["doc1", "doc2"]
+    result = enrichments.enrich_documents_with_rag(texts, docs)
+    assert result == [
+        "Additional text description of text1 as the input.",
+        "Additional text description of text2 as the input.",
+    ]
