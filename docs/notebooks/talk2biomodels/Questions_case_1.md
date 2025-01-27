@@ -7,6 +7,8 @@
 
 <hr>
 
+### General questions about the model
+
 **Question 1:** Search for all models related to a disease/research term <br>
 ```Please search for all the biomodels on Crohns Disease```
 
@@ -45,46 +47,56 @@ deactivated. <br>
 > - Initial for DoseQ2W
 > - Initial for Dose
 
+<hr> 
 
-**Q5.** Simulate the model for 12 weeks = 2016 hours, and give it a name. <br>
-```Simulate the model for 2016 hours and interval of 2016 hours.```
-```Mark this simulation and its follow-up questions as `Treatment 4wk` ```
-```in your memory.```
+### Model simulation and plotting
 
-**A5:**
->The simulation for the model 537 has been successfully completed for a duration of 2016 hours with an interval of 2016 hours. This simulation is now marked as Treatment 4wk in my memory.
+**Q5.** Simulate the model for 12 weeks (= 2016 hours), and give it a name. The current dose is set to 200 mg. <br>
+```Simulate the model for 2016 hours and interval of 2016 hours. Set the initial concentration of Dose to 200 mg. Mark this simulation and its follow-up questions as `Treatment 4wk` in your memory.```
 
-![alt text](newplot.png)
+
 
 **Q6.** Show only CRP-related species, as it is one of the clinically-relevant measurement for a successful treatment. <br>
-```Plot only CRP related species```
+```Plot only CRP-related species```
 
-**A6:**
->The plot for the concentration of C-Reactive Protein (CRP) related species from the simulation results of Treatment 4wk has been successfully created. The following species were included in the plot:
-> - CRP[serum]
-> - CRPExtracellular
-> - CRP[liver]
-> - CRP Suppression (%)
-> - CRP (% of baseline)
 
-![alt text](CRP.png)
 
-**Q7.** Show CRP[serum] concentration <br>
-```What is the `CRP[serum]` concentration after 1000 time points?```
+**Q7.** Show CRP[serum] concentration at any arbitrary time point, e.g. 12 weeks after the initial drug treatment (2016 hours) <br>
+```What is the CRP concentration in the serum after 12 weeks of treatment?```
 
-**Q8.** Redo the simulation by activating the `DoseQ2W` and deactivating `Dose` parameters <br>  
-```Simulate the model again for 2016 hours and intervals 2016 with an initial concentration of `DoseQ2W` set to 300 and `Dose` set to 0.```
-```Mark this simulation and its follow-up questions as `Treatment 2wk` ```
-```in your memory.```
+<hr>
 
-**Q9.** Show only CRP-related species because that's one of the biomarkers the authors were interested in. <br>  
-```Plot only CRP related species.```
+### Compare treatment regimens
 
-**Q10.** Show CRP[serum] concentration <br>
-```Great, What is the `CRP[serum]` concentration after 1000 time points?```
+**Q8.** Resimulate the model by activating the `DoseQ2W` and deactivating `Dose` parameters <br>  
+```Simulate the model again for 2016 hours and intervals 2016 with an initial concentration of `DoseQ2W` set to 200 and `Dose` set to 0. Mark this simulation and its follow-up questions as `Treatment 2wk` in your memory.```
 
-**Q11.** Compare the CRP values in the 2 cases. Treatment 2wk is better than Treatment 4wk. <br>
+
+**A8:**
+
+**Q11.** Compare the CRP values in the 2 cases. Treatment 2wk should reduce CRP over longer time than Treatment 4wk. <br>
 ```Based on the CRP values, which treatment would you recommend? `Treatment 4wk` or `Treatment 2wk`?```
 
 <hr>
 
+### Simulate the concentration of free drug in blood serum 
+
+ Q. Show that the dose 500 mg helps maintain free anti–IL-6Rα at high concentration (Reproduce Figure 4f, 500 mg dose)
+``` Simulate the model and set the initial concentration of Dose to 500 mg. Plot Ab in serum.```
+
+<hr>
+
+### Compare two different antibody affinities / test antibodies with different target binding affinities
+
+**Q12** Plot the current curve of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. Dose is set to 500 mg. We expect 100% suppression of CRP after 12 weeks.
+```Simulate the model and plot the curve of CRP % suppression. Save this simulation as `Antibody 2.5`.```
+
+**Q12.** Set the parameter `kIL6RUnbind` to 250 (initial model value is 2.5), decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % supression. We expect ~10% suppression of CRP after 12 weeks.
+```Set the parameter `kIL6RUnbind` to 250 and simulate the model  for 2016 hours with 2016 intervals and plot the curve of CRP % suppression. Save this simulation as `Antibody 250`.```
+
+--- not plotting
+
+**Q13.** Compare the two curves at 12 weeks. Which antibody `Antibody 250` or `Antibody 2.5` is better? 
+```Which antibody affinity is better?```
+
+--- memory does not work
