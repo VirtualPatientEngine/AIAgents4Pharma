@@ -25,12 +25,12 @@ class RequestedModelInfo:
     """
     Dataclass for storing the requested model information.
     """
-    species: bool = Field(description="Get species from the model.")
-    parameters: bool = Field(description="Get parameters from the model.")
-    compartments: bool = Field(description="Get compartments from the model.")
-    units: bool = Field(description="Get units from the model.")
-    description: bool = Field(description="Get description from the model.")
-    name: bool = Field(description="Get name from the model.")
+    species: bool = Field(description="Get species from the model.", default=False)
+    parameters: bool = Field(description="Get parameters from the model.", default=False)
+    compartments: bool = Field(description="Get compartments from the model.", default=False)
+    units: bool = Field(description="Get units from the model.", default=False)
+    description: bool = Field(description="Get description from the model.", default=False)
+    name: bool = Field(description="Get name from the model.", default=False)
 
 class GetModelInfoInput(BaseModel):
     """

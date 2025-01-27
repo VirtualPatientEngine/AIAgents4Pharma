@@ -52,10 +52,10 @@ class TimeSpeciesNameConcentration:
 class RecurringData:
     """
     Dataclass for storing the species and time data 
-    on recurring basis.
+    on reocurring basis.
     """
     data: List[TimeSpeciesNameConcentration] = Field(
-        description="species and time data on recurring basis",
+        description="species and time data on reocurring basis",
         default=None)
 
 @dataclass
@@ -68,12 +68,15 @@ class ArgumentData:
         description="species name and initial concentration data",
         default=None)
     recurring_data: RecurringData = Field(
-        description="species and time data on recurring basis",
+        description="species and time data on reocurring basis",
         default=None)
+    simulation_name: str = Field(
+        description="""An AI assigned `_` separated name of
+        the simulation based on human query""")
 
 def add_rec_events(model_object, recurring_data):
     """
-    Add recurring events to the model.
+    Add reocurring events to the model.
     """
     for row in recurring_data.data:
         tp, sn, sc = row.time, row.species_name, row.species_concentration
@@ -86,9 +89,12 @@ class SimulateModelInput(BaseModel):
     """
     Input schema for the SimulateModel tool.
     """
-    sys_bio_model: ModelData = Field(description="model data", default=None)
-    arg_data: ArgumentData = Field(description="time, species, and recurring data",
-                                        default=None)
+    sys_bio_model: ModelData = Field(description="model data",
+                                     default=None)
+    arg_data: ArgumentData = Field(description=
+                                   """time, species, and reocurring data
+                                   as well as the simulation name""",
+                                   default=None)
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
@@ -153,12 +159,20 @@ class SimulateModelTool(BaseTool):
             interval=interval
             )
 
+        dic_simulated_data = {
+            'name': arg_data.simulation_name,
+            'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
+            'tool_call_id': tool_call_id,
+            'data': df.to_dict()
+        }
+
         # Prepare the dictionary of updated state for the model
         dic_updated_state_for_model = {}
         for key, value in {
-                        "model_id": [sys_bio_model.biomodel_id],
-                        "sbml_file_path": [sbml_file_path],
-                        }.items():
+            "model_id": [sys_bio_model.biomodel_id],
+            "sbml_file_path": [sbml_file_path],
+            "dic_simulated_data": [dic_simulated_data],
+            }.items():
             if value:
                 dic_updated_state_for_model[key] = value
 
@@ -166,11 +180,11 @@ class SimulateModelTool(BaseTool):
         return Command(
                 update=dic_updated_state_for_model|{
                 # update the state keys
-                "dic_simulated_data": df.to_dict(),
+                # "dic_simulated_data": df.to_dict(),
                 # update the message history
                 "messages": [
                     ToolMessage(
-                        content="Simulation results are ready.",
+                        content=f"Simulation results of {arg_data.simulation_name}",
                         tool_call_id=tool_call_id
                         )
                     ],
