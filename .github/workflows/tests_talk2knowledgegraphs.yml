@@ -195,7 +195,7 @@ jobs:
         brew install ollama
         ollama serve &
         sleep 10
-        ollama pull gemma2:2b
+        ollama pull smollm2:360m
         ollama list
 
     - name: Reading cached Ollama models
@@ -273,7 +273,7 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
-        ollama pull gemma2:2b
+        ollama pull smollm2:360m
         ls -l ~/.ollama/
         ls -l /usr/share/ollama/.ollama/
 
@@ -354,7 +354,7 @@ jobs:
         tar -xzf .\ollama-windows-amd64.zip
         start ollama serve
         sleep 10
-        cmd /k ollama pull gemma2:2b
+        cmd /k ollama pull smollm2:360m
         cmd /k ollama list
 
     - name: Reading cached Ollama models

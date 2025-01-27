@@ -78,7 +78,7 @@ class EnrichmentWithOllama(Enrichments):
                 time.sleep(10)
             raise ValueError(f"Error: {e} and restarted Ollama server.") from e
 
-    def enrich_documents(self, texts: List[str]) -> List[float]:
+    def enrich_documents(self, texts: List[str]) -> List[str]:
         """
         Enrich a list of input texts with additional textual features using OLLAMA model.
         Important: Make sure the input is a list of texts based on the defined prompt template
@@ -106,28 +106,3 @@ class EnrichmentWithOllama(Enrichments):
         assert len(enriched_texts) == len(texts)
 
         return enriched_texts
-
-    def enrich_query(self, text: str) -> List[float]:
-        """
-        Enrich a query with additional textual features using OLLAMA model.
-        Important: Make sure the input is a text based on the defined prompt template
-        with 'input' as the variable name.
-
-        Args:
-            text: A query to be enriched.
-        Returns:
-            The enriched query.
-        """
-
-        # Perform enrichment
-        chain = self.prompt_template | self.model | StrOutputParser()
-
-        # Generate the enriched node
-        # Important: Make sure the input is a text based on the defined prompt template
-        # with 'input' as the variable name.
-        enriched_text = chain.invoke({"input": text})
-
-        # Convert the enriched nodes to a list of dictionary
-        enriched_text = ast.literal_eval(enriched_text.replace("```", ""))
-
-        return enriched_text

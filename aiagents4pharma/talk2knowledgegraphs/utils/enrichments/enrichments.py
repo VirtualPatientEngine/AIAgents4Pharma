@@ -13,7 +13,7 @@ class Enrichments(ABC):
     """
 
     @abstractmethod
-    def enrich_documents(self, texts: list[str]) -> list[list[float]]:
+    def enrich_documents(self, texts: list[str]) -> list[list[str]]:
         """Enrich documents.
 
         Args:
@@ -21,15 +21,4 @@ class Enrichments(ABC):
 
         Returns:
             List of enriched documents.
-        """
-
-    @abstractmethod
-    def enrich_query(self, text: str) -> list[float]:
-        """Enrich a single query text.
-
-        Args:
-            text: Text to enrich.
-
-        Returns:
-            Enriched text.
         """
