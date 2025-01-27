@@ -23,6 +23,8 @@ class AskQuestionInput(BaseModel):
     Input schema for the AskQuestion tool.
     """
     question: str = Field(description="question about the simulation results")
+    simulation_name: str = Field(description="""Name assigned to the simulation
+                                 when the tool simulate_model was invoked.""")
     state: Annotated[dict, InjectedState]
 
 # Note: It's important that every field has type hints.
@@ -39,6 +41,7 @@ class AskQuestionTool(BaseTool):
 
     def _run(self,
              question: str,
+             simulation_name: str,
              state: Annotated[dict, InjectedState]) -> str:
         """
         Run the tool.
@@ -46,18 +49,24 @@ class AskQuestionTool(BaseTool):
         Args:
             question (str): The question to ask about the simulation results.
             state (dict): The state of the graph.
-            run_manager (Optional[CallbackManagerForToolRun]): The CallbackManagerForToolRun object.
+            simulation_name (str): The name assigned to the simulation.
 
         Returns:
             str: The answer to the question.
         """
         logger.log(logging.INFO,
-                   "Calling ask_question tool %s", question)
-        # Check if the simulation results are available
-        if 'dic_simulated_data' not in state:
-            return "Please run the simulation first before \
-                asking a question about the simulation results."
-        df = pd.DataFrame.from_dict(state['dic_simulated_data'])
+                   "Calling ask_question tool %s, %s", question, simulation_name)
+        dic_simulated_data = {}
+        for data in state["dic_simulated_data"]:
+            for key in data:
+                if key not in dic_simulated_data:
+                    dic_simulated_data[key] = []
+                dic_simulated_data[key] += [data[key]]
+        # print (dic_simulated_data)
+        df_simulated_data = pd.DataFrame.from_dict(dic_simulated_data)
+        df = pd.DataFrame(
+                df_simulated_data[df_simulated_data['name'] == simulation_name]['data'].iloc[0]
+                )
         prompt_content = None
         # if run_manager and 'prompt' in run_manager.metadata:
         #     prompt_content = run_manager.metadata['prompt']
