@@ -159,7 +159,6 @@ class SimulateModelTool(BaseTool):
         # Simulate the model
         df = model_object.simulate(duration=duration, interval=interval)
         logger.log(logging.INFO, "Simulation results ready with shape %s", df.shape)
-        # Prepare the dictionary of simulated data
         dic_simulated_data = {
             'name': arg_data.simulation_name,
             'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',

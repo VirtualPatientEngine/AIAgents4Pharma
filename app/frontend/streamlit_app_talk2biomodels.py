@@ -253,6 +253,7 @@ with main_col2:
                         # Skip the Tool message if it is an error message
                         if msg.status == "error":
                             continue
+
                         # Create a unique message id to identify the tool call
                         # msg.name is the name of the tool
                         # msg.tool_call_id is the unique id of the tool call
@@ -321,6 +322,30 @@ with main_col2:
                                 # tool_call_id=msg.tool_call_id,
                                 save_table=True)
                             st.empty()
+                        # elif msg.name in ["ask_question"]:
+                        #     # df_simulated = pd.DataFrame.from_dict(
+                        #     #                     current_state.values["dic_simulated_data"])
+                        #     dic_simulated = current_state.values["dic_simulated_data"]
+                        #     # print (dic_simulated)
+                        #     print (msg.tool_call_id)
+                        #     for entry in dic_simulated:
+                        #         print (entry.keys())
+                        #         if msg.tool_call_id in entry:
+                        #             df_simulated = pd.DataFrame.from_dict(entry[msg.tool_call_id]['data'])
+                        #             break
+                        #     # Display the toggle button to suppress the table
+                        #     streamlit_utils.render_toggle(
+                        #         key="toggle_table_"+uniq_msg_id,
+                        #         toggle_text="Show Table",
+                        #         toggle_state=False,
+                        #         save_toggle=True)
+                        #     # Display the table
+                        #     streamlit_utils.render_table(
+                        #         df_simulated,
+                        #         key="dataframe_"+uniq_msg_id,
+                        #         tool_name=msg.name,
+                        #         save_table=True)
+                        #     st.empty()
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

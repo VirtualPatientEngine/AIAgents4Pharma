@@ -246,9 +246,9 @@ def test_integration():
     reversed_messages = current_state.values["messages"][::-1]
     # Loop through the reversed messages
     # until a ToolMessage is found.
-    expected_header = ['Time', 'CRP{serum}', 'CRPExtracellular']
+    expected_header = ['Time', 'CRP[serum]', 'CRPExtracellular']
     expected_header += ['CRP Suppression (%)', 'CRP (% of baseline)']
-    expected_header += ['CRP{liver}']
+    expected_header += ['CRP[liver]']
     predicted_artifact = []
     for msg in reversed_messages:
         if isinstance(msg, ToolMessage):
