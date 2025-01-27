@@ -57,7 +57,7 @@ class BasicoModel(SysBioModel):
             # check if the param_name is not None
             if param_name is None:
                 continue
-            # if param is a kinectic parameter
+            # if param is a kinetic parameter
             df_all_params = basico.model_info.get_parameters(model=self.copasi_model)
             if param_name in df_all_params.index.tolist():
                 basico.model_info.set_parameters(name=param_name,

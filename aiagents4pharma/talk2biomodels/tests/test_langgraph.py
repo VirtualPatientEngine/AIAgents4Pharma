@@ -119,7 +119,7 @@ def test_simulate_model_tool():
     # Check if the data of the second model contains
     assert 'mTORC2' in dic_simulated_data[1]['data']
 
-def test_param_scane_tool():
+def test_param_scan_tool():
     '''
     In this test, we will test the parameter_scan tool.
     We will prompt it to scan the parameter `kIL6RBind`

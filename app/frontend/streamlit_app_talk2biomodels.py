@@ -259,7 +259,7 @@ with main_col2:
                         # msg.tool_call_id is the unique id of the tool call
                         # st.session_state.run_id is the unique id of the run
                         uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
-                        if msg.name in ["simulate_model", "custom_plotter", "parameter_scan"]:
+                        if msg.name in ["simulate_model", "custom_plotter"]:
                             if msg.name == "simulate_model":
                                 # Convert the simulated data to a single dictionary
                                 dic_simulated_data = {}
@@ -274,78 +274,41 @@ with main_col2:
                                 df_simulated = pd.DataFrame(
                                     df_simulated_data[df_simulated_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
                                 df_selected = df_simulated
-                            elif msg.name == "custom_plotter":
+                            else:
                                 if msg.artifact:
                                     df_selected = pd.DataFrame.from_dict(msg.artifact)
                                     # print (df_selected)
                                 else:
                                     continue
-                            else:
-                                # Convert the scanned data to a single dictionary
-                                dic_scanned_data = {}
-                                for data in current_state.values["dic_scanned_data"]:
-                                    for key in data:
-                                        if key not in dic_scanned_data:
-                                            dic_scanned_data[key] = []
-                                        dic_scanned_data[key] += [data[key]]
-                                # Create a pandas dataframe from the dictionary
-                                df_scanned_data = pd.DataFrame.from_dict(dic_scanned_data)
+                            # Display the toggle button to suppress the table
+                            streamlit_utils.render_table_plotly(
+                                uniq_msg_id, msg.content, df_selected)
+                        elif msg.name == "parameter_scan":
+                            # Convert the scanned data to a single dictionary
+                            print ('-', len(current_state.values["dic_scanned_data"]))
+                            dic_scanned_data = {}
+                            for data in current_state.values["dic_scanned_data"]:
+                                print ('-', data['name'])
+                                for key in data:
+                                    if key not in dic_scanned_data:
+                                        dic_scanned_data[key] = []
+                                    dic_scanned_data[key] += [data[key]]
+                            # Create a pandas dataframe from the dictionary
+                            df_scanned_data = pd.DataFrame.from_dict(dic_scanned_data)
+                            # Get the scanned data for the current tool call
+                            df_scanned_current_tool_call = pd.DataFrame(
+                                df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id])
+                            # df_scanned_current_tool_call.drop_duplicates()
+                            # print (df_scanned_current_tool_call)
+                            for count in range(0, len(df_scanned_current_tool_call.index)):
                                 # Get the scanned data for the current tool call
-                                df_scanned = pd.DataFrame(
-                                    df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
-                                df_selected = df_scanned
-                            # Display the toggle button to suppress the table
-                            streamlit_utils.render_toggle(
-                                key="toggle_plotly_"+uniq_msg_id,
-                                toggle_text="Show Plot",
-                                toggle_state=True,
-                                save_toggle=True)
-                            # Display the plotly chart
-                            streamlit_utils.render_plotly(
-                                df_selected,
-                                key="plotly_"+uniq_msg_id,
-                                title=msg.content,
-                                # tool_name=msg.name,
-                                # tool_call_id=msg.tool_call_id,
-                                save_chart=True)
-                            # Display the toggle button to suppress the table
-                            streamlit_utils.render_toggle(
-                                key="toggle_table_"+uniq_msg_id,
-                                toggle_text="Show Table",
-                                toggle_state=False,
-                                save_toggle=True)
-                            # Display the table
-                            streamlit_utils.render_table(
-                                df_selected,
-                                key="dataframe_"+uniq_msg_id,
-                                # tool_name=msg.name,
-                                # tool_call_id=msg.tool_call_id,
-                                save_table=True)
-                            st.empty()
-                        # elif msg.name in ["ask_question"]:
-                        #     # df_simulated = pd.DataFrame.from_dict(
-                        #     #                     current_state.values["dic_simulated_data"])
-                        #     dic_simulated = current_state.values["dic_simulated_data"]
-                        #     # print (dic_simulated)
-                        #     print (msg.tool_call_id)
-                        #     for entry in dic_simulated:
-                        #         print (entry.keys())
-                        #         if msg.tool_call_id in entry:
-                        #             df_simulated = pd.DataFrame.from_dict(entry[msg.tool_call_id]['data'])
-                        #             break
-                        #     # Display the toggle button to suppress the table
-                        #     streamlit_utils.render_toggle(
-                        #         key="toggle_table_"+uniq_msg_id,
-                        #         toggle_text="Show Table",
-                        #         toggle_state=False,
-                        #         save_toggle=True)
-                        #     # Display the table
-                        #     streamlit_utils.render_table(
-                        #         df_simulated,
-                        #         key="dataframe_"+uniq_msg_id,
-                        #         tool_name=msg.name,
-                        #         save_table=True)
-                        #     st.empty()
+                                df_selected = pd.DataFrame(
+                                    df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[count])
+                                # Display the toggle button to suppress the table
+                                streamlit_utils.render_table_plotly(
+                                uniq_msg_id+'_'+str(count),
+                                df_scanned_current_tool_call['name'].iloc[count],
+                                df_selected)
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(
