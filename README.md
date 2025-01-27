@@ -25,6 +25,7 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 - Forward simulation of both internal and open-source models (BioModels).
 - Adjust parameters within the model to simulate different conditions.
 - Query simulation results.
+- Extract model information such as species, parameters, units and description.
 
 ### 2. Talk2Cells *(Work in Progress)*
 
