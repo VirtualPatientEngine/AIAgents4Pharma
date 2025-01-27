@@ -259,41 +259,34 @@ jobs:
       id: cache_ollama
       with:
         path: |
-          /usr/share/ollama/.ollama/models/*
-          test
+          /home/runner/.ollama/models/*
         key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
       if: steps.cache_ollama.outputs.cache-hit != 'true'
       working-directory: ${{ github.workspace }}
       run: |
-        mkdir test
-        echo "Hello, World!" > test/hello.txt
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
         sudo systemctl stop ollama
         export OLLAMA_HOST=localhost:8888
+        export OLLAMA_MODELS=/home/runner/.ollama/models
         ollama serve &
         sleep 10
         ollama pull smollm2:360m
-        ls -l ~/.ollama/
-        ls -l /usr/share/ollama/.ollama/
 
     - name: Reading cached Ollama models
       working-directory: ${{ github.workspace }}
       run: |
-        cat test/hello.txt
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
         curl -fsSL https://ollama.com/install.sh | sh
         sudo systemctl stop ollama
         export OLLAMA_HOST=localhost:8888
+        export OLLAMA_MODELS=/home/runner/.ollama/models
         ollama serve &
         sleep 10
-        cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
-        du -sh ~/.ollama/
-        du -sh /usr/share/ollama/.ollama/
 
     - name: Run tests with coverage
       working-directory: ${{ github.workspace }}
