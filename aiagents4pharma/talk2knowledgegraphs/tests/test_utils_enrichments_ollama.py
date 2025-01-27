@@ -71,6 +71,7 @@ def test_enrich_nodes_ollama(ollama_config):
         enriched_nodes[i] != nodes[i] for i in range(len(nodes))
     )
 
+
 def test_enrich_relations_ollama(ollama_config):
     """Test the Ollama textual enrichment class for relation enrichment."""
     # Prepare enrichment model
@@ -92,4 +93,25 @@ def test_enrich_relations_ollama(ollama_config):
     assert all(
         enriched_relations[i] != relations[i]
         for i in range(len(relations))
+    )
+
+
+def test_enrich_ollama_rag(ollama_config):
+    """Test the Ollama textual enrichment class for enrichment with RAG (not implemented)."""
+    # Prepare enrichment model
+    cfg = ollama_config
+    enr_model = EnrichmentWithOllama(
+        model_name=cfg["model_name"],
+        prompt_enrichment=cfg["prompt_enrichment"],
+        temperature=cfg["temperature"],
+        streaming=cfg["streaming"],
+    )
+    # Perform enrichment for nodes
+    nodes = ["Adalimumab", "Infliximab"]
+    docs = [r"\path\to\doc1", r"\path\to\doc2"]
+    enriched_nodes = enr_model.enrich_documents_with_rag(nodes, docs)
+    # Check the enriched nodes
+    assert len(enriched_nodes) == 2
+    assert all(
+        enriched_nodes[i] != nodes[i] for i in range(len(nodes))
     )
