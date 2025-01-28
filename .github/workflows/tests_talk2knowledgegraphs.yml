@@ -24,7 +24,7 @@ jobs:
 
     strategy:
         matrix:
-            os: [windows-latest, ubuntu-latest, macos-latest]
+            os: [windows-latest, ubuntu-latest, macos-13]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -53,7 +53,7 @@ jobs:
 
     strategy:
         matrix:
-          os: [ubuntu-latest, macos-latest]
+          os: [ubuntu-latest, macos-13]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -96,7 +96,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.x
+        python-version: 3.12
 
     - name: Install dependencies
       run: pip3 install -r requirements.txt  # Adjust this according to your project

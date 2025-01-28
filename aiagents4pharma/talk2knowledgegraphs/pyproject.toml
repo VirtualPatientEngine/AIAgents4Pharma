@@ -14,6 +14,7 @@ classifiers = [
 ]
 dependencies = [
     "coverage==7.6.4",
+    "einops==0.8.0",
     "gdown==5.2.0",
     "huggingface_hub==0.26.5",
     "joblib==1.4.2",
@@ -21,8 +22,12 @@ dependencies = [
     "pydantic==2.9.2",
     "pylint==3.3.1",
     "pytest==8.3.3",
-    "torch==2.5.1",
+    "pytest-asyncio-0.25.2",
+    "sentence_transformers==3.3.1",
+    "torch==2.2.2",
+    "torch_geometric==2.6.1",
     "tqdm==4.66.6",
+    "transformers==4.48.0",
     "mkdocs==1.6.1",
     "mkdocs-jupyter==0.25.1",
     "mkdocs-material==9.5.47",
@@ -39,4 +44,6 @@ version = {file = "release_version.txt"}
 [tool.setuptools]
 packages = ["aiagents4pharma",
             "aiagents4pharma.talk2knowledgegraphs",
-            "aiagents4pharma.talk2knowledgegraphs.datasets"]
+            "aiagents4pharma.talk2knowledgegraphs.datasets",
+            "aiagents4pharma.talk2knowledgegraphs.utils",
+            "aiagents4pharma.talk2knowledgegraphs.utils.embeddings"]

@@ -12,18 +12,18 @@ class SysBioModel(ABC, BaseModel):
     This class serves as a general structure for models, allowing
     different mathematical approaches to be implemented in subclasses.
     """
-    model_id: Optional[int] = Field(None, description="BioModel ID of the model")
+    biomodel_id: Optional[int] = Field(None, description="BioModel ID of the model")
     sbml_file_path: Optional[str] = Field(None, description="Path to an SBML file")
     name: Optional[str] = Field(..., description="Name of the model")
     description: Optional[str] = Field("", description="Description of the model")
 
     @model_validator(mode="after")
-    def check_model_id_or_sbml_file_path(self):
+    def check_biomodel_id_or_sbml_file_path(self):
         """
-        Validate that either model_id or sbml_file_path is provided.
+        Validate that either biomodel_id or sbml_file_path is provided.
         """
-        if not self.model_id and not self.sbml_file_path:
-            raise ValueError("Either model_id or sbml_file_path must be provided.")
+        if not self.biomodel_id and not self.sbml_file_path:
+            raise ValueError("Either biomodel_id or sbml_file_path must be provided.")
         return self
 
     @abstractmethod

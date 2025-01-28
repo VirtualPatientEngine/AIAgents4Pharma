@@ -12,7 +12,7 @@ class TestBioModel(SysBioModel):
     A test BioModel class for unit testing.
     '''
 
-    model_id: Optional[int] = Field(None, description="BioModel ID of the model")
+    biomodel_id: Optional[int] = Field(None, description="BioModel ID of the model")
     sbml_file_path: Optional[str] = Field(None, description="Path to an SBML file")
     name: Optional[str] = Field(..., description="Name of the model")
     description: Optional[str] = Field("", description="Description of the model")
@@ -21,7 +21,7 @@ class TestBioModel(SysBioModel):
         '''
         Get the metadata of the model.
         '''
-        return self.model_id
+        return self.biomodel_id
 
     def simulate(self,
                  parameters: Dict[str, Union[float, int]],
@@ -37,13 +37,13 @@ def test_get_model_metadata():
     '''
     Test the get_model_metadata method of the BioModel class.
     '''
-    model = TestBioModel(model_id=123, name="Test Model", description="A test model")
+    model = TestBioModel(biomodel_id=123, name="Test Model", description="A test model")
     metadata = model.get_model_metadata()
     assert metadata == 123
 
-def test_check_model_id_or_sbml_file_path():
+def test_check_biomodel_id_or_sbml_file_path():
     '''
-    Test the check_model_id_or_sbml_file_path method of the BioModel class.
+    Test the check_biomodel_id_or_sbml_file_path method of the BioModel class.
     '''
     with pytest.raises(ValueError):
         TestBioModel(name="Test Model", description="A test model")
@@ -52,6 +52,6 @@ def test_simulate():
     '''
     Test the simulate method of the BioModel class.
     '''
-    model = TestBioModel(model_id=123, name="Test Model", description="A test model")
+    model = TestBioModel(biomodel_id=123, name="Test Model", description="A test model")
     results = model.simulate(parameters={'param1': 1.0, 'param2': 2.0}, duration=4.0)
     assert results == [1.0, 3.0, 5.0, 7.0]
