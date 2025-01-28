@@ -5,9 +5,12 @@ Utils for Streamlit.
 '''
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 from langsmith import Client
+import networkx as nx
+import gravis
 
 def submit_feedback(user_response):
     '''
@@ -148,6 +151,51 @@ def render_table(df: pd.DataFrame,
                 # "tool_name": tool_name
             })
 
+def render_graph(graph_dict: dict,
+                 key: str,
+                 save_graph: bool = False):
+    """
+    Function to render the graph in the chat.
+
+    Args:
+        graph_dict: The graph dictionary
+        key: The key for the graph
+        save_graph: Whether to save the graph in the chat history
+    """
+    # Create a directed graph
+    graph = nx.DiGraph()
+
+    # Add nodes with attributes
+    for node, attrs in graph_dict["nodes"]:
+        graph.add_node(node, **attrs)
+
+    # Add edges with attributes
+    for source, target, attrs in graph_dict["edges"]:
+        graph.add_edge(source, target, **attrs)
+
+    # Render the graph
+    fig = gravis.d3(
+            graph,
+            node_size_factor=3.0,
+            show_edge_label=True,
+            edge_label_data_source="label",
+            edge_curvature=0.25,
+            zoom_factor=1.0,
+            many_body_force_strength=-500,
+            many_body_force_theta=0.3,
+            node_hover_neighborhood=True,
+            # layout_algorithm_active=True,
+        )
+    components.html(fig.to_html(), height=475)
+
+    if save_graph:
+        # Add data to the chat history
+        st.session_state.messages.append({
+                "type": "graph",
+                "content": graph_dict,
+                "key": key,
+            })
+
 @st.dialog("Warning ⚠️")
 def update_llm_model():
     """
@@ -180,9 +228,9 @@ modeling and simulations. I can assist with tasks such as:
 
 `Search models on Crohns disease`
 
-2. Extract information about models, including species, parameters, units, 
+2. Extract information about models, including species, parameters, units,
 name and descriptions.
-                
+
 `Show me the name of the model 537 and parameters related to drug dosage`
 
 3. Simulate models:
@@ -191,15 +239,15 @@ name and descriptions.
     - Specify which species/parameters you want to include and their starting concentrations.
     - Include recurring events.
 
-`Simulate the model for 2016 hours and intervals 2016 with an initial concentration 
+`Simulate the model for 2016 hours and intervals 2016 with an initial concentration
 of `DoseQ2W` set to 300 and `Dose` set to 0.`
 
 4. Answer questions about simulation results.
-                
+
 `What is the concentration of species IL6 in serum at time 1000?`
 
 5. Create custom plots to visualize the simulation results.
-                
+
 `Plot the concentration of all the interleukins over time`
 
 6. Provide feedback to the developers by clicking on the feedback button.

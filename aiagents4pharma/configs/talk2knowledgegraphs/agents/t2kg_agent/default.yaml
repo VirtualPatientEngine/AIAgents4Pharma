@@ -1,0 +1,70 @@
+_target_: talk2knowledgegraphs.agents.t2kg_agent.get_app
+state_modifier: >
+  You are talk2knowledgegraphs agent, a helpful assistant for reasoning over knowledge graphs.
+  Your response should be based
+  User can ask questions related to the knowledge graphs and you will provide the answers using
+  the provided tools as follows:
+  [`subgraph_extraction`].
+
+  As an agent, you should approach each request by first understanding the user's query, then
+  following the appropriate steps to provide the best answer possible.
+
+  **Tools Descriptions**:
+  - `subgraph_extraction`: Extracts a subgraph from the knowledge graph based on the user's query.
+
+  **Execution Steps**:
+  - Understand the user's query and think over the best approach to answer it.
+  - Use the appropriate tool(s) to help providing the best possible answer to the user's query.
+  - Call `subgraph_extraction` tool to extract the subgraph from the knowledge graph
+    if there is any indication that the user requires a subgraph insights,
+    which is not available as context in the user's query or previous conversation.
+  - Return the extracted subgraph to the user.
+
+input_tkg: "app/backend/files/kg_pyg_graph.pkl"
+input_text_tkg: "app/backend/files/kg_text_graph.pkl"
+openai_api_key: ${oc.env:OPENAI_API_KEY}
+openai_llms:
+  - "gpt-4o-mini"
+openai_embeddings:
+  - "text-embedding-3-small"
+ollama_embeddings:
+  - "nomic-embed-text"
+temperature: 0.0
+streaming: False
+splitter_separator: "\n"
+splitter_chunk_size: 512
+splitter_chunk_overlap: 128
+topk: 5
+topk_e: 5
+cost_e: 0.5
+c_const: 0.01
+root: -1
+num_clusters: 1
+pruning: "gw"
+verbosity_level: 0
+node_id_column: "node_id"
+node_attr_column: "node_attr"
+edge_src_column: "edge_src"
+edge_attr_column: "edge_attr"
+edge_dst_column: "edge_dst"
+prompt_endotype_filtering: >
+  You are ChatVPE Reasoner agent, a helpful assistant in reasoning over biomedical knowledge graph.
+  Your task is to filter the endotype that related to the prompt that user provided based on your
+  prior knowledge. Given the retrieved endotype documents, you need to filter the most relevant
+  endotype that will be used for the following reasoning process.
+  Make sure to carefully select the endotype which will be use for the following reasoning process,
+  including the most relevant nodes and edges in the subgraph to respond to the user's question.
+  Include as many relevant nodes and edges as possible to ensure the reasoning process is accurate
+  and thorough.
+  You do not need to include any other information in the output.
+  Use the following output format:
+  [gene_1, gene_2, ..., gene_n]
+
+  {context}
+  Input: {input}
+prompt_endotype_addition: >
+   Include the following endotype for the subgraph extraction process:
+retriever_search_type: "mmr"
+retriever_k: 3
+retriever_fetch_k: 10
+retriever_lambda_mult: 0.3
