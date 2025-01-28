@@ -56,11 +56,51 @@ class GetAnnotationTool(BaseTool):
         # Fetch species information
         df_species = basico.model_info.get_species(model=model_object.copasi_model)
 
+        species_names = species_names or df_species.index.tolist()
+        annotations_df, species_not_found = self._fetch_annotations(species_names)
+
+        if annotations_df.empty:
+            species_msg = self._generate_empty_result_message(species_not_found)
+            return species_msg
+
+        annotations_df = self._process_annotations(annotations_df)
+
+        dic_updated_state_for_model = {}
+        for key, value in {
+            "model_id": [sys_bio_model.biomodel_id],
+            "sbml_file_path": [sbml_file_path],
+            "dic_annotations_data": annotations_df.to_dict() if not annotations_df.empty else {}
+        }.items():
+            if value:
+                dic_updated_state_for_model[key] = value
+
+        return Command(
+            update=dic_updated_state_for_model | {
+                "dic_annotations_data": annotations_df.to_dict() 
+                                        if not annotations_df.empty else {},
+                "messages": [
+                    ToolMessage(
+                        content=(
+                            "All the requested annotations extracted successfully."
+                            if not species_not_found else
+                            f'''The following species do not exist, and
+                            hence their annotations were not extracted:
+                            {', '.join(species_not_found)}.
+                            Remaining species annotations
+                            are in the following table.'''
+                        ),
+                        tool_call_id=tool_call_id
+                    )
+                ]
+            }
+        )
+
+    def _fetch_annotations(self, species_names: List[str]) -> tuple:
+        """
+        Fetch annotations for the given species names.
+        """
         species_not_found = []
         data = []
-        # Default to all species if none provided
-        if species_names is None:
-            species_names = df_species.index.tolist()
 
         for species in species_names:
             annotation = basico.get_miriam_annotation(name=species)
@@ -77,73 +117,52 @@ class GetAnnotationTool(BaseTool):
                 })
 
         annotations_df = pd.DataFrame(data)
+        return annotations_df, species_not_found
 
-        if annotations_df.empty:
-            species_msg = (
-                f"None of the species entered were found. The following species do not exist: {', '.join(species_not_found)}."
-                if species_not_found else "No annotations found for the species entered."
-            )
-            return species_msg
+    def _generate_empty_result_message(self, species_not_found: List[str]) -> str:
+        """
+        Generate a message for empty results.
+        """
+        if species_not_found:
+            return f"The following species do not exist: {', '.join(species_not_found)}."
+        return "No annotations found for the species entered."
 
+    def _process_annotations(self, annotations_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process annotations dataframe to add additional information.
+        """
         annotations_df['Id'] = annotations_df['Link'].str.split('/').str[-1]
         annotations_df['Database'] = annotations_df['Link'].str.split('/').str[-2]
 
         identifiers = annotations_df[['Id', 'Database']].to_dict(orient='records')
         descriptions = self._fetch_descriptions(identifiers)
 
-        annotations_df['Description'] = annotations_df['Id'].apply(lambda x: descriptions.get(x, '-'))
+        annotations_df['Description'] = annotations_df['Id'].apply(lambda x:
+                                                                   descriptions.get(x, '-'))
         annotations_df.index = annotations_df.index + 1
 
-        new_annotations_df = ["Species Name", "Description", "Database", "Id", "Link", "Qualifier"]
-        annotations_df = annotations_df[new_annotations_df]
+        annotations_df = annotations_df[
+            ["Species Name", "Description", "Database", "Id", "Link", "Qualifier"]
+        ]
 
-        def process_link(link):
-            substrings = ["chebi/", "pato/", "pr/", "fma/", "sbo/"]
-            for substring in substrings:
-                if substring in link:
-                    link = link.replace(substring, "")
-            if "kegg.compound" in link:
-                link = link.replace("kegg.compound/", "kegg.compound:")
-            return link
+        annotations_df["Link"] = annotations_df["Link"].apply(self._process_link)
+        return annotations_df
 
-        annotations_df["Link"] = annotations_df["Link"].apply(process_link)
-
-        dic_updated_state_for_model = {}
-        for key, value in {
-            "model_id": [sys_bio_model.biomodel_id],
-            "sbml_file_path": [sbml_file_path],
-            "dic_annotations_data": annotations_df.to_dict() if not annotations_df.empty else {}
-        }.items():
-            if value:
-                dic_updated_state_for_model[key] = value
-
-        return Command(
-            update=dic_updated_state_for_model | {
-                "dic_annotations_data": annotations_df.to_dict() if not annotations_df.empty else {},
-                "messages": [
-                    ToolMessage(
-                        content=(
-                            "All the requested annotations extracted successfully."
-                            if not species_not_found else
-                            f"The following species do not exist, and hence their annotations were not extracted: {', '.join(species_not_found)}. Remaining species annotations are in the following table."
-                        ),
-                        tool_call_id=tool_call_id
-                    )
-                ]
-            }
-        )
+    def _process_link(self, link: str) -> str:
+        """
+        Process link to format it correctly.
+        """
+        substrings = ["chebi/", "pato/", "pr/", "fma/", "sbo/"]
+        for substring in substrings:
+            if substring in link:
+                link = link.replace(substring, "")
+        if "kegg.compound" in link:
+            link = link.replace("kegg.compound/", "kegg.compound:")
+        return link
 
     def _fetch_descriptions(self, data: List[dict[str, str]]) -> dict[str, str]:
         """
         Fetch protein names or labels based on the database type.
-
-        Args:
-            data (List[Dict[str, str]]): A list of 
-            dictionaries containing 'Id' and 'Database'.
-
-        Returns:
-            Dict[str, str]: A mapping of identifiers 
-            to their names or labels.
         """
         results = {}
         grouped_data = {}
@@ -161,11 +180,15 @@ class GetAnnotationTool(BaseTool):
                 if database == 'uniprot':
                     results.update(search_uniprot_labels(identifiers))
                 elif database in {'pato', 'chebi', 'sbo', 'fma', 'pr'}:
-                    annotations = search_ols_labels([{"Id": id_, "Database": database} for id_ in identifiers])
+                    annotations = search_ols_labels([
+                        {"Id": id_, "Database": database}
+                        for id_ in identifiers
+                    ])
                     for id_ in identifiers:
                         results[id_] = annotations.get(database, {}).get(id_, "-")
                 else:
-                    data = [{"Id": identifier, "Database": "kegg.compound"} for identifier in identifiers]
+                    data = [{"Id": identifier, "Database": "kegg.compound"}
+                            for identifier in identifiers]
                     annotations = fetch_kegg_annotations(data)
                     for identifier in identifiers:
                         results[identifier] = annotations.get(database, {}).get(identifier, "-")

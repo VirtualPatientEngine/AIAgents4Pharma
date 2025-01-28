@@ -1,19 +1,8 @@
-# import os
-# import sys
-# import requests
-
-# def fetch_from_uniprot(identifier: str) -> str:
-#     """Fetch the protein name or label based on the UniProt identifier."""
-#     url = f"https://www.uniprot.org/uniprot/{identifier}.json"
-#     try:
-#         response = requests.get(url, timeout=10)
-#         response.raise_for_status()
-#         data = response.json()
-#         return data.get('proteinDescription', {}).get('recommendedName', {}).get('fullName', {}).get('value', 'Name not found')
-#     except requests.exceptions.RequestException:
-#         return "Error: Unable to fetch data from UniProt."
-import requests
+"""
+This module contains the API for fetching uniprot database
+"""
 from typing import List, Dict
+import requests
 
 def search_uniprot_labels(identifiers: List[str]) -> Dict[str, str]:
     """
