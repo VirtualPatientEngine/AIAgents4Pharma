@@ -1,5 +1,6 @@
-"""
+'''
 This file is used to import all the modules in the package.
-"""
+'''
 
-from . import agents, config, state, tests, tools
+from . import main_agent
+from . import s2_agent
