@@ -313,6 +313,8 @@ with main_col2:
                                 # tool_name=msg.name,
                                 # tool_call_id=msg.tool_call_id,
                                 save_table=True)
+                            
+
                         elif msg.name in ["get_annotation"]:
 
                             df_simulated = pd.DataFrame.from_dict(current_state.values["dic_annotations_data"])
@@ -320,10 +322,23 @@ with main_col2:
                                 lambda x: f"http://identifiers.org/{x}"  # Construct the full link if needed
                             )
 
+                            # def construct_link(database, identifier):
+                            #     if database == "kegg.compound":
+                            #         return f"https://identifiers.org/kegg.compound:{identifier}"
+                            #     elif database == "chebi":
+                            #         return f"https://www.ebi.ac.uk/chebi/searchId.do?chebiId={identifier}"
+                            #     else:
+                            #         return f"http://identifiers.org/{database}:{identifier}"
+
+                            # # Preprocess: Ensure the Id column is displayed as it is and create a new "Link" column for URLs
+                            # df_simulated["Link"] = df_simulated.apply(
+                            #     lambda row: construct_link(row["Database"], row["Id"]), axis=1
+                            # )
+
                             st.data_editor(
                                 df_simulated.drop(columns=["Link"]),
                                 column_config={
-                                    "Id": st.column_config.LinkColumn(
+                                  "Id": st.column_config.LinkColumn(
                                         "Id",
                                         help="Click to open link",
                                         validate=r"^http://.*$",
@@ -337,29 +352,8 @@ with main_col2:
                                 hide_index=True,
                             )
                             st.empty()
-<<<<<<< HEAD
-
-                            #isplay the toggle button to suppress the table
-                            # streamlit_utils.render_toggle(
-                            #     key="toggle_table_"+msg.name+'_'+str(st.session_state.run_id),
-                            #     toggle_text="Show Table",
-                            #     toggle_state=True,
-                            #     save_toggle=True)
-                            
-                            # # st.dataframe(
-                            # #     df_simulated
-                            # # )
-                            # # st.empty()
-                            # # #isplay the table
-                            # streamlit_utils.render_table(
-                            #     df_simulated,
-                            #     key="dataframe_"+msg.name+'_'+str(st.session_state.run_id),
-                            #     tool_name=msg.name,
-                            #     save_table=True)
-                            # st.empty()    
 
 
-=======
                         # elif msg.name in ["ask_question"]:
                         #     # df_simulated = pd.DataFrame.from_dict(
                         #     #                     current_state.values["dic_simulated_data"])
@@ -384,8 +378,7 @@ with main_col2:
                         #         tool_name=msg.name,
                         #         save_table=True)
                         #     st.empty()
->>>>>>> main
-        # Collect feedback and display the thumbs feedback
+
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(
                 feedback_type="thumbs",
