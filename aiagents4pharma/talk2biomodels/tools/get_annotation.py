@@ -70,7 +70,6 @@ class GetAnnotationTool(BaseTool):
 
         for species in species_names:
             annotation = basico.get_miriam_annotation(name=species)
-            logger.info("Fetching annotation for species '%s': %s", species, annotation)
             if annotation is None:
                 species_not_found.append(species)
                 continue
@@ -124,9 +123,12 @@ class GetAnnotationTool(BaseTool):
 
         identifiers = annotations_df[['Id', 'Database']].to_dict(orient='records')
         descriptions = self._fetch_descriptions(identifiers)
+        print(descriptions)
 
         annotations_df['Description'] = annotations_df['Id'].apply(lambda x: descriptions.get(x, '-'))
         annotations_df.index = annotations_df.index + 1
+
+        
         # annotations_df['Id'] = annotations_df.apply(
         #     lambda row: f'<a href="{row["Link"]}" target="_blank">{row["Id"]}</a>',
         #     axis=1
@@ -136,7 +138,22 @@ class GetAnnotationTool(BaseTool):
 
         new_annotations_df = ["Species Name", "Description","Database","Id","Link", "Qualifier"]
         df = annotations_df[new_annotations_df]
+
         print(df)
+        def process_link(link):
+            substrings = ["chebi/", "pato/","pr/","fma/","sbo/"]  # Substrings to remove
+            for substring in substrings:
+                if substring in link:
+                    link = link.replace(substring, "")  # Remove the substring
+            if "kegg.compound" in link:
+                link = link.replace("kegg.compound/", "kegg.compound:")  # Ensure `/` before and `:` after
+            return link
+
+        df["Link"] = df["Link"].apply(process_link)
+
+        # Display the updated DataFrame
+        print(df)
+
 
         # name_list = annotations_df["Species Name"].tolist()
 
