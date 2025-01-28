@@ -19,15 +19,16 @@ from langchain.callbacks.tracers import LangChainTracer
 from utils import streamlit_utils
 sys.path.append('./')
 from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
+# from talk2biomodels.agents.t2b_agent import get_app
 
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
 
 
-st.logo(
-    image='docs/VPE.png',
-    size='large',
-    link='https://github.com/VirtualPatientEngine'
-)
+# st.logo(
+#     image='docs/VPE.png',
+#     size='large',
+#     link='https://github.com/VirtualPatientEngine'
+# )
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
@@ -107,8 +108,8 @@ with main_col1:
             )
 
         # Help text
-        st.button("Help button",
-                  icon="ℹ️",
+        st.button("Know more ↗",
+                #   icon="ℹ️",
                   on_click=streamlit_utils.help_button,
                   use_container_width=False)
 
@@ -133,7 +134,8 @@ with main_col2:
             elif message["type"] == "plotly":
                 streamlit_utils.render_plotly(message["content"],
                               key=message["key"],
-                              tool_name=message["tool_name"],
+                              title=message["title"],
+                            #   tool_name=message["tool_name"],
                               save_chart=False)
                 st.empty()
             elif message["type"] == "toggle":
@@ -145,7 +147,7 @@ with main_col2:
             elif message["type"] == "dataframe":
                 streamlit_utils.render_table(message["content"],
                                 key=message["key"],
-                                tool_name=message["tool_name"],
+                                # tool_name=message["tool_name"],
                                 save_table=False)
                 st.empty()
 
@@ -248,61 +250,68 @@ with main_col2:
                         # Work on the message if it is a ToolMessage
                         # These may contain additional visuals that
                         # need to be displayed to the user.
-                        # print("ToolMessage", msg)
+                        print("ToolMessage", msg)
+                        # Create a unique message id to identify the tool call
+                        # msg.name is the name of the tool
+                        # msg.tool_call_id is the unique id of the tool call
+                        # st.session_state.run_id is the unique id of the run
+                        uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
                         if msg.name in ["simulate_model", "custom_plotter"]:
-                            df_simulated = pd.DataFrame.from_dict(
-                                                current_state.values["dic_simulated_data"])
                             if msg.name == "simulate_model":
+                                # Convert the simulated data to a single dictionary
+                                dic_simulated_data = {}
+                                for data in current_state.values["dic_simulated_data"]:
+                                    for key in data:
+                                        if key not in dic_simulated_data:
+                                            dic_simulated_data[key] = []
+                                        dic_simulated_data[key] += [data[key]]
+                                # Create a pandas dataframe from the dictionary
+                                df_simulated_data = pd.DataFrame.from_dict(dic_simulated_data)
+                                # Get the simulated data for the current tool call
+                                df_simulated = pd.DataFrame(
+                                    df_simulated_data[df_simulated_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
                                 df_selected = df_simulated
                             else:
-                                # Add Time column to the custom headers
-                                custom_headers = msg.artifact
-                                if custom_headers:
-                                    if 'Time' not in msg.artifact:
-                                        custom_headers = ['Time'] + custom_headers
-                                    # Make df with only the custom headers
-                                    df_selected = df_simulated[custom_headers]
+                                if msg.artifact:
+                                    df_selected = pd.DataFrame.from_dict(msg.artifact)
+                                    # print (df_selected)
                                 else:
                                     continue
+                                # # Add Time column to the custom headers
+                                # custom_headers = msg.artifact
+                                # if custom_headers:
+                                #     if 'Time' not in msg.artifact:
+                                #         custom_headers = ['Time'] + custom_headers
+                                #     # Make df with only the custom headers
+                                #     df_selected = df_simulated[custom_headers]
+                                # else:
+                                #     continue
                             # Display the toggle button to suppress the table
                             streamlit_utils.render_toggle(
-                                key="toggle_plotly_"+msg.name+'_'+str(st.session_state.run_id),
+                                key="toggle_plotly_"+uniq_msg_id,
                                 toggle_text="Show Plot",
                                 toggle_state=True,
                                 save_toggle=True)
                             # Display the plotly chart
                             streamlit_utils.render_plotly(
                                 df_selected,
-                                key="plotly_"+msg.name+'_'+str(st.session_state.run_id),
-                                tool_name=msg.name,
+                                key="plotly_"+uniq_msg_id,
+                                title=msg.content,
+                                # tool_name=msg.name,
+                                # tool_call_id=msg.tool_call_id,
                                 save_chart=True)
                             # Display the toggle button to suppress the table
                             streamlit_utils.render_toggle(
-                                key="toggle_table_"+msg.name+'_'+str(st.session_state.run_id),
+                                key="toggle_table_"+uniq_msg_id,
                                 toggle_text="Show Table",
                                 toggle_state=False,
                                 save_toggle=True)
                             # Display the table
                             streamlit_utils.render_table(
                                 df_selected,
-                                key="dataframe_"+msg.name+'_'+str(st.session_state.run_id),
-                                tool_name=msg.name,
-                                save_table=True)
-                            st.empty()
-                        elif msg.name in ["ask_question"]:
-                            df_simulated = pd.DataFrame.from_dict(
-                                                current_state.values["dic_simulated_data"])
-                            # Display the toggle button to suppress the table
-                            streamlit_utils.render_toggle(
-                                key="toggle_table_"+msg.name+'_'+str(st.session_state.run_id),
-                                toggle_text="Show Table",
-                                toggle_state=False,
-                                save_toggle=True)
-                            # Display the table
-                            streamlit_utils.render_table(
-                                df_simulated,
-                                key="dataframe_"+msg.name+'_'+str(st.session_state.run_id),
-                                tool_name=msg.name,
+                                key="dataframe_"+uniq_msg_id,
+                                # tool_name=msg.name,
+                                # tool_call_id=msg.tool_call_id,
                                 save_table=True)
                         elif msg.name in ["get_annotation"]:
 
@@ -328,6 +337,7 @@ with main_col2:
                                 hide_index=True,
                             )
                             st.empty()
+<<<<<<< HEAD
 
                             #isplay the toggle button to suppress the table
                             # streamlit_utils.render_toggle(
@@ -349,6 +359,32 @@ with main_col2:
                             # st.empty()    
 
 
+=======
+                        # elif msg.name in ["ask_question"]:
+                        #     # df_simulated = pd.DataFrame.from_dict(
+                        #     #                     current_state.values["dic_simulated_data"])
+                        #     dic_simulated = current_state.values["dic_simulated_data"]
+                        #     # print (dic_simulated)
+                        #     print (msg.tool_call_id)
+                        #     for entry in dic_simulated:
+                        #         print (entry.keys())
+                        #         if msg.tool_call_id in entry:
+                        #             df_simulated = pd.DataFrame.from_dict(entry[msg.tool_call_id]['data'])
+                        #             break
+                        #     # Display the toggle button to suppress the table
+                        #     streamlit_utils.render_toggle(
+                        #         key="toggle_table_"+uniq_msg_id,
+                        #         toggle_text="Show Table",
+                        #         toggle_state=False,
+                        #         save_toggle=True)
+                        #     # Display the table
+                        #     streamlit_utils.render_table(
+                        #         df_simulated,
+                        #         key="dataframe_"+uniq_msg_id,
+                        #         tool_name=msg.name,
+                        #         save_table=True)
+                        #     st.empty()
+>>>>>>> main
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

@@ -6,13 +6,10 @@ Tool for plotting a custom figure.
 
 import logging
 from typing import Type, List, TypedDict, Annotated, Tuple, Union, Literal
-from typing import Type, List, TypedDict, Annotated, Tuple, Union, Literal
 from pydantic import BaseModel, Field
-import pandas as pd
 import pandas as pd
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import BaseTool
-from langgraph.prebuilt import InjectedState
 from langgraph.prebuilt import InjectedState
 
 # Initialize logger
@@ -24,7 +21,7 @@ class CustomPlotterInput(BaseModel):
     Input schema for the PlotImage tool.
     """
     question: str = Field(description="Description of the plot")
-    state: Annotated[dict, InjectedState]
+    simulation_name: str = Field(description="Name assigned to the simulation")
     state: Annotated[dict, InjectedState]
 
 # Note: It's important that every field has type hints.
@@ -41,10 +38,10 @@ class CustomPlotterTool(BaseTool):
     description: str = "A tool to make custom plots of the simulation results"
     args_schema: Type[BaseModel] = CustomPlotterInput
     response_format: str = "content_and_artifact"
-    response_format: str = "content_and_artifact"
 
     def _run(self,
              question: str,
+             simulation_name: str,
              state: Annotated[dict, InjectedState]
              ) -> Tuple[str, Union[None, List[str]]]:
         """
@@ -53,17 +50,24 @@ class CustomPlotterTool(BaseTool):
         Args:
             question (str): The question about the custom plot.
             state (dict): The state of the graph.
-            question (str): The question about the custom plot.
-            state (dict): The state of the graph.
 
         Returns:
             str: The answer to the question
         """
         logger.log(logging.INFO, "Calling custom_plotter tool %s", question)
-        # Check if the simulation results are available
-        # if 'dic_simulated_data' not in state:
-        #     return "Please run the simulation first before plotting the figure.", None
-        df = pd.DataFrame.from_dict(state['dic_simulated_data'])
+        dic_simulated_data = {}
+        for data in state["dic_simulated_data"]:
+            for key in data:
+                if key not in dic_simulated_data:
+                    dic_simulated_data[key] = []
+                dic_simulated_data[key] += [data[key]]
+        # Create a pandas dataframe from the dictionary
+        df = pd.DataFrame.from_dict(dic_simulated_data)
+        # Get the simulated data for the current tool call
+        df = pd.DataFrame(
+                df[df['name'] == simulation_name]['data'].iloc[0]
+                )
+        # df = pd.DataFrame.from_dict(state['dic_simulated_data'])
         species_names = df.columns.tolist()
         # Exclude the time column
         species_names.remove('Time')
@@ -76,7 +80,8 @@ class CustomPlotterTool(BaseTool):
             A list of species based on user question.
             """
             relevant_species: Union[None, List[Literal[*species_names]]] = Field(
-                    description="List of species based on user question. If no relevant species are found, it will be None.")
+                    description="""List of species based on user question.
+                    If no relevant species are found, it will be None.""")
         # Create an instance of the LLM model
         llm = ChatOpenAI(model=state['llm_model'], temperature=0)
         llm_with_structured_output = llm.with_structured_output(CustomHeader)
@@ -90,5 +95,6 @@ class CustomPlotterTool(BaseTool):
         logger.info("Extracted species: %s", extracted_species)
         if len(extracted_species) == 0:
             return "No species found in the simulation results that matches the user prompt.", None
-        content = f"Plotted custom figure with species: {', '.join(extracted_species)}"
-        return content, extracted_species
+        # Include the time column
+        extracted_species.insert(0, 'Time')
+        return f"Custom plot {simulation_name}", df[extracted_species].to_dict(orient='records')

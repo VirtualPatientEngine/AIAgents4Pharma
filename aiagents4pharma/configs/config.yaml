@@ -1,0 +1,3 @@
+defaults:
+  - _self_
+  - talk2biomodels/agents/t2b_agent: default
