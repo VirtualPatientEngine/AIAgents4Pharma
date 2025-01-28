@@ -350,46 +350,6 @@ with main_col2:
                                 # tool_name=msg.name,
                                 # tool_call_id=msg.tool_call_id,
                                 save_table=True)
-    
-
-                        # elif msg.name in ["get_annotation"]:
-
-                        #     df_simulated = pd.DataFrame.from_dict(current_state.values["dic_annotations_data"])
-                        #     df_simulated["Id"] = df_simulated["Id"].apply(
-                        #         lambda x: f"http://identifiers.org/{x}"  # Construct the full link if needed
-                        #     )
-
-                        #     # def construct_link(database, identifier):
-                        #     #     if database == "kegg.compound":
-                        #     #         return f"https://identifiers.org/kegg.compound:{identifier}"
-                        #     #     elif database == "chebi":
-                        #     #         return f"https://www.ebi.ac.uk/chebi/searchId.do?chebiId={identifier}"
-                        #     #     else:
-                        #     #         return f"http://identifiers.org/{database}:{identifier}"
-
-                        #     # # Preprocess: Ensure the Id column is displayed as it is and create a new "Link" column for URLs
-                        #     # df_simulated["Link"] = df_simulated.apply(
-                        #     #     lambda row: construct_link(row["Database"], row["Id"]), axis=1
-                        #     # )
-
-                        #     st.data_editor(
-                        #         df_simulated.drop(columns=["Link"]),
-                        #         column_config={
-                        #           "Id": st.column_config.LinkColumn(
-                        #                 "Id",
-                        #                 help="Click to open link",
-                        #                 validate=r"^http://.*$",
-                        #                 # max_chars=100,
-                        #                 display_text=r"http://identifiers\.org/(.*?)$"
-                        #             ),
-                        #             "Species Name": st.column_config.TextColumn("Species Name"),
-                        #             "Description": st.column_config.TextColumn("Description"),
-                        #             "Database": st.column_config.TextColumn("Database"),
-                        #         },
-                        #         hide_index=True,
-                        #     )
-                        #     st.empty()
-
 
                         # elif msg.name in ["ask_question"]:
                         #     # df_simulated = pd.DataFrame.from_dict(
