@@ -258,8 +258,7 @@ jobs:
       uses: actions/cache@v4
       id: cache_ollama
       with:
-        path: |
-          /home/runner/.ollama/models/*
+        path: ~/.ollama/models/*
         key: ${{ runner.os }}-ollama
 
     - name: Install and Pull Ollama models
@@ -270,7 +269,7 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         sudo systemctl stop ollama
         export OLLAMA_HOST=localhost:8888
-        export OLLAMA_MODELS=/home/runner/.ollama/models
+        export OLLAMA_MODELS=~/.ollama/models/
         ollama serve &
         sleep 10
         ollama pull smollm2:360m
@@ -280,10 +279,11 @@ jobs:
       run: |
         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
         source venv/bin/activate
+        sudo systemctl stop ollama
         curl -fsSL https://ollama.com/install.sh | sh
         sudo systemctl stop ollama
         export OLLAMA_HOST=localhost:8888
-        export OLLAMA_MODELS=/home/runner/.ollama/models
+        export OLLAMA_MODELS=~/.ollama/models/
         ollama serve &
         sleep 10
         ollama list
