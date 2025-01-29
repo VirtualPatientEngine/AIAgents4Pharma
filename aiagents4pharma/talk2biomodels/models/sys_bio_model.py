@@ -35,18 +35,21 @@ class SysBioModel(ABC, BaseModel):
         Returns:
             dict: Dictionary with model metadata
         """
-
     @abstractmethod
-    def simulate(self,
-                 parameters: Dict[str, Union[float, int]],
-                 duration: Union[int, float]) -> List[float]:
+    def update_parameters(self, parameters: Dict[str, Union[float, int]]) -> None:
         """
-        Abstract method to run a simulation of the model.
-        This method should be implemented to simulate model 
-        behavior based on the provided parameters.
+        Abstract method to update model parameters.
 
         Args:
             parameters: Dictionary of parameter values.
+        """
+
+    @abstractmethod
+    def simulate(self, duration: Union[int, float]) -> List[float]:
+        """
+        Abstract method to run a simulation of the model.
+
+        Args:
             duration: Duration of the simulation.
 
         Returns:

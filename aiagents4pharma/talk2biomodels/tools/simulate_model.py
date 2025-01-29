@@ -138,7 +138,7 @@ class SimulateModelTool(BaseTool):
         # of the BasicoModel class
         duration = 100.0
         interval = 10
-        dic_species_data = None
+        dic_species_data = {}
         if arg_data:
             # Prepare the dictionary of species data
             if arg_data.species_data is not None:
@@ -151,22 +151,21 @@ class SimulateModelTool(BaseTool):
             if arg_data.time_data is not None:
                 duration = arg_data.time_data.duration
                 interval = arg_data.time_data.interval
-
+        # Update the model parameters
+        model_object.update_parameters(dic_species_data)
+        logger.log(logging.INFO,
+                   "Following species/parameters updated in the model %s",
+                   dic_species_data)
         # Simulate the model
-        df = model_object.simulate(
-            parameters=dic_species_data,
-            duration=duration,
-            interval=interval
-            )
-
+        df = model_object.simulate(duration=duration, interval=interval)
+        logger.log(logging.INFO, "Simulation results ready with shape %s", df.shape)
         dic_simulated_data = {
             'name': arg_data.simulation_name,
             'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
             'tool_call_id': tool_call_id,
             'data': df.to_dict()
         }
-
-        # Prepare the dictionary of updated state for the model
+        # Prepare the dictionary of updated state
         dic_updated_state_for_model = {}
         for key, value in {
             "model_id": [sys_bio_model.biomodel_id],
@@ -175,7 +174,6 @@ class SimulateModelTool(BaseTool):
             }.items():
             if value:
                 dic_updated_state_for_model[key] = value
-
         # Return the updated state of the tool
         return Command(
                 update=dic_updated_state_for_model|{

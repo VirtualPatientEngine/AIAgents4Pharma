@@ -19,13 +19,14 @@ def test_with_biomodel_id(model):
     Test initialization of BasicoModel with biomodel_id.
     """
     assert model.biomodel_id == 64
+    model.update_parameters(parameters={'Pyruvate': 0.5, 'KmPFKF6P': 1.5})
+    df_species = basico.model_info.get_species(model=model.copasi_model)
+    assert df_species.loc['Pyruvate', 'initial_concentration'] == 0.5
+    df_parameters = basico.model_info.get_parameters(model=model.copasi_model)
+    assert df_parameters.loc['KmPFKF6P', 'initial_value'] == 1.5
     # check if the simulation results are a pandas DataFrame object
-    assert isinstance(model.simulate(parameters={'Pyruvate': 0.5, 'KmPFKF6P': 1.5},
-                                     duration=2,
-                                     interval=2),
-                    pd.DataFrame)
-    assert isinstance(model.simulate(parameters={None: None}, duration=2, interval=2),
-                    pd.DataFrame)
+    assert isinstance(model.simulate(duration=2, interval=2), pd.DataFrame)
+    model.update_parameters(parameters={None: None})
     assert model.description == basico.biomodels.get_model_info(model.biomodel_id)["description"]
 
 def test_with_sbml_file():
@@ -35,8 +36,6 @@ def test_with_sbml_file():
     model_object = BasicoModel(sbml_file_path="./BIOMD0000000064_url.xml")
     assert model_object.sbml_file_path == "./BIOMD0000000064_url.xml"
     assert isinstance(model_object.simulate(duration=2, interval=2), pd.DataFrame)
-    assert isinstance(model_object.simulate(parameters={'NADH': 0.5}, duration=2, interval=2),
-                      pd.DataFrame)
 
 def test_check_biomodel_id_or_sbml_file_path():
     '''

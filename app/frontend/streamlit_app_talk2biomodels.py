@@ -251,6 +251,10 @@ with main_col2:
                         # These may contain additional visuals that
                         # need to be displayed to the user.
                         print("ToolMessage", msg)
+                        # Skip the Tool message if it is an error message
+                        if msg.status == "error":
+                            continue
+
                         # Create a unique message id to identify the tool call
                         # msg.name is the name of the tool
                         # msg.tool_call_id is the unique id of the tool call
@@ -277,16 +281,7 @@ with main_col2:
                                     # print (df_selected)
                                 else:
                                     continue
-                                # # Add Time column to the custom headers
-                                # custom_headers = msg.artifact
-                                # if custom_headers:
-                                #     if 'Time' not in msg.artifact:
-                                #         custom_headers = ['Time'] + custom_headers
-                                #     # Make df with only the custom headers
-                                #     df_selected = df_simulated[custom_headers]
-                                # else:
-                                #     continue
-                            # Display the toggle button to suppress the table
+                            # Display the toggle button to suppress the plot
                             streamlit_utils.render_toggle(
                                 key="toggle_plotly_"+uniq_msg_id,
                                 toggle_text="Show Plot",
@@ -313,7 +308,38 @@ with main_col2:
                                 # tool_name=msg.name,
                                 # tool_call_id=msg.tool_call_id,
                                 save_table=True)
-                            
+                        elif msg.name == "parameter_scan":
+                            # Convert the scanned data to a single dictionary
+                            print ('-', len(current_state.values["dic_scanned_data"]))
+                            dic_scanned_data = {}
+                            for data in current_state.values["dic_scanned_data"]:
+                                print ('-', data['name'])
+                                for key in data:
+                                    if key not in dic_scanned_data:
+                                        dic_scanned_data[key] = []
+                                    dic_scanned_data[key] += [data[key]]
+                            # Create a pandas dataframe from the dictionary
+                            df_scanned_data = pd.DataFrame.from_dict(dic_scanned_data)
+                            # Get the scanned data for the current tool call
+                            df_scanned_current_tool_call = pd.DataFrame(
+                                df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id])
+                            # df_scanned_current_tool_call.drop_duplicates()
+                            # print (df_scanned_current_tool_call)
+                            for count in range(0, len(df_scanned_current_tool_call.index)):
+                                # Get the scanned data for the current tool call
+                                df_selected = pd.DataFrame(
+                                    df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[count])
+                                # Display the toggle button to suppress the table
+                                streamlit_utils.render_toggle(
+                                    key="toggle_table_"+uniq_msg_id+'_'+str(count),
+                                    toggle_text="Show Table",
+                                    toggle_state=False,
+                                    save_toggle=True)
+                                # Display the table
+                                streamlit_utils.render_table_plotly(
+                                uniq_msg_id+'_'+str(count),
+                                df_scanned_current_tool_call['name'].iloc[count],
+                                df_selected)
                         elif msg.name in ["get_annotation"]:
                                 df_simulated = pd.DataFrame.from_dict(current_state.values["dic_annotations_data"])
 

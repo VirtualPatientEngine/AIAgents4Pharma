@@ -17,6 +17,7 @@ from ..tools.simulate_model import SimulateModelTool
 from ..tools.custom_plotter import CustomPlotterTool
 from ..tools.ask_question import AskQuestionTool
 from ..tools.get_annotation import GetAnnotationTool
+from ..tools.parameter_scan import ParameterScanTool
 from ..states.state_talk2biomodels import Talk2Biomodels
 
 # Initialize logger
@@ -36,19 +37,14 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
         return response
 
     # Define the tools
-    simulate_model = SimulateModelTool()
-    custom_plotter = CustomPlotterTool()
-    ask_question = AskQuestionTool()
-    search_model = SearchModelsTool()
-    get_modelinfo = GetModelInfoTool()
-    get_annotation = GetAnnotationTool()
     tools = ToolNode([
-                    simulate_model,
-                    ask_question,
-                    custom_plotter,
-                    search_model,
-                    get_modelinfo,
-                    get_annotation
+                    SimulateModelTool(),
+                    AskQuestionTool(),
+                    CustomPlotterTool(),
+                    SearchModelsTool(),
+                    GetModelInfoTool(),
+                    ParameterScanTool(),
+                    GetAnnotationTool()
                     ])
 
     # Define the model

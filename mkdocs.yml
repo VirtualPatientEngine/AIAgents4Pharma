@@ -48,10 +48,13 @@ nav:
           - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
           - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
-          - Embeddings:
-              - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
-              - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
-              - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+        - Embeddings:
+          - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
+          - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
+          - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+        - Enrichments:
+          - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
+          - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
 
   - Talk2Competitors:
       - Introduction: talk2competitors/intro.md

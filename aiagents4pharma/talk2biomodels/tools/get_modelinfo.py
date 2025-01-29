@@ -47,8 +47,10 @@ class GetModelInfoTool(BaseTool):
     """
     This tool ise used extract model information.
     """
-    name: str = "get_parameters"
-    description: str = "A tool for extracting model information."
+    name: str = "get_modelinfo"
+    description: str = """A tool for extracting name,
+                    description, species, parameters,
+                    compartments, and units from a model."""
     args_schema: Type[BaseModel] = GetModelInfoInput
 
     def _run(self,
@@ -81,7 +83,7 @@ class GetModelInfoTool(BaseTool):
         # Extract species from the model
         if requested_model_info.species:
             df_species = basico.model_info.get_species(model=model_obj.copasi_model)
-            dic_results['Species'] = df_species.index.tolist()
+            dic_results['Species'] = df_species['display_name'].tolist()
             dic_results['Species'] = ','.join(dic_results['Species'])
 
         # Extract parameters from the model
