@@ -12,7 +12,7 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode, InjectedState
 from ..tools.subgraph_extraction import SubgraphExtractionTool
 from ..tools.subgraph_summarization import SubgraphSummarizationTool
-from ..tools.graphrag import GraphRAGTool
+from ..tools.graphrag_reasoning import GraphRAGReasoningTool
 from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
 
 # Initialize logger
@@ -29,23 +29,16 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
         '''
         logger.log(logging.INFO, "Calling t2kg_agent node with thread_id %s", uniq_id)
         response = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
+
+        # Preview the state
+        logger.log(logging.INFO, "Previewing the state")
+        state = app.get_state({"configurable": {"thread_id": uniq_id}})
+        logger.log(logging.INFO, state.values["llm_model"])
+        logger.log(logging.INFO, state.values["uploaded_files"])
+        logger.log(logging.INFO, state.values["topk_nodes"])
+        logger.log(logging.INFO, state.values["topk_edges"])
+
         return response
-
-    # Define the tools
-    subgraph_extraction = SubgraphExtractionTool()
-    # subgraph_summarization = SubgraphSummarizationTool()
-    # graphrag = GraphRAGTool()
-    tools = ToolNode([
-                    subgraph_extraction,
-                    # subgraph_summarization,
-                    # graphrag,
-                    ])
-
-    # Define the model
-    if llm_model in ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]:
-        llm = ChatOpenAI(model=llm_model, temperature=0)
-    else:
-        llm = ChatOllama(model=llm_model, temperature=0)
 
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2KnowledgeGraphs agent.")
@@ -53,7 +46,23 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
         cfg = hydra.compose(config_name='config',
                             overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
         cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
-    logger.log(logging.INFO, "state_modifier: %s", cfg.state_modifier)
+
+    # Define the tools
+    subgraph_extraction = SubgraphExtractionTool()
+    subgraph_summarization = SubgraphSummarizationTool()
+    graphrag_reasoning = GraphRAGReasoningTool()
+    tools = ToolNode([
+                    subgraph_extraction,
+                    subgraph_summarization,
+                    graphrag_reasoning,
+                    ])
+
+    # Define the model
+    if llm_model in cfg.openai_llms:
+        llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
+    else:
+        llm = ChatOllama(model=llm_model, temperature=cfg.temperature)
+
     # Create the agent
     model = create_react_agent(
                 llm,

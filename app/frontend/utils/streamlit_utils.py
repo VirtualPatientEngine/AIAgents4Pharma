@@ -4,6 +4,8 @@
 Utils for Streamlit.
 '''
 
+import os
+import datetime
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -252,3 +254,112 @@ of `DoseQ2W` set to 300 and `Dose` set to 0.`
 
 6. Provide feedback to the developers by clicking on the feedback button.
 ''')
+
+def apply_css():
+    """
+    Function to apply custom CSS for streamlit app.
+    """
+    # Styling using CSS
+    st.markdown(
+        """<style>
+        .stFileUploaderFile { display: none;}
+        #stFileUploaderPagination { display: none;}
+        .st-emotion-cache-wbtvu4 { display: none;}
+        </style>
+        """,
+        unsafe_allow_html=True
+        )
+
+def get_file_type_icon(file_type: str) -> str:
+    """
+    Function to get the icon for the file type.
+
+    Args:
+        file_type (str): The file type.
+
+    Returns:
+        str: The icon for the file type.
+    """
+    return {
+        "drug_data": "💊",
+        "endotype": "🧬",
+        "sbml_file": "📜"
+    }.get(file_type)
+
+@st.fragment
+def get_uploaded_files(cfg) -> None:
+    """
+    Upload files to a directory set in cfg.upload_data_dir, and display them in the UI.
+
+    Args:
+        cfg: The configuration object.
+    """
+    # sbml_file = st.file_uploader("📜 Upload SBML file",
+    #     accept_multiple_files=False,
+    #     help='Upload an ODE model in SBML format.',
+    #     type=["xml", "sbml"],
+    #     key=f"uploader_sbml_file_{st.session_state.sbml_key}")
+
+    data_package_files = st.file_uploader(
+        "💊 Upload pre-clinical drug data",
+        help="Free-form text. Must contain atleast drug targets and kinetic parameters",
+        accept_multiple_files=True,
+        type=cfg.data_package_allowed_file_types,
+        key=f"uploader_{st.session_state.data_package_key}")
+
+    endotype_files = st.file_uploader(
+        "🧬 Upload endotype data",
+        help= "Free-form text. List of differentially expressed genes",
+        accept_multiple_files=True,
+        type=cfg.endotype_allowed_file_types,
+        key=f"uploader_endotype_{st.session_state.endotype_key}")
+
+    # Merge the uploaded files
+    uploaded_files = data_package_files.copy()
+    if endotype_files:
+        uploaded_files += endotype_files.copy()
+    # if sbml_file:
+    #     uploaded_files += [sbml_file]
+
+    with st.spinner("Storing uploaded file(s) ..."):
+        # for uploaded_file in data_package_files:
+        for uploaded_file in uploaded_files:
+            if uploaded_file.name not in [uf["file_name"]
+                                          for uf in st.session_state.uploaded_files]:
+                current_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                uploaded_file.file_name = uploaded_file.name
+                uploaded_file.file_path = f"{cfg.upload_data_dir}/{uploaded_file.file_name}"
+                uploaded_file.current_user = st.session_state.current_user
+                uploaded_file.timestamp = current_timestamp
+                if uploaded_file.name in [uf.name for uf in data_package_files]:
+                    uploaded_file.file_type = "drug_data"
+                elif uploaded_file.name in [uf.name for uf in endotype_files]:
+                    uploaded_file.file_type = "endotype"
+                else:
+                    uploaded_file.file_type = "sbml_file"
+                st.session_state.uploaded_files.append({
+                    "file_name": uploaded_file.file_name,
+                    "file_path": uploaded_file.file_path,
+                    "file_type": uploaded_file.file_type,
+                    "uploaded_by": uploaded_file.current_user,
+                    "uploaded_timestamp": uploaded_file.timestamp
+                })
+                with open(os.path.join(cfg.upload_data_dir, uploaded_file.file_name), "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                uploaded_file = None
+
+    # Display uploaded files and provide a remove button
+    for uploaded_file in st.session_state.uploaded_files:
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.write(get_file_type_icon(uploaded_file["file_type"]) + uploaded_file["file_name"])
+        with col2:
+            if st.button("🗑️", key=uploaded_file["file_name"]):
+                with st.spinner("Removing uploaded file ..."):
+                    if os.path.isfile(f"{cfg.upload_data_dir}/{uploaded_file['file_name']}"):
+                        os.remove(f"{cfg.upload_data_dir}/{uploaded_file['file_name']}")
+                    st.session_state.uploaded_files.remove(uploaded_file)
+                    st.cache_data.clear()
+                    st.session_state.data_package_key += 1
+                    st.session_state.endotype_key += 1
+                    st.rerun(scope="fragment")

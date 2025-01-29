@@ -8,9 +8,12 @@ from pydantic import BaseModel, Field
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 # from langchain_core.tools import tool
+from langchain_core.messages import ToolMessage
+from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 import hydra
 
@@ -28,6 +31,7 @@ class SubgraphSummarizationInput(BaseModel):
         textualized_subgraph (str): Textualized subgraph.
     """
     prompt: str = Field(description="Prompt to interact with the backend.")
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(description="Tool call ID.")
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
 
 class SubgraphSummarizationTool(BaseTool):
@@ -39,29 +43,32 @@ class SubgraphSummarizationTool(BaseTool):
     description: str = "A tool to perform subgraph summarization over textualized graph."
     args_schema: Type[BaseModel] = SubgraphSummarizationInput
 
-    def _run(self, state: Annotated[dict, InjectedState], prompt: str):
+    def _run(self,
+             tool_call_id: Annotated[str, InjectedToolCallId],
+             state: Annotated[dict, InjectedState], prompt: str):
         """
         Run the subgraph summarization tool.
 
         Args:
+            tool_call_id: The tool call ID.
             state: The injected state.
             prompt: The prompt to interact with the backend.
         """
         # Load hydra configuration
-        logger.log(logging.INFO, "Load Hydra configuration for subgraph summarization")
-        with hydra.initialize(version_base=None, config_path="../../../../../configs"):
+        logger.log(logging.INFO, "Loading Hydra configuration for subgraph summarization")
+        with hydra.initialize(version_base=None, config_path="../../configs"):
             cfg = hydra.compose(
                 config_name='config',
-                overrides=['web/backend/routers/tools/subgraph_summarization=default']
+                overrides=['talk2knowledgegraphs/agents/t2kg_agent=default']
             )
-            cfg = cfg.web.backend.routers.tools.subgraph_summarization
+            cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
 
         # Load the textualized subgraph
-        logger.log(logging.INFO, "Load the most recent extracted subgraph")
-        textualized_subgraph = state["recent_subgraph"]
+        logger.log(logging.INFO, "Loading the most recent extracted subgraph")
+        textualized_subgraph = state["graph_text"]
 
         # Prepare prompt template
-        logger.log(logging.INFO, "Prepare prompt template")
+        logger.log(logging.INFO, "Preparing prompt template")
         prompt_template = ChatPromptTemplate.from_messages(
             [
                 ("system", cfg.prompt_subgraph_summarization),
@@ -70,27 +77,38 @@ class SubgraphSummarizationTool(BaseTool):
         )
 
         # Prepare LLM
-        logger.log(logging.INFO, "Prepare LLM")
+        logger.log(logging.INFO, "Preparing LLM")
         if state["llm_model"] in cfg.openai_llms:
-            llm = ChatOpenAI(state["llm_model"],
-                            api_key=cfg.openai_api_key,
-                            temperature=cfg.temperature,
-                            streaming=cfg.streaming)
+            logger.log(logging.INFO, "Using OpenAI model")
+            llm = ChatOpenAI(model=state["llm_model"], temperature=cfg.temperature)
         else:
-            llm = ChatOllama(model=state["llm_model"],
-                            temperature=cfg.temperature,
-                            streaming=cfg.streaming)
+            logger.log(logging.INFO, "Using Ollama model")
+            llm = ChatOllama(model=state["llm_model"], temperature=cfg.temperature)
 
         # Prepare chain
-        logger.log(logging.INFO, "Prepare chain")
+        logger.log(logging.INFO, "Preparing chain")
         chain = prompt_template | llm | StrOutputParser()
 
         # Return the subgraph and textualized graph as JSON response
-        logger.log(logging.INFO, "Return the ouput after invoking the chain")
+        logger.log(logging.INFO, "Invoking chain")
         response = chain.invoke({
             "input": prompt,
-            "model_name": state["llm_model"],
             "textualized_subgraph": textualized_subgraph,
         })
 
-        return response
+        # Update the state
+        # logger.log(logging.INFO, "Updating the state")
+        # state["graph_summary"] = response
+
+        # return response
+        return Command(
+            update={
+                "graph_summary": response,
+                "messages":[
+                    ToolMessage(
+                        content="Subgraph Extraction",
+                        tool_call_id=tool_call_id
+                    )
+                ]
+            }
+        )

@@ -151,17 +151,17 @@ class SubgraphExtractionTool(BaseTool):
             Command: The command to be executed.
         """
         # Load hydra configuration
-        logger.log(logging.INFO, "Load Hydra configuration for subgraph extraction")
+        logger.log(logging.INFO, "Loading Hydra configuration for subgraph extraction")
         with hydra.initialize(version_base=None, config_path="../../configs"):
             cfg = hydra.compose(config_name='config',
                                 overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
             cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
 
         # Load the knowledge graph
-        logger.log(logging.INFO, "Load the knowledge graph (PyG Graph)")
+        logger.log(logging.INFO, "Loading the knowledge graph (PyG Graph)")
         with open(cfg.input_tkg, 'rb') as f:
             pyg_graph = pickle.load(f)
-        logger.log(logging.INFO, "Load the knowledge graph (Textualized Graph)")
+        logger.log(logging.INFO, "Loading the knowledge graph (Textualized Graph)")
         with open(cfg.input_text_tkg, 'rb') as f:
             textualized_graph = pickle.load(f)
 
@@ -174,14 +174,14 @@ class SubgraphExtractionTool(BaseTool):
         #                                              cfg)
 
         # Prepare embedding model and embed the user prompt as query
-        logger.log(logging.INFO, "Prepare embedding model and embed the user prompt as query")
+        logger.log(logging.INFO, "Preparing embedding model and embed the user prompt as query")
         query_emb = torch.tensor(EmbeddingWithOllama(
             model_name=cfg.ollama_embeddings[0]
         ).embed_query(prompt)).float()
 
         # Prepare the PCSTPruning object and extract the subgraph
         # Parameters were set in the configuration file obtained from Hydra
-        logger.log(logging.INFO, "Prepare the PCSTPruning object and extract the subgraph")
+        logger.log(logging.INFO, "Preparing the PCSTPruning object and extract the subgraph")
         subgraph = PCSTPruning(topk_nodes,
                                topk_edges,
                                cfg.cost_e,
@@ -192,7 +192,7 @@ class SubgraphExtractionTool(BaseTool):
                                cfg.verbosity_level).extract_subgraph(pyg_graph, query_emb)
 
         # Prepare the PyTorch Geometric graph
-        logger.log(logging.INFO, "Prepare the PyTorch Geometric graph")
+        logger.log(logging.INFO, "Preparing the PyTorch Geometric graph")
         mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
         pyg_graph = Data (
             # Node features
@@ -227,16 +227,15 @@ class SubgraphExtractionTool(BaseTool):
                             label=pyg_graph.edge_type[i])
 
         # Prepare the textualized subgraph
-        logger.log(logging.INFO, "Prepare the textualized subgraph")
+        logger.log(logging.INFO, "Preparing the textualized subgraph")
         textualized_graph = (
             textualized_graph["nodes"].iloc[subgraph["nodes"]].to_csv(index=False)
             + "\n"
             + textualized_graph["edges"].iloc[subgraph["edges"]].to_csv(index=False)
         )
-        logger.log(logging.INFO, "Textualized graph: %s", textualized_graph)
 
         # Store the result state dictionary
-        logger.log(logging.INFO, "Return the result state dictionary")
+        logger.log(logging.INFO, "Returning the extracted subgraph")
         return Command(
             update={
                 "graph_dict" : {

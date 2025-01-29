@@ -12,5 +12,9 @@ class Talk2KnowledgeGraphs(AgentState):
     """
     documents_path: Annotated[list, operator.add]
     llm_model: str
+    uploaded_files: list
+    topk_nodes: int
+    topk_edges: int
     graph_dict: dict
     graph_text: str
+    graph_summary: str

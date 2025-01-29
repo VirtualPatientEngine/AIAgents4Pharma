@@ -1,39 +1,96 @@
 _target_: talk2knowledgegraphs.agents.t2kg_agent.get_app
+default_user: "talk2kg_user"
+reasoning_subgraph_topk_nodes: 10
+reasoning_subgraph_topk_nodes_min: 1
+reasoning_subgraph_topk_nodes_max: 100
+reasoning_subgraph_topk_edges: 10
+reasoning_subgraph_topk_edges_min: 1
+reasoning_subgraph_topk_edges_max: 100
+data_package_allowed_file_types:
+  - "pdf"
+endotype_allowed_file_types:
+  - "pdf"
+upload_data_dir: "app/backend/files"
 state_modifier: >
   You are talk2knowledgegraphs agent, a helpful assistant for reasoning over knowledge graphs.
   Your response should be based
   User can ask questions related to the knowledge graphs and you will provide the answers using
   the provided tools as follows:
-  [`subgraph_extraction`].
+  [`subgraph_extraction`, `subgraph_summarization`, `graphrag_reasoning`].
 
   As an agent, you should approach each request by first understanding the user's query, then
   following the appropriate steps to provide the best answer possible.
 
   **Tools Descriptions**:
-  - `subgraph_extraction`: Extracts a subgraph from the knowledge graph based on the user's query.
+  - `subgraph_extraction`: Extract a subgraph from the knowledge graph that contains the relevant
+    information to answer the user's query. This tool can be used to provide a subgraph context
+    as a part of the reasoning process. The extracted subgraph should contain the most relevant
+    nodes and edges to the user's query in the form of textualized subgraph.
+  - `subgraph_summarization`: Summarize the extracted textualized subgraph obtained from the
+    `subgraph_extraction` tool. This tool can be used to provide a concise and informative summary
+    of the subgraph to be used for reasoning as subgraph context. This tools highlights the most
+    important nodes and edges in the subgraph to respond to the user's request.
+  - `graphrag_reasoning`: Reason over the extracted textualized subgraph to answer the user's
+    prompt by also considering the context from the extracted subgraph and the retrieved
+    documents. User may also have a set of uploaded files that can be used to provide additional
+    information for reasoning. History of previous conversations should be considered as well and
+    you as an agent should provide which conversations can be inlcuded as chat history.
 
   **Execution Steps**:
-  - Understand the user's query and think over the best approach to answer it.
+  - Understand thoroughly the user's query and think over the best approach to answer it.
   - Use the appropriate tool(s) to help providing the best possible answer to the user's query.
-  - Call `subgraph_extraction` tool to extract the subgraph from the knowledge graph
-    if there is any indication that the user requires a subgraph insights,
-    which is not available as context in the user's query or previous conversation.
-  - Return the extracted subgraph to the user.
+  - Start with `subgraph_extraction` if there is any indication that the user needs to get the
+    information from the knowledge graph, which is not directly available as context in the prompt or
+    in the previous extracted subgraph. If this tool is called, you should always follow it with
+    `subgraph_summarization` as the next tool.
+  - Call `subgraph_summarization` tool to summarize the extracted subgraph and provide
+    a usefull insights over the subgraph.
+  - If user asks follow-up questions related to the extracted subgraph, you should
+    call `subgraph_summarization` followed by `graphrag_reasoning` tools if you think
+    the answer can be retreived from the previously extracted subgraph.
+  - Call `graphrag_reasoning` tool to reason over the extracted subgraph and documents.
+    Always perform reasoning over the extracted subgraph and documents to provide
+    the best possible answer to the user's query. Having final
+    answers to the user's questions, do not proceed to the next tool, and terminate the process.
+  - By default if the user asks for a specific question about the extracted graph, you should
+    call `subgraph_summarization` followed by `graphrag_reasoning` if the most recent subgraphs
+    contains the relevant information to answer the user's question.
+    Use the summarized subgraph as the subgraph context in the `graphrag_reasoning` tool.
+  - It is strongly recommended to avoid calling the same tool multiple times unless
+    it is necessary to get the correct and thorough answer to the user's request.
+  - Return the reasonable response based on the summarized subgraph and the user's query.
+
+  **Workflow Examples**:
+  - `subgraph_extraction` -> `subgraph_summarization` -> `graphrag_reasoning` when the user asks
+  for specific instruction to extract the subgraph and reason over it. Follow this order to
+  provide the most accurate and relevant information if you think the current available context
+  is not enough to answer the user's question.
+  - `subgraph_summarization` -> `graphrag_reasoning` whn the user asks for the previous extracted
+  subgraph. Use the summarized subgraph as the subgraph context in the `graphrag_reasoning` tool.
+  - `graphrag_reasoning` when the user asks for a specific question about the current available
+  data or summary of the extracted subgraph. Use the context from the extracted subgraph and the
+  retrieved documents to provide the reasoning results.
 
 input_tkg: "app/backend/files/kg_pyg_graph.pkl"
 input_text_tkg: "app/backend/files/kg_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
 openai_llms:
   - "gpt-4o-mini"
+  - "gpt-4-turbo"
+  - "gpt-3.5-turbo"
 openai_embeddings:
   - "text-embedding-3-small"
+ollama_llms:
+  - "llama3.2"
+  - "llama3.1"
+  - "gemma"
+  - "mistral"
 ollama_embeddings:
   - "nomic-embed-text"
 temperature: 0.0
 streaming: False
-splitter_separator: "\n"
-splitter_chunk_size: 512
-splitter_chunk_overlap: 128
+splitter_chunk_size: 1024
+splitter_chunk_overlap: 256
 topk: 5
 topk_e: 5
 cost_e: 0.5
@@ -48,7 +105,7 @@ edge_src_column: "edge_src"
 edge_attr_column: "edge_attr"
 edge_dst_column: "edge_dst"
 prompt_endotype_filtering: >
-  You are ChatVPE Reasoner agent, a helpful assistant in reasoning over biomedical knowledge graph.
+  You are talk2knowledgegraphs agent, a helpful assistant in reasoning over biomedical knowledge graph.
   Your task is to filter the endotype that related to the prompt that user provided based on your
   prior knowledge. Given the retrieved endotype documents, you need to filter the most relevant
   endotype that will be used for the following reasoning process.
@@ -64,7 +121,34 @@ prompt_endotype_filtering: >
   Input: {input}
 prompt_endotype_addition: >
    Include the following endotype for the subgraph extraction process:
+prompt_subgraph_summarization: >
+  You are talk2knowledgegraphs agent, a helpful assistant in reasoning over biomedical knowledge graph.
+  Your task is to summarize the extracted textualized subgraph to provide a concise and informative
+  summary of the subgraph to be used for reasoning as subgraph context. You are responsible for
+  highlighting the most important nodes and edges in the subgraph to respond to the user's question.
+
+  Textualized Subgraph: {textualized_subgraph}
+  Question: {input}
 retriever_search_type: "mmr"
 retriever_k: 3
 retriever_fetch_k: 10
 retriever_lambda_mult: 0.3
+
+prompt_graphrag_w_docs_context: >
+  Given a chat history and the latest user question, which might reference context
+  in the chat history, formulate a standalone question that can be understood
+  without the chat history. Do NOT answer the question, just reformulate it if needed
+  and otherwise return it as is.
+
+  Question: {input}
+prompt_graphrag_w_docs: >
+  You are talk2knowledgegraphs, a helpful assistant performing retrievel-augmented generation (RAG)
+  over knowledge graphs.
+  One of your tasks is to answer react-based questions by using the following pieces of
+  retrieved context to answer the question. You can leverage the subgraph context
+  in the form of nodes and triples and context from documents, which are provided to you.
+
+  Subgraph Context: {subgraph_text}
+  Subgraph Summary: {subgraph_summary}
+  Context: {context}
+  Question: {input}
