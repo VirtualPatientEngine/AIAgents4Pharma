@@ -43,8 +43,8 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
                     CustomPlotterTool(),
                     SearchModelsTool(),
                     GetModelInfoTool(),
-                    ParameterScanTool(),
-                    SteadyStateTool()
+                    SteadyStateTool(),
+                    ParameterScanTool()
                     ])
 
     # Define the model

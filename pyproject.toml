@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "aiagents4pharma"
 description = "AI Agents for drug discovery, drug development, and other pharmaceutical R&D"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -25,9 +25,11 @@ dependencies = [
     "langchain-core==0.3.31",
     "langchain-experimental==0.3.3",
     "langchain-openai==0.2.5",
+    "langchain_ollama==0.2.2",
     "langgraph==0.2.66",
     "matplotlib==3.9.2",
     "openai==1.59.4",
+    "ollama==0.4.6",
     "pandas==2.2.3",
     "plotly==5.24.1",
     "pydantic==2.9.2",

@@ -22,6 +22,44 @@ def submit_feedback(user_response):
     )
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
+def render_table_plotly(uniq_msg_id, content, df_selected):
+    """
+    Function to render the table and plotly chart in the chat.
+
+    Args:
+        uniq_msg_id: str: The unique message id
+        msg: dict: The message object
+        df_selected: pd.DataFrame: The selected dataframe
+    """
+    # Display the toggle button to suppress the table
+    render_toggle(
+        key="toggle_plotly_"+uniq_msg_id,
+        toggle_text="Show Plot",
+        toggle_state=True,
+        save_toggle=True)
+    # Display the plotly chart
+    render_plotly(
+        df_selected,
+        key="plotly_"+uniq_msg_id,
+        title=content,
+        # tool_name=msg.name,
+        # tool_call_id=msg.tool_call_id,
+        save_chart=True)
+    # Display the toggle button to suppress the table
+    render_toggle(
+        key="toggle_table_"+uniq_msg_id,
+        toggle_text="Show Table",
+        toggle_state=False,
+        save_toggle=True)
+    # Display the table
+    render_table(
+        df_selected,
+        key="dataframe_"+uniq_msg_id,
+        # tool_name=msg.name,
+        # tool_call_id=msg.tool_call_id,
+        save_table=True)
+    st.empty()
+
 def render_toggle(key: str,
                   toggle_text: str,
                   toggle_state: bool,

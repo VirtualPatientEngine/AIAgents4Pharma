@@ -1,8 +1,11 @@
-'''
+"""
 This file is used to import aiagents4pharma modules.
-'''
+"""
 
-from . import talk2biomodels
-from . import talk2cells
-from . import talk2knowledgegraphs
-from . import configs
+from . import (
+    configs,
+    talk2biomodels,
+    talk2cells,
+    talk2competitors,
+    talk2knowledgegraphs,
+)
