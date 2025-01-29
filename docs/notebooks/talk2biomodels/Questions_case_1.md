@@ -94,14 +94,14 @@ deactivated. <br>
 
 
 
-**Q7.** Show CRP[serum] concentration at any arbitrary time point, e.g. 12 weeks after the initial drug treatment (2016 hours) <br>
+**Q7.** Review, how drug treatment influences CRP[serum] concentration at any arbitrary time point, e.g. 12 weeks after the initial drug treatment (2016 hours). <br>
 ```What is the CRP concentration in the serum after 2016 hours of treatment?```
 
 <hr>
 
 ### Compare treatment regimens
 
-**Q8.** Resimulate the model by activating the `DoseQ2W` and deactivating `Dose` parameters <br>  
+**Q8.** Re-simulate the model by administrating the drug trieatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
 ```Simulate the model again for 2016 hours with 2016 intervals. Set the initial concentration of `DoseQ2W` to 200 and `Dose` to 0. Mark this simulation as `Treatment 2wk`.```
 
 
@@ -117,7 +117,7 @@ deactivated. <br>
 
 <hr>
 
-### Compare two different antibody affinities / test antibodies with different target binding affinities
+### Compare the effect on CRP suppression by simulating two different antibodies with varying dissociation affinities
 
 **Q11.** Plot the current curve of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. Dose is set to 500 mg. We expect 100% suppression of CRP after 12 weeks.
 ```Simulate the model and plot the curve of CRP % suppression. Save this simulation as `Antibody 2.5`.```
