@@ -5,7 +5,8 @@ This module contains the `GetAnnotationTool` for fetching species annotations
 based on the provided model and species names.
 """
 
-from typing import List, Optional, Annotated, Type, Union
+import math
+from typing import List, Annotated, Type
 import logging
 from pydantic import BaseModel, Field
 import basico
@@ -24,16 +25,32 @@ from ..api.kegg import fetch_kegg_annotations
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def prepare_content_msg(species_not_found: List[str],
+                        species_without_description: List[str]):
+    """
+    Prepare the content message.
+    """
+    content = 'Successfully extracted annotations for the species.'
+    if species_not_found:
+        content += f'''The following species do not exist, and
+                        hence their annotations were not extracted:
+                        {', '.join(species_not_found)}.'''
+    if species_without_description:
+        content += f'''The descriptions for the following species
+                        were not found:
+                        {", ".join(species_without_description)}.'''
+    return content
+
 class GetAnnotationInput(BaseModel):
     """
     Input schema for annotation tool.
     """
     sys_bio_model: ModelData = Field(description="model data")
     tool_call_id: Annotated[str, InjectedToolCallId]
-    species_names: Union[None, List[str]] = Field(
-        default=None,
+    list_species_names: List[str] = Field(
+        default=[],
         description='''List of species names to fetch annotations for.
-                      If not provided (i.e. None) annotations for all
+                      If not provided, annotations for all
                       species in the model will be fetched.'''
     )
     state: Annotated[dict, InjectedState]
@@ -43,22 +60,23 @@ class GetAnnotationTool(BaseTool):
     Tool for fetching species annotations based on the provided model and species names.
     """
     name: str = "get_annotation"
-    description: str = '''A tool to extract annotations for species names
+    description: str = '''A tool to extract annotations for a list of species names
                         based on the provided model. Annotations include
                         the species name, description, database, ID, link,
-                        and qualifier.'''
+                        and qualifier. The tool can handle multiple species
+                        in a single invoke.'''
     args_schema: Type[BaseModel] = GetAnnotationInput
     return_direct: bool = False
 
     def _run(self,
-             species_names: Union[None, List[str]],
-             sys_bio_model: ModelData,
              tool_call_id: Annotated[str, InjectedToolCallId],
-             state: Annotated[dict, InjectedState]) -> str:
+             state: Annotated[dict, InjectedState],
+             list_species_names: List[str] = None,
+             sys_bio_model: ModelData = None) -> str:
         """
         Run the tool.
         """
-        logger.info("Running the GetAnnotationTool tool.")
+        logger.info("Running the GetAnnotationTool tool for species %s", list_species_names)
 
         # Prepare the model object
         sbml_file_path = state['sbml_file_path'][-1] if state['sbml_file_path'] else None
@@ -68,46 +86,48 @@ class GetAnnotationTool(BaseTool):
         df_species = basico.model_info.get_species(model=model_object.copasi_model)
 
         # Fetch annotations for the species names
-        species_names = species_names or df_species.index.tolist()
-        annotations_df, species_not_found = self._fetch_annotations(species_names)
+        list_species_names = list_species_names or df_species.index.tolist()
+        (annotations_df,
+         species_not_found,
+         species_without_description) = self._fetch_annotations(list_species_names)
 
         # Check if annotations are empty
         # If empty, return a message
         if annotations_df.empty:
             logger.warning("The annotations dataframe is empty.")
-            # species_msg = self._generate_empty_result_message(species_not_found)
-            # return species_msg
-            if species_not_found:
-                return f'''The following species do not exist:
-                        {", ".join(species_not_found)}.''', False
-            return "No annotations found for any of the species entered.", False
+            return f'''The following species do not exist:
+                    {", ".join(species_not_found)}. The
+                    descriptions for the following species
+                    were not found:
+                    {", ".join(species_without_description)}.'''
+            # return "No annotations found for any of the species entered.", False
 
         # Process annotations
         annotations_df = self._process_annotations(annotations_df)
+
+        # Prepare the simulated data
+        dic_annotations_data = {
+            'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
+            'tool_call_id': tool_call_id,
+            'data': annotations_df.to_dict()
+        }
 
         # Update the state with the annotations data
         dic_updated_state_for_model = {}
         for key, value in {
             "model_id": [sys_bio_model.biomodel_id],
             "sbml_file_path": [sbml_file_path],
-            "dic_annotations_data": annotations_df.to_dict() if not annotations_df.empty else {}
+            "dic_annotations_data": [dic_annotations_data]
         }.items():
             if value:
                 dic_updated_state_for_model[key] = value
 
         return Command(
             update=dic_updated_state_for_model | {
-                "dic_annotations_data": annotations_df.to_dict() 
-                                        if not annotations_df.empty else {},
                 "messages": [
                     ToolMessage(
-                        content=(
-                            "Successfully extracted annotations for the species."
-                            if not species_not_found else
-                            f'''The following species do not exist, and
-                            hence their annotations were not extracted:
-                            {', '.join(species_not_found)}.'''
-                        ),
+                        content=prepare_content_msg(species_not_found,
+                                                    species_without_description),
                         artifact=True,
                         tool_call_id=tool_call_id
                     )
@@ -115,7 +135,7 @@ class GetAnnotationTool(BaseTool):
             }
         )
 
-    def _fetch_annotations(self, species_names: List[str]) -> tuple:
+    def _fetch_annotations(self, list_species_names: List[str]) -> tuple:
         """
         Fetch annotations for the given species names from the model.
         In this method, we fetch the MIRIAM annotations for the species names.
@@ -124,16 +144,18 @@ class GetAnnotationTool(BaseTool):
         from the annotation and add them to the data list.
 
         Args:
-            species_names (List[str]): List of species names to fetch annotations for.
+            list_species_names (List[str]): List of species names to fetch annotations for.
 
         Returns:
-            tuple: A tuple containing the annotations dataframe and the species not found list.
+            tuple: A tuple containing the annotations dataframe, species not found list,
+                   and description not found list.
         """
         species_not_found = []
+        description_not_found = []
         data = []
 
         # Loop through the species names
-        for species in species_names:
+        for species in list_species_names:
             # Get the MIRIAM annotation for the species
             annotation = basico.get_miriam_annotation(name=species)
             # If the annotation is not found, add the species to the list
@@ -143,6 +165,10 @@ class GetAnnotationTool(BaseTool):
 
             # Extract the descriptions from the annotation
             descriptions = annotation.get("descriptions", [])
+
+            if descriptions == []:
+                description_not_found.append(species)
+                continue
 
             # Loop through the descriptions and add them to the data list
             for desc in descriptions:
@@ -156,15 +182,7 @@ class GetAnnotationTool(BaseTool):
         annotations_df = pd.DataFrame(data)
 
         # Return the annotations dataframe and the species not found list
-        return annotations_df, species_not_found
-
-    # def _generate_empty_result_message(self, species_not_found: List[str]) -> str:
-    #     """
-    #     Generate a message for empty results.
-    #     """
-    #     if species_not_found:
-    #         return f"The following species do not exist: {', '.join(species_not_found)}."
-    #     return "No annotations found for any of the species entered."
+        return annotations_df, species_not_found, description_not_found
 
     def _process_annotations(self, annotations_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -231,34 +249,40 @@ class GetAnnotationTool(BaseTool):
         results = {}
         grouped_data = {}
 
+        # In the following loop, we create a dictionary with database as the key
+        # and a list of identifiers as the value. If either the database or the
+        # identifier is NaN, we set it to None.
         for entry in data:
             identifier = entry.get('Id')
-            database = entry.get('Database', '').lower()
-            if identifier and database:
-                grouped_data.setdefault(database, []).append(identifier)
+            database = entry.get('Database')
+            # Check if database is NaN
+            if isinstance(database, float):
+                if math.isnan(database):
+                    database = None
+                    results[identifier or "unknown"] = "-"
             else:
-                results[identifier or "unknown"] = "-"
+                database = database.lower()
+                grouped_data.setdefault(database, []).append(identifier)
 
+        # In the following loop, we fetch the descriptions for the identifiers
+        # based on the database type.
         for database, identifiers in grouped_data.items():
-            try:
-                if database == 'uniprot':
-                    results.update(search_uniprot_labels(identifiers))
-                elif database in {'pato', 'chebi', 'sbo', 'fma', 'pr'}:
-                    annotations = search_ols_labels([
+            if database == 'uniprot':
+                results.update(search_uniprot_labels(identifiers))
+            elif database in {'pato', 'chebi', 'sbo', 'fma', 'pr'}:
+                annotations = search_ols_labels([
                         {"Id": id_, "Database": database}
                         for id_ in identifiers
                     ])
-                    for id_ in identifiers:
-                        results[id_] = annotations.get(database, {}).get(id_, "-")
-                else:
-                    data = [{"Id": identifier, "Database": "kegg.compound"}
-                            for identifier in identifiers]
-                    annotations = fetch_kegg_annotations(data)
-                    for identifier in identifiers:
-                        results[identifier] = annotations.get(database, {}).get(identifier, "-")
-            except ImportError as e:
-                logger.error("Error fetching data for database '%s': %s", database, e)
-                for id_ in identifiers:
-                    results[id_] = "-"
-
+                for identifier in identifiers:
+                    results[identifier] = annotations.get(database, {}).get(identifier, "-")
+            elif database == 'kegg.compound':
+                data = [{"Id": identifier, "Database": "kegg.compound"}
+                        for identifier in identifiers]
+                annotations = fetch_kegg_annotations(data)
+                for identifier in identifiers:
+                    results[identifier] = annotations.get(database, {}).get(identifier, "-")
+            else:
+                for identifier in identifiers:
+                    results[identifier] = "-"
         return results

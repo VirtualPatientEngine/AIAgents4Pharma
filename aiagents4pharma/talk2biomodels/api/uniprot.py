@@ -32,7 +32,4 @@ def search_uniprot_labels(identifiers: List[str]) -> Dict[str, str]:
             results[identifier] = protein_name
         except requests.exceptions.RequestException as e:
             results[identifier] = f"Error: {str(e)}"
-        except KeyError:
-            results[identifier] = "Error: Unexpected response structure"
-
     return results

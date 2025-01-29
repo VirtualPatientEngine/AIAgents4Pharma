@@ -38,25 +38,28 @@ def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
         query = "+".join(batch)
         entry_data = fetch_from_api(base_url, query)
 
-        if entry_data:
-            entries = entry_data.split("///")
-            for entry in entries:
-                if entry.strip():
-                    lines = entry.strip().split("\n")
-                    entry_line = next((line for line in lines
-                                       if line.startswith("ENTRY")), None)
-                    name_line = next((line for line in lines
-                                      if line.startswith("NAME")), None)
+        # if not entry_data:
+        #     continue
+        entries = entry_data.split("///")
+        for entry in entries:
+            if not entry.strip():
+                continue
+            lines = entry.strip().split("\n")
+            entry_line = next((line for line in lines
+                                if line.startswith("ENTRY")), None)
+            name_line = next((line for line in lines
+                                if line.startswith("NAME")), None)
 
-                    if entry_line and name_line:
-                        entry_id = entry_line.split()[1]
-                        # Split multiple names in the NAME field and clean them
-                        names = [
-                            re.sub(r'[^a-zA-Z0-9\s]', '', name).strip()
-                            for name in name_line.replace("NAME", "").strip().split(";")
-                        ]
-                        # Join cleaned names into a single string
-                        entry_name_map[entry_id] = " ".join(names)
+            # if not entry_line and not name_line:
+            #     continue
+            entry_id = entry_line.split()[1]
+            # Split multiple names in the NAME field and clean them
+            names = [
+                re.sub(r'[^a-zA-Z0-9\s]', '', name).strip()
+                for name in name_line.replace("NAME", "").strip().split(";")
+            ]
+            # Join cleaned names into a single string
+            entry_name_map[entry_id] = " ".join(names).strip()
 
     return entry_name_map
 
@@ -74,7 +77,7 @@ def fetch_kegg_annotations(data: List[Dict[str, str]],
 
     return results
 
-def get_protein_name_or_label(data: List[Dict[str, str]],
-                              batch_size: int = 10) -> Dict[str, Dict[str, str]]:
-    """Fetch descriptions for KEGG-related identifiers."""
-    return fetch_kegg_annotations(data, batch_size=batch_size)
+# def get_protein_name_or_label(data: List[Dict[str, str]],
+#                               batch_size: int = 10) -> Dict[str, Dict[str, str]]:
+#     """Fetch descriptions for KEGG-related identifiers."""
+#     return fetch_kegg_annotations(data, batch_size=batch_size)

@@ -26,11 +26,12 @@ def fetch_from_ols(term: str) -> str:
         )
         response.raise_for_status()
         data = response.json()
+        label = '-'
         # Extract and return the label
         if "_embedded" in data and "terms" in data["_embedded"] \
              and len(data["_embedded"]["terms"]) > 0:
-            return data["_embedded"]["terms"][0].get("label", "Label not found")
-        return "-"
+            label = data["_embedded"]["terms"][0].get("label", "Label not found")
+        return label
     except (requests.exceptions.RequestException, KeyError, IndexError) as e:
         return f"Error: {str(e)}"
 

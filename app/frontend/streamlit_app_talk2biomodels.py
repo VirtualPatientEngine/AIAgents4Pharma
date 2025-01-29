@@ -145,10 +145,30 @@ with main_col2:
                                     save_toggle=False)
                 st.empty()
             elif message["type"] == "dataframe":
-                streamlit_utils.render_table(message["content"],
-                                key=message["key"],
-                                # tool_name=message["tool_name"],
-                                save_table=False)
+                if 'tool_name' in message:
+                    if message['tool_name'] == 'get_annotation':
+                        df_selected = message["content"]
+                        st.dataframe(df_selected,
+                                        use_container_width=True,
+                                        key=message["key"],
+                                        hide_index=True,
+                                        column_config={
+                                            "Id": st.column_config.LinkColumn(
+                                                label="Id",
+                                                help="Click to open the link associated with the Id",
+                                                validate=r"^http://.*$",  # Ensure the link is valid
+                                                display_text=r"^http://identifiers\.org/(.*?)$"
+                                            ),
+                                            "Species Name": st.column_config.TextColumn("Species Name"),
+                                            "Description": st.column_config.TextColumn("Description"),
+                                            "Database": st.column_config.TextColumn("Database"),
+                                        }
+                                )
+                else:
+                    streamlit_utils.render_table(message["content"],
+                                    key=message["key"],
+                                    # tool_name=message["tool_name"],
+                                    save_table=False)
                 st.empty()
 
         # When the user asks a question
@@ -341,21 +361,36 @@ with main_col2:
                                 df_scanned_current_tool_call['name'].iloc[count],
                                 df_selected)
                         elif msg.name in ["get_annotation"]:
-                                df_simulated = pd.DataFrame.from_dict(current_state.values["dic_annotations_data"])
-
-                                df_simulated["Id"] = df_simulated.apply(
-                                        lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
-                                    )
-
-                                # Directly use the "Link" column for the "Id" column
-                                streamlit_utils.render_toggle(
+                            if not msg.artifact:
+                                continue
+                            # Convert the annotated data to a single dictionary
+                            # print ('-', len(current_state.values["dic_annotations_data"]))
+                            dic_annotations_data = {}
+                            for data in current_state.values["dic_annotations_data"]:
+                                # print (data)
+                                for key in data:
+                                    if key not in dic_annotations_data:
+                                        dic_annotations_data[key] = []
+                                    dic_annotations_data[key] += [data[key]]
+                            df_annotations_data = pd.DataFrame.from_dict(dic_annotations_data)
+                            # Get the annotated data for the current tool call
+                            df_selected = pd.DataFrame(
+                                    df_annotations_data[df_annotations_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
+                            # print (df_selected)
+                            df_selected["Id"] = df_selected.apply(
+                                    lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
+                                )
+                            df_selected = df_selected.drop(columns=["Link"])
+                            # Directly use the "Link" column for the "Id" column
+                            streamlit_utils.render_toggle(
                                 key="toggle_table_"+uniq_msg_id,
                                 toggle_text="Show Table",
-                                toggle_state=False,
+                                toggle_state=True,
                                 save_toggle=True)
-
-                                df_selected = st.data_editor(
-                                    df_simulated.drop(columns=["Link"]),
+                            st.dataframe(df_selected,
+                                    use_container_width=True,
+                                    key='dataframe_'+uniq_msg_id,
+                                    hide_index=True,
                                     column_config={
                                         "Id": st.column_config.LinkColumn(
                                             label="Id",
@@ -366,16 +401,15 @@ with main_col2:
                                         "Species Name": st.column_config.TextColumn("Species Name"),
                                         "Description": st.column_config.TextColumn("Description"),
                                         "Database": st.column_config.TextColumn("Database"),
-                                    },
-                                    hide_index=True,
-                                )
-
-                                streamlit_utils.render_table(
-                                df_selected,
-                                key="dataframe_"+uniq_msg_id,
-                                # tool_name=msg.name,
-                                # tool_call_id=msg.tool_call_id,
-                                save_table=True)
+                                    }
+                            )
+                            # Add data to the chat history
+                            st.session_state.messages.append({
+                                    "type": "dataframe",
+                                    "content": df_selected,
+                                    "key": "dataframe_"+uniq_msg_id,
+                                    "tool_name": msg.name
+                                })
 
                         # elif msg.name in ["ask_question"]:
                         #     # df_simulated = pd.DataFrame.from_dict(
