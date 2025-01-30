@@ -95,12 +95,7 @@ class GetAnnotationTool(BaseTool):
         # If empty, return a message
         if annotations_df.empty:
             logger.warning("The annotations dataframe is empty.")
-            return f'''The following species do not exist:
-                    {", ".join(species_not_found)}. The
-                    descriptions for the following species
-                    were not found:
-                    {", ".join(species_without_description)}.'''
-            # return "No annotations found for any of the species entered.", False
+            return prepare_content_msg(species_not_found, species_without_description)
 
         # Process annotations
         annotations_df = self._process_annotations(annotations_df)
@@ -180,6 +175,7 @@ class GetAnnotationTool(BaseTool):
 
         # Create a dataframe from the data list
         annotations_df = pd.DataFrame(data)
+        print (annotations_df)
 
         # Return the annotations dataframe and the species not found list
         return annotations_df, species_not_found, description_not_found
@@ -210,6 +206,7 @@ class GetAnnotationTool(BaseTool):
         # by qyerying the respective APIs
         identifiers = annotations_df[['Id', 'Database']].to_dict(orient='records')
         descriptions = self._fetch_descriptions(identifiers)
+        print(descriptions)
 
         # Add a new column for the description
         # Get the description from the descriptions dictionary
@@ -222,9 +219,11 @@ class GetAnnotationTool(BaseTool):
         annotations_df = annotations_df[
             ["Species Name", "Description", "Database", "Id", "Link", "Qualifier"]
         ]
+        print (annotations_df)
 
         # Process the link to format it correctly
         annotations_df["Link"] = annotations_df["Link"].apply(self._process_link)
+        print (annotations_df)
 
         # Return the processed annotations dataframe
         return annotations_df
@@ -266,10 +265,13 @@ class GetAnnotationTool(BaseTool):
 
         # In the following loop, we fetch the descriptions for the identifiers
         # based on the database type.
+        # Constants
+        ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr'}
+
         for database, identifiers in grouped_data.items():
             if database == 'uniprot':
                 results.update(search_uniprot_labels(identifiers))
-            elif database in {'pato', 'chebi', 'sbo', 'fma', 'pr'}:
+            elif database in ols_ontology_abbreviations:
                 annotations = search_ols_labels([
                         {"Id": id_, "Database": database}
                         for id_ in identifiers

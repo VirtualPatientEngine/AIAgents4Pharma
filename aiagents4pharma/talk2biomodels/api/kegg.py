@@ -17,10 +17,10 @@ def fetch_from_api(base_url: str, query: str) -> str:
 
 def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
     """
-    Fetch the names of multiple KEGG entries using the KEGG REST API.
+    Fetch the names of multiple KEGG entries using the KEGG REST API in batches.
 
     Args:
-        ids (List[str]): List of KEGG compound IDs.
+        ids (List[str]): List of KEGG IDs.
         batch_size (int): Maximum number of IDs to include in a single request.
 
     Returns:
