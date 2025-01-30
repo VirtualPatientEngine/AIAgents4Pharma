@@ -1,6 +1,7 @@
-# T2B sample use case #1
+# T2B example use case #1
 ## Human disease model with drug treatment assessment: Crohns IL6 Disease
 
+**Paper:**
 > Dwivedi G, Fitz L, Hegen M, Martin SW, Harrold J, Heatherington A, Li C. (2014). A multiscale model of interleukin-6-mediated immune regulation in Crohn's disease and its application in drug discovery and development. *CPT Pharmacometrics Syst Pharmacol*, 3(1):e89. doi: 10.1038/psp.2013.64. [PMID: 24402116](https://pubmed.ncbi.nlm.nih.gov/24402116/)
 
 **Model**: [BIOMD0000000537](https://www.ebi.ac.uk/biomodels/BIOMD0000000537)
@@ -104,34 +105,34 @@ TBD (editing and saving annotations - work in progress)
 
 ### Compare treatment regimens
 
-**Q8.** Re-simulate the model by administrating the drug trieatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
+**Q8.** Administrate the drug treatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
 ```Simulate the model again for 2016 hours with 2016 intervals. Set the initial concentration of `DoseQ2W` to 200 and `Dose` to 0. Mark this simulation as `Treatment 2wk`.```
 
 
-**Q9.** Compare the CRP values in the 2 cases. Treatment 2wk should reduce CRP over longer time than Treatment 4wk. <br>
+**Q9.** Compare the CRP values in the 2 cases. 'Treatment 2wk' should reduce CRP over longer time than 'Treatment 4wk'. <br>
 ```Based on the CRP values, which treatment would you recommend? `Treatment 4wk` or `Treatment 2wk`?```
 
 <hr>
 
-### Simulate the concentration of free drug in blood serum 
+### Simulate concentration of free drug in blood serum 
 
-**Q10.** Show that the dose 500 mg helps maintain free anti–IL-6Rα at high concentration (Reproduce Figure 4f, 500 mg dose).
+**Q10.** Show that the dose 500 mg helps maintain free anti–IL-6Rα at high concentration (Reproduce Figure 4f, 500mg dose). <br>
 ``` Simulate the model and set the initial concentration of Dose to 500 mg. Plot Ab in serum.```
 
 <hr>
 
-### Compare the effect on CRP suppression by simulating two different antibodies with varying dissociation affinities
+### Simulate two antibodies with varying dissociation affinities
 
-**Q11.** Plot the current curve of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. Dose is set to 500 mg. We expect 100% suppression of CRP after 12 weeks.
+**Q11.** Plot the current curve of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. Dose is set to 500 mg. We expect 100% suppression of CRP after 12 weeks. <br>
 ```Simulate the model and plot the curve of CRP % suppression. Save this simulation as `Antibody 2.5`.```
 
-**Q12.** Set the parameter `kIL6RUnbind` to 250 (initial model value is 2.5), decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % suppression. We expect ~10% suppression of CRP after 12 weeks.
+**Q12.** Set the parameter `kIL6RUnbind` to 250 (initial model value is 2.5), decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % suppression. We expect ~10% suppression of CRP after 12 weeks. <br>
 ```Set the parameter `kIL6RUnbind` to 250 and simulate the model  for 2016 hours with 2016 intervals and plot the curve of CRP % suppression. Save this simulation as `Antibody 250`.```
 
 
-**Q13.** Compare the two curves at 12 weeks. Which antibody `Antibody 250` or `Antibody 2.5` is better? The `Antibody 250` should have a higher CRP suppression after 12 weeks of treatment.
+**Q13.** Compare the two curves at 12 weeks. Which antibody `Antibody 250` or `Antibody 2.5` is better? The `Antibody 250` should have a higher CRP suppression after 12 weeks of treatment. <br>
 ```Which antibody ('Antibody 250' or 'Antibody 2.5') is better, in terms of CRP suppression after 12 weeks of treatment?```
 
-### Perform parameter scanning
-**Q14.** Perform parameter scanning to see how the CRP in serum change if the parameter `kIL6RUnbind` is varied from 2.5 to 250.
+### Parameter scanning
+**Q14.** Perform parameter scanning to see how the CRP in serum change if the parameter `kIL6RUnbind` is varied from 2.5 to 250. <br>
 ```How does the CRP in serum change if the parameter `kIL6RUnbind` is varied from 2.5 to 250?```	
