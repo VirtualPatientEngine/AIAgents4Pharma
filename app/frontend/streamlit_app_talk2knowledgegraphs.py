@@ -239,24 +239,20 @@ with main_col2:
 
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
+                    app.update_state(
+                        config,
+                        {"llm_model": st.session_state.llm_model,
+                         "uploaded_files": st.session_state.uploaded_files,
+                         "topk_nodes": st.session_state.topk_nodes,
+                         "topk_edges": st.session_state.topk_edges,
+                         "input_tkg": st.session_state.config["input_tkg"],
+                         "input_text_tkg": st.session_state.config["input_text_tkg"]}
+                    )
+
                     # Update the agent states
                     current_state = app.get_state(config)
-                    app.update_state(
-                        config,
-                        {"llm_model": st.session_state.llm_model}
-                    )
-                    app.update_state(
-                        config,
-                        {"uploaded_files": st.session_state.uploaded_files}
-                    )
-                    app.update_state(
-                        config,
-                        {"topk_nodes": st.session_state.topk_nodes}
-                    )
-                    app.update_state(
-                        config,
-                        {"topk_edges": st.session_state.topk_edges}
-                    )
+                    print(current_state.values["input_tkg"])
+                    print(current_state.values["input_text_tkg"])
                     # print (current_state.values)
                     # current_state = app.get_state(config)
                     # print ('updated state', current_state.values["documents_path"])

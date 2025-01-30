@@ -52,9 +52,18 @@ nav:
           - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
           - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
           - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+          - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
         - Enrichments:
           - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
           - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
+      - Agents:
+          - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
+      - States:
+          - Talk2KG State: talk2knowledgegraphs/states/state_talk2knowledgegraphs.md
+      - Tools:
+          - Subgraph Extraction: talk2knowledgegraphs/tools/subgraph_extraction.md
+          - Subgraph Summarization: talk2knowledgegraphs/tools/subgraph_summarization.md
+          - GraphRAG Reasoning: talk2knowledgegraphs/tools/graphrag_reasoning.md
 
   - Talk2Competitors:
       - Introduction: talk2competitors/intro.md

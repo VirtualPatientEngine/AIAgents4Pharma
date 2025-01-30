@@ -2,22 +2,16 @@
 Tool for performing Graph RAG reasoning.
 """
 
-import os
 import logging
-# import streamlit as st
 from typing import Type, Annotated
 from pydantic import BaseModel, Field
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-# from langchain_core.tools import tool
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import BaseTool
-from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.chains.history_aware_retriever import create_history_aware_retriever
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langgraph.prebuilt import InjectedState

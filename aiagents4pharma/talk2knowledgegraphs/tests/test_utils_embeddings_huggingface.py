@@ -31,7 +31,6 @@ def test_embedding_with_huggingface_embed_query(embedding_model):
     # Check the result
     assert len(result) == 768
 
-
 def test_embedding_with_huggingface_failed():
     """Test embedding documents using the EmbeddingWithHuggingFace class."""
     # Check if the model is available on HuggingFace Hub
