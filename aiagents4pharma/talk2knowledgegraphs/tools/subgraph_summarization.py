@@ -56,12 +56,12 @@ class SubgraphSummarizationTool(BaseTool):
         """
         # Load hydra configuration
         logger.log(logging.INFO, "Loading Hydra configuration for subgraph summarization")
-        with hydra.initialize(version_base=None, config_path="../../configs"):
+        with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(
                 config_name='config',
-                overrides=['talk2knowledgegraphs/agents/t2kg_agent=default']
+                overrides=['tools/subgraph_summarization=default']
             )
-            cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
+            cfg = cfg.tools.subgraph_summarization
 
         # Load the textualized subgraph
         logger.log(logging.INFO, "Loading the most recent extracted subgraph")

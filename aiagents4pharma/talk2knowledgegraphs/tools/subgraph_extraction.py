@@ -57,79 +57,79 @@ class SubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = SubgraphExtractionInput
 
-    # def perform_endotype_filtering(self,
-    #                                prompt: str,
-    #                                uploaded_files: list,
-    #                                model_name: str,
-    #                                cfg: hydra.core.config_store.ConfigStore) -> str:
-    #     """
-    #     Perform endotype filtering based on the uploaded files and prepare the prompt.
+    def perform_endotype_filtering(self,
+                                   prompt: str,
+                                   uploaded_files: list,
+                                   model_name: str,
+                                   cfg: hydra.core.config_store.ConfigStore) -> str:
+        """
+        Perform endotype filtering based on the uploaded files and prepare the prompt.
 
-    #     Args:
-    #         prompt: The prompt to interact with the backend.
-    #         uploaded_files: List of files uploaded during the chat session.
-    #         model_name: The model name to be used for the chat.
-    #         cfg: Hydra configuration object.
-    #     """
-    #     # Prepare embeddings and LLM based on the model name
-    #     if model_name in cfg.openai_llms:
-    #         embeddings = OpenAIEmbeddings(model=cfg.openai_embeddings[0],
-    #                                     api_key=cfg.openai_api_key)
-    #         llm = ChatOpenAI(model=model_name,
-    #                         api_key=cfg.openai_api_key,
-    #                         temperature=cfg.temperature,
-    #                         streaming=cfg.streaming)
-    #     else:
-    #         embeddings = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
-    #         llm = ChatOllama(model=model_name,
-    #                         temperature=cfg.temperature,
-    #                         streaming=cfg.streaming)
+        Args:
+            prompt: The prompt to interact with the backend.
+            uploaded_files: List of files uploaded during the chat session.
+            model_name: The model name to be used for the chat.
+            cfg: Hydra configuration object.
+        """
+        # Prepare embeddings and LLM based on the model name
+        if model_name in cfg.openai_llms:
+            embeddings = OpenAIEmbeddings(model=cfg.openai_embeddings[0],
+                                        api_key=cfg.openai_api_key)
+            llm = ChatOpenAI(model=model_name,
+                            api_key=cfg.openai_api_key,
+                            temperature=cfg.temperature,
+                            streaming=cfg.streaming)
+        else:
+            embeddings = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+            llm = ChatOllama(model=model_name,
+                            temperature=cfg.temperature,
+                            streaming=cfg.streaming)
 
-    #     all_genes = []
-    #     for uploaded_file in uploaded_files:
-    #         if uploaded_file["file_type"] == "endotype":
-    #             # Load the PDF file
-    #             docs = PyPDFLoader(file_path=uploaded_file['file_path']).load()
+        all_genes = []
+        for uploaded_file in uploaded_files:
+            if uploaded_file["file_type"] == "endotype":
+                # Load the PDF file
+                docs = PyPDFLoader(file_path=uploaded_file['file_path']).load()
 
-    #             # Split the text into chunks
-    #             text_splitter = RecursiveCharacterTextSplitter(
-    #                 chunk_size=cfg.splitter_chunk_size,
-    #                 chunk_overlap=cfg.splitter_chunk_overlap
-    #             )
-    #             splits = text_splitter.split_documents(docs)
+                # Split the text into chunks
+                text_splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=cfg.splitter_chunk_size,
+                    chunk_overlap=cfg.splitter_chunk_overlap
+                )
+                splits = text_splitter.split_documents(docs)
 
-    #             # Prepare the vector store
-    #             vectorstore = InMemoryVectorStore.from_documents(
-    #                 documents=splits, embedding=embeddings
-    #             )
+                # Prepare the vector store
+                vectorstore = InMemoryVectorStore.from_documents(
+                    documents=splits, embedding=embeddings
+                )
 
-    #             # Create a chat prompt template
-    #             prompt_template = ChatPromptTemplate.from_messages(
-    #                 [
-    #                     ("system", cfg.prompt_endotype_filtering),
-    #                     ("human", "{input}"),
-    #                 ]
-    #             )
+                # Create a chat prompt template
+                prompt_template = ChatPromptTemplate.from_messages(
+                    [
+                        ("system", cfg.prompt_endotype_filtering),
+                        ("human", "{input}"),
+                    ]
+                )
 
-    #             question_answer_chain = create_stuff_documents_chain(llm, prompt_template)
-    #             rag_chain = create_retrieval_chain(vectorstore.as_retriever(
-    #                 search_type=cfg.retriever_search_type,
-    #                 search_kwargs={
-    #                     'k': cfg.retriever_k,
-    #                     'fetch_k': cfg.retriever_fetch_k,
-    #                     'lambda_mult': cfg.retriever_lambda_mult
-    #                 }),
-    #                 question_answer_chain)
-    #             results = rag_chain.invoke(
-    #                 {"input": prompt}
-    #             )
-    #             all_genes.append(results["answer"])
+                qa_chain = create_stuff_documents_chain(llm, prompt_template)
+                rag_chain = create_retrieval_chain(vectorstore.as_retriever(
+                    search_type=cfg.retriever_search_type,
+                    search_kwargs={
+                        'k': cfg.retriever_k,
+                        'fetch_k': cfg.retriever_fetch_k,
+                        'lambda_mult': cfg.retriever_lambda_mult
+                    }),
+                    qa_chain)
+                results = rag_chain.invoke(
+                    {"input": prompt}
+                )
+                all_genes.append(results["answer"])
 
-    #     # Prepare the prompt
-    #     if len(all_genes) > 0:
-    #         prompt = " ".join([prompt, cfg.prompt_endotype_addition, ", ".join(all_genes)])
+        # Prepare the prompt
+        if len(all_genes) > 0:
+            prompt = " ".join([prompt, cfg.prompt_endotype_addition, ", ".join(all_genes)])
 
-    #     return prompt
+        return prompt
 
     def _run(self,
              tool_call_id: Annotated[str, InjectedToolCallId],
@@ -152,10 +152,10 @@ class SubgraphExtractionTool(BaseTool):
         """
         # Load hydra configuration
         logger.log(logging.INFO, "Loading Hydra configuration for subgraph extraction")
-        with hydra.initialize(version_base=None, config_path="../../configs"):
+        with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
-            cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
+                                overrides=['tools/subgraph_extraction=default'])
+            cfg = cfg.tools.subgraph_extraction
 
         # Load the knowledge graph
         logger.log(logging.INFO, "Loading the knowledge graph (PyG Graph)")
@@ -166,12 +166,13 @@ class SubgraphExtractionTool(BaseTool):
             textualized_graph = pickle.load(f)
 
         # Prepare prompt construction along with a list of endotypes
-        # if len(state["uploaded_files"]) != 0:
-        #     logger.log(logging.INFO, "Prepare prompt construction along with a list of endotypes")
-        #     prompt = self.perform_endotype_filtering(prompt,
-        #                                              state["uploaded_files"],
-        #                                              state["llm_model"],
-        #                                              cfg)
+        if len(state["uploaded_files"]) != 0 \
+            and "endotype" in [f["file_type"] for f in state["uploaded_files"]]:
+            logger.log(logging.INFO, "Preparing prompt construction along with a list of endotypes")
+            prompt = self.perform_endotype_filtering(prompt,
+                                                     state["uploaded_files"],
+                                                     state["llm_model"],
+                                                     cfg)
 
         # Prepare embedding model and embed the user prompt as query
         logger.log(logging.INFO, "Preparing embedding model and embed the user prompt as query")

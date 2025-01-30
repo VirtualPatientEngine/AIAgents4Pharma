@@ -31,21 +31,21 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
         response = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
 
         # Preview the state
-        logger.log(logging.INFO, "Previewing the state")
-        state = app.get_state({"configurable": {"thread_id": uniq_id}})
-        logger.log(logging.INFO, state.values["llm_model"])
-        logger.log(logging.INFO, state.values["uploaded_files"])
-        logger.log(logging.INFO, state.values["topk_nodes"])
-        logger.log(logging.INFO, state.values["topk_edges"])
+        # logger.log(logging.INFO, "Previewing the state")
+        # state = app.get_state({"configurable": {"thread_id": uniq_id}})
+        # logger.log(logging.INFO, state.values["llm_model"])
+        # logger.log(logging.INFO, state.values["uploaded_files"])
+        # logger.log(logging.INFO, state.values["topk_nodes"])
+        # logger.log(logging.INFO, state.values["topk_edges"])
 
         return response
 
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2KnowledgeGraphs agent.")
-    with hydra.initialize(version_base=None, config_path="../../configs"):
+    with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(config_name='config',
-                            overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
-        cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
+                            overrides=['agents/t2kg_agent=default'])
+        cfg = cfg.agents.t2kg_agent
 
     # Define the tools
     subgraph_extraction = SubgraphExtractionTool()

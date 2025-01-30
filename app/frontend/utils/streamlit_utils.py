@@ -6,6 +6,7 @@ Utils for Streamlit.
 
 import os
 import datetime
+import hydra
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -287,7 +288,7 @@ def get_file_type_icon(file_type: str) -> str:
     }.get(file_type)
 
 @st.fragment
-def get_uploaded_files(cfg) -> None:
+def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     """
     Upload files to a directory set in cfg.upload_data_dir, and display them in the UI.
 

@@ -57,10 +57,10 @@ class GraphRAGReasoningTool(BaseTool):
         """
         # Load Hydra configuration
         logger.log(logging.INFO, "Loading Hydra configuration for graphrag reasoning")
-        with hydra.initialize(version_base=None, config_path="../../configs"):
+        with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
-            cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
+                                overrides=['tools/graphrag_reasoning=default'])
+            cfg = cfg.tools.graphrag_reasoning
 
         # Prepare embeddings and LLM based on the model name
         logger.log(logging.INFO, "Preparing embeddings and LLM")
@@ -92,23 +92,11 @@ class GraphRAGReasoningTool(BaseTool):
                     # Add documents to the list
                     all_docs.extend(documents)
 
-        # Set prompt template
-        # logger.log(logging.INFO, "Preparing contextualized que prompt")
-        # contextualize_q_prompt = ChatPromptTemplate.from_messages(
-        #     [
-        #         ("system", cfg.prompt_graphrag_w_docs_context),
-        #         MessagesPlaceholder("chat_history"),
-        #         ("human", "{input}"),
-        #         ("placeholder", "{agent_scratchpad}"),
-        #     ]
-        # )
-
         # Set another prompt template
         logger.log(logging.INFO, "Preparing prompt template")
         prompt_template = ChatPromptTemplate.from_messages(
             [
                 ("system", cfg.prompt_graphrag_w_docs),
-                # MessagesPlaceholder("chat_history"),
                 ("human", "{input}")
             ]
         )

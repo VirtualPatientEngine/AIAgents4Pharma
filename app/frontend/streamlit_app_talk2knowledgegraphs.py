@@ -30,10 +30,11 @@ st.set_page_config(page_title="Talk2KnowledgeGraphs",
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
     # Load Hydra configuration
-    with hydra.initialize(version_base=None, config_path="../../aiagents4pharma/configs"):
+    with hydra.initialize(version_base=None,
+                          config_path="../../aiagents4pharma/talk2knowledgegraphs/configs"):
         cfg = hydra.compose(config_name='config',
-                            overrides=['talk2knowledgegraphs/agents/t2kg_agent=default'])
-        cfg = cfg.talk2knowledgegraphs.agents.t2kg_agent
+                            overrides=['app/frontend=default'])
+        cfg = cfg.app.frontend
         st.session_state.config = cfg
 else:
     cfg = st.session_state.config
@@ -288,12 +289,12 @@ with main_col2:
 
                     # Get the current state of the graph
                     current_state = app.get_state(config)
-                    print(current_state.values["messages"])
+                    # print(current_state.values["messages"])
 
                     # # Get the messages from the current state
                     # # and reverse the order
                     reversed_messages = current_state.values["messages"][::-1]
-                    print(reversed_messages)
+                    # print(reversed_messages)
 
                     # Loop through the reversed messages until a
                     # HumanMessage is found i.e. the last message
@@ -315,7 +316,7 @@ with main_col2:
                         # Work on the message if it is a ToolMessage
                         # These may contain additional visuals that
                         # need to be displayed to the user.
-                        print("ToolMessage", msg)
+                        # print("ToolMessage", msg)
                         # Skip the Tool message if it is an error message
                         if msg.status == "error":
                             continue
