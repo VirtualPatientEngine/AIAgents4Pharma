@@ -82,6 +82,9 @@ deactivated. <br>
 
 <hr> 
 
+### Interrogate model annotations
+TBD (editing and saving annotations - work in progress)
+
 ### Model simulation and plotting
 
 **Q5.** Simulate the model for 12 weeks (= 2016 hours), and give it a name. The current dose is set to 200 mg. <br>
@@ -127,5 +130,8 @@ deactivated. <br>
 
 
 **Q13.** Compare the two curves at 12 weeks. Which antibody `Antibody 250` or `Antibody 2.5` is better? The `Antibody 250` should have a higher CRP suppression after 12 weeks of treatment.
-```Which antibody affinity is better, in terms of CRP suppression after 12 weeks of treatment?```
+```Which antibody ('Antibody 250' or 'Antibody 2.5') is better, in terms of CRP suppression after 12 weeks of treatment?```
 
+### Perform parameter scanning
+**Q14.** Perform parameter scanning to see how the CRP in serum change if the parameter `kIL6RUnbind` is varied from 2.5 to 250.
+```How does the CRP in serum change if the parameter `kIL6RUnbind` is varied from 2.5 to 250?```	

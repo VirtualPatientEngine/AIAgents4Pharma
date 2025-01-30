@@ -23,26 +23,20 @@
 
 ### Model simulation
 
-**Q3** Ask when does the model reach steady state
-``` When does the model reach steady state? ```
-
-**Q4** What is the concentration of Mpp (the readout of the system) at steady state?
-``` What is the concentration of Mpp at steady state? ```
-
-**Q5** Simulate the model
-``` Simulate this model for 1000 seconds ``
-
+**Q4** What is the concentration of Mpp (output of the system) at steady state?
+``` What is the concentration of Mpp at a steady state and what is the transition time until steady state is reached? ```
 
 <hr>
 
 ### Emergent model behavior (hysteresis)
 
 **Q6** Observe the steady state concentration of Mpp if the Mpp is in "ON" state.
-``` Set initial concentration of MAPKK to 50, Mpp to 350 and M to 150.Observe the steady state concentration of Mpp.```
+``` Set initial concentration of MAPKK to 50, Mpp to 350 and M to 150. Observe the steady state concentration of Mpp.```
 
 
 **Q7** Observe the steady state concentration of Mpp if the Mpp is in "OFF" state.
-``` Set initial concentration of MAPKK to 50, Mpp to 150 and M to 350.Observe the steady state concentration of Mpp.```
+``` Set initial concentration of MAPKK to 50, Mpp to 150 and M to 350. Observe the steady state concentration of Mpp.```
 
-**Q7** Analyze why these values are different and what does this mean.
-``` Why are the previous two steady state values of Mpp different? What does this mean? ```
+**Q8** (Scan initial concentrations of MAPKK- work in progress...) 
+``` Scan the initial concentration of MAPKK from 0 to 100 with 10 intervals.```
+
