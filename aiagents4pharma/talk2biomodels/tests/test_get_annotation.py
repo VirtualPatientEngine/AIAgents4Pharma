@@ -61,6 +61,7 @@ def test_species_list(make_graph):
                 break
     # assert test_condition
     assert test_condition, "Expected rejection message for NADH but did not find it."
+
     # Test with an invalid species name and a valid species name
     app, config = make_graph
     prompt = "Extract annotations of species NADH, NAD, and IL7 in model 64."
@@ -73,13 +74,12 @@ def test_species_list(make_graph):
     reversed_messages = current_state.values["messages"][::-1]
     # Loop through the reversed messages until a
     # ToolMessage is found.
-
     artifact_was_none = False
     for msg in reversed_messages:
         # Assert that the one of the messages is a ToolMessage
         # and its artifact is None.
         if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
-            print (msg.artifact, msg.content)
+            # print (msg.artifact, msg.content)
 
             if msg.artifact is True and 'IL7' in msg.content:
                 artifact_was_none = True
@@ -106,12 +106,27 @@ def test_all_species(make_graph):
         assistant_msg = response["messages"][-1].content
 
         current_state = app.get_state(config)
-        dic_annotations_data = current_state.values["dic_annotations_data"]
 
-        assert isinstance(dic_annotations_data, list),\
-            f"Expected a list for model {model_id}, got {type(dic_annotations_data)}"
-        assert len(dic_annotations_data) > 0,\
-            f"Expected species data for model {model_id}, but got empty list"
+    reversed_messages = current_state.values["messages"][::-1]
+
+    # Covered all the use case for the expecetd sting on all the species
+    test_condition = False
+    for msg in reversed_messages:
+        if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
+            print("ToolMessage Content:", msg.content)  # Debugging output
+            if msg.artifact is None and ('ORI' in msg.content or
+                                         "Successfully extracted annotations for the species"
+                                         in msg.content or "Error" in msg.content):
+                test_condition = True
+                break
+
+    dic_annotations_data = current_state.values["dic_annotations_data"]
+
+    assert isinstance(dic_annotations_data, list),\
+        f"Expected a list for model {model_id}, got {type(dic_annotations_data)}"
+    assert len(dic_annotations_data) > 0,\
+        f"Expected species data for model {model_id}, but got empty list"
+    assert test_condition # Expected output is validated
 
     # Test case where no model is specified
     app, config = make_graph

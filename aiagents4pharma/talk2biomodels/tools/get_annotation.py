@@ -175,7 +175,6 @@ class GetAnnotationTool(BaseTool):
 
         # Create a dataframe from the data list
         annotations_df = pd.DataFrame(data)
-        print (annotations_df)
 
         # Return the annotations dataframe and the species not found list
         return annotations_df, species_not_found, description_not_found
@@ -206,7 +205,6 @@ class GetAnnotationTool(BaseTool):
         # by qyerying the respective APIs
         identifiers = annotations_df[['Id', 'Database']].to_dict(orient='records')
         descriptions = self._fetch_descriptions(identifiers)
-        print(descriptions)
 
         # Add a new column for the description
         # Get the description from the descriptions dictionary
@@ -219,11 +217,9 @@ class GetAnnotationTool(BaseTool):
         annotations_df = annotations_df[
             ["Species Name", "Description", "Database", "Id", "Link", "Qualifier"]
         ]
-        print (annotations_df)
 
         # Process the link to format it correctly
         annotations_df["Link"] = annotations_df["Link"].apply(self._process_link)
-        print (annotations_df)
 
         # Return the processed annotations dataframe
         return annotations_df
