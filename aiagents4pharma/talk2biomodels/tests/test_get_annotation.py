@@ -121,13 +121,13 @@ def test_prepare_content_msg():
     for species_not_found, species_without_description, expected_message in test_cases:
         # Iterates through the test cases, calling `prepare_content_msg` with the
         # species lists and comparing the generated message to the expected message.
-        actual_message = prepare_content_msg(species_not_found, species_without_description)
+        tool_message = prepare_content_msg(species_not_found, species_without_description)
         # The core assertion: checks if the expected message is a substring of the actual message.
         # .strip() is used on the actual message to remove any leading/trailing whitespace,
         # making the test more robust to minor formatting variations in the function's output.
-    assert expected_message in actual_message.strip(), f"not_found: {species_not_found},\
+    assert expected_message in tool_message.strip(), f"not_found: {species_not_found},\
         without_desc: {species_without_description},\
-        expected: '{expected_message}', got: '{actual_message}'"
+        expected: '{expected_message}', got: '{tool_message}'"
 
 def test_all_species(make_graph):
     '''
