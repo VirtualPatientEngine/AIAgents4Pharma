@@ -20,8 +20,8 @@ def test_fetch_from_ols():
     '''
     Test the fetch_from_ols function.
     '''
-    term_1 = "GO:0005886" #Negative result
-    term_2 = "GO:ABC123" #Positive result
+    term_1 = "GO:0005886" #Positive result
+    term_2 = "GO:ABC123" #Negative result
     label_1 = fetch_from_ols(term_1)
     label_2 = fetch_from_ols(term_2)
     assert isinstance(label_1, str), f"Expected string, got {type(label_1)}"

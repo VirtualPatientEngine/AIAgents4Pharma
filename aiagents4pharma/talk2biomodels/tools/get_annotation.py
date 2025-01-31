@@ -4,7 +4,6 @@
 This module contains the `GetAnnotationTool` for fetching species annotations 
 based on the provided model and species names.
 """
-
 import math
 from typing import List, Annotated, Type
 import logging
@@ -24,6 +23,8 @@ from ..api.kegg import fetch_kegg_annotations
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr'}
 
 def prepare_content_msg(species_not_found: List[str],
                         species_without_description: List[str]):
@@ -262,7 +263,6 @@ class GetAnnotationTool(BaseTool):
         # In the following loop, we fetch the descriptions for the identifiers
         # based on the database type.
         # Constants
-        ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr'}
 
         for database, identifiers in grouped_data.items():
             if database == 'uniprot':

@@ -5,6 +5,7 @@ import random
 import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
 from ..agents.t2b_agent import get_app
+from ..tools.get_annotation import prepare_content_msg
 
 @pytest.fixture(name="make_graph")
 def make_graph_fixture():
@@ -86,6 +87,48 @@ def test_species_list(make_graph):
                 break
     assert artifact_was_none
 
+def test_prepare_content_msg():
+    '''
+     Testing the tool by expected messages
+    '''
+    test_cases = [
+        (
+            ["NADH"],
+            [],
+            """Successfully extracted annotations for the species.
+                        The following species do not exist, and
+                        hence their annotations were not extracted:
+                        NADH."""
+        ),
+        (
+            [],# Species not found
+            ["H2O"],# Species without description
+            """The descriptions for the following species
+                        were not found:
+                        H2O."""
+        ),
+        (
+            ["NADH", "NAD+"],
+            ["H2O", "ATP"],
+            """The following species do not exist, and
+                        hence their annotations were not extracted:
+                        NADH, NAD+.The descriptions for the following species
+                        were not found:
+                        H2O, ATP."""
+        ),
+    ]
+
+    for species_not_found, species_without_description, expected_message in test_cases:
+        # Iterates through the test cases, calling `prepare_content_msg` with the
+        # species lists and comparing the generated message to the expected message.
+        actual_message = prepare_content_msg(species_not_found, species_without_description)
+        # The core assertion: checks if the expected message is a substring of the actual message.
+        # .strip() is used on the actual message to remove any leading/trailing whitespace,
+        # making the test more robust to minor formatting variations in the function's output.
+    assert expected_message in actual_message.strip(), f"not_found: {species_not_found},\
+        without_desc: {species_without_description},\
+        expected: '{expected_message}', got: '{actual_message}'"
+
 def test_all_species(make_graph):
     '''
     Test the tool by asking for annotations of all species is specific models.
@@ -103,13 +146,13 @@ def test_all_species(make_graph):
                             {"messages": [HumanMessage(content=prompt)]},
                             config=config
                         )
+        print(response["messages"])
         assistant_msg = response["messages"][-1].content
 
         current_state = app.get_state(config)
 
     reversed_messages = current_state.values["messages"][::-1]
-
-    # Covered all the use case for the expecetd sting on all the species
+    # Coveres all of the use cases for the expecetd sting on all the species
     test_condition = False
     for msg in reversed_messages:
         if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
