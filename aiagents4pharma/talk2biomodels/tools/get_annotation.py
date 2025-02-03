@@ -24,7 +24,7 @@ from ..api.kegg import fetch_kegg_annotations
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr'}
+ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr','go'}
 
 def prepare_content_msg(species_not_found: List[str],
                         species_without_description: List[str]):
@@ -86,8 +86,13 @@ class GetAnnotationTool(BaseTool):
         # Extract all the species names from the model
         df_species = basico.model_info.get_species(model=model_object.copasi_model)
 
+        if df_species is None:
+            # for example this may happen with model 20
+           raise ValueError("Unable to extract species from the model.")#  
         # Fetch annotations for the species names
         list_species_names = list_species_names or df_species.index.tolist()
+
+        
         (annotations_df,
          species_not_found,
          species_without_description) = self._fetch_annotations(list_species_names)
@@ -229,7 +234,7 @@ class GetAnnotationTool(BaseTool):
         """
         Process link to format it correctly.
         """
-        substrings = ["chebi/", "pato/", "pr/", "fma/", "sbo/"]
+        substrings = ["chebi/", "pato/", "pr/", "fma/", "sbo/", "go/"]
         for substring in substrings:
             if substring in link:
                 link = link.replace(substring, "")
