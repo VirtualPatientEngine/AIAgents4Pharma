@@ -234,10 +234,9 @@ class GetAnnotationTool(BaseTool):
         """
         Process link to format it correctly.
         """
-        substrings = ["chebi/", "pato/", "pr/", "fma/", "sbo/", "go/"]
-        for substring in substrings:
-            if substring in link:
-                link = link.replace(substring, "")
+        for ols_ontology_abbreviation in ols_ontology_abbreviations:
+            if ols_ontology_abbreviation +'/' in link:
+                link = link.replace(f"{ols_ontology_abbreviation}/", "")
         if "kegg.compound" in link:
             link = link.replace("kegg.compound/", "kegg.compound:")
         return link
