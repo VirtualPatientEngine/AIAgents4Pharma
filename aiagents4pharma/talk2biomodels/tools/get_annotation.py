@@ -88,11 +88,10 @@ class GetAnnotationTool(BaseTool):
 
         if df_species is None:
             # for example this may happen with model 20
-           raise ValueError("Unable to extract species from the model.")#  
+            raise ValueError("Unable to extract species from the model.")
         # Fetch annotations for the species names
         list_species_names = list_species_names or df_species.index.tolist()
 
-        
         (annotations_df,
          species_not_found,
          species_without_description) = self._fetch_annotations(list_species_names)
