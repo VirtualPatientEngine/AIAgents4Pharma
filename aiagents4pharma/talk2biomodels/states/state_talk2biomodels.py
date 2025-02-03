@@ -22,4 +22,5 @@ class Talk2Biomodels(AgentState):
     sbml_file_path: Annotated[list, operator.add]
     dic_simulated_data: Annotated[list[dict], operator.add]
     dic_scanned_data: Annotated[list[dict], operator.add]
+    dic_steady_state_data: Annotated[list[dict], operator.add]
     dic_annotations_data : Annotated[list[dict], operator.add]

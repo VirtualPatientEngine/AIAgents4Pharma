@@ -295,13 +295,13 @@ with main_col2:
                                 df_simulated = pd.DataFrame(
                                     df_simulated_data[df_simulated_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
                                 df_selected = df_simulated
-                            else:
+                            elif msg.name == "custom_plotter":
                                 if msg.artifact:
                                     df_selected = pd.DataFrame.from_dict(msg.artifact)
                                     # print (df_selected)
                                 else:
                                     continue
-                            # Display the toggle button to suppress the plot
+                            # Display the toggle button to suppress the table
                             streamlit_utils.render_toggle(
                                 key="toggle_plotly_"+uniq_msg_id,
                                 toggle_text="Show Plot",

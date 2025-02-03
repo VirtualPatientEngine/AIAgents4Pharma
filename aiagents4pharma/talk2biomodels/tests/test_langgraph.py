@@ -98,7 +98,7 @@ def test_simulate_model_tool():
     # Upload a model to the state
     app.update_state(config,
         {"sbml_file_path": ["aiagents4pharma/talk2biomodels/tests/BIOMD0000000449_url.xml"]})
-    prompt = "Simulate models 64 and the uploaded model"
+    prompt = "Simulate model 64 and the uploaded model"
     # Invoke the agent
     app.invoke(
         {"messages": [HumanMessage(content=prompt)]},
@@ -145,10 +145,9 @@ def test_param_scan_tool():
     app.update_state(config, {"llm_model": "gpt-4o-mini"})
     prompt = """How will the value of Ab in model 537 change
             if the param kIL6Rbind is varied from 1 to 100 in steps of 10?
-            Set the initial `DoseQ2W` concentration to 300.
-            Reset the IL6{serum} concentration to 100 every 500 hours.
-            Assume that the model is simulated for 2016 hours with
-            an interval of 2016."""
+            Set the initial `DoseQ2W` concentration to 300. Also, reset
+            the IL6{serum} concentration to 100 every 500 hours and assume
+            that the model is simulated for 2016 hours with an interval of 2016."""
     # Invoke the agent
     app.invoke(
         {"messages": [HumanMessage(content=prompt)]},
@@ -181,11 +180,95 @@ def test_param_scan_tool():
     assert any((df["status"] == "success") &
                (df["name"] == "get_modelinfo"))
 
+def test_steady_state_tool():
+    '''
+    Test the steady_state tool.
+    '''
+    unique_id = 123
+    app = get_app(unique_id)
+    config = {"configurable": {"thread_id": unique_id}}
+    app.update_state(config, {"llm_model": "gpt-4o-mini"})
+    #########################################################
+    # In this case, we will test if the tool returns an error
+    # when the model does not achieve a steady state. The tool
+    # status should be "error".
+    prompt = """Run a steady state analysis of model 537."""
+    # Invoke the agent
+    app.invoke(
+        {"messages": [HumanMessage(content=prompt)]},
+        config=config
+    )
+    current_state = app.get_state(config)
+    reversed_messages = current_state.values["messages"][::-1]
+    tool_msg_status = None
+    for msg in reversed_messages:
+        # Assert that the status of the
+        # ToolMessage is "error"
+        if isinstance(msg, ToolMessage):
+            # print (msg)
+            tool_msg_status = msg.status
+            break
+    assert tool_msg_status == "error"
+    #########################################################
+    # In this case, we will test if the tool is indeed invoked
+    # successfully
+    prompt = """Run a steady state analysis of model 64.
+    Set the initial concentration of `Pyruvate` to 0.2. The
+    concentration of `NAD` resets to 100 every 2 time units."""
+    # Invoke the agent
+    app.invoke(
+        {"messages": [HumanMessage(content=prompt)]},
+        config=config
+    )
+    # Loop through the reversed messages until a
+    # ToolMessage is found.
+    current_state = app.get_state(config)
+    reversed_messages = current_state.values["messages"][::-1]
+    steady_state_invoked = False
+    for msg in reversed_messages:
+        # Assert that the message is a ToolMessage
+        # and its status is "error"
+        if isinstance(msg, ToolMessage):
+            print (msg)
+            if msg.name == "steady_state" and msg.status != "error":
+                steady_state_invoked = True
+                break
+    assert steady_state_invoked
+    #########################################################
+    # In this case, we will test if the `ask_question` tool is
+    # invoked upon asking a question about the already generated
+    # steady state results
+    prompt = """What is the Phosphoenolpyruvate concentration
+        at the steady state? Show onlyconcentration, rounded to
+        2 decimal places. For example, if the concentration is
+        0.123456, your response should be `0.12`. Do not return
+        any other information."""
+    # Invoke the agent
+    response = app.invoke(
+        {"messages": [HumanMessage(content=prompt)]},
+        config=config
+    )
+    assistant_msg = response["messages"][-1].content
+    current_state = app.get_state(config)
+    reversed_messages = current_state.values["messages"][::-1]
+    # Loop through the reversed messages until a
+    # ToolMessage is found.
+    ask_questool_invoked = False
+    for msg in reversed_messages:
+        # Assert that the message is a ToolMessage
+        # and its status is "error"
+        if isinstance(msg, ToolMessage):
+            if msg.name == "ask_question":
+                ask_questool_invoked = True
+                break
+    assert ask_questool_invoked
+    assert "0.06" in assistant_msg
+
 def test_integration():
     '''
     Test the integration of the tools.
     '''
-    unique_id = 123
+    unique_id = 1234567
     app = get_app(unique_id)
     config = {"configurable": {"thread_id": unique_id}}
     app.update_state(config, {"llm_model": "gpt-4o-mini"})
@@ -211,10 +294,8 @@ def test_integration():
     ##########################################
     # Update state
     app.update_state(config, {"llm_model": "gpt-4o-mini"})
-    prompt = "What is the concentration of CRP in serum at 1000 hours? "
-    # prompt += "Show only the concentration, rounded to 1 decimal place."
-    # prompt += "For example, if the concentration is 0.123456, "
-    # prompt += "your response should be `0.1`. Do not return any other information."
+    prompt = """What is the concentration of CRP
+            in serum after 1000 time points?"""
     # Test the tool get_modelinfo
     response = app.invoke(
                         {"messages": [HumanMessage(content=prompt)]},
@@ -271,8 +352,9 @@ def test_integration():
     # simulation results are available but
     # the species is not available
     ##########################################
-    prompt = "Plot the species `TP53`."
-
+    prompt = """Make a custom plot showing the
+        concentration of the species `TP53` over
+        time. Do not show any other species."""
     # Update state
     app.update_state(config, {"llm_model": "gpt-4o-mini"}
                     )
