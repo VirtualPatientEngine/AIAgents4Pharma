@@ -93,7 +93,7 @@ class ArgumentData:
         description="List of concentration and time data of species that"
         " reoccur. For example, a species whose concentration resets"
         " to a certain value after a certain time interval.",
-        default=None)    
+        default=None)
 
 def add_rec_events(model_object, reocurring_data):
     """
