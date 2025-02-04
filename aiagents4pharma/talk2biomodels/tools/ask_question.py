@@ -94,16 +94,18 @@ class AskQuestionTool(BaseTool):
             df_data[df_data['name'] == experiment_name]['data'].iloc[0]
         )
         logger.log(logging.INFO, "Shape of the dataframe: %s", df.shape)
-        # Extract the model units
-        model_units = basico.model_info.get_model_units()
+        # # Extract the model units
+        # model_units = basico.model_info.get_model_units()
         # Update the prompt content with the model units
-        prompt_content += f"Following are the model units: {model_units}\n\n"
+        prompt_content += "Following are the model units:\n"
+        prompt_content += f"{basico.model_info.get_model_units()}\n\n"
         # Create a pandas dataframe agent
         df_agent = create_pandas_dataframe_agent(
                         ChatOpenAI(model=state['llm_model']),
                         allow_dangerous_code=True,
                         agent_type='tool-calling',
                         df=df,
+                        max_iterations=5,
                         include_df_in_prompt=True,
                         number_of_head_rows=df.shape[0],
                         verbose=True,

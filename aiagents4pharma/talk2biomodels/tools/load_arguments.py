@@ -7,10 +7,10 @@ before the experiment is run.
 """
 
 import logging
-import basico
 from dataclasses import dataclass
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Annotated
 from pydantic import Field
+import basico
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -76,6 +76,10 @@ class ArgumentData:
     """
     Dataclass for storing the argument data.
     """
+    experiment_name: Annotated[str, "An AI assigned _ separated name of"
+                                    " the experiment based on human query"
+                                    " and the context of the experiment."
+                                    " This must be set before the experiment is run."]
     time_data: Optional[TimeData] = Field(
         description="time data",
         default=None)
@@ -89,14 +93,7 @@ class ArgumentData:
         description="List of concentration and time data of species that"
         " reoccur. For example, a species whose concentration resets"
         " to a certain value after a certain time interval.",
-        default=None)
-    # species_to_be_analyzed_after_experiment: Optional[List[str]] = Field(
-    #     description="List of species whose concentration is to be"
-    #     " determined after the experiment is run.", default=None)
-    experiment_name: str = Field(
-        description="An AI assigned `_` separated name of"
-        " the experiment based on human query")
-    # experiment_name: Annotated[str, Field(description="An AI assigned _ separated name of"
+        default=None)    
 
 def add_rec_events(model_object, reocurring_data):
     """

@@ -16,7 +16,7 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from .load_biomodel import ModelData, load_biomodel
-from .load_arguments import ReocurringData, TimeData, SpeciesInitialData, add_rec_events
+from .load_arguments import TimeData, SpeciesInitialData
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -61,10 +61,6 @@ class ArgumentData:
                     " of the experiment. This also does not include the species"
                     " or the parameter that is to be scanned. Do not make up this data.",
                     default=None)
-    # reocurring_data: Optional[ReocurringData] = Field(
-    #                 description="Concentration and time data of species that "
-    #                 "reoccur. For example, a species whose concentration "
-    #                 "resets to a certain value after a certain time interval")
     parameter_scan_data: ParameterScanData = Field(
                     description="parameter scan data",
                     default=None)
@@ -132,12 +128,11 @@ def run_parameter_scan(model_object,
     # Verify if the given species or parameter names to be scanned are valid
     if arg_data.parameter_scan_data.species_parameter_name not in all_parameters + all_species:
         logger.error(
-            "Invalid species/parameter name: %s",
+            "Invalid species or parameter name: %s",
             arg_data.parameter_scan_data.species_parameter_name)
         raise ValueError(
-            f"Invalid species/parameter name: "
-            "{arg_data.parameter_scan_data.species_parameter_name}."
-            " Please report this back to the user.")
+            "Invalid species or parameter name: "
+            f"{arg_data.parameter_scan_data.species_parameter_name}.")
 
     # Dictionary to store the parameter scan results
     dic_param_scan_results = {}
@@ -147,11 +142,10 @@ def run_parameter_scan(model_object,
         # Verify if the given species name to be observed is valid
         if species_name not in all_species:
             logger.error("Invalid species name: %s", species_name)
-            raise ValueError(f"Invalid species name: {species_name}."
-                             " Please report this back to the user.")
+            raise ValueError(f"Invalid species name: {species_name}.")
 
         # Copy the model object to avoid modifying the original model
-        model_object_copy = model_object.copy()
+        model_object_copy = model_object.model_copy()
 
         # Update the fixed model species and parameters
         # These are the initial conditions of the model

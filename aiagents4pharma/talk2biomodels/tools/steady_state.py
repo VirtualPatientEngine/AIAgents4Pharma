@@ -88,12 +88,10 @@ class SteadyStateInput(BaseModel):
 # Pydantic class and not having type hints can lead to unexpected behavior.
 class SteadyStateTool(BaseTool):
     """
-    Tool for steady state analysis.
+    Tool to bring a model to steady state.
     """
     name: str = "steady_state"
-    description: str = """A tool to simulate a model and perform
-                        steady state analysisto answer questions
-                        about the steady state of species."""
+    description: str = "A tool to bring a model to steady state."
     args_schema: Type[BaseModel] = SteadyStateInput
 
     def _run(self,
@@ -127,13 +125,15 @@ class SteadyStateTool(BaseTool):
         if arg_data:
             # Prepare the dictionary of species data
             if arg_data.species_to_be_analyzed_before_experiment is not None:
-                dic_species_to_be_analyzed_before_experiment = dict(zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
-                                            arg_data.species_to_be_analyzed_before_experiment.species_concentration))
+                dic_species_to_be_analyzed_before_experiment = dict(
+                    zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
+                        arg_data.species_to_be_analyzed_before_experiment.species_concentration))
             # Add reocurring events (if any) to the model
             if arg_data.reocurring_data is not None:
                 add_rec_events(model_object, arg_data.reocurring_data)
         # Run the parameter scan
-        df_steady_state = run_steady_state(model_object, dic_species_to_be_analyzed_before_experiment)
+        df_steady_state = run_steady_state(model_object,
+                                           dic_species_to_be_analyzed_before_experiment)
         # Prepare the dictionary of scanned data
         # that will be passed to the state of the graph
         dic_steady_state_data = {

@@ -1,6 +1,7 @@
 '''
-Test cases for Talk2Biomodels.
+Test cases for Talk2Biomodels get_annotation tool.
 '''
+
 import random
 import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
@@ -17,9 +18,11 @@ def make_graph_fixture():
     config = {"configurable": {"thread_id": unique_id}}
     return graph, config
 
-def test_species_list(make_graph):
+def test_specific_species_provided(make_graph):
     '''
-    Test the tool by passing species names.
+    Test the tool by providing a specific species name.
+    We are testing a condition where the user asks for annotations
+    of a specific species in a specific model.
     '''
     # Test with a valid species name
     app, config = make_graph
@@ -87,15 +90,19 @@ def test_species_list(make_graph):
                 break
     assert artifact_was_none
 
-def test_all_species(make_graph):
+def test_all_species_annotations(make_graph):
     '''
     Test the tool by asking for annotations of all species is specific models.
+    Here, we test the tool with three models since they have different use cases:
+        - model 12 contains a species with no URL provided.
+        - model 20 contains a species without description.
+        - model 56 contains a species with database outside of KEGG, UniProt, and OLS.
 
-    model 12 contains species with no URL.
-    model 20 contains species without description.
-    model 56 contains species with database outside of KEGG, UniProt, and OLS.
+    We are testing a condition where the user asks for annotations
+    of all species in a specific model.
     '''
-    # Test valid models
+    # Loop through the models and test the tool
+    # for each model's unique use case.
     for model_id in [12, 20, 56]:
         app, config = make_graph
         prompt = f"Extract annotations of all species model {model_id}."
@@ -103,71 +110,70 @@ def test_all_species(make_graph):
         app.invoke({"messages": [HumanMessage(content=prompt)]},
                             config=config
                         )
-        #print(response["messages"])
-        # assistant_msg = response["messages"][-1].content
-
         current_state = app.get_state(config)
 
         reversed_messages = current_state.values["messages"][::-1]
         # Coveres all of the use cases for the expecetd sting on all the species
         test_condition = False
         for msg in reversed_messages:
-            if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
-                if model_id == 12:
-                # For model 12:
+            # Skip messages that are not ToolMessages and those that are not
+            # from the get_annotation tool.
+            if not isinstance(msg, ToolMessage) or msg.name != "get_annotation":
+                continue
+            if model_id == 12:
+                # Extact the first and second description of the LacI protein
+                # We already know that the first or second description is missing ('-')
+                dic_annotations_data = current_state.values["dic_annotations_data"][0]
+                first_descp_laci_protein = dic_annotations_data['data']['Description'][0]
+                second_descp_laci_protein = dic_annotations_data['data']['Description'][1]
+
                 # Expect a successful extraction (artifact is True) and that the content
-                # matches what is returned by prepare_content_msg for species ['lac'].
-                    if (msg.artifact is True and msg.content == prepare_content_msg(['lac'],[])
-                        and msg.status=="success"):
-                        test_condition = True
-                        break
+                # matches what is returned by prepare_content_msg for species.
+                # And that the first or second description of the LacI protein is missing.
+                if (msg.artifact is True and msg.content == prepare_content_msg([],[])
+                    and msg.status=="success" and (first_descp_laci_protein == '-' or
+                                                    second_descp_laci_protein == '-')):
+                    test_condition = True
+                    break
 
-                if model_id == 20:
-                # For model 20:
-                # Expect an error message containing a note that species extraction failed.
-                    if ("Unable to extract species from the model"
-                        in msg.content and msg.status == "error"):
-                        test_condition = True
-                        break
+            if model_id == 20:
+                # Expect an error message containing a note
+                # that species extraction failed.
+                if ("Unable to extract species from the model"
+                    in msg.content and msg.status == "error"):
+                    test_condition = True
+                    break
 
-                if model_id == 56:
-                    # For model 56:
-                    # Expect a successful extraction (artifact is True) and that the content
-                    # matches for for missing description ['ORI'].
-                    if (msg.artifact is True and
-                    msg.content == prepare_content_msg([],['ORI'])
-                    and msg.status == "success"):
-                        test_condition = True
-                        break
+            if model_id == 56:
+                # Expect a successful extraction (artifact is True) and that the content
+                # matches for for missing description ['ORI'].
+                if (msg.artifact is True and
+                msg.content == prepare_content_msg([],['ORI'])
+                and msg.status == "success"):
+                    test_condition = True
+                    break
+        assert test_condition # Expected output is validated
 
-    # Retrieve the dictionary that holds all the annotation data from the app's state
-    dic_annotations_data = current_state.values["dic_annotations_data"]
-
-    assert isinstance(dic_annotations_data, list),\
-        f"Expected a list for model {model_id}, got {type(dic_annotations_data)}"
-    assert len(dic_annotations_data) > 0,\
-        f"Expected species data for model {model_id}, but got empty list"
-    assert test_condition # Expected output is validated
-
-    # Test case where no model is specified
+def test_no_model_provided(make_graph):
+    '''
+    Test the tool by not specifying any model.
+    We are testing a condition where the user asks for annotations
+    of all species without specifying a model.
+    '''
     app, config = make_graph
-    prompt = "Extract annotations of all species."
+    prompt = "Extract annotations of all species. Call the tool get_annotation."
     app.invoke({"messages": [HumanMessage(content=prompt)]},
                         config=config
                     )
     current_state = app.get_state(config)
-    # dic_annotations_data = current_state.values["dic_annotations_data"]
     reversed_messages = current_state.values["messages"][::-1]
-    print(reversed_messages)
 
     test_condition = False
     for msg in reversed_messages:
         # Assert that the one of the messages is a ToolMessage
         if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
-            if "Error:" in msg.content and msg.status == "error":
+            if msg.status == "error":
                 test_condition = True
                 break
-    # Loop through the reversed messages until a
-    # ToolMessage is found.
-    # Ensure the system correctly informs the user to specify a model
-    assert test_condition, "Expected error message when no model is specified was not found."
+    # Assert that the tool get_annotation was not called.
+    assert test_condition

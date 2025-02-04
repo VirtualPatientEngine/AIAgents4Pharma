@@ -5,9 +5,7 @@ Tool for simulating a model.
 """
 
 import logging
-from dataclasses import dataclass
-from typing import Type, Union, List, Annotated
-import basico
+from typing import Type, Annotated
 from pydantic import BaseModel, Field
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
@@ -74,25 +72,13 @@ class SimulateModelTool(BaseTool):
         # of the BasicoModel class
         duration = 100.0
         interval = 10
-        # dic_species_data = {}
-        # if arg_data:
-        #     # Prepare the dictionary of species data
-        #     if arg_data.species_data is not None:
-        #         dic_species_data = dict(zip(arg_data.species_data.species_name,
-        #                                     arg_data.species_data.species_concentration))
-        #     # Add recurring events (if any) to the model
-        #     if arg_data.recurring_data is not None:
-        #         add_rec_events(model_object, arg_data.recurring_data)
-        #     # Set the duration and interval
-        #     if arg_data.time_data is not None:
-        #         duration = arg_data.time_data.duration
-        #         interval = arg_data.time_data.interval
         dic_species_to_be_analyzed_before_experiment = {}
         if arg_data:
             # Prepare the dictionary of species data
             if arg_data.species_to_be_analyzed_before_experiment is not None:
-                dic_species_to_be_analyzed_before_experiment = dict(zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
-                                            arg_data.species_to_be_analyzed_before_experiment.species_concentration))
+                dic_species_to_be_analyzed_before_experiment = dict(
+                    zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
+                        arg_data.species_to_be_analyzed_before_experiment.species_concentration))
             # Add reocurring events (if any) to the model
             if arg_data.reocurring_data is not None:
                 add_rec_events(model_object, arg_data.reocurring_data)
