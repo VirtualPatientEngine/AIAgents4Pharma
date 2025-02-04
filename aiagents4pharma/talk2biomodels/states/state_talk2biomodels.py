@@ -53,3 +53,4 @@ class Talk2Biomodels(AgentState):
     dic_simulated_data: Annotated[list[dict], operator.add]
     dic_scanned_data: Annotated[list[dict], operator.add]
     dic_steady_state_data: Annotated[list[dict], add_data]
+    dic_annotations_data : Annotated[list[dict], operator.add]

@@ -9,6 +9,7 @@ import sys
 import random
 import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
@@ -144,10 +145,30 @@ with main_col2:
                                     save_toggle=False)
                 st.empty()
             elif message["type"] == "dataframe":
-                streamlit_utils.render_table(message["content"],
-                                key=message["key"],
-                                # tool_name=message["tool_name"],
-                                save_table=False)
+                if 'tool_name' in message:
+                    if message['tool_name'] == 'get_annotation':
+                        df_selected = message["content"]
+                        st.dataframe(df_selected,
+                                        use_container_width=True,
+                                        key=message["key"],
+                                        hide_index=True,
+                                        column_config={
+                                            "Id": st.column_config.LinkColumn(
+                                                label="Id",
+                                                help="Click to open the link associated with the Id",
+                                                validate=r"^http://.*$",  # Ensure the link is valid
+                                                display_text=r"^http://identifiers\.org/(.*?)$"
+                                            ),
+                                            "Species Name": st.column_config.TextColumn("Species Name"),
+                                            "Description": st.column_config.TextColumn("Description"),
+                                            "Database": st.column_config.TextColumn("Database"),
+                                        }
+                                )
+                else:
+                    streamlit_utils.render_table(message["content"],
+                                    key=message["key"],
+                                    # tool_name=message["tool_name"],
+                                    save_table=False)
                 st.empty()
 
         # When the user asks a question
@@ -331,11 +352,92 @@ with main_col2:
                                 df_selected = pd.DataFrame(
                                     df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[count])
                                 # Display the toggle button to suppress the table
+                                streamlit_utils.render_toggle(
+                                    key="toggle_table_"+uniq_msg_id+'_'+str(count),
+                                    toggle_text="Show Table",
+                                    toggle_state=False,
+                                    save_toggle=True)
+                                # Display the table
                                 streamlit_utils.render_table_plotly(
                                 uniq_msg_id+'_'+str(count),
                                 df_scanned_current_tool_call['name'].iloc[count],
                                 df_selected)
-        # Collect feedback and display the thumbs feedback
+                        elif msg.name in ["get_annotation"]:
+                            if not msg.artifact:
+                                continue
+                            # Convert the annotated data to a single dictionary
+                            # print ('-', len(current_state.values["dic_annotations_data"]))
+                            dic_annotations_data = {}
+                            for data in current_state.values["dic_annotations_data"]:
+                                # print (data)
+                                for key in data:
+                                    if key not in dic_annotations_data:
+                                        dic_annotations_data[key] = []
+                                    dic_annotations_data[key] += [data[key]]
+                            df_annotations_data = pd.DataFrame.from_dict(dic_annotations_data)
+                            # Get the annotated data for the current tool call
+                            df_selected = pd.DataFrame(
+                                    df_annotations_data[df_annotations_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
+                            # print (df_selected)
+                            df_selected["Id"] = df_selected.apply(
+                                    lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
+                                )
+                            df_selected = df_selected.drop(columns=["Link"])
+                            # Directly use the "Link" column for the "Id" column
+                            streamlit_utils.render_toggle(
+                                key="toggle_table_"+uniq_msg_id,
+                                toggle_text="Show Table",
+                                toggle_state=True,
+                                save_toggle=True)
+                            st.dataframe(df_selected,
+                                    use_container_width=True,
+                                    key='dataframe_'+uniq_msg_id,
+                                    hide_index=True,
+                                    column_config={
+                                        "Id": st.column_config.LinkColumn(
+                                            label="Id",
+                                            help="Click to open the link associated with the Id",
+                                            validate=r"^http://.*$",  # Ensure the link is valid
+                                            display_text=r"^http://identifiers\.org/(.*?)$"
+                                        ),
+                                        "Species Name": st.column_config.TextColumn("Species Name"),
+                                        "Description": st.column_config.TextColumn("Description"),
+                                        "Database": st.column_config.TextColumn("Database"),
+                                    }
+                            )
+                            # Add data to the chat history
+                            st.session_state.messages.append({
+                                    "type": "dataframe",
+                                    "content": df_selected,
+                                    "key": "dataframe_"+uniq_msg_id,
+                                    "tool_name": msg.name
+                                })
+
+                        # elif msg.name in ["ask_question"]:
+                        #     # df_simulated = pd.DataFrame.from_dict(
+                        #     #                     current_state.values["dic_simulated_data"])
+                        #     dic_simulated = current_state.values["dic_simulated_data"]
+                        #     # print (dic_simulated)
+                        #     print (msg.tool_call_id)
+                        #     for entry in dic_simulated:
+                        #         print (entry.keys())
+                        #         if msg.tool_call_id in entry:
+                        #             df_simulated = pd.DataFrame.from_dict(entry[msg.tool_call_id]['data'])
+                        #             break
+                        #     # Display the toggle button to suppress the table
+                        #     streamlit_utils.render_toggle(
+                        #         key="toggle_table_"+uniq_msg_id,
+                        #         toggle_text="Show Table",
+                        #         toggle_state=False,
+                        #         save_toggle=True)
+                        #     # Display the table
+                        #     streamlit_utils.render_table(
+                        #         df_simulated,
+                        #         key="dataframe_"+uniq_msg_id,
+                        #         tool_name=msg.name,
+                        #         save_table=True)
+                        #     st.empty()
+
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(
                 feedback_type="thumbs",

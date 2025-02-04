@@ -9,3 +9,4 @@ from . import get_modelinfo
 from . import parameter_scan
 from . import steady_state
 from . import load_biomodel
+from . import get_annotation
