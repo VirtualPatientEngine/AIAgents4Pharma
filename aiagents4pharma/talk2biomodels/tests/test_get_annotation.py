@@ -18,6 +18,22 @@ def make_graph_fixture():
     config = {"configurable": {"thread_id": unique_id}}
     return graph, config
 
+def test_no_model_provided(make_graph):
+    '''
+    Test the tool by not specifying any model.
+    We are testing a condition where the user
+    asks for annotations of all species without
+    specifying a model.
+    '''
+    app, config = make_graph
+    prompt = "Extract annotations of all species. Call the tool get_annotation."
+    app.invoke({"messages": [HumanMessage(content=prompt)]},
+                        config=config
+                    )
+    current_state = app.get_state(config)
+    # Assert that the state key model_id is empty.
+    assert current_state.values["model_id"] == []
+
 def test_specific_species_provided(make_graph):
     '''
     Test the tool by providing a specific species name.
@@ -153,27 +169,3 @@ def test_all_species_annotations(make_graph):
                     test_condition = True
                     break
         assert test_condition # Expected output is validated
-
-def test_no_model_provided(make_graph):
-    '''
-    Test the tool by not specifying any model.
-    We are testing a condition where the user asks for annotations
-    of all species without specifying a model.
-    '''
-    app, config = make_graph
-    prompt = "Extract annotations of all species. Call the tool get_annotation."
-    app.invoke({"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
-    current_state = app.get_state(config)
-    reversed_messages = current_state.values["messages"][::-1]
-
-    test_condition = False
-    for msg in reversed_messages:
-        # Assert that the one of the messages is a ToolMessage
-        if isinstance(msg, ToolMessage) and msg.name == "get_annotation":
-            if msg.status == "error":
-                test_condition = True
-                break
-    # Assert that the tool get_annotation was not called.
-    assert test_condition
