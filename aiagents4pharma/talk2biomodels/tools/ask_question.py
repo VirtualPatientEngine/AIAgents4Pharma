@@ -6,10 +6,11 @@ Tool for asking a question about the simulation results.
 
 import logging
 from typing import Type, Annotated, Literal
+import hydra
+import basico
 import pandas as pd
 from pydantic import BaseModel, Field
 from langchain_core.tools.base import BaseTool
-from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import InjectedState
@@ -64,31 +65,49 @@ class AskQuestionTool(BaseTool):
                    question,
                    question_context,
                    experiment_name)
-        # print (f'Calling ask_question tool {question}, {question_context}, {experiment_name}')
+        # Load hydra configuration
+        with hydra.initialize(version_base=None, config_path="../../configs"):
+            cfg = hydra.compose(config_name='config',
+                                overrides=['talk2biomodels/tools/ask_question=default'])
+            cfg = cfg.talk2biomodels.tools.ask_question
+        # Get the context of the question
+        # and based on the context, get the data
+        # and prompt content to ask the question
         if question_context == "steady_state":
             dic_context = state["dic_steady_state_data"]
+            prompt_content = cfg.steady_state_prompt
         else:
             dic_context = state["dic_simulated_data"]
+            prompt_content = cfg.simulation_prompt
+        # Extract the
         dic_data = {}
         for data in dic_context:
             for key in data:
                 if key not in dic_data:
                     dic_data[key] = []
                 dic_data[key] += [data[key]]
-        # print (dic_data)
+        # Create a pandas dataframe of the data
         df_data = pd.DataFrame.from_dict(dic_data)
+        # Extract the data for the experiment
+        # matching the experiment name
         df = pd.DataFrame(
             df_data[df_data['name'] == experiment_name]['data'].iloc[0]
         )
-        prompt_content = None
-        # if run_manager and 'prompt' in run_manager.metadata:
-        #     prompt_content = run_manager.metadata['prompt']
-        # Create a pandas dataframe agent with OpenAI
+        logger.log(logging.INFO, "Shape of the dataframe: %s", df.shape)
+        # Extract the model units
+        model_units = basico.model_info.get_model_units()
+        # Update the prompt content with the model units
+        prompt_content += f"Following are the model units: {model_units}\n\n"
+        # Create a pandas dataframe agent
         df_agent = create_pandas_dataframe_agent(
                         ChatOpenAI(model=state['llm_model']),
                         allow_dangerous_code=True,
-                        agent_type=AgentType.OPENAI_FUNCTIONS,
+                        agent_type='tool-calling',
                         df=df,
+                        include_df_in_prompt=True,
+                        number_of_head_rows=df.shape[0],
+                        verbose=True,
                         prefix=prompt_content)
+        # Invoke the agent with the question
         llm_result = df_agent.invoke(question)
         return llm_result["output"]

@@ -211,7 +211,8 @@ with main_col2:
                         st.session_state.run_id = cb.traced_runs[-1].id
                     # print(response["messages"])
                     current_state = app.get_state(config)
-                    # print (current_state.values["model_id"])
+                    print ('steady_state', len(current_state.values["dic_steady_state_data"]))
+                    # print (current_state.values["dic_steady_state_data"])
 
                     # Add response to chat history
                     assistant_msg = ChatMessage(
@@ -245,6 +246,7 @@ with main_col2:
                         # may make multiple tool calls before the
                         # final response to the user.
                         if isinstance(msg, AIMessage):
+                            # print ("AIMessage", msg)
                             continue
                         # Work on the message if it is a ToolMessage
                         # These may contain additional visuals that
