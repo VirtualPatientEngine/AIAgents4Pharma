@@ -12,8 +12,6 @@ def add_data(data1: dict, data2: dict) -> dict:
     """
     A reducer function to merge two dictionaries.
     """
-    if data2 is None:
-        return data1
     left_idx_by_name = {data['name']: idx for idx, data in enumerate(data1)}
     merged = data1.copy()
     for data in data2:
