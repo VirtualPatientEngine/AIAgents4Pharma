@@ -13,57 +13,77 @@ nav:
         - ./notebooks/talk2biomodels/tutorial.ipynb
         - ./notebooks/talk2biomodels/Case_3.md
 
+      - Agents:
+          - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
+      - States:
+          - Talk2Biomodels state: talk2biomodels/states/state_talk2biomodels.md
       - Models:
-        - System Bio Model: talk2biomodels/models/sys_bio_model.md
-        - Basico Model : talk2biomodels/models/basico_model.md
+          - System Bio Model: talk2biomodels/models/sys_bio_model.md
+          - Basico Model: talk2biomodels/models/basico_model.md
       - Tools:
-        - Search models: talk2biomodels/tools/search_models.md
-        - Model description: talk2biomodels/tools/model_description.md
-        - Fetch parameters: talk2biomodels/tools/fetch_parameters.md
-        - Simulate model: talk2biomodels/tools/simulate_model.md
-        - Ask questions: talk2biomodels/tools/ask_question.md
-        - Custom figures: talk2biomodels/tools/custom_plotter.md
+          - Search models: talk2biomodels/tools/search_models.md
+          - Model information: talk2biomodels/tools/get_modelinfo.md
+          - Simulate model: talk2biomodels/tools/simulate_model.md
+          - Ask questions: talk2biomodels/tools/ask_question.md
+          - Custom plots: talk2biomodels/tools/custom_plotter.md
+          - Load biomodel: talk2biomodels/tools/load_biomodel.md
 
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
       - Agents:
-        - SCP Agent: talk2cells/agents/scp_agent.md
+          - SCP Agent: talk2cells/agents/scp_agent.md
       - States:
-        - Talk2Cells: talk2cells/states/state_talk2cells.md
+          - Talk2Cells: talk2cells/states/state_talk2cells.md
       - Tools:
-        - Search studies: talk2cells/tools/search_studies.md
-        - Display studies: talk2cells/tools/display_studies.md
-        
+          - Search studies: talk2cells/tools/search_studies.md
+          - Display studies: talk2cells/tools/display_studies.md
 
-  - Talk2KnowledgeGraphs :
+  - Talk2KnowledgeGraphs:
       - Introduction: talk2knowledgegraphs/intro.md
       - Tutorials:
-        - PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_primekg_loader.ipynb
-        - StarkQA-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader.ipynb
-        - BioBridge-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_loader.ipynb
-        - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
-        - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
-        - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
-        - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
-        - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
+          - PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_primekg_loader.ipynb
+          - StarkQA-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader.ipynb
+          - BioBridge-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_loader.ipynb
+          - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
+          - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
+          - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
+          - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
+          - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
       - Datasets:
-        - Dataset: talk2knowledgegraphs/datasets/dataset.md
-        - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
-        - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
-        - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
+          - Dataset: talk2knowledgegraphs/datasets/dataset.md
+          - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
+          - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
+          - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
         - Embeddings:
           - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
           - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
           - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+        - Enrichments:
+          - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
+          - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
 
-  - Documentation :
-    - Ops:
-        - Introduction: ops/Documentation_intro.md
-        - CodeOps : ops/CodeOps.md
-        - DevOps : ops/DevOps.md
-    - Contributing:
-        - Contributing : CONTRIBUTING.md
+  - Talk2Competitors:
+      - Introduction: talk2competitors/intro.md
+      - Tutorials: ./notebooks/talk2competitors/tutorial.ipynb
+      - Agents:
+          - Main Agent: talk2competitors/agents/main_agent.md
+          - S2 Agent: talk2competitors/agents/s2_agent.md
+      - States:
+          - Talk2Competitors state: talk2competitors/states/state_talk2competitors.md
+      - Tools:
+          - Search papers: talk2competitors/tools/search.md
+          - Single paper recomendation: talk2competitors/tools/single_paper_rec.md
+          - Multi paper recomendation: talk2competitors/tools/multi_paper_rec.md
+          - Display results: talk2competitors/tools/display_results.md
+
+  - Documentation:
+      - Ops:
+          - Introduction: ops/Documentation_intro.md
+          - CodeOps: ops/CodeOps.md
+          - DevOps: ops/DevOps.md
+      - Contributing:
+          - Contributing: CONTRIBUTING.md
 
 repo_url: https://github.com/VirtualPatientEngine/AIAgents4Pharma
 repo_name: VPE/AIAgents4Pharma
@@ -108,9 +128,9 @@ plugins:
 
 markdown_extensions:
   - pymdownx.highlight
-      # anchor_linenums: true
-      # line_spans: __span
-      # pygments_lang_class: true
+    # anchor_linenums: true
+    # line_spans: __span
+    # pygments_lang_class: true
   - pymdownx.superfences
 
 extra:
