@@ -10,8 +10,6 @@ nav:
         - Covid-19: talk2biomodels/cases/Case_2.md
         - MAPK: talk2biomodels/cases/Case_3.md
       - Tutorials: 
-
-
         - ./notebooks/talk2biomodels/tutorial.ipynb
         - ./notebooks/talk2biomodels/Case_3.md
 
