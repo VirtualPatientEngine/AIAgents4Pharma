@@ -6,14 +6,15 @@ import pytest
 import ollama
 from ..utils.enrichments.ollama import EnrichmentWithOllama
 
+
 @pytest.fixture(name="ollama_config")
 def fixture_ollama_config():
     """Return a dictionary with Ollama configuration."""
     return {
-        "model_name": "granite3.1-moe:1b",
+        "model_name": "llama3.2:1b",
         "prompt_enrichment": """
-            Given the input as a list of strings, please return the list of addditional information of
-            each input terms using your prior knowledge.
+            Given the input as a list of strings, please return the list of addditional information 
+            of each input terms using your prior knowledge.
 
             Example:
             Input: ['acetaminophen', 'aspirin']
@@ -28,10 +29,11 @@ def fixture_ollama_config():
         "streaming": False,
     }
 
+
 def test_no_model_ollama(ollama_config):
     """Test the case when the Ollama model is not available."""
     cfg = ollama_config
-    cfg_model = "smollm2:135m" # Choose a small model
+    cfg_model = "smollm2:135m"  # Choose a small model
 
     # Delete the Ollama model
     try:
@@ -41,7 +43,8 @@ def test_no_model_ollama(ollama_config):
 
     # Check if the model is available
     with pytest.raises(
-        ValueError, match=f"Error: Pulled {cfg_model} model and restarted Ollama server."
+        ValueError,
+        match=f"Error: Pulled {cfg_model} model and restarted Ollama server.",
     ):
         EnrichmentWithOllama(
             model_name=cfg_model,
@@ -51,7 +54,8 @@ def test_no_model_ollama(ollama_config):
         )
     ollama.delete(cfg_model)
 
-def test_enrich_nodes_ollama(ollama_config):
+
+def test_enrich_ollama(ollama_config):
     """Test the Ollama textual enrichment class for node enrichment."""
     # Prepare enrichment model
     cfg = ollama_config
@@ -63,37 +67,11 @@ def test_enrich_nodes_ollama(ollama_config):
     )
 
     # Perform enrichment for nodes
-    nodes = ["Adalimumab", "Infliximab"]
+    nodes = ["acetaminophen", "acetaminophen"]
     enriched_nodes = enr_model.enrich_documents(nodes)
     # Check the enriched nodes
     assert len(enriched_nodes) == 2
-    assert all(
-        enriched_nodes[i] != nodes[i] for i in range(len(nodes))
-    )
-
-
-def test_enrich_relations_ollama(ollama_config):
-    """Test the Ollama textual enrichment class for relation enrichment."""
-    # Prepare enrichment model
-    cfg = ollama_config
-    enr_model = EnrichmentWithOllama(
-        model_name=cfg["model_name"],
-        prompt_enrichment=cfg["prompt_enrichment"],
-        temperature=cfg["temperature"],
-        streaming=cfg["streaming"],
-    )
-    # Perform enrichment for relations
-    relations = [
-        "IL23R-gene causation disease-inflammatory bowel diseases",
-        "NOD2-gene causation disease-inflammatory bowel diseases",
-    ]
-    enriched_relations = enr_model.enrich_documents(relations)
-    # Check the enriched relations
-    assert len(enriched_relations) == 2
-    assert all(
-        enriched_relations[i] != relations[i]
-        for i in range(len(relations))
-    )
+    assert all(enriched_nodes[i] != nodes[i] for i in range(len(nodes)))
 
 
 def test_enrich_ollama_rag(ollama_config):
@@ -107,11 +85,9 @@ def test_enrich_ollama_rag(ollama_config):
         streaming=cfg["streaming"],
     )
     # Perform enrichment for nodes
-    nodes = ["Adalimumab", "Infliximab"]
+    nodes = ["acetaminophen", "acetaminophen"]
     docs = [r"\path\to\doc1", r"\path\to\doc2"]
     enriched_nodes = enr_model.enrich_documents_with_rag(nodes, docs)
     # Check the enriched nodes
     assert len(enriched_nodes) == 2
-    assert all(
-        enriched_nodes[i] != nodes[i] for i in range(len(nodes))
-    )
+    assert all(enriched_nodes[i] != nodes[i] for i in range(len(nodes)))

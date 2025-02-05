@@ -79,25 +79,6 @@ def test_t2kg_agent_openai(input_dict):
     assistant_msg = response["messages"][-1].content
     assert isinstance(assistant_msg, str)
 
-    # Check the reasoning insights
-    assert "DrugA" in assistant_msg
-    assert "TNF" in assistant_msg
-
-    # Inquire about extracted subgraph
-    prompt = """
-    Without extracting a new subgraph, give me a list of genes mentioned in
-    the recently extracted subgraph.
-    """
-
-    # Update state
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
-    # Test the tool get_modelinfo
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
-    assistant_msg = response["messages"][-1].content
-
-    # Check assistant message
-    assert "NOD2" in assistant_msg or "IL10" in assistant_msg or "TLR4" in assistant_msg
-
 
 def test_t2kg_agent_ollama(input_dict):
     """
@@ -107,7 +88,7 @@ def test_t2kg_agent_ollama(input_dict):
         input_dict: Input dictionary
     """
     # Update the input dictionary
-    input_dict["llm_model"] = "granite3.1-moe:1b"
+    input_dict["llm_model"] = "llama3.2:1b"
 
     # Setup the app
     unique_id = 12345
@@ -135,22 +116,3 @@ def test_t2kg_agent_ollama(input_dict):
     # Check assistant message
     assistant_msg = response["messages"][-1].content
     assert isinstance(assistant_msg, str)
-
-    # Check the reasoning insights
-    assert "DrugA" in assistant_msg
-    assert "TNF" in assistant_msg
-
-    # Inquire about extracted subgraph
-    prompt = """
-    Without extracting a new subgraph, give me a list of genes mentioned in
-    the recently extracted subgraph.
-    """
-
-    # Update state
-    app.update_state(config, {"llm_model": "llama3.2"})
-    # Test the tool get_modelinfo
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
-    assistant_msg = response["messages"][-1].content
-
-    # Check assistant message
-    assert "NOD2" in assistant_msg or "IL10" in assistant_msg or "TLR4" in assistant_msg

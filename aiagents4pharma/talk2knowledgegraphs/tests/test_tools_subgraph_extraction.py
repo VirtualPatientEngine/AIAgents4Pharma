@@ -44,8 +44,10 @@ def test_extract_subgraph_wo_docs_openai(input_dict):
         input_dict,
     )
     prompt = """
+    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
+    to respond to the following prompt:
+
     Extract all relevant information related to nodes of genes mentioned in the knowledge graph.
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools.
     """
 
     # Test the tool get_modelinfo
@@ -101,8 +103,10 @@ def test_extract_subgraph_w_docs_openai(input_dict):
         input_dict,
     )
     prompt = """
+    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
+    to respond to the following prompt:
+
     Extract all relevant information related to nodes of genes mentioned in the knowledge graph.
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools.
     """
 
     # Test the tool get_modelinfo
@@ -139,7 +143,7 @@ def test_extract_subgraph_wo_docs_ollama(input_dict):
         input_dict: Input dictionary.
     """
     # Update the input dictionary
-    input_dict["llm_model"] = "smollm2"
+    input_dict["llm_model"] = "llama3.2:1b"
 
     # Setup the app
     unique_id = 12345
@@ -151,8 +155,10 @@ def test_extract_subgraph_wo_docs_ollama(input_dict):
         input_dict,
     )
     prompt = """
+    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
+    to respond to the following prompt:
+
     Extract all relevant information related to nodes of genes mentioned in the knowledge graph.
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools.
     """
 
     # Test the tool get_modelinfo
@@ -190,7 +196,7 @@ def test_extract_subgraph_w_docs_ollama(input_dict):
         input_dict: Input dictionary.
     """
     # Update the input dictionary
-    input_dict["llm_model"] = "smollm2"
+    input_dict["llm_model"] = "llama3.2:1b"
 
     # Setup the app
     unique_id = 12345
@@ -211,8 +217,10 @@ def test_extract_subgraph_w_docs_ollama(input_dict):
         input_dict,
     )
     prompt = """
+    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
+    to respond to the following prompt:
+
     Extract all relevant information related to nodes of genes mentioned in the knowledge graph.
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools.
     """
 
     # Test the tool get_modelinfo

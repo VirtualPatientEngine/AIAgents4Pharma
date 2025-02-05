@@ -14,6 +14,7 @@ openai_llms:
   - "gpt-4-turbo"
   - "gpt-3.5-turbo"
 ollama_llms:
+  - "llama3.2:1b"
   - "llama3.2"
   - "llama3.1"
   - "gemma"

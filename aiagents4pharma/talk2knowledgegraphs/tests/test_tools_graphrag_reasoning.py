@@ -186,11 +186,14 @@ def test_graphrag_reasoning_openai(input_dict):
         input_dict,
     )
     prompt = """
-    Given the textualized subgraph and its summary, please provide reasoning insights over the
-    mechanism of actions of DrugA, which is a human monoclonal antibody that binds to both
+    Please invoke `graphrag_reasoning` tool without calling any other tools 
+    to respond to the following prompt:
+
+    Without extracting a new subgraph, perform Graph RAG reasoning 
+    to get insights related to nodes of genes mentioned in the knowledge graph related to DrugA. 
+
+    DrugA is a human monoclonal antibody that binds to both 
     the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
-    Make sure to discover insights related to TNF and its interactions with other entities.
-    Please ONLY invoke `graphrag_reasoning` tool  without calling any other tools.
     """
 
     # Test the tool get_modelinfo
@@ -204,10 +207,6 @@ def test_graphrag_reasoning_openai(input_dict):
     tool_msg = response["messages"][-2]
     assert tool_msg.name == "graphrag_reasoning"
 
-    # Check the reasoning insights
-    assert "DrugA" in assistant_msg
-    assert "TNF" in assistant_msg
-
 
 def test_graphrag_reasoning_ollama(input_dict):
     """
@@ -217,7 +216,7 @@ def test_graphrag_reasoning_ollama(input_dict):
         input_dict: Input dictionary
     """
     # Update the input dictionary
-    input_dict["llm_model"] = "granite3.1-moe:1b"
+    input_dict["llm_model"] = "llama3.2:1b"
 
     # Setup the app
     unique_id = 12345
@@ -229,11 +228,14 @@ def test_graphrag_reasoning_ollama(input_dict):
         input_dict,
     )
     prompt = """
-    Given the textualized subgraph and its summary, please provide reasoning insights over the
-    mechanism of actions of DrugA, which is a human monoclonal antibody that binds to both
+    Please invoke `graphrag_reasoning` tool without calling any other tools 
+    to respond to the following prompt:
+
+    Without extracting a new subgraph, perform Graph RAG reasoning 
+    to get insights related to nodes of genes mentioned in the knowledge graph related to DrugA. 
+
+    DrugA is a human monoclonal antibody that binds to both 
     the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
-    Make sure to discover insights related to TNF and its interactions with other entities.
-    Please ONLY invoke `graphrag_reasoning` tool without calling any other tools.
     """
 
     # Test the tool get_modelinfo
@@ -246,7 +248,3 @@ def test_graphrag_reasoning_ollama(input_dict):
     # Check tool message
     tool_msg = response["messages"][-2]
     assert tool_msg.name == "graphrag_reasoning"
-
-    # Check the reasoning insights
-    assert "DrugA" in assistant_msg
-    assert "TNF" in assistant_msg

@@ -134,10 +134,12 @@ def test_summarize_subgraph_openai(input_dict):
         input_dict,
     )
     prompt = """
-    You are given a subgraph in the forms of textualized subgraph representing nodes
-    and edges (triples).
+    Please ONLY invoke `subgraph_summarization` tool without calling any other tools 
+    to respond to the following prompt:
+
+    You are given a subgraph in the forms of textualized subgraph representing
+    nodes and edges (triples).
     Summarize the given subgraph and higlight the importance nodes and edges.
-    Please ONLY invoke `subgraph_summarization` tool without calling any other tools afterward.
     """
 
     # Test the tool get_modelinfo
@@ -163,23 +165,25 @@ def test_summarize_subgraph_ollama(input_dict):
         input_dict: Input dictionary fixture.
     """
     # Update the input dictionary
-    input_dict["llm_model"] = "granite3.1-moe:1b"
+    input_dict["llm_model"] = "llama3.2:1b"
 
     # Setup the app
     unique_id = 12345
     app = get_app(unique_id, llm_model=input_dict["llm_model"])
     config = {"configurable": {"thread_id": unique_id}}
     # Update state
-    input_dict["llm_model"] = "granite3.1-moe:1b"
+    input_dict["llm_model"] = "llama3.2:1b"
     app.update_state(
         config,
         input_dict,
     )
     prompt = """
+    Please ONLY invoke `subgraph_summarization` tool without calling any other tools 
+    to respond to the following prompt:
+
     You are given a subgraph in the forms of textualized subgraph representing
     nodes and edges (triples).
     Summarize the given subgraph and higlight the importance nodes and edges.
-    Please ONLY invoke `subgraph_summarization` tool without calling any other tools afterward.
     """
 
     # Test the tool get_modelinfo
