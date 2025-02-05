@@ -72,3 +72,6 @@ aiagents4pharma = [
             "configs/*",
             "configs/talk2biomodels/agents/t2b_agent/*",
             "configs/talk2knowledgegraphs/agents/t2kg_agent/*"]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

@@ -5,9 +5,7 @@ Tool for simulating a model.
 """
 
 import logging
-from dataclasses import dataclass
-from typing import Type, Union, List, Annotated
-import basico
+from typing import Type, Annotated
 from pydantic import BaseModel, Field
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
@@ -15,75 +13,11 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from .load_biomodel import ModelData, load_biomodel
+from .load_arguments import ArgumentData, add_rec_events
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-@dataclass
-class TimeData:
-    """
-    Dataclass for storing the time data.
-    """
-    duration: Union[int, float] = 100
-    interval: Union[int, float] = 10
-
-@dataclass
-class SpeciesData:
-    """
-    Dataclass for storing the species data.
-    """
-    species_name: List[str] = Field(description="species name", default=None)
-    species_concentration: List[Union[int, float]] = Field(
-        description="initial species concentration",
-        default=None)
-
-@dataclass
-class TimeSpeciesNameConcentration:
-    """
-    Dataclass for storing the time, species name, and concentration data.
-    """
-    time: Union[int, float] = Field(description="time point where the event occurs")
-    species_name: str = Field(description="species name")
-    species_concentration: Union[int, float] = Field(
-        description="species concentration at the time point")
-
-@dataclass
-class RecurringData:
-    """
-    Dataclass for storing the species and time data 
-    on reocurring basis.
-    """
-    data: List[TimeSpeciesNameConcentration] = Field(
-        description="species and time data on reocurring basis",
-        default=None)
-
-@dataclass
-class ArgumentData:
-    """
-    Dataclass for storing the argument data.
-    """
-    time_data: TimeData = Field(description="time data", default=None)
-    species_data: SpeciesData = Field(
-        description="species name and initial concentration data",
-        default=None)
-    recurring_data: RecurringData = Field(
-        description="species and time data on reocurring basis",
-        default=None)
-    simulation_name: str = Field(
-        description="""An AI assigned `_` separated name of
-        the simulation based on human query""")
-
-def add_rec_events(model_object, recurring_data):
-    """
-    Add reocurring events to the model.
-    """
-    for row in recurring_data.data:
-        tp, sn, sc = row.time, row.species_name, row.species_concentration
-        basico.add_event(f'{sn}_{tp}',
-                            f'Time > {tp}',
-                            [[sn, str(sc)]],
-                            model=model_object.copasi_model)
 
 class SimulateModelInput(BaseModel):
     """
@@ -138,29 +72,30 @@ class SimulateModelTool(BaseTool):
         # of the BasicoModel class
         duration = 100.0
         interval = 10
-        dic_species_data = {}
+        dic_species_to_be_analyzed_before_experiment = {}
         if arg_data:
             # Prepare the dictionary of species data
-            if arg_data.species_data is not None:
-                dic_species_data = dict(zip(arg_data.species_data.species_name,
-                                            arg_data.species_data.species_concentration))
-            # Add recurring events (if any) to the model
-            if arg_data.recurring_data is not None:
-                add_rec_events(model_object, arg_data.recurring_data)
+            if arg_data.species_to_be_analyzed_before_experiment is not None:
+                dic_species_to_be_analyzed_before_experiment = dict(
+                    zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
+                        arg_data.species_to_be_analyzed_before_experiment.species_concentration))
+            # Add reocurring events (if any) to the model
+            if arg_data.reocurring_data is not None:
+                add_rec_events(model_object, arg_data.reocurring_data)
             # Set the duration and interval
             if arg_data.time_data is not None:
                 duration = arg_data.time_data.duration
                 interval = arg_data.time_data.interval
         # Update the model parameters
-        model_object.update_parameters(dic_species_data)
+        model_object.update_parameters(dic_species_to_be_analyzed_before_experiment)
         logger.log(logging.INFO,
                    "Following species/parameters updated in the model %s",
-                   dic_species_data)
+                   dic_species_to_be_analyzed_before_experiment)
         # Simulate the model
         df = model_object.simulate(duration=duration, interval=interval)
         logger.log(logging.INFO, "Simulation results ready with shape %s", df.shape)
         dic_simulated_data = {
-            'name': arg_data.simulation_name,
+            'name': arg_data.experiment_name,
             'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
             'tool_call_id': tool_call_id,
             'data': df.to_dict()
@@ -177,12 +112,10 @@ class SimulateModelTool(BaseTool):
         # Return the updated state of the tool
         return Command(
                 update=dic_updated_state_for_model|{
-                # update the state keys
-                # "dic_simulated_data": df.to_dict(),
                 # update the message history
                 "messages": [
                     ToolMessage(
-                        content=f"Simulation results of {arg_data.simulation_name}",
+                        content=f"Simulation results of {arg_data.experiment_name}",
                         tool_call_id=tool_call_id
                         )
                     ],
