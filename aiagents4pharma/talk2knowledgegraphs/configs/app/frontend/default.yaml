@@ -5,10 +5,10 @@ data_package_allowed_file_types:
 endotype_allowed_file_types:
   - "pdf"
 upload_data_dir: "app/backend/files"
-input_tkg: "app/backend/files/kg_pyg_graph.pkl"
-input_text_tkg: "app/backend/files/kg_text_graph.pkl"
-# input_tkg: "../data/kg_12k_pyg_graph.pkl"
-# input_text_tkg: "../data/kg_12k_textualized_graph.pkl"
+# input_tkg: "app/backend/files/kg_pyg_graph.pkl"
+# input_text_tkg: "app/backend/files/kg_text_graph.pkl"
+input_tkg: "../data/kg_12k_pyg_graph.pkl"
+input_text_tkg: "../data/kg_12k_textualized_graph.pkl"
 openai_llms:
   - "gpt-4o-mini"
   - "gpt-4-turbo"

@@ -278,7 +278,8 @@ class SubgraphExtractionTool(BaseTool):
                 "graph_text": textualized_graph,
                 "messages": [
                     ToolMessage(
-                        content="Subgraph Extraction", tool_call_id=tool_call_id
+                        content=f"Subgraph Extraction Result: {textualized_graph}",
+                        tool_call_id=tool_call_id
                     )
                 ],
             }

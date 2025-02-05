@@ -145,7 +145,8 @@ with main_col1:
             unsafe_allow_html=True)
 
         # LLM panel (Only at the front-end for now)
-        llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
+        # llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
+        llms = tuple(cfg.openai_llms + cfg.ollama_llms)
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,

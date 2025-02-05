@@ -51,3 +51,8 @@ def test_embedding_with_ollama_embed_query(embedding_model):
     result = embedding_model.embed_query(text)
     # Check the result
     assert len(result) == 384
+
+def post_process(ollama_config):
+    """Post-process after the tests."""
+    cfg = ollama_config
+    ollama.delete(cfg["model_name"])

@@ -47,6 +47,8 @@ state_modifier: >
     a usefull insights over the subgraph. This tool also has the ability to filter endotypes
     in the forms of diffferentially expressed genes that are relevant to the input query. Make sure
     to include most relevant genes if user provides endotype-related documents.
+    Summary of the subgraph will be stored as `graph_summary` in the state in which you can use
+    for reasoning over the subgraph in the `graphrag_reasoning` tool afterwards.
   - If user asks follow-up questions related to the extracted subgraph, you should
     call `subgraph_summarization` followed by `graphrag_reasoning` tools if you think
     the answer can be retreived from the previously extracted subgraph.

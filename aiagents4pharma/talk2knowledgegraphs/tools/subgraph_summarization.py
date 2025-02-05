@@ -106,7 +106,7 @@ class SubgraphSummarizationTool(BaseTool):
                 "graph_summary": response,
                 "messages":[
                     ToolMessage(
-                        content="Subgraph Extraction",
+                        content=response,
                         tool_call_id=tool_call_id
                     )
                 ]

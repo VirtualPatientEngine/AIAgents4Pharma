@@ -58,9 +58,13 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
                     ])
 
     # Define the model
+    logger.log(logging.INFO, llm_model)
+    logger.log(logging.INFO, cfg.openai_llms)
     if llm_model in cfg.openai_llms:
+        logger.log(logging.INFO, "Using OpenAI model %s", llm_model)
         llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
     else:
+        logger.log(logging.INFO, "Using Ollama model %s", llm_model)
         llm = ChatOllama(model=llm_model, temperature=cfg.temperature)
 
     # Create the agent

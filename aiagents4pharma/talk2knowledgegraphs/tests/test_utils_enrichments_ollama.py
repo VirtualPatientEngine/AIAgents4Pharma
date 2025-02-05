@@ -10,16 +10,16 @@ from ..utils.enrichments.ollama import EnrichmentWithOllama
 def fixture_ollama_config():
     """Return a dictionary with Ollama configuration."""
     return {
-        "model_name": "smollm2:360m",
+        "model_name": "granite3.1-moe:1b",
         "prompt_enrichment": """
             Given the input as a list of strings, please return the list of addditional information of
             each input terms using your prior knowledge.
 
             Example:
             Input: ['acetaminophen', 'aspirin']
-            Ouput: ['acetaminophen is a medication used to treat pain and fever', 
+            Ouput: ['acetaminophen is a medication used to treat pain and fever',
             'aspirin is a medication used to treat pain, fever, and inflammation']
-            
+
             Do not include any pretext as the output, only the list of strings enriched.
 
             Input: {input}

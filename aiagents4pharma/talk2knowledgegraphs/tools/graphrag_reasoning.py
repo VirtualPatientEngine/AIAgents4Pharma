@@ -69,8 +69,8 @@ class GraphRAGReasoningTool(BaseTool):
         # Load existing vector store from the directory
         logger.log(logging.INFO, "Loading documents")
         # Prepare documents from uploaded files and create vector store out of them
+        all_docs = []
         if len(state["uploaded_files"]) != 0:
-            all_docs = []
             for uploaded_file in state["uploaded_files"]:
                 if uploaded_file["file_type"] == "drug_data":
                     # Load documents
