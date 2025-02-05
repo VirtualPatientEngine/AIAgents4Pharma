@@ -2,3 +2,4 @@ defaults:
   - _self_
   - talk2biomodels/agents/t2b_agent: default
   - talk2biomodels/tools/ask_question: default
+  - talk2biomodels/tools/get_annotation: default
