@@ -4,6 +4,7 @@ Test cases for Talk2Biomodels query_article tool.
 
 from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
 
 class Article(BaseModel):
@@ -30,11 +31,20 @@ def test_query_article_with_an_article():
                     )
     # Get the response from the tool
     assistant_msg = response["messages"][-1].content
+    # Prepare a LLM that can be used as a judge
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+    # Make it return a structured output
+    structured_llm = llm.with_structured_output(Article)
+    # Prepare a prompt for the judge
+    prompt = "Given the text below, what is the title of the article?"
+    prompt += f"\n\n{assistant_msg}"
+    # Get the structured output
+    article = structured_llm.invoke(prompt)
     # Check if the article title is correct
     expected_title = "A Multiscale Model of IL-6–Mediated "
     expected_title += "Immune Regulation in Crohn’s Disease"
-    assert expected_title in assistant_msg
-    # assert article.title == expected_title
+    # Check if the article title is correct
+    assert article.title == expected_title
 
 def test_query_article_without_an_article():
     '''
