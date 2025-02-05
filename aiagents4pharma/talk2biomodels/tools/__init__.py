@@ -10,3 +10,4 @@ from . import parameter_scan
 from . import steady_state
 from . import load_biomodel
 from . import get_annotation
+from . import query_article

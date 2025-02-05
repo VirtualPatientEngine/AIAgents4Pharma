@@ -6,3 +6,9 @@ state_modifier: >
   as True. If the user asks for simulation
   or param_scan or steady state, suggest a
   value for the `experiment_name` argument.
+
+  If the user asks question related to the
+  uploaded document/pdf/article/document,
+  use the tool `query_article` to answer the
+  question. Please note that the `experiment_name`
+  argument may be unrelated to the question asked.
