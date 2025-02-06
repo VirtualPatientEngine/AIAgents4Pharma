@@ -5,7 +5,7 @@
 **Paper:**
 > Tang B, Wang X, Li Q, Bragazzi NL, Tang S, Xiao Y, Wu J. Estimation of the Transmission Risk of the 2019-nCoV and Its Implication for Public Health Interventions. J Clin Med. 2020 Feb 7;9(2):462. doi: 10.3390/jcm9020462. [PMID: 32046137](https://pubmed.ncbi.nlm.nih.gov/32046137/)
 
-**Model:** [BIOMD0000000971]([text](https://www.ebi.ac.uk/biomodels/BIOMD0000000971))
+**Model:** [BIOMD0000000971](https://www.ebi.ac.uk/biomodels/BIOMD0000000971)
 
 <hr>
 
