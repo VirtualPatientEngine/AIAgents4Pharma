@@ -52,7 +52,5 @@ def test_embedding_with_ollama_embed_query(embedding_model):
     # Check the result
     assert len(result) == 384
 
-def post_process(ollama_config):
-    """Post-process after the tests."""
-    cfg = ollama_config
-    ollama.delete(cfg["model_name"])
+    # Delete the Ollama model so that it will not be cached afterward
+    ollama.delete(embedding_model.model_name)
