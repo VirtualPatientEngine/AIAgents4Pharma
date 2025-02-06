@@ -14,28 +14,38 @@
 
 **Q1** Describe the model <br>
 
-```Briefly describe the BioModel 971```
+```
+Briefly describe the BioModel 971
+```
 
 
 **Q2** Describe model components <br>
 
-``` Describe model components```
+```
+Describe model components
+```
 
 <hr>
 
 ### Compute infected cases over time
 **Q3** Simulate the model and plot infected cases over time <br>
+**Q4** Set the quarantine rate rate (`q_lockdown`) 20 times the initial value (=3.7774 e-06) and simulate the model (reproduce figure 3C from the paper). <br>
+```
+Simulate the model for 50 days with an interval of 50. Plot infected cases over time. Call this model_default.
+```
 
-``` Simulate the model for 50 days with an interval of 50. Plot infected cases over time. Call this model_default.```
 
+**Q4** Set the quarantine rate (`q_lockdown`) 20 times the initial value (=3.7774 e-06) and simulate the model (reproduce the red line in figure 3C from the paper). <br>
 
-**Q4** Set the quarantine rate rate (`q_lockdown`) 20 times the initial value (=3.7774 e-06) and simulate the model (reproduce  figure 3C from the paper). <br>
-
-``` Simulate the model again, but set the parameter 'q_lockdown' to 0.0000037774. Call this model_high_lockdown.```
+```
+Simulate the model again, but set the parameter 'q_lockdown' to 0.0000037774. Call this model_high_lockdown.
+```
 
 **Q5:** Compare infected cases for both simulations. <br>
 
-```What is the value of infected cases at the end of the simulation in both experiments?```
+```
+What is the value of infected cases at the end of the simulation in both experiments?
+```
 
 <hr>
 
