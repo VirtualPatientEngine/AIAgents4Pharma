@@ -42,6 +42,7 @@ nav:
           - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
+          - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb 
       - Datasets:
           - Dataset: talk2knowledgegraphs/datasets/dataset.md
           - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
