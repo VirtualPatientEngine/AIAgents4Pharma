@@ -33,12 +33,14 @@ def extract_relevant_species_names(model_object, arg_data, state):
     """
     Extract relevant species names based on the user question.
     """
-    logger.info("Loading prompt for the LLM model.")
     # Load hydra configuration
     with hydra.initialize(version_base=None, config_path="../../configs"):
         cfg = hydra.compose(config_name='config',
                             overrides=['talk2biomodels/tools/get_annotation=default'])
         cfg = cfg.talk2biomodels.tools.get_annotation
+    logger.info("Loaded the following system prompt for the LLM"
+                " to get a structured output: %s", cfg.prompt)
+
     # Extract all the species names from the model
     df_species = basico.model_info.get_species(model=model_object.copasi_model)
     if df_species is None:
