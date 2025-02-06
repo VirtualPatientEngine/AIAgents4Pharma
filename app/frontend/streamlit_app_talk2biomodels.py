@@ -73,6 +73,47 @@ if "app" not in st.session_state:
 # Get the app
 app = st.session_state.app
 
+@st.fragment
+def get_uploaded_files():
+    """
+    Upload files.
+    """
+    # Upload the XML/SBML file
+    uploaded_sbml_file = st.file_uploader(
+        "Upload an XML/SBML file",
+        accept_multiple_files=False,
+        type=["xml", "sbml"],
+        help='''Upload an XML/SBML file to simulate
+            a biological model, and ask questions
+            about the simulation results.'''
+        )
+
+    # Upload the article
+    article = st.file_uploader(
+        "Upload article",
+        help="Article to ask questions",
+        accept_multiple_files=False,
+        type=["pdf"],
+        key="article"
+    )
+    # print (article)
+    # Update the agent state with the uploaded article
+    if article:
+        import tempfile
+        print (article.name)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            f.write(article.read())
+            # print (f.name)
+        # Create config for the agent
+        config = {"configurable": {"thread_id": st.session_state.unique_id}}
+        # Update the agent state with the selected LLM model
+        app.update_state(
+            config,
+            {"pdf_file_name": f.name}
+        )
+    # Return the uploaded file
+    return uploaded_sbml_file
+
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
 # First column
@@ -96,15 +137,21 @@ with main_col1:
             on_change=streamlit_utils.update_llm_model
         )
 
-        # Upload files (placeholder)
-        uploaded_file = st.file_uploader(
-            "Upload an XML/SBML file",
-            accept_multiple_files=False,
-            type=["xml", "sbml"],
-            help='''Upload an XML/SBML file to simulate
-                a biological model, and ask questions
-                about the simulation results.'''
-            )
+        # Upload panel
+        # with st.container(border=True):
+        #     get_uploaded_files()
+        # Upload files
+        uploaded_sbml_file = get_uploaded_files()
+
+        # # Upload files (placeholder)
+        # uploaded_file = st.file_uploader(
+        #     "Upload an XML/SBML file",
+        #     accept_multiple_files=False,
+        #     type=["xml", "sbml"],
+        #     help='''Upload an XML/SBML file to simulate
+        #         a biological model, and ask questions
+        #         about the simulation results.'''
+        #     )
 
         # Help text
         st.button("Know more ↗",
@@ -173,8 +220,8 @@ with main_col2:
         # When the user asks a question
         if prompt:
             # Create a key 'uploaded_file' to read the uploaded file
-            if uploaded_file:
-                st.session_state.sbml_file_path = uploaded_file.read().decode("utf-8")
+            if uploaded_sbml_file:
+                st.session_state.sbml_file_path = uploaded_sbml_file.read().decode("utf-8")
 
             # Display user prompt
             prompt_msg = ChatMessage(prompt, role="user")

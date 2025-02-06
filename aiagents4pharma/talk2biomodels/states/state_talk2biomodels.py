@@ -27,6 +27,7 @@ class Talk2Biomodels(AgentState):
     The state for the Talk2BioModels agent.
     """
     llm_model: str
+    pdf_file_name: str
     # A StateGraph may receive a concurrent updates
     # which is not supported by the StateGraph. Hence,
     # we need to add a reducer function to handle the

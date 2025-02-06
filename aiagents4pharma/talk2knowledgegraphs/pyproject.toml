@@ -30,7 +30,7 @@ dependencies = [
     "pcst_fast==1.0.10",
     "pydantic==2.9.2",
     "pylint==3.3.1",
-    "pypdf==5.1.0",
+    "pypdf==5.2.0",
     "pytest==8.3.3",
     "pytest-asyncio-0.25.2",
     "sentence_transformers==3.3.1",

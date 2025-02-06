@@ -17,10 +17,9 @@ def test_integration():
     # ##########################################
     # ## Test simulate_model tool
     # ##########################################
-    prompt = '''Simulate the model 537 for 100 hours and intervals
-    100 with an initial concentration of `DoseQ2W`
-    set to 300 and `Dose` set to 0. Reset the concentration
-    of `Ab{serum}` to 100 every 25 hours.'''
+    prompt = '''Simulate the model 537 for 100 hours and time intervals
+    100 with an initial concentration of `DoseQ2W` set to 300 and `Dose`
+    set to 0. Reset the concentration of `Ab{serum}` to 100 every 25 hours.'''
     # Test the tool get_modelinfo
     response = app.invoke(
                         {"messages": [HumanMessage(content=prompt)]},
