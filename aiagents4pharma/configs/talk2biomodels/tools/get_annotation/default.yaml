@@ -1,0 +1,6 @@
+_target_: talk2biomodels.tools.get_annotation.GetAnnotationTool
+prompt: >
+  Given the user question, extract the relevant species names.
+  If the user aks for a specific species, extract that species.
+  If none of the species match the user question, return None.
+  If the user asks for all species, return all species.

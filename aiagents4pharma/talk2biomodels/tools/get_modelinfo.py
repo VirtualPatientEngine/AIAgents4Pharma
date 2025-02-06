@@ -83,14 +83,33 @@ class GetModelInfoTool(BaseTool):
         # Extract species from the model
         if requested_model_info.species:
             df_species = basico.model_info.get_species(model=model_obj.copasi_model)
-            dic_results['Species'] = df_species['display_name'].tolist()
-            dic_results['Species'] = ','.join(dic_results['Species'])
+            if df_species is None:
+                raise ValueError("Unable to extract species from the model.")
+            # Convert index into a column
+            df_species.reset_index(inplace=True)
+            dic_results['Species'] = df_species[
+                                        ['name',
+                                         'compartment',
+                                         'type',
+                                         'unit',
+                                         'initial_concentration',
+                                         'display_name']]
+            # Convert this into a dictionary
+            dic_results['Species'] = dic_results['Species'].to_dict(orient='records')
 
         # Extract parameters from the model
         if requested_model_info.parameters:
             df_parameters = basico.model_info.get_parameters(model=model_obj.copasi_model)
-            dic_results['Parameters'] = df_parameters.index.tolist()
-            dic_results['Parameters'] = ','.join(dic_results['Parameters'])
+            # Convert index into a column
+            df_parameters.reset_index(inplace=True)
+            dic_results['Parameters'] = df_parameters[
+                                        ['name',
+                                         'type',
+                                         'unit',
+                                         'initial_value',
+                                         'display_name']]
+            # Convert this into a dictionary
+            dic_results['Parameters'] = dic_results['Parameters'].to_dict(orient='records')
 
         # Extract compartments from the model
         if requested_model_info.compartments:

@@ -5,9 +5,10 @@ This module contains the `GetAnnotationTool` for fetching species annotations
 based on the provided model and species names.
 """
 import math
-from typing import List, Annotated, Type
+from typing import List, Annotated, Type, TypedDict, Union, Literal
 import logging
 from dataclasses import dataclass
+import hydra
 from pydantic import BaseModel, Field
 import basico
 import pandas as pd
@@ -16,6 +17,7 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.base import BaseTool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
+from langchain_openai import ChatOpenAI
 from .load_biomodel import ModelData, load_biomodel
 from ..api.uniprot import search_uniprot_labels
 from ..api.ols import search_ols_labels
@@ -27,16 +29,56 @@ logger = logging.getLogger(__name__)
 
 ols_ontology_abbreviations = {'pato', 'chebi', 'sbo', 'fma', 'pr','go'}
 
-def prepare_content_msg(species_not_found: List[str],
-                        species_without_description: List[str]):
+def extract_relevant_species_names(model_object, arg_data, state):
+    """
+    Extract relevant species names based on the user question.
+    """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(config_name='config',
+                            overrides=['talk2biomodels/tools/get_annotation=default'])
+        cfg = cfg.talk2biomodels.tools.get_annotation
+    logger.info("Loaded the following system prompt for the LLM"
+                " to get a structured output: %s", cfg.prompt)
+
+    # Extract all the species names from the model
+    df_species = basico.model_info.get_species(model=model_object.copasi_model)
+    if df_species is None:
+        raise ValueError("Unable to extract species from the model.")
+    # Get all the species names
+    all_species_names = df_species.index.tolist()
+
+    # Define a structured output for the LLM model
+    class CustomHeader(TypedDict):
+        """
+        A list of species based on user question.
+        """
+        relevant_species: Union[None, List[Literal[*all_species_names]]] = Field(
+                description="""List of species based on user question.
+                If no relevant species are found, it must be None.""")
+
+    # Create an instance of the LLM model
+    llm = ChatOpenAI(model=state['llm_model'], temperature=0)
+    # Get the structured output from the LLM model
+    llm_with_structured_output = llm.with_structured_output(CustomHeader)
+    # Define the question for the LLM model using the prompt
+    question = cfg.prompt
+    question += f'Here is the user question: {arg_data.user_question}'
+    # Invoke the LLM model with the user question
+    dic = llm_with_structured_output.invoke(question)
+    extracted_species = []
+    # Extract all the species names from the model
+    for species in dic['relevant_species']:
+        if species in all_species_names:
+            extracted_species.append(species)
+    logger.info("Extracted species: %s", extracted_species)
+    return extracted_species
+
+def prepare_content_msg(species_without_description: List[str]):
     """
     Prepare the content message.
     """
     content = 'Successfully extracted annotations for the species.'
-    if species_not_found:
-        content += f'''The following species do not exist, and
-                        hence their annotations were not extracted:
-                        {', '.join(species_not_found)}.'''
     if species_without_description:
         content += f'''The descriptions for the following species
                         were not found:
@@ -52,12 +94,7 @@ class ArgumentData:
                                     " the experiment based on human query"
                                     " and the context of the experiment."
                                     " This must be set before the experiment is run."]
-    list_species_names: List[str] = Field(
-        default=None,
-        description='''List of species names to fetch annotations for.
-                      If not provided, annotations for all
-                      species in the model will be fetched.'''
-    )
+    user_question: Annotated[str, "Description of the user question"]
 
 class GetAnnotationInput(BaseModel):
     """
@@ -90,31 +127,22 @@ class GetAnnotationTool(BaseTool):
         Run the tool.
         """
         logger.info("Running the GetAnnotationTool tool for species %s, %s",
-                    arg_data.list_species_names,
+                    arg_data.user_question,
                     arg_data.experiment_name)
 
         # Prepare the model object
         sbml_file_path = state['sbml_file_path'][-1] if state['sbml_file_path'] else None
         model_object = load_biomodel(sys_bio_model, sbml_file_path=sbml_file_path)
 
-        # Extract all the species names from the model
-        df_species = basico.model_info.get_species(model=model_object.copasi_model)
+        # Extract relevant species names based on the user question
+        list_species_names = extract_relevant_species_names(model_object, arg_data, state)
 
-        if df_species is None:
-            # for example this may happen with model 20
-            raise ValueError("Unable to extract species from the model.")
-        # Fetch annotations for the species names
-        arg_data.list_species_names = arg_data.list_species_names or df_species.index.tolist()
+        # Check if the returned species names are empty
+        if not list_species_names:
+            raise ValueError("Model does not contain the requested species.")
 
         (annotations_df,
-         species_not_found,
-         species_without_description) = self._fetch_annotations(arg_data.list_species_names)
-
-        # Check if annotations are empty
-        # If empty, return a message
-        if annotations_df.empty:
-            logger.warning("The annotations dataframe is empty.")
-            return prepare_content_msg(species_not_found, species_without_description)
+         species_without_description) = self._fetch_annotations(list_species_names)
 
         # Process annotations
         annotations_df = self._process_annotations(annotations_df)
@@ -141,8 +169,7 @@ class GetAnnotationTool(BaseTool):
             update=dic_updated_state_for_model | {
                 "messages": [
                     ToolMessage(
-                        content=prepare_content_msg(species_not_found,
-                                                    species_without_description),
+                        content=prepare_content_msg(species_without_description),
                         artifact=True,
                         tool_call_id=tool_call_id
                     )
@@ -165,7 +192,6 @@ class GetAnnotationTool(BaseTool):
             tuple: A tuple containing the annotations dataframe, species not found list,
                    and description not found list.
         """
-        species_not_found = []
         description_not_found = []
         data = []
 
@@ -173,10 +199,6 @@ class GetAnnotationTool(BaseTool):
         for species in list_species_names:
             # Get the MIRIAM annotation for the species
             annotation = basico.get_miriam_annotation(name=species)
-            # If the annotation is not found, add the species to the list
-            if annotation is None:
-                species_not_found.append(species)
-                continue
 
             # Extract the descriptions from the annotation
             descriptions = annotation.get("descriptions", [])
@@ -197,7 +219,7 @@ class GetAnnotationTool(BaseTool):
         annotations_df = pd.DataFrame(data)
 
         # Return the annotations dataframe and the species not found list
-        return annotations_df, species_not_found, description_not_found
+        return annotations_df, description_not_found
 
     def _process_annotations(self, annotations_df: pd.DataFrame) -> pd.DataFrame:
         """
