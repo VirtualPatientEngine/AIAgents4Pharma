@@ -4,15 +4,13 @@ nav:
   - Home: index.md
 
   - Talk2Biomodels:
-      - Introduction: talk2biomodels/models/intro.md
+      - Introduction123: talk2biomodels/models/intro.md
       - Case Studies:
         - IBD: talk2biomodels/cases/Case_1.md
         - Covid-19: talk2biomodels/cases/Case_2.md
         - MAPK: talk2biomodels/cases/Case_3.md
       - Tutorials: 
         - ./notebooks/talk2biomodels/tutorial.ipynb
-        - ./notebooks/talk2biomodels/Case_3.md
-
       - Agents:
           - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
       - States:
