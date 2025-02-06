@@ -34,6 +34,7 @@ dependencies = [
     "plotly==5.24.1",
     "pydantic==2.9.2",
     "pylint==3.3.1",
+    "pypdf==5.2.0",
     "pytest==8.3.3",
     "pytest-asyncio==0.25.2",
     "streamlit==1.39.0",
@@ -67,4 +68,9 @@ include = ["aiagents4pharma*"]
 [tool.setuptools.package-data]
 aiagents4pharma = [
             "configs/*",
-            "configs/talk2biomodels/agents/t2b_agent/*"]
+            "configs/talk2biomodels/agents/t2b_agent/*",
+            "configs/talk2biomodels/tools/ask_question/*",
+            "configs/talk2biomodels/tools/get_annotation/*"]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

@@ -19,6 +19,7 @@ from ..tools.get_annotation import GetAnnotationTool
 from ..tools.ask_question import AskQuestionTool
 from ..tools.parameter_scan import ParameterScanTool
 from ..tools.steady_state import SteadyStateTool
+from ..tools.query_article import QueryArticle
 from ..states.state_talk2biomodels import Talk2Biomodels
 
 # Initialize logger
@@ -46,7 +47,8 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
                     GetModelInfoTool(),
                     SteadyStateTool(),
                     ParameterScanTool(),
-                    GetAnnotationTool()
+                    GetAnnotationTool(),
+                    QueryArticle()
                 ])
 
     # Define the model

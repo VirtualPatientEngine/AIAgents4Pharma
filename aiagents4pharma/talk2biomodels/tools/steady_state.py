@@ -5,8 +5,7 @@ Tool for parameter scan.
 """
 
 import logging
-from dataclasses import dataclass
-from typing import Type, Union, List, Annotated
+from typing import Type, Annotated
 import basico
 from pydantic import BaseModel, Field
 from langgraph.types import Command
@@ -15,83 +14,20 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from .load_biomodel import ModelData, load_biomodel
+from .load_arguments import ArgumentData, add_rec_events
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@dataclass
-class TimeData:
-    """
-    Dataclass for storing the time data.
-    """
-    duration: Union[int, float] = 100
-    interval: Union[int, float] = 10
-
-@dataclass
-class SpeciesData:
-    """
-    Dataclass for storing the species data.
-    """
-    species_name: List[str] = Field(description="species name", default=[])
-    species_concentration: List[Union[int, float]] = Field(
-        description="initial species concentration",
-        default=[])
-
-@dataclass
-class TimeSpeciesNameConcentration:
-    """
-    Dataclass for storing the time, species name, and concentration data.
-    """
-    time: Union[int, float] = Field(description="time point where the event occurs")
-    species_name: str = Field(description="species name")
-    species_concentration: Union[int, float] = Field(
-        description="species concentration at the time point")
-
-@dataclass
-class ReocurringData:
-    """
-    Dataclass for species that reoccur. In other words, the concentration
-    of the species resets to a certain value after a certain time interval.
-    """
-    data: List[TimeSpeciesNameConcentration] = Field(
-        description="time, name, and concentration data of species that reoccur",
-        default=[])
-
-@dataclass
-class ArgumentData:
-    """
-    Dataclass for storing the argument data.
-    """
-    time_data: TimeData = Field(description="time data", default=None)
-    species_data: SpeciesData = Field(
-        description="species name and initial concentration data")
-    reocurring_data: ReocurringData = Field(
-        description="""Concentration and time data of species that reoccur
-            For example, a species whose concentration resets to a certain value
-            after a certain time interval""")
-    steadystate_name: str = Field(
-        description="""An AI assigned `_` separated name of
-        the steady state experiment based on human query""")
-
-def add_rec_events(model_object, reocurring_data):
-    """
-    Add reocurring events to the model.
-    """
-    for row in reocurring_data.data:
-        tp, sn, sc = row.time, row.species_name, row.species_concentration
-        basico.add_event(f'{sn}_{tp}',
-                            f'Time > {tp}',
-                            [[sn, str(sc)]],
-                            model=model_object.copasi_model)
-
-def run_steady_state(model_object, dic_species_data):
+def run_steady_state(model_object,
+                     dic_species_to_be_analyzed_before_experiment):
     """
     Run the steady state analysis.
 
     Args:
         model_object: The model object.
-        dic_species_data: Dictionary of species data.
+        dic_species_to_be_analyzed_before_experiment: Dictionary of species data.
 
     Returns:
         DataFrame: The results of the steady state analysis.
@@ -99,7 +35,7 @@ def run_steady_state(model_object, dic_species_data):
     # Update the fixed model species and parameters
     # These are the initial conditions of the model
     # set by the user
-    model_object.update_parameters(dic_species_data)
+    model_object.update_parameters(dic_species_to_be_analyzed_before_experiment)
     logger.log(logging.INFO, "Running steady state analysis")
     # Run the steady state analysis
     output = basico.task_steadystate.run_steadystate(model=model_object.copasi_model)
@@ -108,7 +44,30 @@ def run_steady_state(model_object, dic_species_data):
         raise ValueError("A steady state was not found")
     logger.log(logging.INFO, "Steady state analysis successful")
     # Store the steady state results in a DataFrame
-    df_steady_state = basico.model_info.get_species(model=model_object.copasi_model)
+    df_steady_state = basico.model_info.get_species(model=model_object.copasi_model).reset_index()
+    # print (df_steady_state)
+    # Rename the column name to species_name
+    df_steady_state.rename(columns={'name': 'species_name'},
+                           inplace=True)
+    # Rename the column concentration to steady_state_concentration
+    df_steady_state.rename(columns={'concentration': 'steady_state_concentration'},
+                           inplace=True)
+    # Rename the column transition_time to steady_state_transition_time
+    df_steady_state.rename(columns={'transition_time': 'steady_state_transition_time'},
+                           inplace=True)
+    # Drop some columns
+    df_steady_state.drop(columns=
+                         [
+                            'initial_particle_number',
+                            'initial_expression',
+                            'expression',
+                            'particle_number',
+                            'type',
+                            'particle_number_rate',
+                            'key',
+                            'sbml_id',
+                            'display_name'],
+                            inplace=True)
     logger.log(logging.INFO, "Steady state results with shape %s", df_steady_state.shape)
     return df_steady_state
 
@@ -118,10 +77,10 @@ class SteadyStateInput(BaseModel):
     """
     sys_bio_model: ModelData = Field(description="model data",
                                      default=None)
-    arg_data: ArgumentData = Field(description=
-                                   """time, species, and reocurring data
-                                   as well as the steady state data""",
-                                   default=None)
+    arg_data: ArgumentData = Field(
+        description="time, species, and reocurring data"
+                " that must be set before the steady state analysis"
+                " as well as the experiment name", default=None)
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
@@ -129,12 +88,10 @@ class SteadyStateInput(BaseModel):
 # Pydantic class and not having type hints can lead to unexpected behavior.
 class SteadyStateTool(BaseTool):
     """
-    Tool for steady state analysis.
+    Tool to bring a model to steady state.
     """
     name: str = "steady_state"
-    description: str = """A tool to simulate a model and perform
-                        steady state analysisto answer questions
-                        about the steady state of species."""
+    description: str = "A tool to bring a model to steady state."
     args_schema: Type[BaseModel] = SteadyStateInput
 
     def _run(self,
@@ -155,7 +112,7 @@ class SteadyStateTool(BaseTool):
         Returns:
             Command: The updated state of the tool.
         """
-        logger.log(logging.INFO, "Calling steady_state tool %s, %s",
+        logger.log(logging.INFO, "Calling the steady_state tool %s, %s",
                    sys_bio_model, arg_data)
         # print (f'Calling steady_state tool {sys_bio_model}, {arg_data}, {tool_call_id}')
         sbml_file_path = state['sbml_file_path'][-1] if len(state['sbml_file_path']) > 0 else None
@@ -164,21 +121,23 @@ class SteadyStateTool(BaseTool):
         # Prepare the dictionary of species data
         # that will be passed to the simulate method
         # of the BasicoModel class
-        dic_species_data = {}
+        dic_species_to_be_analyzed_before_experiment = {}
         if arg_data:
             # Prepare the dictionary of species data
-            if arg_data.species_data is not None:
-                dic_species_data = dict(zip(arg_data.species_data.species_name,
-                                            arg_data.species_data.species_concentration))
+            if arg_data.species_to_be_analyzed_before_experiment is not None:
+                dic_species_to_be_analyzed_before_experiment = dict(
+                    zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
+                        arg_data.species_to_be_analyzed_before_experiment.species_concentration))
             # Add reocurring events (if any) to the model
             if arg_data.reocurring_data is not None:
                 add_rec_events(model_object, arg_data.reocurring_data)
         # Run the parameter scan
-        df_steady_state = run_steady_state(model_object, dic_species_data)
+        df_steady_state = run_steady_state(model_object,
+                                           dic_species_to_be_analyzed_before_experiment)
         # Prepare the dictionary of scanned data
         # that will be passed to the state of the graph
         dic_steady_state_data = {
-            'name': arg_data.steadystate_name,
+            'name': arg_data.experiment_name,
             'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
             'tool_call_id': tool_call_id,
             'data': df_steady_state.to_dict(orient='records')
@@ -198,9 +157,9 @@ class SteadyStateTool(BaseTool):
                 # Update the message history
                 "messages": [
                 ToolMessage(
-                        content=f'''Steady state analysis of
-                                {arg_data.steadystate_name}
-                                are ready''',
+                        content=f"Steady state analysis of"
+                                f" {arg_data.experiment_name}"
+                                " was successful.",
                         tool_call_id=tool_call_id
                         )
                     ],

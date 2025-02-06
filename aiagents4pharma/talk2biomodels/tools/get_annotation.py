@@ -7,6 +7,7 @@ based on the provided model and species names.
 import math
 from typing import List, Annotated, Type
 import logging
+from dataclasses import dataclass
 from pydantic import BaseModel, Field
 import basico
 import pandas as pd
@@ -42,18 +43,29 @@ def prepare_content_msg(species_not_found: List[str],
                         {", ".join(species_without_description)}.'''
     return content
 
-class GetAnnotationInput(BaseModel):
+@dataclass
+class ArgumentData:
     """
-    Input schema for annotation tool.
+    Dataclass for storing the argument data.
     """
-    sys_bio_model: ModelData = Field(description="model data")
-    tool_call_id: Annotated[str, InjectedToolCallId]
+    experiment_name: Annotated[str, "An AI assigned _ separated name of"
+                                    " the experiment based on human query"
+                                    " and the context of the experiment."
+                                    " This must be set before the experiment is run."]
     list_species_names: List[str] = Field(
-        default=[],
+        default=None,
         description='''List of species names to fetch annotations for.
                       If not provided, annotations for all
                       species in the model will be fetched.'''
     )
+
+class GetAnnotationInput(BaseModel):
+    """
+    Input schema for annotation tool.
+    """
+    arg_data: ArgumentData = Field(description="argument data")
+    sys_bio_model: ModelData = Field(description="model data")
+    tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
 class GetAnnotationTool(BaseTool):
@@ -70,14 +82,16 @@ class GetAnnotationTool(BaseTool):
     return_direct: bool = False
 
     def _run(self,
+             arg_data: ArgumentData,
              tool_call_id: Annotated[str, InjectedToolCallId],
              state: Annotated[dict, InjectedState],
-             list_species_names: List[str] = None,
              sys_bio_model: ModelData = None) -> str:
         """
         Run the tool.
         """
-        logger.info("Running the GetAnnotationTool tool for species %s", list_species_names)
+        logger.info("Running the GetAnnotationTool tool for species %s, %s",
+                    arg_data.list_species_names,
+                    arg_data.experiment_name)
 
         # Prepare the model object
         sbml_file_path = state['sbml_file_path'][-1] if state['sbml_file_path'] else None
@@ -90,11 +104,11 @@ class GetAnnotationTool(BaseTool):
             # for example this may happen with model 20
             raise ValueError("Unable to extract species from the model.")
         # Fetch annotations for the species names
-        list_species_names = list_species_names or df_species.index.tolist()
+        arg_data.list_species_names = arg_data.list_species_names or df_species.index.tolist()
 
         (annotations_df,
          species_not_found,
-         species_without_description) = self._fetch_annotations(list_species_names)
+         species_without_description) = self._fetch_annotations(arg_data.list_species_names)
 
         # Check if annotations are empty
         # If empty, return a message
@@ -107,6 +121,7 @@ class GetAnnotationTool(BaseTool):
 
         # Prepare the simulated data
         dic_annotations_data = {
+            'name': arg_data.experiment_name,
             'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
             'tool_call_id': tool_call_id,
             'data': annotations_df.to_dict()
