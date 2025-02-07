@@ -176,12 +176,36 @@ what is R in this model?
 <img src="../figures/C1_q4.4.png" width="600"/>
 </details>
 
+ **Q4.5** Use RAG over the PDF to answer the questions related to the model. The user has to upload the PDF file of the article first.
+ The article can be found [here](https://ascpt.onlinelibrary.wiley.com/doi/epdf/10.1038/psp.2013.64).
 
-**Q4.5:** Show concentrations of model species <br>
+
+```
+Query the uploaded article to suggest a possible description and role of the parameter R in the model.
+```
+
+<details>
+<summary>Answer</summary>   
+
+<p>The parameter R in the model is associated with the dynamics of IL-6 signaling in the context of Crohn's disease. While the specific role of R is not explicitly detailed in the provided excerpts, it can be inferred that R is likely involved in the regulation of receptor interactions or signaling pathways related to IL-6.</p>
+
+<h4>Possible Description and Role of Parameter R:</h4>
+<p><strong>Description:</strong> R may represent a receptor or a regulatory component in the IL-6 signaling pathway, potentially influencing the binding and activity of IL-6 or its receptors (such as IL-6Rα).</p>
+<p><strong>Role:</strong> The parameter R could play a critical role in modulating the effects of IL-6 signaling, particularly in how the immune system responds to IL-6 in the context of Crohn's disease. It may affect the concentration of downstream signaling molecules or biomarkers, such as C-Reactive Protein (CRP), which is a key indicator of inflammation in this disease.</p>
+
+<p>In summary, while the exact function of R is not explicitly stated, it is likely integral to the signaling dynamics of IL-6 and its impact on immune regulation in Crohn's disease. Further details from the model or additional context from the article may provide more specific insights into its role.</p>
+
+
+</details>
+
+
+**Q4.6:** Show concentrations of model species <br>
 
 ```
 show concentrations of all species in this model in a table format
+
 ```
+
 
 <details>
 <summary>Answer</summary>   
@@ -236,7 +260,7 @@ show concentrations of all species in this model in a table format
 
 </details>
 
-**Q4.6:** Show parameter values <br>
+**Q4.7:** Show parameter values <br>
 
 ```
 show parameter values in this model
@@ -304,6 +328,21 @@ show parameter values in this model
 </details>
 
 <hr>
+
+**Q4.8:** Modle time
+
+```
+Query the uploaded article and return the model's simulation duration time mentioned in the paper.
+```
+ 
+<details>
+<summary>Answer</summary>   
+
+<p>The model in the paper simulates the pharmacological effects over a duration of <strong>12 weeks</strong>. This is indicated in the context of intravenous drug administration at 4-week intervals, where the effects on biomarkers such as serum CRP are assessed throughout this period.</p>
+
+</details>
+
+
 
 ### Model simulation and plotting
 
