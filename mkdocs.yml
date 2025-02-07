@@ -4,11 +4,11 @@ nav:
   - Home: index.md
 
   - Talk2Biomodels:
-      - Introduction123: talk2biomodels/models/intro.md
+      - Introduction: talk2biomodels/models/intro.md
       - Case Studies:
-        - IBD: talk2biomodels/cases/Case_1.md
-        - Covid-19: talk2biomodels/cases/Case_2.md
-        - MAPK: talk2biomodels/cases/Case_3.md
+        - Precision medicine: talk2biomodels/cases/Case_1.md
+        - Epidemiology: talk2biomodels/cases/Case_2.md
+        - Emergent system properties: talk2biomodels/cases/Case_3.md
       - Tutorials: 
         - ./notebooks/talk2biomodels/tutorial.ipynb
       - Agents:
