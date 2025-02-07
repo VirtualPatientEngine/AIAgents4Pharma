@@ -56,19 +56,19 @@ nav:
           - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
           - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
 
-  - Talk2Competitors:
-      - Introduction: talk2competitors/intro.md
-      - Tutorials: ./notebooks/talk2competitors/tutorial.ipynb
+  - Talk2Scholars:
+      - Introduction: talk2scholars/intro.md
+      - Tutorials: ./notebooks/talk2scholars/tutorial.ipynb
       - Agents:
-          - Main Agent: talk2competitors/agents/main_agent.md
-          - S2 Agent: talk2competitors/agents/s2_agent.md
+          - Main Agent: talk2scholars/agents/main_agent.md
+          - S2 Agent: talk2scholars/agents/s2_agent.md
       - States:
-          - Talk2Competitors state: talk2competitors/states/state_talk2competitors.md
+          - Talk2Scholars state: talk2scholars/states/state_talk2scholars.md
       - Tools:
-          - Search papers: talk2competitors/tools/search.md
-          - Single paper recomendation: talk2competitors/tools/single_paper_rec.md
-          - Multi paper recomendation: talk2competitors/tools/multi_paper_rec.md
-          - Display results: talk2competitors/tools/display_results.md
+          - Search papers: talk2scholars/tools/search.md
+          - Single paper recommendation: talk2scholars/tools/single_paper_rec.md
+          - Multi paper recommendation: talk2scholars/tools/multi_paper_rec.md
+          - Display results: talk2scholars/tools/display_results.md
 
   - Documentation:
       - Ops:
