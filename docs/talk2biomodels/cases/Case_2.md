@@ -16,7 +16,7 @@
 ### General questions about the model
 
 
-**Q1** Describe the model <br>
+**Q:** Describe the model <br>
 
 ```
 
@@ -31,13 +31,14 @@ The model indicates that the control reproduction number could be as high as 6.4
 
 </details>
 
-**Q2** Describe model components <br>
+**Q:** Describe model components <br>
 
 ```
 Describe model components
 ```
 
 <details>
+
 <summary>Answer</summary>
 
 The components of BioModel 971 include:
@@ -94,19 +95,21 @@ The components of BioModel 971 include:
 <hr>
 
 ### Compute infected cases over time
-**Q3** Simulate the model and plot infected cases over time <br>
+**Q:** Simulate the model and plot infected cases over time <br>
 
 ```
 Simulate the model for 50 days with an interval of 50. Plot infected cases over time. Call this model_default.
 ```
 
 <details>
+
 <summary>Answer</summary>
 <img src="../figures/C2_q3.png" width="600"/>
 </details>
 
 
-**Q4** Set the quarantine rate (`q_lockdown`) 20 times the initial value (=3.7774 e-06) and simulate the model (reproduce the red line in figure 3C from the paper). <br>
+**Q:** Set the quarantine rate (`q_lockdown`) 20 times the initial value (=3.7774 e-06) and simulate the model (reproduce the red line in figure 3C from the paper). <br>
+
 
 
 ```
@@ -123,7 +126,7 @@ Plot the infected cases over time.
 </details>
 
 
-**Q5:** Compare infected cases for both simulations. <br>
+**Q:** Compare infected cases for both simulations. <br>
 
 ```
 What is the value of infected cases at the end of the simulation in both experiments?
@@ -138,11 +141,3 @@ The values of infected cases at the end of the simulations are as follows:
   <li>For the experiment model_high_lockdown, the value is approximately <strong>7,275.49</strong></li>
 </ul>
 </details>
-
-
-
-<hr>
-
-
-
-	

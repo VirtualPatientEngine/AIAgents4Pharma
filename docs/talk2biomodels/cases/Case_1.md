@@ -16,7 +16,7 @@
 
 <hr>
 
-**Q1:** Search for a model on BioModels database related to a search term <br>
+**Q:** Search for a model on BioModels database related to a search term <br>
 
 ```
 Search for all the BioModels on Crohn's Disease
@@ -62,7 +62,7 @@ Search for all the BioModels on Crohn's Disease
 </details>
 
 
-**Q2:** Get model description <br>
+**Q:** Get model description <br>
 
 ```
 Briefly describe the BioModel 537
@@ -89,7 +89,7 @@ Briefly describe the BioModel 537
 
 </details>
 
-**Q3:** Ask about publication data of the model (It will remember the model number) <br>
+**Q:** Ask about publication data of the model (It will remember the model number) <br>
 
 ```
 When and where was this model published?
@@ -119,7 +119,7 @@ When and where was this model published?
 ### Interrogate model species and annotations
 
 
-**Q4.1:** Display all parameters related to drug dosage. <br>
+**Q:** Display all parameters related to drug dosage. <br>
 
 ```
 Show me the parameters related to drug dosing regimen in the model
@@ -143,7 +143,7 @@ Show me the parameters related to drug dosing regimen in the model
 </details>
 <hr> 
 
-**Q4.2:** Show annotated species of the model. <br>
+**Q:** Show annotated species of the model. <br>
 
 ```
 get model annotations
@@ -154,7 +154,7 @@ get model annotations
 <img src="../figures/C1_q4.2.png" width="600"/>
 </details>
 
-**Q4.3:** Show all species of a specific type in the model <br>
+**Q:** Show all species of a specific type in the model <br>
 
 ```
 show all interleukins in this model
@@ -165,7 +165,7 @@ show all interleukins in this model
 <img src="../figures/C1_q4.3.png" width="600"/>
 </details>	
 
-**Q4.4:** Interrogate specific species in the model <br>
+**Q:** Interrogate specific species in the model <br>
 
 ```
 what is R in this model?
@@ -176,7 +176,9 @@ what is R in this model?
 <img src="../figures/C1_q4.4.png" width="600"/>
 </details>
 
- **Q4.5** Use RAG over the PDF to answer the questions related to the model. The user has to upload the PDF file of the article first.
+### Ask questions to the published article using Retrieval-Augmented Generation (RAG)
+
+ **Q:** Ask questions to the published article concerning the model species. To utilize Retrieval-Augmented Generation (RAG) for answering questions about the model, the PDF file of the article should be uploaded first.
  The article can be found [here](https://ascpt.onlinelibrary.wiley.com/doi/epdf/10.1038/psp.2013.64).
 
 
@@ -198,14 +200,27 @@ Query the uploaded article to suggest a possible description and role of the par
 
 </details>
 
+**Q:** Access simulation time from the publication. To utilize Retrieval-Augmented Generation (RAG) for answering questions about the model, the PDF file of the article should be uploaded first. The article can be found [here](https://ascpt.onlinelibrary.wiley.com/doi/epdf/10.1038/psp.2013.64).
 
-**Q4.6:** Show concentrations of model species <br>
+```
+Query the uploaded article and return the model's simulation duration time mentioned in the paper.
+```
+ 
+<details>
+<summary>Answer</summary>   
+
+<p>The model in the paper simulates the pharmacological effects over a duration of <strong>12 weeks</strong>. This is indicated in the context of intravenous drug administration at 4-week intervals, where the effects on biomarkers such as serum CRP are assessed throughout this period.</p>
+
+</details>
+
+
+
+**Q:** Show concentrations of model species <br>
 
 ```
 show concentrations of all species in this model in a table format
 
 ```
-
 
 <details>
 <summary>Answer</summary>   
@@ -260,7 +275,7 @@ show concentrations of all species in this model in a table format
 
 </details>
 
-**Q4.7:** Show parameter values <br>
+**Q:** Show parameter values <br>
 
 ```
 show parameter values in this model
@@ -329,34 +344,22 @@ show parameter values in this model
 
 <hr>
 
-**Q4.8:** Modle time
-
-```
-Query the uploaded article and return the model's simulation duration time mentioned in the paper.
-```
- 
-<details>
-<summary>Answer</summary>   
-
-<p>The model in the paper simulates the pharmacological effects over a duration of <strong>12 weeks</strong>. This is indicated in the context of intravenous drug administration at 4-week intervals, where the effects on biomarkers such as serum CRP are assessed throughout this period.</p>
-
-</details>
-
 
 
 ### Model simulation and plotting
 
-**Q5:** Simulate the model for 12 weeks (= 2016 hours), and give the simulation result a name. <br>
+**Q:** Simulate the model for 12 weeks (= 2016 hours), and give the simulation result a name. <br>
 
 ```
-Simulate the model for 2016 hours with an interval of 2016 hours. Set the initial concentration of Dose to 200 mg. Call this result `Treatment 4wk`.
-```
+Simulate the model for 2016 hours with 300 intervals. Set the initial concentration of Dose to 200 mg. Call this result `Treatment 4wk`.
+```	
 
 <details>
 <summary>Answer</summary>
 
 <h3>Figure:</h3>
 <img src="../figures/C1_q5.png" width="600"/>
+
 
 <h3>Table:</h3>
 <table>
@@ -433,7 +436,7 @@ Simulate the model for 2016 hours with an interval of 2016 hours. Set the initia
 </table>
 </details>
 
-**Q6:** Show only CRP-related species, as it is one of the clinically-relevant measurement for a successful treatment. <br>
+**Q:** Show only CRP-related species, as it is one of the clinically-relevant measurement for a successful treatment. <br>
 
 ```
 Plot only CRP-related species.
@@ -446,20 +449,29 @@ Plot only CRP-related species.
 <img src="../figures/C1_q6.png" width="600"/>
 </details>
 
-**Q7:** Review, how drug treatment influences CRP[serum] concentration at any arbitrary time point, e.g. 12 weeks after the initial drug treatment (2016 hours). <br>
+**Q:** Review, how drug treatment influences CRP concentration in the serum at any arbitrary time point, e.g. 12 weeks after the initial drug treatment (2016 hours). <br>
 
 ```
-What is the CRP concentration in the serum after 2016 hours of treatment?
+What is the CRP concentration in the serum at the end of the simulation?
 ```
+
+<details>
+<summary>Answer</summary>
+
+<p>The CRP concentration in the serum at the end of the simulation is approximately <strong>220.52 nmol</strong>.</p>
+
+</details>
 
 <hr>
 
 ### Compare two treatment regimens and apply reasoning
 
-**Q8:** Administrate the drug treatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
+
+**Q:** Administrate the drug treatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
+
 
 ```
-Simulate the model again for 2016 hours with an interval of 2016 hours. Set the initial concentration of `DoseQ2W` to 200 and `Dose` to 0. Call this result `Treatment 2wk`.
+Simulate the model again for 2016 hours with 300 intervals. Set the initial concentration of `DoseQ2W` to 200 and `Dose` to 0. Call this result `Treatment 2wk`.
 ```
 <details>
 <summary>Answer</summary>
@@ -467,24 +479,40 @@ Simulate the model again for 2016 hours with an interval of 2016 hours. Set the 
 
 </details>
 
-**Q9:** Compare the CRP values in both aforementioned cases. 'Treatment 2wk' should reduce CRP earlier than 'Treatment 4wk'. <br>
+**Q:** Compare the CRP values in both aforementioned cases. 'Treatment 2wk' should reduce CRP earlier than 'Treatment 4wk'. <br>
 
 ```
 Based on the CRP values in serum at the end of the simulation, which treatment would you recommend `Treatment 4wk` or `Treatment 2wk`?
 ```
 
+<details>
+<summary>Answer</summary>
+
+<p>At the end of the simulations, the CRP concentrations in the serum are as follows:</p>
+
+<ul>
+  <li><strong>Treatment 4wk:</strong> Approximately 220.52 nmol</li>
+  <li><strong>Treatment 2wk:</strong> Approximately 1.457 nmol</li>
+</ul>
+
+<p>Based on these values, I would recommend <strong>Treatment 2wk</strong>, as it results in a significantly lower CRP concentration in the serum compared to Treatment 4wk. A lower CRP concentration indicates better suppression of inflammation. If you have any further questions or need additional insights, feel free to ask!</p>
+
+</details>
+
 <hr>
 
 ### Compute the concentration of free drug in blood serum 
 
-**Q10:** Reproduce Figure 4f from the paper for a 500mg dose. <br>
+
+**Q:** Reproduce Figure 4f from the paper for a 500mg dose. <br>
 
 ```
-Set the initial concentration of 'Dose' to 500 mg and simulate the model for 2016 hours with an interval of 2016. 
+Set the initial concentration of 'Dose' to 500 mg and simulate the model for 2016 hours with 300 intervals. 
 ```
 ```
 Plot Ab in serum.
 ```
+
 
 <details>
 <summary>Answer</summary>
@@ -498,14 +526,15 @@ Plot Ab in serum.
 
 ### Simulate two antibodies with varying dissociation affinities
 
-**Q11:** Plot the current trajectory of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. The authors expect 100% suppression of CRP after 12 weeks. <br>
+**Q:** Plot the current trajectory of CRP % suppression with the initial model parameters (`kIL6RUnbind` = 2.5). Compare the CRP suppression after 12 weeks of treatment. The authors expect 100% suppression of CRP after 12 weeks. <br>
 
 ```
-Simulate the model for 2016 hours with an interval of 2016.
+Simulate the model 537 for 2016 hours with 300 intervals. Save this simulation as 'Ab_2.5'.
 ```
 ```
-Plot the trajectory of CRP % suppression. Save this simulation as 'Ab_2.5'.
+Plot the trajectory of CRP % suppression. 
 ```
+
 
 <details>
 <summary>Answer</summary>
@@ -515,13 +544,13 @@ Plot the trajectory of CRP % suppression. Save this simulation as 'Ab_2.5'.
 </details>
 
 
-**Q12:** Set the parameter `kIL6RUnbind` to 250, decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % suppression. The authors expect ~10% suppression of CRP after 12 weeks. <br>
+**Q:** Set the parameter `kIL6RUnbind` to 250, decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % suppression. The authors expect ~10% suppression of CRP after 12 weeks. <br>
 
 ```
-Simulate the model for 2016 hours with an interval of 2016, but set the parameter `kIL6RUnbind` to 250. 
+Simulate the model for 2016 hours with 300 intervals, but set the parameter `kIL6RUnbind` to 250. Save this simulation as 'Ab_250'. 
 ```
 ```	
-Plot the curve of CRP % suppression. Save this simulation as 'Ab_250'.
+Plot the curve of CRP % suppression. 
 ```
 
 <details>
@@ -533,23 +562,33 @@ Plot the curve of CRP % suppression. Save this simulation as 'Ab_250'.
 
 
 
-**Q13:** Inquire about the effectiveness of the antibodies. <br>
+**Q:** Inquire about the effectiveness of the antibodies. <br>
 
 ```
 Which antibody 'Ab_250' or 'Ab_2.5' is more effective in reducing CRP in the blood serum at the end of the simulation?
 ```
 
+<details>
+<summary>Answer</summary>
+<p>At the end of the simulation:</p>
+<ul>
+  <li>Ab_250 resulted in a final CRP level of approximately 219.77 nmol.</li>
+  <li>Ab_2.5 resulted in a final CRP level of approximately 2.27 nmol.</li>
+</ul>
+
+<p>Based on this data, Ab_2.5 is more effective in reducing CRP in the blood serum at the end of the simulation. If you have any further questions or need additional analysis, feel free to ask!</p>
+</details>
+
 <hr>
 
 ### Parameter scanning
-**Q14:** A scan over the parameter `kIL6RUnbind` to evaluate how CRP in serum changes with the stability of the antibody-IL6R complex. <br>
+**Q:** Analyze the variability of the parameter kIL6RUnbind to evaluate how CRP levels in serum are influenced by the stability of the antibody-IL6R complex. <br>
 
 ```
-How will the concentration of CRP in serum change, if the parameter `kIL6RUnbind` were to be changed from 2.5 to 250 in steps of 20?
+How will the concentration of CRP in serum change, if the parameter `kIL6RUnbind` were to be changed from 2 to 250 in steps of 20?
 ```
 
 <details>
 <summary>Answer</summary>
 <img src="../figures/C1_q14.png" width="600"/>
 </details>
-
