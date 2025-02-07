@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Talk2Competitors: A Streamlit app for the Talk2Competitors graph.
+Talk2Scholars: A Streamlit app for the Talk2Scholars graph.
 '''
 
 import os
@@ -16,9 +16,9 @@ from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
 from langsmith import Client
 sys.path.append('./')
-from aiagents4pharma.talk2competitors.agents.main_agent import get_app
+from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
-st.set_page_config(page_title="Talk2Competitors", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Talk2Scholars", page_icon="🤖", layout="wide")
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
@@ -28,7 +28,7 @@ if "OPENAI_API_KEY" not in os.environ:
 
 # Create a chat prompt template
 prompt = ChatPromptTemplate.from_messages([
-        ("system", "Welcome to Talk2Competitors!"),
+        ("system", "Welcome to Talk2Scholars!"),
         MessagesPlaceholder(variable_name='chat_history', optional=True),
         ("human", "{input}"),
         ("placeholder", "{agent_scratchpad}"),
@@ -41,7 +41,7 @@ if "messages" not in st.session_state:
 # Initialize project_name for Langsmith
 if "project_name" not in st.session_state:
     # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = 'Talk2Competitors-' + str(random.randint(1000, 9999))
+    st.session_state.project_name = 'Talk2Scholars-' + str(random.randint(1000, 9999))
 
 # Initialize run_id for Langsmith
 if "run_id" not in st.session_state:
@@ -100,7 +100,7 @@ with main_col1:
         # Title
         st.write("""
             <h3 style='margin: 0px; padding-bottom: 10px; font-weight: bold;'>
-            🤖 Talk2Competitors
+            🤖 Talk2Scholars
             </h3>
             """,
             unsafe_allow_html=True)
