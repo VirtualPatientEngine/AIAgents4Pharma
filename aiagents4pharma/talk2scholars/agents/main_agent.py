@@ -6,7 +6,7 @@ Main agent for the talk2scholars app.
 
 import logging
 from typing import Literal
-from dotenv import load_dotenv
+import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
@@ -14,15 +14,13 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 from ..agents import s2_agent
-from ..config.config import config
 from ..state.state_talk2scholars import Talk2Scholars
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-load_dotenv()
 
-def make_supervisor_node(llm: BaseChatModel) -> str:
+def make_supervisor_node(llm: BaseChatModel, cfg) -> str:
     """
     Creates a supervisor node following LangGraph patterns.
 
@@ -34,7 +32,9 @@ def make_supervisor_node(llm: BaseChatModel) -> str:
     """
     # options = ["FINISH", "s2_agent"]
 
-    def supervisor_node(state: Talk2Scholars) -> Command[Literal["s2_agent", "__end__"]]:
+    def supervisor_node(
+        state: Talk2Scholars,
+    ) -> Command[Literal["s2_agent", "__end__"]]:
         """
         Supervisor node that routes to appropriate sub-agents.
 
@@ -46,7 +46,7 @@ def make_supervisor_node(llm: BaseChatModel) -> str:
         """
         logger.info("Supervisor node called")
 
-        messages = [{"role": "system", "content": config.MAIN_AGENT_PROMPT}] + state[
+        messages = [{"role": "system", "content": cfg.state_modifier}] + state[
             "messages"
         ]
         response = llm.invoke(messages)
@@ -81,7 +81,8 @@ def make_supervisor_node(llm: BaseChatModel) -> str:
 
     return supervisor_node
 
-def get_app(thread_id: str, llm_model ='gpt-4o-mini') -> StateGraph:
+
+def get_app(thread_id: str, llm_model="gpt-4o-mini") -> StateGraph:
     """
     Returns the langraph app with hierarchical structure.
 
@@ -91,6 +92,15 @@ def get_app(thread_id: str, llm_model ='gpt-4o-mini') -> StateGraph:
     Returns:
         The compiled langraph app.
     """
+
+    # Load hydra configuration
+    logger.log(logging.INFO, "Load Hydra configuration for Talk2Scholars main agent.")
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["agents/talk2scholars/main_agent=default"]
+        )
+        cfg = cfg.agents.talk2scholars.main_agent
+
     def call_s2_agent(state: Talk2Scholars) -> Command[Literal["__end__"]]:
         """
         Node for calling the S2 agent.
@@ -114,10 +124,12 @@ def get_app(thread_id: str, llm_model ='gpt-4o-mini') -> StateGraph:
                 "current_agent": "s2_agent",
             },
         )
-    llm = ChatOpenAI(model=llm_model, temperature=0)
+
+    logger.log(logging.INFO, "Using OpenAI model %s", llm_model)
+    llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
     workflow = StateGraph(Talk2Scholars)
 
-    supervisor = make_supervisor_node(llm)
+    supervisor = make_supervisor_node(llm, cfg)
     workflow.add_node("supervisor", supervisor)
     workflow.add_node("s2_agent", call_s2_agent)
 
