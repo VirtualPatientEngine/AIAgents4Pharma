@@ -21,11 +21,6 @@ from ..tools.s2.single_paper_rec import get_single_paper_recommendations
 # pylint: disable=redefined-outer-name
 
 
-def pytest_configure(config):
-    """Register integration marker."""
-    config.addinivalue_line("markers", "integration: mark test as an integration test")
-
-
 @pytest.fixture(autouse=True)
 def hydra_setup():
     """Setup and cleanup Hydra for tests."""
