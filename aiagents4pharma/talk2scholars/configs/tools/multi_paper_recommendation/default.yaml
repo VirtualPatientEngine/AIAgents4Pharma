@@ -1,0 +1,19 @@
+api_endpoint: "https://api.semanticscholar.org/recommendations/v1/papers"
+default_limit: 2
+request_timeout: 10
+api_fields:
+  - "paperId"
+  - "title"
+  - "abstract"
+  - "year"
+  - "authors"
+  - "citationCount"
+  - "url"
+
+# Default headers and params
+headers:
+  Content-Type: "application/json"
+
+recommendation_params:
+  limit: ${.default_limit}
+  fields: ${.api_fields}
