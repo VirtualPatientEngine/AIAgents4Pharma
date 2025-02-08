@@ -8,6 +8,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from langsmith import Client
+from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 def submit_feedback(user_response):
     '''
@@ -153,7 +155,13 @@ def update_llm_model():
     """
     Function to update the LLM model.
     """
-    llm_model = st.session_state.llm_model
+    # llm_model = st.session_state.llm_model
+    if st.session_state.llm_model.startswith("llama"):
+        llm_model = ChatOllama(model=st.session_state.llm_model,
+                               temperature=0)
+    else:
+        llm_model = ChatOpenAI(model=st.session_state.llm_model,
+                               temperature=0)
     st.warning(f"Clicking 'Continue' will reset all agents, \
             set the selected LLM to {llm_model}. \
             This action will reset the entire app, \

@@ -12,6 +12,7 @@ import pandas as pd
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
@@ -23,17 +24,17 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
 
 
-# st.logo(
-#     image='docs/VPE.png',
-#     size='large',
-#     link='https://github.com/VirtualPatientEngine'
-# )
+st.logo(
+    image='docs/VPE.png',
+    size='large',
+    link='https://github.com/VirtualPatientEngine'
+)
 
 # Check if env variable OPENAI_API_KEY exists
-if "OPENAI_API_KEY" not in os.environ:
-    st.error("Please set the OPENAI_API_KEY environment \
-        variable in the terminal where you run the app.")
-    st.stop()
+# if "OPENAI_API_KEY" not in os.environ:
+#     st.error("Please set the OPENAI_API_KEY environment \
+#         variable in the terminal where you run the app.")
+#     st.stop()
 
 # Create a chat prompt template
 prompt = ChatPromptTemplate.from_messages([
@@ -128,7 +129,7 @@ with main_col1:
             unsafe_allow_html=True)
 
         # LLM panel (Only at the front-end for now)
-        llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
+        llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo", "llama3.2:1b"]
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
@@ -258,9 +259,13 @@ with main_col2:
                         config,
                         {"sbml_file_path": [st.session_state.sbml_file_path]}
                     )
+                    # app.update_state(
+                    #     config,
+                    #     {"llm_model": st.session_state.llm_model}
+                    # )
                     app.update_state(
                         config,
-                        {"llm_model": st.session_state.llm_model}
+                        {"llm_model": ChatOllama(model='llama3.2:1b', temperature=0)}
                     )
                     # print (current_state.values)
                     # current_state = app.get_state(config)
