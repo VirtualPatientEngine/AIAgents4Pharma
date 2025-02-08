@@ -6,7 +6,7 @@ This tool is used to return recommendations for a single paper.
 
 import logging
 from typing import Annotated, Any, Dict, Optional
-
+import hydra
 import pandas as pd
 import requests
 from langchain_core.messages import ToolMessage
@@ -41,6 +41,14 @@ class SinglePaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
+# Load hydra configuration
+with hydra.initialize(version_base=None, config_path="../../configs"):
+    cfg = hydra.compose(
+        config_name="config", overrides=["tools/single_paper_recommendation=default"]
+    )
+    cfg = cfg.tools.single_paper_recommendation
+
+
 @tool(args_schema=SinglePaperRecInput)
 def get_single_paper_recommendations(
     paper_id: str,
@@ -63,20 +71,18 @@ def get_single_paper_recommendations(
     """
     logger.info("Starting single paper recommendations search.")
 
-    endpoint = (
-        f"https://api.semanticscholar.org/recommendations/v1/papers/forpaper/{paper_id}"
-    )
+    endpoint = f"{cfg.api_endpoint}/{paper_id}"
     params = {
         "limit": min(limit, 500),  # Max 500 per API docs
-        "fields": "paperId,title,abstract,year,authors,citationCount,url",
-        "from": "all-cs",  # Using all-cs pool as specified in docs
+        "fields": ",".join(cfg.api_fields),
+        "from": cfg.recommendation_params.from_pool,
     }
 
     # Add year parameter if provided
     if year:
         params["year"] = year
 
-    response = requests.get(endpoint, params=params, timeout=10)
+    response = requests.get(endpoint, params=params, timeout=cfg.request_timeout)
     data = response.json()
     papers = data.get("data", [])
     response = requests.get(endpoint, params=params, timeout=10)

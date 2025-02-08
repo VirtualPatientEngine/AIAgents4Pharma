@@ -8,7 +8,7 @@ multi_paper_rec: Tool for getting recommendations
 import json
 import logging
 from typing import Annotated, Any, Dict, List, Optional
-
+import hydra
 import pandas as pd
 import requests
 from langchain_core.messages import ToolMessage
@@ -40,6 +40,14 @@ class MultiPaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
+# Load hydra configuration
+with hydra.initialize(version_base=None, config_path="../../configs"):
+    cfg = hydra.compose(
+        config_name="config", overrides=["tools/multi_paper_recommendation=default"]
+    )
+    cfg = cfg.tools.multi_paper_recommendation
+
+
 @tool(args_schema=MultiPaperRecInput)
 def get_multi_paper_recommendations(
     paper_ids: List[str],
@@ -62,12 +70,12 @@ def get_multi_paper_recommendations(
     """
     logging.info("Starting multi-paper recommendations search.")
 
-    endpoint = "https://api.semanticscholar.org/recommendations/v1/papers"
-    headers = {"Content-Type": "application/json"}
+    endpoint = cfg.api_endpoint
+    headers = cfg.headers
     payload = {"positivePaperIds": paper_ids, "negativePaperIds": []}
     params = {
         "limit": min(limit, 500),
-        "fields": "paperId,title,abstract,year,authors,citationCount,url",
+        "fields": ",".join(cfg.api_fields),
     }
 
     # Add year parameter if provided
@@ -80,7 +88,7 @@ def get_multi_paper_recommendations(
         headers=headers,
         params=params,
         data=json.dumps(payload),
-        timeout=10,
+        timeout=cfg.request_timeout,
     )
     logging.info(
         "API Response Status for multi-paper recommendations: %s", response.status_code

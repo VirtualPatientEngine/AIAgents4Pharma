@@ -6,7 +6,7 @@ This tool is used to search for academic papers on Semantic Scholar.
 
 import logging
 from typing import Annotated, Any, Dict, Optional
-
+import hydra
 import pandas as pd
 import requests
 from langchain_core.messages import ToolMessage
@@ -34,6 +34,12 @@ class SearchInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
+# Load hydra configuration
+with hydra.initialize(version_base=None, config_path="../../configs"):
+    cfg = hydra.compose(config_name="config", overrides=["tools/search=default"])
+    cfg = cfg.tools.search
+
+
 @tool(args_schema=SearchInput)
 def search_tool(
     query: str,
@@ -55,13 +61,13 @@ def search_tool(
         Dict[str, Any]: The search results and related information.
     """
     print("Starting paper search...")
-    endpoint = "https://api.semanticscholar.org/graph/v1/paper/search"
+    endpoint = cfg.api_endpoint
     params = {
         "query": query,
         "limit": min(limit, 100),
         # "fields": "paperId,title,abstract,year,authors,
         # citationCount,url,publicationTypes,openAccessPdf",
-        "fields": "paperId,title,abstract,year,authors,citationCount,url",
+        "fields": ",".join(cfg.api_fields),
     }
 
     # Add year parameter if provided
