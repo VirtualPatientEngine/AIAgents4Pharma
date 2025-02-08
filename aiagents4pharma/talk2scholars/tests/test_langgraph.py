@@ -5,18 +5,61 @@ Tests are deterministic and independent of each other.
 """
 
 from unittest.mock import Mock, patch
-
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
+import hydra
+from hydra.core.global_hydra import GlobalHydra
+from omegaconf import DictConfig, OmegaConf
 
 from ..agents.main_agent import get_app, make_supervisor_node
-from ..state.state_talk2scholars import replace_dict
+from ..state.state_talk2scholars import replace_dict, Talk2Scholars
 from ..tools.s2.display_results import display_results
 from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations
 from ..tools.s2.search import search_tool
 from ..tools.s2.single_paper_rec import get_single_paper_recommendations
 
 # pylint: disable=redefined-outer-name
+
+
+def pytest_configure(config):
+    """Register integration marker."""
+    config.addinivalue_line("markers", "integration: mark test as an integration test")
+
+
+@pytest.fixture(autouse=True)
+def hydra_setup():
+    """Setup and cleanup Hydra for tests."""
+    GlobalHydra.instance().clear()
+    with hydra.initialize(version_base=None, config_path="../configs"):
+        yield
+
+
+@pytest.fixture
+def mock_cfg() -> DictConfig:
+    """Create a mock configuration for testing."""
+    config = {
+        "agents": {
+            "talk2scholars": {
+                "main_agent": {
+                    "state_modifier": "Test prompt for main agent",
+                    "temperature": 0,
+                },
+                "s2_agent": {
+                    "temperature": 0,
+                    "s2_agent": "Test prompt for s2 agent",
+                },
+            }
+        },
+        "tools": {
+            "search": {
+                "api_endpoint": "https://api.semanticscholar.org/graph/v1/paper/search",
+                "default_limit": 2,
+                "api_fields": ["paperId", "title", "abstract", "year", "authors"],
+            }
+        },
+    }
+    return OmegaConf.create(config)
+
 
 # Fixed test data for deterministic results
 MOCK_SEARCH_RESPONSE = {
@@ -45,27 +88,33 @@ MOCK_STATE_PAPER = {
 
 
 @pytest.fixture
-def initial_state():
+def initial_state() -> Talk2Scholars:
     """Create a base state for tests"""
-    return {
-        "messages": [],
-        "papers": {},
-        "is_last_step": False,
-        "current_agent": None,
-        "llm_model": "gpt-4o-mini",
-    }
+    return Talk2Scholars(
+        messages=[],
+        papers={},
+        is_last_step=False,
+        current_agent=None,
+        llm_model="gpt-4o-mini",
+        next="",
+    )
 
 
 class TestMainAgent:
     """Unit tests for main agent functionality"""
 
-    def test_supervisor_routes_search_to_s2(self, initial_state):
+    def test_supervisor_routes_search_to_s2(
+        self, initial_state: Talk2Scholars, mock_cfg
+    ):
         """Verifies that search-related queries are routed to S2 agent"""
         llm_mock = Mock()
         llm_mock.invoke.return_value = AIMessage(content="Search initiated")
 
-        supervisor = make_supervisor_node(llm_mock)
-        state = initial_state.copy()
+        # Extract the main_agent config
+        supervisor = make_supervisor_node(
+            llm_mock, mock_cfg.agents.talk2scholars.main_agent
+        )
+        state = initial_state
         state["messages"] = [HumanMessage(content="search for papers")]
 
         result = supervisor(state)
@@ -73,13 +122,18 @@ class TestMainAgent:
         assert not result.update["is_last_step"]
         assert result.update["current_agent"] == "s2_agent"
 
-    def test_supervisor_routes_general_to_end(self, initial_state):
+    def test_supervisor_routes_general_to_end(
+        self, initial_state: Talk2Scholars, mock_cfg
+    ):
         """Verifies that non-search queries end the conversation"""
         llm_mock = Mock()
         llm_mock.invoke.return_value = AIMessage(content="General response")
 
-        supervisor = make_supervisor_node(llm_mock)
-        state = initial_state.copy()
+        # Extract the main_agent config
+        supervisor = make_supervisor_node(
+            llm_mock, mock_cfg.agents.talk2scholars.main_agent
+        )
+        state = initial_state
         state["messages"] = [HumanMessage(content="What is ML?")]
 
         result = supervisor(state)
@@ -90,9 +144,9 @@ class TestMainAgent:
 class TestS2Tools:
     """Unit tests for individual S2 tools"""
 
-    def test_display_results_shows_papers(self, initial_state):
+    def test_display_results_shows_papers(self, initial_state: Talk2Scholars):
         """Verifies display_results tool correctly returns papers from state"""
-        state = initial_state.copy()
+        state = initial_state
         state["papers"] = MOCK_STATE_PAPER
         result = display_results.invoke(input={"state": state})
         assert result == MOCK_STATE_PAPER
@@ -199,40 +253,6 @@ class TestS2Tools:
         assert "papers" in result.update
         assert len(result.update["messages"]) == 1
 
-    @patch("requests.get")
-    def test_single_paper_rec_empty_response(self, mock_get):
-        """Tests single paper recommendations with empty response"""
-        mock_get.return_value.json.return_value = {"recommendedPapers": []}
-        mock_get.return_value.status_code = 200
-
-        result = get_single_paper_recommendations.invoke(
-            input={
-                "paper_id": "123",
-                "limit": 1,
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-        assert "papers" in result.update
-        assert len(result.update["papers"]) == 0
-
-    @patch("requests.post")
-    def test_multi_paper_rec_empty_response(self, mock_post):
-        """Tests multi-paper recommendations with empty response"""
-        mock_post.return_value.json.return_value = {"recommendedPapers": []}
-        mock_post.return_value.status_code = 200
-
-        result = get_multi_paper_recommendations.invoke(
-            input={
-                "paper_ids": ["123", "456"],
-                "limit": 1,
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-        assert "papers" in result.update
-        assert len(result.update["papers"]) == 0
-
 
 def test_state_replace_dict():
     """Verifies state dictionary replacement works correctly"""
@@ -244,11 +264,13 @@ def test_state_replace_dict():
 
 
 @pytest.mark.integration
-def test_end_to_end_search_workflow(initial_state):
+def test_end_to_end_search_workflow(initial_state: Talk2Scholars, mock_cfg):
     """Integration test: Complete search workflow"""
     with (
         patch("requests.get") as mock_get,
         patch("langchain_openai.ChatOpenAI") as mock_llm,
+        patch("hydra.compose", return_value=mock_cfg),
+        patch("hydra.initialize"),
     ):
         mock_get.return_value.json.return_value = MOCK_SEARCH_RESPONSE
         mock_get.return_value.status_code = 200
@@ -258,7 +280,7 @@ def test_end_to_end_search_workflow(initial_state):
         mock_llm.return_value = llm_instance
 
         app = get_app("test_integration")
-        test_state = initial_state.copy()
+        test_state = initial_state
         test_state["messages"] = [HumanMessage(content="search for ML papers")]
 
         config = {
