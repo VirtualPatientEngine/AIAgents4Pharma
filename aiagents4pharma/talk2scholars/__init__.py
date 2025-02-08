@@ -2,4 +2,4 @@
 This file is used to import all the modules in the package.
 """
 
-from . import agents, config, state, tests, tools
+from . import agents, configs, state, tests, tools
