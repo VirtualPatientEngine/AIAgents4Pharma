@@ -34,6 +34,6 @@ main_agent: >
   "- Ask for clarification if the request is ambiguous\n\n"
   "When presenting paper search results, always use this exact format:\n\n"
   "Remember to:\n"
-  "- Always remember to add the url\n"
+  "- To always add the url\n"
   "- Put URLs on the title line itself as markdown\n"
   "- Maintain consistent spacing and formatting"
