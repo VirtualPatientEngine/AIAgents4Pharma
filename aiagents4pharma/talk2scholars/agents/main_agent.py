@@ -43,7 +43,11 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> str:
         Returns:
             Command[Literal["s2_agent", "__end__"]]: The command to execute next.
         """
-        logger.info("Supervisor node called with state: %s", state)
+        logger.info(
+            "Supervisor node called - Messages count: %d, Current Agent: %s",
+            len(state["messages"]),
+            state.get("current_agent", "None"),
+        )
 
         messages = [{"role": "system", "content": cfg.state_modifier}] + state[
             "messages"
