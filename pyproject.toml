@@ -71,6 +71,14 @@ aiagents4pharma = [
   "configs/talk2biomodels/agents/t2b_agent/*",
   "configs/talk2biomodels/tools/ask_question/*",
   "configs/talk2biomodels/tools/get_annotation/*",
+  "talk2scholars/configs/*",
+  "talk2scholars/configs/agents/talk2scholars/main_agent/*",
+  "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
+  "talk2scholars/configs/app/frontend/*",
+  "talk2scholars/configs/tools/multi_paper_recommendation/*",
+  "talk2scholars/configs/tools/search/*",
+  "talk2scholars/configs/tools/single_paper_recommendation/*",
+
 ]
 
 [tool.pytest.ini_options]
