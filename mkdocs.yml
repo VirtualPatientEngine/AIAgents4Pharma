@@ -5,7 +5,12 @@ nav:
 
   - Talk2Biomodels:
       - Introduction: talk2biomodels/models/intro.md
-      - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
+      - Case Studies:
+        - Precision medicine: talk2biomodels/cases/Case_1.md
+        - Epidemiology: talk2biomodels/cases/Case_2.md
+        - Emergent system properties: talk2biomodels/cases/Case_3.md
+      - Tutorials: 
+        - ./notebooks/talk2biomodels/tutorial.ipynb
       - Agents:
           - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
       - States:
