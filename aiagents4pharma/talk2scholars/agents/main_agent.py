@@ -5,7 +5,7 @@ Main agent for the talk2scholars app.
 """
 
 import logging
-from typing import Literal
+from typing import Literal, Any
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
@@ -20,18 +20,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def make_supervisor_node(llm: BaseChatModel, cfg) -> str:
+def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> str:
     """
     Creates a supervisor node following LangGraph patterns.
 
     Args:
         llm (BaseChatModel): The language model to use for generating responses.
+        cfg (Any): The configuration object.
 
     Returns:
         str: The supervisor node function.
     """
-    # options = ["FINISH", "s2_agent"]
-
     def supervisor_node(
         state: Talk2Scholars,
     ) -> Command[Literal["s2_agent", "__end__"]]:
@@ -44,7 +43,7 @@ def make_supervisor_node(llm: BaseChatModel, cfg) -> str:
         Returns:
             Command[Literal["s2_agent", "__end__"]]: The command to execute next.
         """
-        logger.info("Supervisor node called")
+        logger.info("Supervisor node called with state: %s", state)
 
         messages = [{"role": "system", "content": cfg.state_modifier}] + state[
             "messages"
@@ -100,6 +99,7 @@ def get_app(thread_id: str, llm_model="gpt-4o-mini") -> StateGraph:
             config_name="config", overrides=["agents/talk2scholars/main_agent=default"]
         )
         cfg = cfg.agents.talk2scholars.main_agent
+        logger.info("Hydra configuration loaded with values: %s", cfg)
 
     def call_s2_agent(state: Talk2Scholars) -> Command[Literal["__end__"]]:
         """
@@ -111,10 +111,10 @@ def get_app(thread_id: str, llm_model="gpt-4o-mini") -> StateGraph:
         Returns:
             Command[Literal["__end__"]]: The command to execute next.
         """
-        logger.info("Calling S2 agent")
+        logger.info("Calling S2 agent with state: %s", state)
         app = s2_agent.get_app(thread_id, llm_model)
         response = app.invoke(state)
-        logger.info("S2 agent completed")
+        logger.info("S2 agent completed with response: %s", response)
         return Command(
             goto=END,
             update={
@@ -125,7 +125,12 @@ def get_app(thread_id: str, llm_model="gpt-4o-mini") -> StateGraph:
             },
         )
 
-    logger.log(logging.INFO, "Using OpenAI model %s", llm_model)
+    logger.log(
+        logging.INFO,
+        "Using OpenAI model %s with temperature %s",
+        llm_model,
+        cfg.temperature
+    )
     llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
     workflow = StateGraph(Talk2Scholars)
 
