@@ -118,7 +118,10 @@ def get_multi_paper_recommendations(
         update={
             "multi_papers": filtered_papers,  # Now sending the dictionary directly
             "messages": [
-                ToolMessage(content="Search Successfull", tool_call_id=tool_call_id)
+                ToolMessage(
+                    content=f"Search Successful: {filtered_papers}",
+                    tool_call_id=tool_call_id
+                )
             ],
         }
     )
