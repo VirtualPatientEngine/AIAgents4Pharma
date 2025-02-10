@@ -9,13 +9,17 @@ import json
 import logging
 from typing import Annotated, Any, Dict, List, Optional
 import hydra
-import pandas as pd
 import requests
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
+
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class MultiPaperRecInput(BaseModel):
@@ -110,31 +114,11 @@ def get_multi_paper_recommendations(
         if paper.get("title") and paper.get("paperId")
     }
 
-    # Create a DataFrame from the dictionary
-    df = pd.DataFrame.from_dict(filtered_papers, orient="index")
-    # print("Created DataFrame with results:")
-    logging.info("Created DataFrame with results: %s", df)
-
-    # Format papers for state update
-    papers = [
-        f"Paper ID: {paper_id}\n"
-        f"Title: {paper_data['Title']}\n"
-        f"Abstract: {paper_data['Abstract']}\n"
-        f"Year: {paper_data['Year']}\n"
-        f"Citations: {paper_data['Citation Count']}\n"
-        f"URL: {paper_data['URL']}\n"
-        for paper_id, paper_data in filtered_papers.items()
-    ]
-
-    # Convert DataFrame to markdown table
-    markdown_table = df.to_markdown(tablefmt="grid")
-    logging.info("Search results: %s", papers)
-
     return Command(
         update={
-            "papers": filtered_papers,  # Now sending the dictionary directly
+            "multi_papers": filtered_papers,  # Now sending the dictionary directly
             "messages": [
-                ToolMessage(content=markdown_table, tool_call_id=tool_call_id)
+                ToolMessage(content="Search Successfull", tool_call_id=tool_call_id)
             ],
         }
     )
