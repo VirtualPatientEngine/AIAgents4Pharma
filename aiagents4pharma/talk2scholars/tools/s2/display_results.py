@@ -5,7 +5,7 @@ This tool is used to display the table of studies.
 """
 
 import logging
-from typing import Annotated
+from typing import Annotated, Dict, Any
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
 
@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 @tool("display_results")
-def display_results(state: Annotated[dict, InjectedState]):
+def display_results(state: Annotated[dict, InjectedState]) -> Dict[str, Any]:
     """
-    Display the papers in the state.
+    Display the papers in the state. If no papers are found, indicates that a search is needed.
 
     Args:
         state (dict): The state of the agent containing the papers.
@@ -25,13 +25,21 @@ def display_results(state: Annotated[dict, InjectedState]):
     Returns:
         dict: A dictionary containing the papers and multi_papers from the state.
 
-    Raises:
-        ValueError: If no papers are found in the state, trigger a search.
+    Note:
+        Updates state directly to indicate search requirement if papers are not found.
     """
     logger.info("Displaying papers from the state")
 
     if not state.get("papers") and not state.get("multi_papers"):
-        logger.error("No papers found in the state. Triggering a search.")
-        raise ValueError("No papers found in the state. Please trigger a search.")
+        logger.info("No papers found in state, indicating search is needed")
+        state["need_search"] = True
+        return {
+            "papers": {},
+            "multi_papers": {},
+            "message": "No papers found. A search needs to be performed first.",
+        }
 
-    return {"papers": state["papers"], "multi_papers": state["multi_papers"]}
+    return {
+        "papers": state.get("papers", {}),
+        "multi_papers": state.get("multi_papers", {}),
+    }
