@@ -4,6 +4,7 @@ Test cases for tools/subgraph_summarization.py
 
 import pytest
 from langchain_core.messages import HumanMessage
+from langchain_ollama import OllamaEmbeddings, ChatOllama
 from ..agents.t2kg_agent import get_app
 
 # Define the data path
@@ -16,7 +17,8 @@ def input_dict_fixture():
     Input dictionary fixture.
     """
     input_dict = {
-        "llm_model": "gpt-4o-mini",
+        "llm_model": None,  # TBA for each test case
+        "embedding_model": None,  # TBA for each test case
         "uploaded_files": [],
         "input_tkg": f"{DATA_PATH}/kg_pyg_graph.pkl",
         "input_text_tkg": f"{DATA_PATH}/kg_text_graph.pkl",
@@ -117,62 +119,22 @@ def input_dict_fixture():
     return input_dict
 
 
-def test_summarize_subgraph_openai(input_dict):
-    """
-    Test the subgraph summarization tool without any documents using OpenAI model.
-
-    Args:
-        input_dict: Input dictionary fixture.
-    """
-    # Setup the app
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=input_dict["llm_model"])
-    config = {"configurable": {"thread_id": unique_id}}
-    # Update state
-    app.update_state(
-        config,
-        input_dict,
-    )
-    prompt = """
-    Please ONLY invoke `subgraph_summarization` tool without calling any other tools 
-    to respond to the following prompt:
-
-    You are given a subgraph in the forms of textualized subgraph representing
-    nodes and edges (triples).
-    Summarize the given subgraph and higlight the importance nodes and edges.
-    """
-
-    # Test the tool get_modelinfo
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
-
-    # Check assistant message
-    assistant_msg = response["messages"][-1].content
-    assert isinstance(assistant_msg, str)
-
-    # Check tool message
-    tool_msg = response["messages"][-2]
-    assert tool_msg.name == "subgraph_summarization"
-
-    # Check summarized subgraph
-    assert isinstance(response["graph_summary"], str)
-
-
-def test_summarize_subgraph_ollama(input_dict):
+def test_summarize_subgraph(input_dict):
     """
     Test the subgraph summarization tool without any documents using Ollama model.
 
     Args:
         input_dict: Input dictionary fixture.
     """
-    # Update the input dictionary
-    input_dict["llm_model"] = "llama3.2:1b"
+    # Prepare LLM and embedding model
+    input_dict["llm_model"] = ChatOllama(model="llama3.2:1b", temperature=0.0)
+    input_dict["embedding_model"] = OllamaEmbeddings(model="nomic-embed-text")
 
     # Setup the app
     unique_id = 12345
     app = get_app(unique_id, llm_model=input_dict["llm_model"])
     config = {"configurable": {"thread_id": unique_id}}
     # Update state
-    input_dict["llm_model"] = "llama3.2:1b"
     app.update_state(
         config,
         input_dict,
@@ -186,7 +148,7 @@ def test_summarize_subgraph_ollama(input_dict):
     Summarize the given subgraph and higlight the importance nodes and edges.
     """
 
-    # Test the tool get_modelinfo
+    # Test the tool subgraph_summarization
     response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
 
     # Check assistant message

@@ -14,8 +14,6 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
@@ -62,8 +60,7 @@ class SubgraphExtractionTool(BaseTool):
     def perform_endotype_filtering(
         self,
         prompt: str,
-        uploaded_files: list,
-        model_name: str,
+        state: Annotated[dict, InjectedState],
         cfg: hydra.core.config_store.ConfigStore,
     ) -> str:
         """
@@ -71,29 +68,12 @@ class SubgraphExtractionTool(BaseTool):
 
         Args:
             prompt: The prompt to interact with the backend.
-            uploaded_files: List of files uploaded during the chat session.
-            model_name: The model name to be used for the chat.
+            state: Injected state for the tool.
             cfg: Hydra configuration object.
         """
-        # Prepare embeddings and LLM based on the model name
-        if model_name in cfg.openai_llms:
-            embeddings = OpenAIEmbeddings(
-                model=cfg.openai_embeddings[0], api_key=cfg.openai_api_key
-            )
-            llm = ChatOpenAI(
-                model=model_name,
-                api_key=cfg.openai_api_key,
-                temperature=cfg.temperature,
-                streaming=cfg.streaming,
-            )
-        else:
-            embeddings = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
-            llm = ChatOllama(
-                model=model_name, temperature=cfg.temperature, streaming=cfg.streaming
-            )
-
+        # Loop through the uploaded files
         all_genes = []
-        for uploaded_file in uploaded_files:
+        for uploaded_file in state["uploaded_files"]:
             if uploaded_file["file_type"] == "endotype":
                 # Load the PDF file
                 docs = PyPDFLoader(file_path=uploaded_file["file_path"]).load()
@@ -112,10 +92,10 @@ class SubgraphExtractionTool(BaseTool):
                     ]
                 )
 
-                qa_chain = create_stuff_documents_chain(llm, prompt_template)
+                qa_chain = create_stuff_documents_chain(state["llm_model"], prompt_template)
                 rag_chain = create_retrieval_chain(
                     InMemoryVectorStore.from_documents(
-                        documents=splits, embedding=embeddings
+                        documents=splits, embedding=state["embedding_model"]
                     ).as_retriever(
                         search_type=cfg.retriever_search_type,
                         search_kwargs={
@@ -163,11 +143,9 @@ class SubgraphExtractionTool(BaseTool):
             cfg = cfg.tools.subgraph_extraction
 
         # Load the knowledge graph
-        logger.log(logging.INFO, "Loading the knowledge graph (PyG Graph)")
         # with open(cfg.input_tkg, 'rb') as f:
         with open(state["input_tkg"], "rb") as f:
             pyg_graph = pickle.load(f)
-        logger.log(logging.INFO, "Loading the knowledge graph (Textualized Graph)")
         # with open(cfg.input_text_tkg, 'rb') as f:
         with open(state["input_text_tkg"], "rb") as f:
             textualized_graph = pickle.load(f)
@@ -176,27 +154,17 @@ class SubgraphExtractionTool(BaseTool):
         if len(state["uploaded_files"]) != 0 and "endotype" in [
             f["file_type"] for f in state["uploaded_files"]
         ]:
-            logger.log(
-                logging.INFO,
-                "Preparing prompt construction along with a list of endotypes",
-            )
             prompt = self.perform_endotype_filtering(
-                prompt, state["uploaded_files"], state["llm_model"], cfg
+                prompt, state, cfg
             )
 
         # Prepare embedding model and embed the user prompt as query
-        logger.log(
-            logging.INFO, "Preparing embedding model and embed the user prompt as query"
-        )
         query_emb = torch.tensor(
             EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
         ).float()
 
         # Prepare the PCSTPruning object and extract the subgraph
         # Parameters were set in the configuration file obtained from Hydra
-        logger.log(
-            logging.INFO, "Preparing the PCSTPruning object and extract the subgraph"
-        )
         subgraph = PCSTPruning(
             state["topk_nodes"],
             state["topk_edges"],
@@ -209,7 +177,6 @@ class SubgraphExtractionTool(BaseTool):
         ).extract_subgraph(pyg_graph, query_emb)
 
         # Prepare the PyTorch Geometric graph
-        logger.log(logging.INFO, "Preparing the PyTorch Geometric graph")
         mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
         pyg_graph = Data(
             # Node features
@@ -239,10 +206,6 @@ class SubgraphExtractionTool(BaseTool):
         )
 
         # Networkx DiGraph construction to be visualized in the frontend
-        logger.log(
-            logging.INFO,
-            "Networkx DiGraph construction to be visualized in the frontend",
-        )
         nx_graph = nx.DiGraph()
         for n in pyg_graph.node_name:
             nx_graph.add_node(n)
@@ -260,7 +223,6 @@ class SubgraphExtractionTool(BaseTool):
             )
 
         # Prepare the textualized subgraph
-        logger.log(logging.INFO, "Preparing the textualized subgraph")
         textualized_graph = (
             textualized_graph["nodes"].iloc[subgraph["nodes"]].to_csv(index=False)
             + "\n"
@@ -268,7 +230,6 @@ class SubgraphExtractionTool(BaseTool):
         )
 
         # Store the result state dictionary
-        logger.log(logging.INFO, "Returning the extracted subgraph")
         return Command(
             update={
                 "graph_dict": {

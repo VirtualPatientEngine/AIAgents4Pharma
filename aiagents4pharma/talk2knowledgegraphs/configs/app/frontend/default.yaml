@@ -4,21 +4,24 @@ data_package_allowed_file_types:
   - "pdf"
 endotype_allowed_file_types:
   - "pdf"
-upload_data_dir: "app/backend/files"
-# input_tkg: "app/backend/files/kg_pyg_graph.pkl"
-# input_text_tkg: "app/backend/files/kg_text_graph.pkl"
-input_tkg: "../data/kg_12k_pyg_graph.pkl"
-input_text_tkg: "../data/kg_12k_textualized_graph.pkl"
+upload_data_dir: "../files"
+input_tkg: "aiagents4pharma/talk2knowledgegraphs/tests/files/kg_pyg_graph.pkl"
+input_text_tkg: "aiagents4pharma/talk2knowledgegraphs/tests/files/kg_text_graph.pkl"
+openai_api_key: ${oc.env:OPENAI_API_KEY}
 openai_llms:
   - "gpt-4o-mini"
   - "gpt-4-turbo"
   - "gpt-3.5-turbo"
+openai_embeddings:
+  - "text-embedding-3-small"
 ollama_llms:
   - "llama3.2:1b"
   - "llama3.2"
   - "llama3.1"
-  - "gemma"
-  - "mistral"
+ollama_embeddings:
+  - "nomic-embed-text"
+temperature: 0.1
+streaming: False
 reasoning_subgraph_topk_nodes: 10
 reasoning_subgraph_topk_nodes_min: 1
 reasoning_subgraph_topk_nodes_max: 100

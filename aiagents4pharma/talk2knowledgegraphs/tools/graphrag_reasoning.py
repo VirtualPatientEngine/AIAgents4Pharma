@@ -12,8 +12,6 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langgraph.prebuilt import InjectedState
 import hydra
 
@@ -56,18 +54,11 @@ class GraphRAGReasoningTool(BaseTool):
                                 overrides=['tools/graphrag_reasoning=default'])
             cfg = cfg.tools.graphrag_reasoning
 
-        # Prepare embeddings and LLM based on the model name
-        logger.log(logging.INFO, "Preparing embeddings and LLM")
-        if state["llm_model"] in cfg.openai_llms:
-            emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0],
-                                        api_key=cfg.openai_api_key)
-            llm = ChatOpenAI(model=state["llm_model"], temperature=cfg.temperature)
-        else:
-            emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
-            llm = ChatOllama(model=state["llm_model"], temperature=cfg.temperature)
+        # Retrieve embedding model and LLM from the state
+        emb_model = state["embedding_model"]
+        llm = state["llm_model"]
 
         # Load existing vector store from the directory
-        logger.log(logging.INFO, "Loading documents")
         # Prepare documents from uploaded files and create vector store out of them
         all_docs = []
         if len(state["uploaded_files"]) != 0:
@@ -87,7 +78,6 @@ class GraphRAGReasoningTool(BaseTool):
                     all_docs.extend(documents)
 
         # Set another prompt template
-        logger.log(logging.INFO, "Preparing prompt template")
         prompt_template = ChatPromptTemplate.from_messages(
             [
                 ("system", cfg.prompt_graphrag_w_docs),
@@ -96,7 +86,6 @@ class GraphRAGReasoningTool(BaseTool):
         )
 
         # Prepare chain with retrieved documents
-        logger.log(logging.INFO, "Chain setup")
         qa_chain = create_stuff_documents_chain(llm, prompt_template)
         rag_chain = create_retrieval_chain(
                     InMemoryVectorStore.from_documents(
@@ -109,7 +98,6 @@ class GraphRAGReasoningTool(BaseTool):
                                         qa_chain)
 
         # Invoke the chain
-        logger.log(logging.INFO, "Invoking chain")
         response = rag_chain.invoke({
             "input": prompt,
             "subgraph_summary": state["graph_summary"],

@@ -1,20 +1,4 @@
 _target_: talk2knowledgegraphs.tools.graphrag_reasoning
-openai_api_key: ${oc.env:OPENAI_API_KEY}
-openai_llms:
-  - "gpt-4o-mini"
-  - "gpt-4-turbo"
-  - "gpt-3.5-turbo"
-openai_embeddings:
-  - "text-embedding-3-small"
-ollama_llms:
-  - "llama3.2"
-  - "llama3.1"
-  - "gemma"
-  - "mistral"
-ollama_embeddings:
-  - "nomic-embed-text"
-temperature: 0.1
-streaming: False
 splitter_chunk_size: 1024
 splitter_chunk_overlap: 256
 retriever_search_type: "mmr"

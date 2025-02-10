@@ -7,12 +7,9 @@ from typing import Type, Annotated
 from pydantic import BaseModel, Field
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-# from langchain_core.tools import tool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.tools import BaseTool
-from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 import hydra
@@ -64,11 +61,9 @@ class SubgraphSummarizationTool(BaseTool):
             cfg = cfg.tools.subgraph_summarization
 
         # Load the textualized subgraph
-        logger.log(logging.INFO, "Loading the most recent extracted subgraph")
         textualized_subgraph = state["graph_text"]
 
         # Prepare prompt template
-        logger.log(logging.INFO, "Preparing prompt template")
         prompt_template = ChatPromptTemplate.from_messages(
             [
                 ("system", cfg.prompt_subgraph_summarization),
@@ -76,31 +71,18 @@ class SubgraphSummarizationTool(BaseTool):
             ]
         )
 
-        # Prepare LLM
-        logger.log(logging.INFO, "Preparing LLM")
-        if state["llm_model"] in cfg.openai_llms:
-            logger.log(logging.INFO, "Using OpenAI model")
-            llm = ChatOpenAI(model=state["llm_model"], temperature=cfg.temperature)
-        else:
-            logger.log(logging.INFO, "Using Ollama model")
-            llm = ChatOllama(model=state["llm_model"], temperature=cfg.temperature)
+        # Retrieve LLM from the state
+        llm = state["llm_model"]
 
         # Prepare chain
-        logger.log(logging.INFO, "Preparing chain")
         chain = prompt_template | llm | StrOutputParser()
 
         # Return the subgraph and textualized graph as JSON response
-        logger.log(logging.INFO, "Invoking chain")
         response = chain.invoke({
             "input": prompt,
             "textualized_subgraph": textualized_subgraph,
         })
 
-        # Update the state
-        # logger.log(logging.INFO, "Updating the state")
-        # state["graph_summary"] = response
-
-        # return response
         return Command(
             update={
                 "graph_summary": response,

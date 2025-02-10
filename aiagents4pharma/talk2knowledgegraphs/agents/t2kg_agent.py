@@ -5,8 +5,8 @@ This is the agent file for the Talk2KnowledgeGraphs agent.
 import logging
 from typing import Annotated
 import hydra
-from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode, InjectedState
@@ -19,7 +19,7 @@ from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_app(uniq_id, llm_model='gpt-4o-mini'):
+def get_app(uniq_id, llm_model: BaseChatModel=ChatOllama(model='llama3.2:1b', temperature=0.0)):
     '''
     This function returns the langraph app.
     '''
@@ -29,14 +29,6 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
         '''
         logger.log(logging.INFO, "Calling t2kg_agent node with thread_id %s", uniq_id)
         response = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
-
-        # Preview the state
-        # logger.log(logging.INFO, "Previewing the state")
-        # state = app.get_state({"configurable": {"thread_id": uniq_id}})
-        # logger.log(logging.INFO, state.values["llm_model"])
-        # logger.log(logging.INFO, state.values["uploaded_files"])
-        # logger.log(logging.INFO, state.values["topk_nodes"])
-        # logger.log(logging.INFO, state.values["topk_edges"])
 
         return response
 
@@ -57,19 +49,9 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
                     graphrag_reasoning,
                     ])
 
-    # Define the model
-    logger.log(logging.INFO, llm_model)
-    logger.log(logging.INFO, cfg.openai_llms)
-    if llm_model in cfg.openai_llms:
-        logger.log(logging.INFO, "Using OpenAI model %s", llm_model)
-        llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
-    else:
-        logger.log(logging.INFO, "Using Ollama model %s", llm_model)
-        llm = ChatOllama(model=llm_model, temperature=cfg.temperature)
-
     # Create the agent
     model = create_react_agent(
-                llm,
+                llm_model,
                 tools=tools,
                 state_schema=Talk2KnowledgeGraphs,
                 state_modifier=cfg.state_modifier,

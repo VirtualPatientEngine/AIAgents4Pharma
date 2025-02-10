@@ -13,9 +13,10 @@ import hydra
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_ollama import OllamaEmbeddings, ChatOllama
 from utils import streamlit_utils
 sys.path.append('./')
 from aiagents4pharma.talk2knowledgegraphs.agents.t2kg_agent import get_app
@@ -51,14 +52,6 @@ if "OPENAI_API_KEY" not in os.environ:
     st.error("Please set the OPENAI_API_KEY environment \
         variable in the terminal where you run the app.")
     st.stop()
-
-# Create a chat prompt template
-# prompt = ChatPromptTemplate.from_messages([
-#         ("system", "Welcome to Talk2KnowledgeGraphs!"),
-#         MessagesPlaceholder(variable_name='chat_history', optional=True),
-#         ("human", "{input}"),
-#         ("placeholder", "{agent_scratchpad}"),
-# ])
 
 # Initialize current user
 if "current_user" not in st.session_state:
@@ -99,12 +92,26 @@ if "run_id" not in st.session_state:
 # Initialize graph
 if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
+
+# Initialize the LLM model
+if "llm_model" not in st.session_state:
+    st.session_state.llm_model = tuple(cfg.openai_llms + cfg.ollama_llms)[0]
+
+# Initialize the app with default LLM model for the first time
 if "app" not in st.session_state:
-    if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(st.session_state.unique_id)
-    else:
+    # Initialize the app
+    if st.session_state.llm_model in cfg.openai_llms:
+        print("Using OpenAI LLM model")
         st.session_state.app = get_app(st.session_state.unique_id,
-                                       llm_model=st.session_state.llm_model)
+                                        llm_model=ChatOpenAI(
+                                            model=st.session_state.llm_model, 
+                                            temperature=cfg.temperature))
+    else:
+        print("Using Ollama LLM model")
+        st.session_state.app = get_app(st.session_state.unique_id,
+                                        llm_model=ChatOllama(
+                                            model=st.session_state.llm_model, 
+                                            temperature=cfg.temperature))
 
 if "topk_nodes" not in st.session_state:
     # Subgraph extraction settings
@@ -238,11 +245,22 @@ with main_col2:
                         for m in history
                     ]
 
+                    # Prepare LLM and embedding model for updating the agent
+                    if st.session_state.llm_model in cfg.openai_llms:
+                        llm_model = ChatOpenAI(model=st.session_state.llm_model,
+                                               temperature=cfg.temperature)
+                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                    else:
+                        llm_model=ChatOllama(model=st.session_state.llm_model,
+                                             temperature=cfg.temperature)
+                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     app.update_state(
                         config,
-                        {"llm_model": st.session_state.llm_model,
+                        {"llm_model": llm_model,
+                         "embedding_model": emb_model,
                          "uploaded_files": st.session_state.uploaded_files,
                          "topk_nodes": st.session_state.topk_nodes,
                          "topk_edges": st.session_state.topk_edges,
@@ -252,11 +270,6 @@ with main_col2:
 
                     # Update the agent states
                     current_state = app.get_state(config)
-                    print(current_state.values["input_tkg"])
-                    print(current_state.values["input_text_tkg"])
-                    # print (current_state.values)
-                    # current_state = app.get_state(config)
-                    # print ('updated state', current_state.values["documents_path"])
 
                     ERROR_FLAG = False
                     with collect_runs() as cb:
@@ -268,9 +281,7 @@ with main_col2:
                             config=config|{"callbacks": [tracer]}
                         )
                         st.session_state.run_id = cb.traced_runs[-1].id
-                    # print(response["messages"])
                     current_state = app.get_state(config)
-                    # print (current_state.values["model_id"])
 
                     # Add response to chat history
                     assistant_msg = ChatMessage(
@@ -286,12 +297,10 @@ with main_col2:
 
                     # Get the current state of the graph
                     current_state = app.get_state(config)
-                    # print(current_state.values["messages"])
 
                     # # Get the messages from the current state
                     # # and reverse the order
                     reversed_messages = current_state.values["messages"][::-1]
-                    # print(reversed_messages)
 
                     # Loop through the reversed messages until a
                     # HumanMessage is found i.e. the last message

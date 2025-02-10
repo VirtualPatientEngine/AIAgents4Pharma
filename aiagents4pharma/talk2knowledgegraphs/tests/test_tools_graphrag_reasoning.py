@@ -4,6 +4,7 @@ Test cases for tools/graphrag_reasoning.py
 
 import pytest
 from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from ..agents.t2kg_agent import get_app
 
 # Define the data path
@@ -16,7 +17,8 @@ def input_dict_fixture():
     Input dictionary fixture.
     """
     input_dict = {
-        "llm_model": "gpt-4o-mini",
+        "llm_model": None,  # TBA for each test case
+        "embedding_model": None,  # TBA for each test case
         "uploaded_files": [
             {
                 "file_name": "DrugA.pdf",
@@ -176,47 +178,9 @@ def test_graphrag_reasoning_openai(input_dict):
     Args:
         input_dict: Input dictionary
     """
-    # Setup the app
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=input_dict["llm_model"])
-    config = {"configurable": {"thread_id": unique_id}}
-    # Update state
-    app.update_state(
-        config,
-        input_dict,
-    )
-    prompt = """
-    Please invoke `graphrag_reasoning` tool without calling any other tools 
-    to respond to the following prompt:
-
-    Without extracting a new subgraph, perform Graph RAG reasoning 
-    to get insights related to nodes of genes mentioned in the knowledge graph related to DrugA. 
-
-    DrugA is a human monoclonal antibody that binds to both 
-    the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
-    """
-
-    # Test the tool get_modelinfo
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
-
-    # Check assistant message
-    assistant_msg = response["messages"][-1].content
-    assert isinstance(assistant_msg, str)
-
-    # Check tool message
-    tool_msg = response["messages"][-2]
-    assert tool_msg.name == "graphrag_reasoning"
-
-
-def test_graphrag_reasoning_ollama(input_dict):
-    """
-    Test the GraphRAG reasoning tool using Ollama model.
-
-    Args:
-        input_dict: Input dictionary
-    """
-    # Update the input dictionary
-    input_dict["llm_model"] = "llama3.2:1b"
+    # Prepare LLM and embedding model
+    input_dict["llm_model"] = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+    input_dict["embedding_model"] = OpenAIEmbeddings(model="text-embedding-3-small")
 
     # Setup the app
     unique_id = 12345
@@ -238,7 +202,7 @@ def test_graphrag_reasoning_ollama(input_dict):
     the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
     """
 
-    # Test the tool get_modelinfo
+    # Test the tool  graphrag_reasoning
     response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
 
     # Check assistant message
@@ -248,3 +212,7 @@ def test_graphrag_reasoning_ollama(input_dict):
     # Check tool message
     tool_msg = response["messages"][-2]
     assert tool_msg.name == "graphrag_reasoning"
+
+    # Check reasoning results
+    assert "DrugA" in assistant_msg
+    assert "TNF" in assistant_msg

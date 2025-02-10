@@ -67,10 +67,10 @@ def test_enrich_ollama(ollama_config):
     )
 
     # Perform enrichment for nodes
-    nodes = ["acetaminophen", "acetaminophen"]
+    nodes = ["acetaminophen"]
     enriched_nodes = enr_model.enrich_documents(nodes)
     # Check the enriched nodes
-    assert len(enriched_nodes) == 2
+    assert len(enriched_nodes) == 1
     assert all(enriched_nodes[i] != nodes[i] for i in range(len(nodes)))
 
 
@@ -85,9 +85,9 @@ def test_enrich_ollama_rag(ollama_config):
         streaming=cfg["streaming"],
     )
     # Perform enrichment for nodes
-    nodes = ["acetaminophen", "acetaminophen"]
+    nodes = ["acetaminophen"]
     docs = [r"\path\to\doc1", r"\path\to\doc2"]
     enriched_nodes = enr_model.enrich_documents_with_rag(nodes, docs)
     # Check the enriched nodes
-    assert len(enriched_nodes) == 2
+    assert len(enriched_nodes) == 1
     assert all(enriched_nodes[i] != nodes[i] for i in range(len(nodes)))
