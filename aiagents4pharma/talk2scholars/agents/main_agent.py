@@ -177,7 +177,19 @@ def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
         """
         logger.info("Calling S2 agent with state: %s", state)
         app = s2_agent.get_app(thread_id, llm_model)
-        response = app.invoke(state)
+
+        # Pass initial state in invoke
+        response = app.invoke(
+            {
+                **state,
+                "thread_id": thread_id,
+                "papers": state.get("papers", {}),
+                "multi_papers": state.get("multi_papers", {}),
+                "is_last_step": False,
+                "current_agent": "s2_agent",
+                "need_search": state.get("need_search", False),
+            }
+        )
         logger.info("S2 agent completed with response: %s", response)
 
         return Command(
@@ -204,18 +216,6 @@ def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
     # Build the graph
     workflow = StateGraph(Talk2Scholars)
 
-    # Set initial state
-    workflow.set_initial_state(
-        {
-            "thread_id": thread_id,
-            "papers": {},
-            "multi_papers": {},
-            "is_last_step": False,
-            "llm_model": llm_model,
-            "need_search": False,
-        }
-    )
-
     # Add nodes
     supervisor = make_supervisor_node(llm, cfg)
     workflow.add_node("supervisor", supervisor)
@@ -225,7 +225,7 @@ def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
     workflow.add_edge(START, "supervisor")
     workflow.add_edge("s2_agent", "supervisor")  # Report back to supervisor
 
-    # Compile the graph
-    app = workflow.compile(checkpointer=MemorySaver())
+    # Compile the graph without initial state
+    app = workflow.compile()
     logger.info("Main agent workflow compiled")
     return app
