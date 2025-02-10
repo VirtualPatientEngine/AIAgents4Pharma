@@ -4,7 +4,7 @@ nav:
   - Home: index.md
 
   - Talk2Biomodels:
-      - Introduction: talk2biomodels/models/intro.md
+      - Introduction: talk2biomodels/intro.md
       - FAQ: talk2biomodels/faq.md
       - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
       - Case Studies:
@@ -92,18 +92,22 @@ extra_css:
   - VPE.png
 theme:
   name: material
-  logo: ./robot.png
+  logo: assets/VPE.png
   palette:
-    - primary: teal
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+  - accent: black
+    primary: white
+    scheme: default
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to dark mode
+  - accent: black
+    primary: white
+    scheme: slate
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
   features:
+    - navigation.top
     - navigation.tabs
     - navigation.instant
     - navigation.expand
@@ -111,6 +115,7 @@ theme:
     - search.highlight
     - content.code.copy
     - navigation.scrollable
+
 plugins:
   - search:
       lang:
