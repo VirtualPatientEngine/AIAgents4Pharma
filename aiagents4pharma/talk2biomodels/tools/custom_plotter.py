@@ -8,7 +8,6 @@ import logging
 from typing import Type, List, TypedDict, Annotated, Tuple, Union, Literal
 from pydantic import BaseModel, Field
 import pandas as pd
-from langchain_openai import ChatOpenAI
 from langchain_core.tools import BaseTool
 from langgraph.prebuilt import InjectedState
 
@@ -83,7 +82,7 @@ class CustomPlotterTool(BaseTool):
                     description="""List of species based on user question.
                     If no relevant species are found, it will be None.""")
         # Create an instance of the LLM model
-        llm = ChatOpenAI(model=state['llm_model'], temperature=0)
+        llm = state['llm_model']
         llm_with_structured_output = llm.with_structured_output(CustomHeader)
         results = llm_with_structured_output.invoke(question)
         extracted_species = []

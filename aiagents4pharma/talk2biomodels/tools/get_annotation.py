@@ -17,7 +17,7 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.base import BaseTool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from .load_biomodel import ModelData, load_biomodel
 from ..api.uniprot import search_uniprot_labels
 from ..api.ols import search_ols_labels
@@ -58,7 +58,7 @@ def extract_relevant_species_names(model_object, arg_data, state):
                 If no relevant species are found, it must be None.""")
 
     # Create an instance of the LLM model
-    llm = ChatOpenAI(model=state['llm_model'], temperature=0)
+    llm = state['llm_model']
     # Get the structured output from the LLM model
     llm_with_structured_output = llm.with_structured_output(CustomHeader)
     # Define the question for the LLM model using the prompt

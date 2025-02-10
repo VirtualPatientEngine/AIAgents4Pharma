@@ -44,7 +44,7 @@ class SearchModelsTool(BaseTool):
             dict: The answer to the question in the form of a dictionary.
         """
         search_results = biomodels.search_for_model(query)
-        llm = ChatOpenAI(model=state['llm_model'])
+        llm = state['llm_model']
         # Check if run_manager's metadata has the key 'prompt_content'
         prompt_content = f'''
                         Convert the input into a table.
