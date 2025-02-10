@@ -3,10 +3,9 @@ This is the state file for the talk2scholars agent.
 """
 
 import logging
-from typing import Annotated, Any, Dict, Optional
-
-from langgraph.prebuilt.chat_agent_executor import AgentState
+from typing import Annotated, Any, Dict, Optional, Literal
 from typing_extensions import NotRequired, Required
+from langgraph.prebuilt.chat_agent_executor import AgentState
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,12 +21,25 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
 class Talk2Scholars(AgentState):
     """
     The state for the talk2scholars agent, inheriting from AgentState.
+
+    Attributes:
+        papers: Dictionary of papers from search results
+        multi_papers: Dictionary of papers from multi-paper recommendations
+        search_table: Optional string containing formatted search results
+        next: Required for routing in LangGraph. Can be "s2_agent" or "FINISH"
+        current_agent: Current active agent
+        is_last_step: Required field for LangGraph
+        llm_model: Model being used
+        need_search: Flag indicating if search is needed
     """
 
-    papers: Annotated[Dict[str, Any], replace_dict]  # Changed from List to Dict
-    multi_papers: Annotated[Dict[str, Any], replace_dict]  # Changed from List to Dict
+    # Agent state fields
+    papers: Annotated[Dict[str, Any], replace_dict]
+    multi_papers: Annotated[Dict[str, Any], replace_dict]
     search_table: NotRequired[str]
-    next: str  # Required for routing in LangGraph
+    next: Literal["s2_agent", "FINISH"]  # Supervisor routing options
     current_agent: NotRequired[Optional[str]]
-    is_last_step: Required[bool]  # Required field for LangGraph
+    is_last_step: Required[bool]
     llm_model: str
+    need_search: NotRequired[bool]
+    thread_id: NotRequired[str]
