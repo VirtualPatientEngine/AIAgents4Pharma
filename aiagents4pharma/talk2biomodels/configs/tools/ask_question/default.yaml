@@ -1,4 +1,4 @@
-_target_: talk2biomodels.tools.ask_question.AskQuestionTool
+_target_: tools.ask_question.AskQuestionTool
 steady_state_prompt: >
   Following are header columns of the data:
   `species_name`: Name of the species,

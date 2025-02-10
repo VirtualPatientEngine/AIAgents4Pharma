@@ -55,10 +55,10 @@ def get_app(uniq_id, llm_model='gpt-4o-mini'):
     llm = ChatOpenAI(model=llm_model, temperature=0)
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2BioModels agent.")
-    with hydra.initialize(version_base=None, config_path="../../configs"):
+    with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(config_name='config',
-                            overrides=['talk2biomodels/agents/t2b_agent=default'])
-        cfg = cfg.talk2biomodels.agents.t2b_agent
+                            overrides=['agents/t2b_agent=default'])
+        cfg = cfg.agents.t2b_agent
     logger.log(logging.INFO, "state_modifier: %s", cfg.state_modifier)
     # Create the agent
     model = create_react_agent(
