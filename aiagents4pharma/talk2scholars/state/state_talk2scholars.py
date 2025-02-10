@@ -25,6 +25,7 @@ class Talk2Scholars(AgentState):
     """
 
     papers: Annotated[Dict[str, Any], replace_dict]  # Changed from List to Dict
+    multi_papers: Annotated[Dict[str, Any], replace_dict]  # Changed from List to Dict
     search_table: NotRequired[str]
     next: str  # Required for routing in LangGraph
     current_agent: NotRequired[Optional[str]]
