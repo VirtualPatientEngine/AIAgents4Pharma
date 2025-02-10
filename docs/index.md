@@ -10,6 +10,8 @@ Our toolkit currently consists of three agents, each designed to simplify and en
 
 - [**Talk2KnowledgeGraphs**](talk2knowledgegraphs/intro.md) *(Coming soon)*: Access and explore complex biological knowledge graphs for insightful data connections.
 
+- [**Talk2Scholars**](talk2scholars/intro.md) *(Coming soon)*: Access articles and receive recommendations for academic papers using state-of-the-art natural language processing
+
 ### Prerequisites
 
 - **Python 3.10+**
@@ -39,7 +41,7 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 3. **Initialize OPENAI_API_KEY**
    ```bash
-   export OPENAI_API_KEY = ....
+   export OPENAI_API_KEY=....
    ```
 
 4. **[Optional] Set up login credentials**
@@ -50,7 +52,7 @@ Check out the tutorials on each agent for detailed instrcutions.
    ```
    password='XXX'
    ```
-   Please note that the passowrd will be same for all.
+   Please note that the password will be same for all.
 
 5. **[Optional] Initialize LANGSMITH_API_KEY**
    ```bash

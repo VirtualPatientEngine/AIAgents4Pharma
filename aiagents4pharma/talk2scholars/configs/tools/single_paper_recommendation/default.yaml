@@ -1,0 +1,20 @@
+api_endpoint: "https://api.semanticscholar.org/recommendations/v1/papers/forpaper"
+default_limit: 2
+request_timeout: 10
+api_fields:
+  - "paperId"
+  - "title"
+  - "abstract"
+  - "year"
+  - "authors"
+  - "citationCount"
+  - "url"
+# Commented fields that could be added later if needed
+#  - "publicationTypes"
+#  - "openAccessPdf"
+
+# Default recommendation parameters
+recommendation_params:
+  limit: ${.default_limit} # Reference to the default_limit above
+  fields: ${.api_fields} # Reference to the api_fields above
+  from_pool: "all-cs" # Using all-cs pool as specified in docs

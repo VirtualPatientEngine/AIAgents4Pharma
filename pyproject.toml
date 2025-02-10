@@ -8,54 +8,54 @@ description = "AI Agents for drug discovery, drug development, and other pharmac
 readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 dependencies = [
-    "copasi_basico==0.78",
-    "coverage==7.6.4",
-    "einops==0.8.0",
-    "gdown==5.2.0",
-    "huggingface_hub==0.26.5",
-    "hydra-core==1.3.2",
-    "joblib==1.4.2",
-    "langchain==0.3.7",
-    "langchain-community==0.3.5",
-    "langchain-core==0.3.31",
-    "langchain-experimental==0.3.3",
-    "langchain-openai==0.2.5",
-    "langchain_ollama==0.2.2",
-    "langgraph==0.2.66",
-    "matplotlib==3.9.2",
-    "openai==1.59.4",
-    "ollama==0.4.6",
-    "pandas==2.2.3",
-    "plotly==5.24.1",
-    "pydantic==2.9.2",
-    "pylint==3.3.1",
-    "pypdf==5.2.0",
-    "pytest==8.3.3",
-    "pytest-asyncio==0.25.2",
-    "streamlit==1.39.0",
-    "sentence_transformers==3.3.1",
-    "tabulate==0.9.0",
-    "torch==2.2.2",
-    "torch_geometric==2.6.1",
-    "tqdm==4.66.6",
-    "transformers==4.48.0",
-    "mkdocs==1.6.1",
-    "mkdocs-jupyter==0.25.1",
-    "mkdocs-material==9.5.47",
-    "mkdocstrings-python==1.12.2",
-    "mkdocs-include-markdown-plugin==7.1.2",
-    "mkdocstrings==0.27.0",
-    "streamlit-feedback"
+  "copasi_basico==0.78",
+  "coverage==7.6.4",
+  "einops==0.8.0",
+  "gdown==5.2.0",
+  "huggingface_hub==0.26.5",
+  "hydra-core==1.3.2",
+  "joblib==1.4.2",
+  "langchain==0.3.7",
+  "langchain-community==0.3.5",
+  "langchain-core==0.3.31",
+  "langchain-experimental==0.3.3",
+  "langchain-openai==0.2.5",
+  "langchain_ollama==0.2.2",
+  "langgraph==0.2.66",
+  "matplotlib==3.9.2",
+  "openai==1.59.4",
+  "ollama==0.4.6",
+  "pandas==2.2.3",
+  "plotly==5.24.1",
+  "pydantic==2.9.2",
+  "pylint==3.3.1",
+  "pypdf==5.2.0",
+  "pytest==8.3.3",
+  "pytest-asyncio==0.25.2",
+  "streamlit==1.39.0",
+  "sentence_transformers==3.3.1",
+  "tabulate==0.9.0",
+  "torch==2.2.2",
+  "torch_geometric==2.6.1",
+  "tqdm==4.66.6",
+  "transformers==4.48.0",
+  "mkdocs==1.6.1",
+  "mkdocs-jupyter==0.25.1",
+  "mkdocs-material==9.5.47",
+  "mkdocstrings-python==1.12.2",
+  "mkdocs-include-markdown-plugin==7.1.2",
+  "mkdocstrings==0.27.0",
+  "streamlit-feedback",
 ]
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = {file = "release_version.txt"}
+version = { file = "release_version.txt" }
 
 # find packages
 [tool.setuptools]
@@ -67,10 +67,20 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
-            "talk2biomodels/configs*",
-            "talk2biomodels/configs/agents/t2b_agent/*",
-            "talk2biomodels/configs/tools/ask_question/*",
-            "talk2biomodels/configs/tools/get_annotation/*"]
+    "talk2biomodels/configs*",
+    "talk2biomodels/configs/agents/t2b_agent/*",
+    "talk2biomodels/configs/tools/ask_question/*",
+    "talk2biomodels/configs/tools/get_annotation/*",
+    "talk2scholars/configs/*",
+    "talk2scholars/configs/agents/talk2scholars/main_agent/*",
+    "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
+    "talk2scholars/configs/app/frontend/*",
+    "talk2scholars/configs/tools/multi_paper_recommendation/*",
+    "talk2scholars/configs/tools/search/*",
+    "talk2scholars/configs/tools/single_paper_recommendation/*",
+
+]
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+markers = ["integration: marks tests as integration tests"]

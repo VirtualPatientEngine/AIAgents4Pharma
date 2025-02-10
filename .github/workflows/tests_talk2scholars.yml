@@ -1,0 +1,124 @@
+# This is a basic workflow to help you get started with GitHub Actions
+name: TESTS Talk2Scholars
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'aiagents4pharma/talk2scholars/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+# This workflow contains jobs covering linting and code coverage (along with testing).
+jobs:
+  pylint-windows-ubuntu-macos:
+    # The type of runner that the job will run on
+    name: pylint-windows-ubuntu-macos
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+            os: [windows-latest, ubuntu-latest, macos-13]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      # install requirements
+      - name: Install the requirements
+        run: |
+          pip3 install --break-system-packages -r requirements.txt
+
+      # pylint
+      - name: Run pylint
+        run: |
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
+
+  # code coverage job for ubuntu and macos
+  code-cov-ubuntu-macos:
+    name: code-coverage-ubuntu-macos
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [ubuntu-latest, macos-13]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: pip3 install -r requirements.txt  # Adjust this according to your project
+
+    - name: Run tests with coverage
+      run: coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
+
+    - name: Check coverage
+      run: |
+        coverage report -m
+        TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
+        if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+          echo "Code coverage is not 100%. Please check the coverage report."
+          exit 1
+        fi
+      env:
+        COVERAGE_FILE: './.coverage'
+
+  # code coverage job for windows
+  code-cov-windows:
+    name: code-coverage-windows
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: pip3 install -r requirements.txt  # Adjust this according to your project
+
+    - name: Run tests with coverage
+      run: coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
+
+    - name: Check coverage
+      run: |
+        coverage report -m
+        # $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1) -replace "[^\d]"  # Extract the last line and remove non-numeric characters
+        $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1)
+        # split and extract the last element
+        $TOTAL_COVERAGE=($TOTAL_COVERAGE -split " ")[-1]
+        # remove non-numeric characters
+        $TOTAL_COVERAGE=($TOTAL_COVERAGE -replace "[^\d]")
+        # convert to int
+        $TOTAL_COVERAGE=[int]$TOTAL_COVERAGE
+        echo "Total coverage: $TOTAL_COVERAGE"
+        if ($TOTAL_COVERAGE -ne 100) {
+          Write-Host "Code coverage is not 100%. Please check the coverage report."
+          exit 1
+        }
+      env:
+        COVERAGE_FILE: './.coverage'
