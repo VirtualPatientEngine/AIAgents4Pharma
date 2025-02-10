@@ -1,4 +1,4 @@
-_target_: talk2biomodels.agents.t2b_agent.get_app
+_target_: agents.t2b_agent.get_app
 state_modifier: >
   You are Talk2BioModels agent.
   If the user asks for the uploaded model, 

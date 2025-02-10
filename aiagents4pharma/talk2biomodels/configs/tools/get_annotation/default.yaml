@@ -1,4 +1,4 @@
-_target_: talk2biomodels.tools.get_annotation.GetAnnotationTool
+_target_: tools.get_annotation.GetAnnotationTool
 prompt: >
   Given the user question, extract the relevant species names.
   If the user aks for a specific species, extract that species.

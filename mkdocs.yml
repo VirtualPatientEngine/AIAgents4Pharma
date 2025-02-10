@@ -5,11 +5,12 @@ nav:
 
   - Talk2Biomodels:
       - Introduction: talk2biomodels/models/intro.md
+      - FAQ: talk2biomodels/faq.md
       - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
       - Agents:
-          - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
+          - T2B agent: talk2biomodels/agents/t2b_agent.md
       - States:
-          - Talk2Biomodels state: talk2biomodels/states/state_talk2biomodels.md
+          - T2B state: talk2biomodels/states/state_talk2biomodels.md
       - Models:
           - System Bio Model: talk2biomodels/models/sys_bio_model.md
           - Basico Model: talk2biomodels/models/basico_model.md
