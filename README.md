@@ -1,10 +1,9 @@
 [![Talk2BioModels](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml)
 [![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
 [![Talk2KnowledgeGraphs](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml)
-[![Talk2Competitors](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2competitors.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2competitors.yml)
+[![Talk2Scholars](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml)
 ![GitHub Release](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma)
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
-
 
 <h1 align="center" style="border-bottom: none;">🤖 AIAgents4Pharma</h1>
 
@@ -15,7 +14,7 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 - **Talk2BioModels**: Engage directly with mathematical models in systems biology.
 - **Talk2Cells** _(Work in progress)_: Query and analyze sequencing data with ease.
 - **Talk2KnowledgeGraphs** _(Work in progress)_: Access and explore complex biological knowledge graphs for insightful data connections.
-- **Talk2Competitors** _(Coming soon)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
+- **Talk2Scholars** _(Coming soon)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 
 ---
 
@@ -38,7 +37,9 @@ Our toolkit currently consists of three intelligent agents, each designed to sim
 
 **Talk2KnowledgeGraphs** is an agent designed to enable interaction with biological knowledge graphs (KGs). KGs integrate vast amounts of structured biological data into a format that highlights relationships between entities, such as proteins, genes, and diseases.
 
-### 4. Talk2Competitors _(Coming soon)_
+### 4. Talk2Scholars _(Work in Progress)_
+
+Talk2Scholars is an AI-powered hierarchical agent system designed to revolutionize academic paper search and analysis. Through intelligent conversation, users can discover, analyze, and receive recommendations for academic papers using state-of-the-art natural language processing.
 
 ## Getting Started
 
@@ -149,7 +150,7 @@ Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 - **User Interface**: Interactive web UI for all agents.
 - **Talk2Cells**: Integration of sequencing data analysis tools.
 - **Talk2KnowledgeGraphs**: Interface for biological knowledge graph interaction.
-- **Talk2Competitors**: Interface for exploring articles
+- **Talk2Scholars**: Interface for exploring articles
 
 We’re excited to bring AIAgents4Pharma to the bioinformatics and pharmaceutical research community. Together, let’s make data-driven biological research more accessible and insightful.
 

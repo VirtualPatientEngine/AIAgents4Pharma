@@ -6,6 +6,6 @@ from . import (
     configs,
     talk2biomodels,
     talk2cells,
-    talk2competitors,
+    talk2scholars,
     talk2knowledgegraphs,
 )
