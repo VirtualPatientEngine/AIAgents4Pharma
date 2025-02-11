@@ -18,31 +18,48 @@ import hydra
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class SubgraphSummarizationInput(BaseModel):
     """
     SubgraphSummarizationInput is a Pydantic model representing an input for
     summarizing a given textualized subgraph.
 
     Args:
-        prompt (str): Prompt to interact with the backend.
-        textualized_subgraph (str): Textualized subgraph.
+        tool_call_id: Tool call ID.
+        state: Injected state.
+        prompt: Prompt to interact with the backend.
+        extraction_name: Name assigned to the subgraph extraction process
     """
-    prompt: str = Field(description="Prompt to interact with the backend.")
-    tool_call_id: Annotated[str, InjectedToolCallId] = Field(description="Tool call ID.")
+
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(
+        description="Tool call ID."
+    )
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
+    prompt: str = Field(description="Prompt to interact with the backend.")
+    extraction_name: str = Field(
+        description="""Name assigned to the subgraph extraction process
+                                 when the subgraph_extraction tool is invoked."""
+    )
+
 
 class SubgraphSummarizationTool(BaseTool):
     """
     This tool performs subgraph summarization over textualized graph to highlight the most
     important information in responding to user's prompt.
     """
+
     name: str = "subgraph_summarization"
-    description: str = "A tool to perform subgraph summarization over textualized graph."
+    description: str = """A tool to perform subgraph summarization over textualized graph 
+                        for responding to user's follow-up prompt(s)."""
     args_schema: Type[BaseModel] = SubgraphSummarizationInput
 
-    def _run(self,
-             tool_call_id: Annotated[str, InjectedToolCallId],
-             state: Annotated[dict, InjectedState], prompt: str):
+    def _run(
+        self,
+        tool_call_id: Annotated[str, InjectedToolCallId],
+        state: Annotated[dict, InjectedState],
+        prompt: str,
+        extraction_name: str,
+    ):
         """
         Run the subgraph summarization tool.
 
@@ -50,18 +67,22 @@ class SubgraphSummarizationTool(BaseTool):
             tool_call_id: The tool call ID.
             state: The injected state.
             prompt: The prompt to interact with the backend.
+            extraction_name: The name assigned to the subgraph extraction process.
         """
+        logger.log(
+            logging.INFO, "Invoking subgraph_summarization tool for %s", extraction_name
+        )
+
         # Load hydra configuration
-        logger.log(logging.INFO, "Loading Hydra configuration for subgraph summarization")
         with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(
-                config_name='config',
-                overrides=['tools/subgraph_summarization=default']
+                config_name="config", overrides=["tools/subgraph_summarization=default"]
             )
             cfg = cfg.tools.subgraph_summarization
 
-        # Load the textualized subgraph
-        textualized_subgraph = state["graph_text"]
+        # Load the extracted graph
+        extracted_graph = {dic["name"]: dic for dic in state["dic_extracted_graph"]}
+        # logger.log(logging.INFO, "Extracted graph: %s", extracted_graph)
 
         # Prepare prompt template
         prompt_template = ChatPromptTemplate.from_messages(
@@ -78,19 +99,31 @@ class SubgraphSummarizationTool(BaseTool):
         chain = prompt_template | llm | StrOutputParser()
 
         # Return the subgraph and textualized graph as JSON response
-        response = chain.invoke({
-            "input": prompt,
-            "textualized_subgraph": textualized_subgraph,
-        })
+        response = chain.invoke(
+            {
+                "input": prompt,
+                "textualized_subgraph": extracted_graph[extraction_name]["graph_text"],
+            }
+        )
 
+        # Store the response as graph_summary in the extracted graph
+        for key, value in extracted_graph.items():
+            if key == extraction_name:
+                value["graph_summary"] = response
+
+        # Prepare the dictionary of updated state
+        dic_updated_state_for_model = {}
+        for key, value in {
+            "dic_extracted_graph": list(extracted_graph.values()),
+        }.items():
+            if value:
+                dic_updated_state_for_model[key] = value
+
+        # Return the updated state of the tool
         return Command(
-            update={
-                "graph_summary": response,
-                "messages":[
-                    ToolMessage(
-                        content=response,
-                        tool_call_id=tool_call_id
-                    )
-                ]
+            update=dic_updated_state_for_model
+            | {
+                # update the message history
+                "messages": [ToolMessage(content=response, tool_call_id=tool_call_id)]
             }
         )

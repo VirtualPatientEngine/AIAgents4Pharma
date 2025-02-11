@@ -333,10 +333,13 @@ with main_col2:
                         # st.session_state.run_id is the unique id of the run
                         uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
                         if msg.name in ["subgraph_extraction"]:
+                            print ('-', len(current_state.values["dic_extracted_graph"]),
+                                   'subgraph_extraction')
                             # Add the graph into the visuals list
-                            if current_state.values["graph_dict"]:
+                            latest_graph = current_state.values["dic_extracted_graph"][-1]
+                            if current_state.values["dic_extracted_graph"]:
                                 graphs_visuals.append({
-                                    "content": current_state.values["graph_dict"],
+                                    "content": latest_graph["graph_dict"],
                                     "key": "subgraph_"+uniq_msg_id
                                 })
 

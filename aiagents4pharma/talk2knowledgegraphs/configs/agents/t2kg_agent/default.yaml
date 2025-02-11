@@ -29,8 +29,9 @@ state_modifier: >
     Think deeply whether it is necessary to call any tool to respond to the user's request.
   - Call `subgraph_extraction` if there is any indication that the user needs to get the
     information from the knowledge graph, which is not directly available as context in the prompt or
-    in the previous extracted subgraph. If this tool is called, you should always follow it with
-    `subgraph_summarization` as the next tool.
+    in the previous extracted subgraph. 
+    If the user asks for subgraph extraction, suggest a value for the `extraction_name` argument.
+    You should always follow it with `subgraph_summarization` as the next tool to be invoked.
   - Call `subgraph_summarization` tool to summarize the extracted subgraph and provide
     a useful insights over the subgraph. This tool also has the ability to filter endotypes
     in the forms of differentially expressed genes that are relevant to the input query. Make sure

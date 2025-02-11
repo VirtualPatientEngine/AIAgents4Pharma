@@ -24,6 +24,7 @@ import torch
 from torch_geometric.data import Data
 from ..utils.extractions.pcst import PCSTPruning
 from ..utils.embeddings.ollama import EmbeddingWithOllama
+from .load_arguments import ArgumentData
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -35,17 +36,18 @@ class SubgraphExtractionInput(BaseModel):
     SubgraphExtractionInput is a Pydantic model representing an input for extracting a subgraph.
 
     Args:
-        prompt (str): Prompt to interact with the backend.
-        topk_nodes (int): Number of top nodes for subgraph extraction.
-        topk_edges (int): Number of top edges for subgraph extraction.
+        prompt: Prompt to interact with the backend.
+        tool_call_id: Tool call ID.
+        state: Injected state.
+        arg_data: Argument for analytical process over graph data.
     """
 
-    prompt: str = Field(description="Prompt to interact with the backend.")
     tool_call_id: Annotated[str, InjectedToolCallId] = Field(
         description="Tool call ID."
     )
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
-
+    prompt: str = Field(description="Prompt to interact with the backend.")
+    arg_data: ArgumentData = Field(description="Experiment over graph data.", default=None)
 
 class SubgraphExtractionTool(BaseTool):
     """
@@ -92,7 +94,9 @@ class SubgraphExtractionTool(BaseTool):
                     ]
                 )
 
-                qa_chain = create_stuff_documents_chain(state["llm_model"], prompt_template)
+                qa_chain = create_stuff_documents_chain(
+                    state["llm_model"], prompt_template
+                )
                 rag_chain = create_retrieval_chain(
                     InMemoryVectorStore.from_documents(
                         documents=splits, embedding=state["embedding_model"]
@@ -122,6 +126,7 @@ class SubgraphExtractionTool(BaseTool):
         tool_call_id: Annotated[str, InjectedToolCallId],
         state: Annotated[dict, InjectedState],
         prompt: str,
+        arg_data: ArgumentData = None
     ) -> Command:
         """
         Run the subgraph extraction tool.
@@ -130,12 +135,14 @@ class SubgraphExtractionTool(BaseTool):
             tool_call_id: The tool call ID for the tool.
             state: Injected state for the tool.
             prompt: The prompt to interact with the backend.
+            arg_data (ArgumentData): The argument data.
 
         Returns:
             Command: The command to be executed.
         """
+        logger.log(logging.INFO, "Invoking subgraph_extraction tool")
+
         # Load hydra configuration
-        logger.log(logging.INFO, "Loading Hydra configuration for subgraph extraction")
         with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(
                 config_name="config", overrides=["tools/subgraph_extraction=default"]
@@ -154,9 +161,7 @@ class SubgraphExtractionTool(BaseTool):
         if len(state["uploaded_files"]) != 0 and "endotype" in [
             f["file_type"] for f in state["uploaded_files"]
         ]:
-            prompt = self.perform_endotype_filtering(
-                prompt, state, cfg
-            )
+            prompt = self.perform_endotype_filtering(prompt, state, cfg)
 
         # Prepare embedding model and embed the user prompt as query
         query_emb = torch.tensor(
@@ -229,18 +234,34 @@ class SubgraphExtractionTool(BaseTool):
             + textualized_graph["edges"].iloc[subgraph["edges"]].to_csv(index=False)
         )
 
-        # Store the result state dictionary
+        # Prepare the dictionary of extracted graph
+        dic_extracted_graph = {
+            "name": arg_data.extraction_name,
+            "tool_call_id": tool_call_id,
+            "graph_dict": {
+                "nodes": list(nx_graph.nodes(data=True)),  # Include node attributes
+                "edges": list(nx_graph.edges(data=True)),  # Include edge attributes
+            },
+            "graph_text": textualized_graph,
+            "graph_summary": None,
+        }
+
+        # Prepare the dictionary of updated state
+        dic_updated_state_for_model = {}
+        for key, value in {
+            "dic_extracted_graph": [dic_extracted_graph],
+            }.items():
+            if value:
+                dic_updated_state_for_model[key] = value
+
+        # Return the updated state of the tool
         return Command(
-            update={
-                "graph_dict": {
-                    "nodes": list(nx_graph.nodes(data=True)),  # Include node attributes
-                    "edges": list(nx_graph.edges(data=True)),  # Include edge attributes
-                },
-                "graph_text": textualized_graph,
+            update=dic_updated_state_for_model|{
+                # update the message history
                 "messages": [
                     ToolMessage(
-                        content=f"Subgraph Extraction Result: {textualized_graph}",
-                        tool_call_id=tool_call_id
+                        content=f"Subgraph Extraction Result of {arg_data.extraction_name}",
+                        tool_call_id=tool_call_id,
                     )
                 ],
             }
