@@ -7,6 +7,8 @@ This is the state file for the Talk2BioModels agent.
 from typing import Annotated
 import operator
 from langgraph.prebuilt.chat_agent_executor import AgentState
+from langchain_core.language_models import BaseChatModel
+from langchain_core.embeddings import Embeddings
 
 def add_data(data1: dict, data2: dict) -> dict:
     """
@@ -26,7 +28,8 @@ class Talk2Biomodels(AgentState):
     """
     The state for the Talk2BioModels agent.
     """
-    llm_model: str
+    llm_model: BaseChatModel
+    text_embedding_model: Embeddings
     pdf_file_name: str
     # A StateGraph may receive a concurrent updates
     # which is not supported by the StateGraph. Hence,

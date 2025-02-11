@@ -5,7 +5,7 @@ This module contains the `GetAnnotationTool` for fetching species annotations
 based on the provided model and species names.
 """
 import math
-from typing import List, Annotated, Type, TypedDict, Union, Literal
+from typing import List, Annotated, Type, Union, Literal
 import logging
 from dataclasses import dataclass
 import hydra
@@ -34,10 +34,10 @@ def extract_relevant_species_names(model_object, arg_data, state):
     Extract relevant species names based on the user question.
     """
     # Load hydra configuration
-    with hydra.initialize(version_base=None, config_path="../../configs"):
+    with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(config_name='config',
-                            overrides=['talk2biomodels/tools/get_annotation=default'])
-        cfg = cfg.talk2biomodels.tools.get_annotation
+                            overrides=['tools/get_annotation=default'])
+        cfg = cfg.tools.get_annotation
     logger.info("Loaded the following system prompt for the LLM"
                 " to get a structured output: %s", cfg.prompt)
 
@@ -49,7 +49,7 @@ def extract_relevant_species_names(model_object, arg_data, state):
     all_species_names = df_species.index.tolist()
 
     # Define a structured output for the LLM model
-    class CustomHeader(TypedDict):
+    class CustomHeader(BaseModel):
         """
         A list of species based on user question.
         """
@@ -65,10 +65,14 @@ def extract_relevant_species_names(model_object, arg_data, state):
     question = cfg.prompt
     question += f'Here is the user question: {arg_data.user_question}'
     # Invoke the LLM model with the user question
-    dic = llm_with_structured_output.invoke(question)
+    results = llm_with_structured_output.invoke(question)
+    logging.info("Results from the LLM model: %s", results)
+    # Check if the returned species names are empty
+    if not results.relevant_species:
+        raise ValueError("Model does not contain the requested species.")
     extracted_species = []
     # Extract all the species names from the model
-    for species in dic['relevant_species']:
+    for species in results.relevant_species:
         if species in all_species_names:
             extracted_species.append(species)
     logger.info("Extracted species: %s", extracted_species)
@@ -136,10 +140,7 @@ class GetAnnotationTool(BaseTool):
 
         # Extract relevant species names based on the user question
         list_species_names = extract_relevant_species_names(model_object, arg_data, state)
-
-        # Check if the returned species names are empty
-        if not list_species_names:
-            raise ValueError("Model does not contain the requested species.")
+        print (list_species_names)
 
         (annotations_df,
          species_without_description) = self._fetch_annotations(list_species_names)

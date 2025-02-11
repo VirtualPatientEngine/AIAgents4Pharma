@@ -8,7 +8,6 @@ import logging
 from typing import Annotated
 import hydra
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
@@ -28,7 +27,8 @@ from ..states.state_talk2biomodels import Talk2Biomodels
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_app(uniq_id, llm_model: BaseChatModel = ChatOllama(model='llama3.2:1b', temperature=0)):
+def get_app(uniq_id,
+            llm_model: BaseChatModel = ChatOpenAI(model='gpt-4o-mini', temperature=0)):
     '''
     This function returns the langraph app.
     '''
@@ -53,14 +53,12 @@ def get_app(uniq_id, llm_model: BaseChatModel = ChatOllama(model='llama3.2:1b', 
                     QueryArticle()
                 ])
 
-    # Define the model
-    # llm = ChatOpenAI(model=llm_model, temperature=0)
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2BioModels agent.")
-    with hydra.initialize(version_base=None, config_path="../../configs"):
+    with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(config_name='config',
-                            overrides=['talk2biomodels/agents/t2b_agent=default'])
-        cfg = cfg.talk2biomodels.agents.t2b_agent
+                            overrides=['agents/t2b_agent=default'])
+        cfg = cfg.agents.t2b_agent
     logger.log(logging.INFO, "state_modifier: %s", cfg.state_modifier)
     # Create the agent
     model = create_react_agent(

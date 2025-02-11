@@ -5,13 +5,17 @@ Tool for searching models based on search query.
 """
 
 from typing import Type, Annotated
+import logging
 from pydantic import BaseModel, Field
 from basico import biomodels
 from langchain_core.tools import BaseTool
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import InjectedState
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class SearchModelsInput(BaseModel):
     """
@@ -29,7 +33,7 @@ class SearchModelsTool(BaseTool):
     name: str = "search_models"
     description: str = "Search models in the BioMmodels database based on keywords."
     args_schema: Type[BaseModel] = SearchModelsInput
-    return_direct: bool = True
+    return_direct: bool = False
 
     def _run(self,
              query: str,
@@ -43,6 +47,8 @@ class SearchModelsTool(BaseTool):
         Returns:
             dict: The answer to the question in the form of a dictionary.
         """
+        logger.log(logging.INFO, "Searching models with the query and model: %s, %s",
+                   query, state['llm_model'])
         search_results = biomodels.search_for_model(query)
         llm = state['llm_model']
         # Check if run_manager's metadata has the key 'prompt_content'

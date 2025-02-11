@@ -12,7 +12,6 @@ import pandas as pd
 from pydantic import BaseModel, Field
 from langchain_core.tools.base import BaseTool
 from langchain_experimental.agents import create_pandas_dataframe_agent
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import InjectedState
 
 # Initialize logger
@@ -66,10 +65,10 @@ class AskQuestionTool(BaseTool):
                    question_context,
                    experiment_name)
         # Load hydra configuration
-        with hydra.initialize(version_base=None, config_path="../../configs"):
+        with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['talk2biomodels/tools/ask_question=default'])
-            cfg = cfg.talk2biomodels.tools.ask_question
+                                overrides=['tools/ask_question=default'])
+            cfg = cfg.tools.ask_question
         # Get the context of the question
         # and based on the context, get the data
         # and prompt content to ask the question
@@ -101,7 +100,7 @@ class AskQuestionTool(BaseTool):
         prompt_content += f"{basico.model_info.get_model_units()}\n\n"
         # Create a pandas dataframe agent
         df_agent = create_pandas_dataframe_agent(
-                        ChatOpenAI(model=state['llm_model']),
+                        state['llm_model'],
                         allow_dangerous_code=True,
                         agent_type='tool-calling',
                         df=df,
@@ -111,5 +110,6 @@ class AskQuestionTool(BaseTool):
                         verbose=True,
                         prefix=prompt_content)
         # Invoke the agent with the question
-        llm_result = df_agent.invoke(question)
+        llm_result = df_agent.invoke(question, stream_mode=None)
+        # print (llm_result)
         return llm_result["output"]
