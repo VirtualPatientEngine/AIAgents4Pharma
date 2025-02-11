@@ -47,7 +47,10 @@ class SubgraphExtractionInput(BaseModel):
     )
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
-    arg_data: ArgumentData = Field(description="Experiment over graph data.", default=None)
+    arg_data: ArgumentData = Field(
+        description="Experiment over graph data.", default=None
+    )
+
 
 class SubgraphExtractionTool(BaseTool):
     """
@@ -126,7 +129,7 @@ class SubgraphExtractionTool(BaseTool):
         tool_call_id: Annotated[str, InjectedToolCallId],
         state: Annotated[dict, InjectedState],
         prompt: str,
-        arg_data: ArgumentData = None
+        arg_data: ArgumentData = None,
     ) -> Command:
         """
         Run the subgraph extraction tool.
@@ -149,12 +152,14 @@ class SubgraphExtractionTool(BaseTool):
             )
             cfg = cfg.tools.subgraph_extraction
 
+        # Retrieve source graph from the state
+        source_graph = state["dic_source_graph"][-1]  # Get the last source graph as of now
+        logger.log(logging.INFO, "Source graph: %s", source_graph)
+
         # Load the knowledge graph
-        # with open(cfg.input_tkg, 'rb') as f:
-        with open(state["input_tkg"], "rb") as f:
+        with open(source_graph["tkg_pyg_path"], "rb") as f:
             pyg_graph = pickle.load(f)
-        # with open(cfg.input_text_tkg, 'rb') as f:
-        with open(state["input_text_tkg"], "rb") as f:
+        with open(source_graph["tkg_text_path"], "rb") as f:
             textualized_graph = pickle.load(f)
 
         # Prepare prompt construction along with a list of endotypes
@@ -238,6 +243,9 @@ class SubgraphExtractionTool(BaseTool):
         dic_extracted_graph = {
             "name": arg_data.extraction_name,
             "tool_call_id": tool_call_id,
+            "graph_source": source_graph["name"],
+            "topk_nodes": state["topk_nodes"],
+            "topk_edges": state["topk_edges"],
             "graph_dict": {
                 "nodes": list(nx_graph.nodes(data=True)),  # Include node attributes
                 "edges": list(nx_graph.edges(data=True)),  # Include edge attributes
@@ -250,13 +258,13 @@ class SubgraphExtractionTool(BaseTool):
         dic_updated_state_for_model = {}
         for key, value in {
             "dic_extracted_graph": [dic_extracted_graph],
-            }.items():
+        }.items():
             if value:
                 dic_updated_state_for_model[key] = value
 
         # Return the updated state of the tool
         return Command(
-            update=dic_updated_state_for_model|{
+            update=dic_updated_state_for_model | {
                 # update the message history
                 "messages": [
                     ToolMessage(

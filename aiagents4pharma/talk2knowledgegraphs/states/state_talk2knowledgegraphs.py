@@ -34,6 +34,5 @@ class Talk2KnowledgeGraphs(AgentState):
     uploaded_files: list
     topk_nodes: int
     topk_edges: int
+    dic_source_graph: Annotated[list[dict], add_data]
     dic_extracted_graph: Annotated[list[dict], add_data]
-    input_tkg: str
-    input_text_tkg: str

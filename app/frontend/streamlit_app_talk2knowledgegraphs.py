@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Talk2KnowledgeGraphs: A Streamlit app for the Talk2KnowledgeGraphs graph.
-'''
+"""
 
 import os
 import sys
@@ -18,23 +18,27 @@ from langchain.callbacks.tracers import LangChainTracer
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from utils import streamlit_utils
-sys.path.append('./')
+
+sys.path.append("./")
 from aiagents4pharma.talk2knowledgegraphs.agents.t2kg_agent import get_app
 # from talk2knowledgegraphs.agents.t2kg_agent import get_app
 
-st.set_page_config(page_title="Talk2KnowledgeGraphs",
-                   page_icon="🤖",
-                   layout="wide",
-                   initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="Talk2KnowledgeGraphs",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
     # Load Hydra configuration
-    with hydra.initialize(version_base=None,
-                          config_path="../../aiagents4pharma/talk2knowledgegraphs/configs"):
-        cfg = hydra.compose(config_name='config',
-                            overrides=['app/frontend=default'])
+    with hydra.initialize(
+        version_base=None,
+        config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
+    ):
+        cfg = hydra.compose(config_name="config", overrides=["app/frontend=default"])
         cfg = cfg.app.frontend
         st.session_state.config = cfg
 else:
@@ -49,8 +53,10 @@ else:
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
-    st.error("Please set the OPENAI_API_KEY environment \
-        variable in the terminal where you run the app.")
+    st.error(
+        "Please set the OPENAI_API_KEY environment \
+        variable in the terminal where you run the app."
+    )
     st.stop()
 
 # Initialize current user
@@ -74,7 +80,7 @@ if "endotype_key" not in st.session_state:
     st.session_state.endotype_key = 0
 
 # Initialize session state for uploaded files
-if 'uploaded_files' not in st.session_state:
+if "uploaded_files" not in st.session_state:
     st.session_state.uploaded_files = []
 
     # Make directories if not exists
@@ -83,7 +89,7 @@ if 'uploaded_files' not in st.session_state:
 # Initialize project_name for Langsmith
 if "project_name" not in st.session_state:
     # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = 'T2KG-' + str(random.randint(1000, 9999))
+    st.session_state.project_name = "T2KG-" + str(random.randint(1000, 9999))
 
 # Initialize run_id for Langsmith
 if "run_id" not in st.session_state:
@@ -102,16 +108,20 @@ if "app" not in st.session_state:
     # Initialize the app
     if st.session_state.llm_model in cfg.openai_llms:
         print("Using OpenAI LLM model")
-        st.session_state.app = get_app(st.session_state.unique_id,
-                                        llm_model=ChatOpenAI(
-                                            model=st.session_state.llm_model, 
-                                            temperature=cfg.temperature))
+        st.session_state.app = get_app(
+            st.session_state.unique_id,
+            llm_model=ChatOpenAI(
+                model=st.session_state.llm_model, temperature=cfg.temperature
+            ),
+        )
     else:
         print("Using Ollama LLM model")
-        st.session_state.app = get_app(st.session_state.unique_id,
-                                        llm_model=ChatOllama(
-                                            model=st.session_state.llm_model, 
-                                            temperature=cfg.temperature))
+        st.session_state.app = get_app(
+            st.session_state.unique_id,
+            llm_model=ChatOllama(
+                model=st.session_state.llm_model, temperature=cfg.temperature
+            ),
+        )
 
 if "topk_nodes" not in st.session_state:
     # Subgraph extraction settings
@@ -127,15 +137,21 @@ streamlit_utils.apply_css()
 # Sidebar
 with st.sidebar:
     st.markdown("**⚙️ Subgraph Extraction Settings**")
-    topk_nodes = st.slider("Top-K (Nodes)",
-                           cfg.reasoning_subgraph_topk_nodes_min,
-                           cfg.reasoning_subgraph_topk_nodes_max,
-                           st.session_state.topk_nodes, key="st_slider_topk_nodes")
+    topk_nodes = st.slider(
+        "Top-K (Nodes)",
+        cfg.reasoning_subgraph_topk_nodes_min,
+        cfg.reasoning_subgraph_topk_nodes_max,
+        st.session_state.topk_nodes,
+        key="st_slider_topk_nodes",
+    )
     st.session_state.topk_nodes = topk_nodes
-    topk_edges = st.slider("Top-K (Edges)",
-                           cfg.reasoning_subgraph_topk_nodes_min,
-                           cfg.reasoning_subgraph_topk_nodes_max,
-                           st.session_state.topk_edges, key="st_slider_topk_edges")
+    topk_edges = st.slider(
+        "Top-K (Edges)",
+        cfg.reasoning_subgraph_topk_nodes_min,
+        cfg.reasoning_subgraph_topk_nodes_max,
+        st.session_state.topk_edges,
+        key="st_slider_topk_edges",
+    )
     st.session_state.topk_edges = topk_edges
 
 # Main layout of the app split into two columns
@@ -144,12 +160,14 @@ main_col1, main_col2 = st.columns([3, 7])
 with main_col1:
     with st.container(border=True):
         # Title
-        st.write("""
+        st.write(
+            """
             <h3 style='margin: 0px; padding-bottom: 10px; font-weight: bold;'>
             🤖 Talk2KnowledgeGraphs
             </h3>
             """,
-            unsafe_allow_html=True)
+            unsafe_allow_html=True,
+        )
 
         # LLM panel (Only at the front-end for now)
         # llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
@@ -159,7 +177,7 @@ with main_col1:
             llms,
             index=0,
             key="llm_model",
-            on_change=streamlit_utils.update_llm_model
+            on_change=streamlit_utils.update_llm_model,
         )
 
         # Upload files
@@ -183,47 +201,48 @@ with main_col2:
         # Display chat messages
         for count, message in enumerate(st.session_state.messages):
             if message["type"] == "message":
-                with st.chat_message(message["content"].role,
-                                     avatar="🤖"
-                                     if message["content"].role != 'user'
-                                     else "👩🏻‍💻"):
+                with st.chat_message(
+                    message["content"].role,
+                    avatar="🤖" if message["content"].role != "user" else "👩🏻‍💻",
+                ):
                     st.markdown(message["content"].content)
                     st.empty()
             elif message["type"] == "plotly":
-                streamlit_utils.render_plotly(message["content"],
-                              key=message["key"],
-                              title=message["title"],
-                            #   tool_name=message["tool_name"],
-                              save_chart=False)
+                streamlit_utils.render_plotly(
+                    message["content"],
+                    key=message["key"],
+                    title=message["title"],
+                    #   tool_name=message["tool_name"],
+                    save_chart=False,
+                )
                 st.empty()
             elif message["type"] == "toggle":
-                streamlit_utils.render_toggle(key=message["key"],
-                                    toggle_text=message["content"],
-                                    toggle_state=message["toggle_state"],
-                                    save_toggle=False)
+                streamlit_utils.render_toggle(
+                    key=message["key"],
+                    toggle_text=message["content"],
+                    toggle_state=message["toggle_state"],
+                    save_toggle=False,
+                )
                 st.empty()
             elif message["type"] == "dataframe":
-                streamlit_utils.render_table(message["content"],
-                                key=message["key"],
-                                # tool_name=message["tool_name"],
-                                save_table=False)
+                streamlit_utils.render_table(
+                    message["content"],
+                    key=message["key"],
+                    # tool_name=message["tool_name"],
+                    save_table=False,
+                )
                 st.empty()
             elif message["type"] == "graph":
-                streamlit_utils.render_graph(message["content"],
-                                key=message["key"],
-                                save_graph=False)
+                streamlit_utils.render_graph(
+                    message["content"], key=message["key"], save_graph=False
+                )
                 st.empty()
 
         # When the user asks a question
         if prompt:
             # Display user prompt
             prompt_msg = ChatMessage(prompt, role="user")
-            st.session_state.messages.append(
-                {
-                    "type": "message",
-                    "content": prompt_msg
-                }
-            )
+            st.session_state.messages.append({"type": "message", "content": prompt_msg})
             with st.chat_message("user", avatar="👩🏻‍💻"):
                 st.markdown(prompt)
                 st.empty()
@@ -234,38 +253,53 @@ with main_col2:
                 # with st.spinner("Fetching response ..."):
                 with st.spinner():
                     # Get chat history
-                    history = [(m["content"].role, m["content"].content)
-                                            for m in st.session_state.messages
-                                            if m["type"] == "message"]
+                    history = [
+                        (m["content"].role, m["content"].content)
+                        for m in st.session_state.messages
+                        if m["type"] == "message"
+                    ]
                     # Convert chat history to ChatMessage objects
                     chat_history = [
-                        SystemMessage(content=m[1]) if m[0] == "system" else
-                        HumanMessage(content=m[1]) if m[0] == "human" else
-                        AIMessage(content=m[1])
+                        SystemMessage(content=m[1])
+                        if m[0] == "system"
+                        else HumanMessage(content=m[1])
+                        if m[0] == "human"
+                        else AIMessage(content=m[1])
                         for m in history
                     ]
 
                     # Prepare LLM and embedding model for updating the agent
                     if st.session_state.llm_model in cfg.openai_llms:
-                        llm_model = ChatOpenAI(model=st.session_state.llm_model,
-                                               temperature=cfg.temperature)
+                        llm_model = ChatOpenAI(
+                            model=st.session_state.llm_model,
+                            temperature=cfg.temperature,
+                        )
                         emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
                     else:
-                        llm_model=ChatOllama(model=st.session_state.llm_model,
-                                             temperature=cfg.temperature)
+                        llm_model = ChatOllama(
+                            model=st.session_state.llm_model,
+                            temperature=cfg.temperature,
+                        )
                         emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
 
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     app.update_state(
                         config,
-                        {"llm_model": llm_model,
-                         "embedding_model": emb_model,
-                         "uploaded_files": st.session_state.uploaded_files,
-                         "topk_nodes": st.session_state.topk_nodes,
-                         "topk_edges": st.session_state.topk_edges,
-                         "input_tkg": st.session_state.config["input_tkg"],
-                         "input_text_tkg": st.session_state.config["input_text_tkg"]}
+                        {
+                            "llm_model": llm_model,
+                            "embedding_model": emb_model,
+                            "uploaded_files": st.session_state.uploaded_files,
+                            "topk_nodes": st.session_state.topk_nodes,
+                            "topk_edges": st.session_state.topk_edges,
+                            "dic_source_graph": [
+                                {
+                                    "name": st.session_state.config["tkg_name"],
+                                    "tkg_pyg_path": st.session_state.config["tkg_pyg_path"],
+                                    "tkg_text_path": st.session_state.config["tkg_text_path"],
+                                }
+                            ],
+                        },
                     )
 
                     # Update the agent states
@@ -274,23 +308,24 @@ with main_col2:
                     ERROR_FLAG = False
                     with collect_runs() as cb:
                         # Add Langsmith tracer
-                        tracer = LangChainTracer(project_name=st.session_state.project_name)
+                        tracer = LangChainTracer(
+                            project_name=st.session_state.project_name
+                        )
                         # Get response from the agent
                         response = app.invoke(
                             {"messages": [HumanMessage(content=prompt)]},
-                            config=config|{"callbacks": [tracer]}
+                            config=config | {"callbacks": [tracer]},
                         )
                         st.session_state.run_id = cb.traced_runs[-1].id
                     current_state = app.get_state(config)
 
                     # Add response to chat history
                     assistant_msg = ChatMessage(
-                                        response["messages"][-1].content,
-                                        role="assistant")
-                    st.session_state.messages.append({
-                                    "type": "message",
-                                    "content": assistant_msg
-                                })
+                        response["messages"][-1].content, role="assistant"
+                    )
+                    st.session_state.messages.append(
+                        {"type": "message", "content": assistant_msg}
+                    )
                     # Display the response in the chat
                     st.markdown(response["messages"][-1].content)
                     st.empty()
@@ -331,25 +366,36 @@ with main_col2:
                         # msg.name is the name of the tool
                         # msg.tool_call_id is the unique id of the tool call
                         # st.session_state.run_id is the unique id of the run
-                        uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
+                        uniq_msg_id = (
+                            msg.name
+                            + "_"
+                            + msg.tool_call_id
+                            + "_"
+                            + str(st.session_state.run_id)
+                        )
                         if msg.name in ["subgraph_extraction"]:
-                            print ('-', len(current_state.values["dic_extracted_graph"]),
-                                   'subgraph_extraction')
+                            print(
+                                "-",
+                                len(current_state.values["dic_extracted_graph"]),
+                                "subgraph_extraction",
+                            )
                             # Add the graph into the visuals list
-                            latest_graph = current_state.values["dic_extracted_graph"][-1]
+                            latest_graph = current_state.values["dic_extracted_graph"][
+                                -1
+                            ]
                             if current_state.values["dic_extracted_graph"]:
-                                graphs_visuals.append({
-                                    "content": latest_graph["graph_dict"],
-                                    "key": "subgraph_"+uniq_msg_id
-                                })
+                                graphs_visuals.append(
+                                    {
+                                        "content": latest_graph["graph_dict"],
+                                        "key": "subgraph_" + uniq_msg_id,
+                                    }
+                                )
 
             # Visualize the graph
             if len(graphs_visuals) > 0:
                 for count, graph in enumerate(graphs_visuals):
                     streamlit_utils.render_graph(
-                        graph_dict=graph["content"],
-                        key=graph["key"],
-                        save_graph=True
+                        graph_dict=graph["content"], key=graph["key"], save_graph=True
                     )
 
         # Collect feedback and display the thumbs feedback
@@ -358,5 +404,5 @@ with main_col2:
                 feedback_type="thumbs",
                 optional_text_label="[Optional] Please provide an explanation",
                 on_submit=streamlit_utils.submit_feedback,
-                key=f"feedback_{st.session_state.run_id}"
+                key=f"feedback_{st.session_state.run_id}",
             )

@@ -41,7 +41,7 @@ class GraphRAGReasoningInput(BaseModel):
     extraction_name: str = Field(
         description="""Name assigned to the subgraph extraction process 
                     when the subgraph_extraction tool is invoked."""
-   )
+    )
 
 
 class GraphRAGReasoningTool(BaseTool):
