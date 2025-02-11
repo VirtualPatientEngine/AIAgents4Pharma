@@ -49,7 +49,7 @@ class SubgraphSummarizationTool(BaseTool):
     """
 
     name: str = "subgraph_summarization"
-    description: str = """A tool to perform subgraph summarization over textualized graph 
+    description: str = """A tool to perform subgraph summarization over textualized graph
                         for responding to user's follow-up prompt(s)."""
     args_schema: Type[BaseModel] = SubgraphSummarizationInput
 
@@ -92,11 +92,8 @@ class SubgraphSummarizationTool(BaseTool):
             ]
         )
 
-        # Retrieve LLM from the state
-        llm = state["llm_model"]
-
         # Prepare chain
-        chain = prompt_template | llm | StrOutputParser()
+        chain = prompt_template | state["llm_model"] | StrOutputParser()
 
         # Return the subgraph and textualized graph as JSON response
         response = chain.invoke(

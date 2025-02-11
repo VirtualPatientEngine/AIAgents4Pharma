@@ -4,7 +4,7 @@ Test cases for tools/subgraph_summarization.py
 
 import pytest
 from langchain_core.messages import HumanMessage
-from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from ..agents.t2kg_agent import get_app
 
 # Define the data path
@@ -20,72 +20,84 @@ def input_dict_fixture():
         "llm_model": None,  # TBA for each test case
         "embedding_model": None,  # TBA for each test case
         "uploaded_files": [],
-        "input_tkg": f"{DATA_PATH}/kg_pyg_graph.pkl",
-        "input_text_tkg": f"{DATA_PATH}/kg_text_graph.pkl",
         "topk_nodes": 3,
         "topk_edges": 3,
-        "graph_dict": {
-            "nodes": [
-                ("g1", {}),
-                ("g4", {}),
-                ("g5", {}),
-                ("p5", {}),
-                ("p10", {}),
-                ("p1", {}),
-                ("p6", {}),
-            ],
-            "edges": [
-                (
-                    "g1",
-                    "p1",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g4",
-                    "p10",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g4",
-                    "p5",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p5",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p6",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p1",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-            ],
-        },
-        "graph_text": """
+        "dic_source_graph": [
+            {
+                "name": "PrimeKG",
+                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+            }
+        ],
+        "dic_extracted_graph": [
+            {
+                "name": "subkg_12345",
+                "tool_call_id": "tool_12345",
+                "graph_source": "PrimeKG",
+                "topk_nodes": 3,
+                "topk_edges": 3,
+                "graph_dict": {
+                    "nodes": [
+                        ("g1", {}),
+                        ("g4", {}),
+                        ("g5", {}),
+                        ("p5", {}),
+                        ("p10", {}),
+                        ("p1", {}),
+                        ("p6", {}),
+                    ],
+                    "edges": [
+                        (
+                            "g1",
+                            "p1",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g4",
+                            "p10",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g4",
+                            "p5",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p5",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p6",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p1",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                    ],
+                },
+                "graph_text": """
             node_id,node_attr
             g1,"NOD2 is a gene that contributes to immune responses and has been implicated in
             Crohn's disease, particularly through genetic mutations linked to inflammation."
@@ -114,6 +126,9 @@ def input_dict_fixture():
             g4,"('gene', 'member_of', 'pathway')",p5
             g5,"('gene', 'member_of', 'pathway')",p1
             """,
+                "graph_summary": None,
+            }
+        ],
     }
 
     return input_dict
@@ -127,8 +142,8 @@ def test_summarize_subgraph(input_dict):
         input_dict: Input dictionary fixture.
     """
     # Prepare LLM and embedding model
-    input_dict["llm_model"] = ChatOllama(model="llama3.2:1b", temperature=0.0)
-    input_dict["embedding_model"] = OllamaEmbeddings(model="nomic-embed-text")
+    input_dict["llm_model"] = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+    input_dict["embedding_model"] = OpenAIEmbeddings(model="text-embedding-3-small")
 
     # Setup the app
     unique_id = 12345
@@ -140,11 +155,11 @@ def test_summarize_subgraph(input_dict):
         input_dict,
     )
     prompt = """
-    Please ONLY invoke `subgraph_summarization` tool without calling any other tools 
+    Please directly invoke `subgraph_summarization` tool without calling any other tools 
     to respond to the following prompt:
 
     You are given a subgraph in the forms of textualized subgraph representing
-    nodes and edges (triples).
+    nodes and edges (triples) obtained from extraction_name `subkg_12345`.
     Summarize the given subgraph and higlight the importance nodes and edges.
     """
 
@@ -160,4 +175,6 @@ def test_summarize_subgraph(input_dict):
     assert tool_msg.name == "subgraph_summarization"
 
     # Check summarized subgraph
-    assert isinstance(response["graph_summary"], str)
+    current_state = app.get_state(config)
+    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    assert isinstance(dic_extracted_graph["graph_summary"], str)

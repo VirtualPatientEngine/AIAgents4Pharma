@@ -39,7 +39,7 @@ class GraphRAGReasoningInput(BaseModel):
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
     extraction_name: str = Field(
-        description="""Name assigned to the subgraph extraction process 
+        description="""Name assigned to the subgraph extraction process
                     when the subgraph_extraction tool is invoked."""
     )
 
@@ -82,12 +82,7 @@ class GraphRAGReasoningTool(BaseTool):
             )
             cfg = cfg.tools.graphrag_reasoning
 
-        # Retrieve embedding model and LLM from the state
-        emb_model = state["embedding_model"]
-        llm = state["llm_model"]
-
-        # Load existing vector store from the directory
-        # Prepare documents from uploaded files and create vector store out of them
+        # Prepare documents
         all_docs = []
         if len(state["uploaded_files"]) != 0:
             for uploaded_file in state["uploaded_files"]:
@@ -117,10 +112,10 @@ class GraphRAGReasoningTool(BaseTool):
         )
 
         # Prepare chain with retrieved documents
-        qa_chain = create_stuff_documents_chain(llm, prompt_template)
+        qa_chain = create_stuff_documents_chain(state["llm_model"], prompt_template)
         rag_chain = create_retrieval_chain(
             InMemoryVectorStore.from_documents(
-                documents=all_docs, embedding=emb_model
+                documents=all_docs, embedding=state["embedding_model"]
             ).as_retriever(
                 search_type=cfg.retriever_search_type,
                 search_kwargs={

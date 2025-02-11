@@ -21,10 +21,15 @@ def input_dict_fixture():
         "llm_model": None,  # TBA for each test case
         "embedding_model": None,  # TBA for each test case
         "uploaded_files": [],
-        "input_tkg": f"{DATA_PATH}/kg_pyg_graph.pkl",
-        "input_text_tkg": f"{DATA_PATH}/kg_text_graph.pkl",
         "topk_nodes": 3,
         "topk_edges": 3,
+        "dic_source_graph": [
+            {
+                "name": "PrimeKG",
+                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+            }
+        ],
     }
 
     return input_dict
@@ -51,10 +56,12 @@ def test_extract_subgraph_wo_docs(input_dict):
         input_dict,
     )
     prompt = """
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
+    Please directly invoke `subgraph_extraction` tool without calling any other tools 
     to respond to the following prompt:
 
     Extract all relevant information related to nodes of genes existed in the knowledge graph.
+    Before starting, do not forget to set the arg_data.extraction_name 
+    for this process as `subkg_12345`. 
     """
 
     # Test the tool subgraph_extraction
@@ -68,18 +75,28 @@ def test_extract_subgraph_wo_docs(input_dict):
     tool_msg = response["messages"][-2]
     assert tool_msg.name == "subgraph_extraction"
 
-    # Check extracted subgraph
-    assert isinstance(response["graph_dict"], dict)
-    assert len(response["graph_dict"]["nodes"]) > 0
-    assert len(response["graph_dict"]["edges"]) > 0
-    assert isinstance(response["graph_text"], str)
+    # Check extracted subgraph dictionary
+    current_state = app.get_state(config)
+    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    assert isinstance(dic_extracted_graph, dict)
+    assert dic_extracted_graph["name"] == "subkg_12345"
+    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["topk_nodes"] == 3
+    assert dic_extracted_graph["topk_edges"] == 3
+    assert isinstance(dic_extracted_graph["graph_dict"], dict)
+    assert len(dic_extracted_graph["graph_dict"]["nodes"]) > 0
+    assert len(dic_extracted_graph["graph_dict"]["edges"]) > 0
+    assert isinstance(dic_extracted_graph["graph_text"], str)
     # Check if the nodes are in the graph_text
-    assert all(n[0] in response["graph_text"] for n in response["graph_dict"]["nodes"])
+    assert all(
+        n[0] in dic_extracted_graph["graph_text"]
+        for n in dic_extracted_graph["graph_dict"]["nodes"]
+    )
     # Check if the edges are in the graph_text
     assert all(
         ",".join([e[0], '"' + str(tuple(e[2]["relation"])) + '"', e[1]])
-        in response["graph_text"]
-        for e in response["graph_dict"]["edges"]
+        in dic_extracted_graph["graph_text"]
+        for e in dic_extracted_graph["graph_dict"]["edges"]
     )
 
 
@@ -118,6 +135,7 @@ def test_extract_subgraph_w_docs(input_dict):
     to respond to the following prompt:
 
     Extract all relevant information related to nodes of genes existed in the knowledge graph.
+    Please set the extraction name for this process as `subkg_12345`.
     """
 
     # Test the tool subgraph_extraction
@@ -131,16 +149,26 @@ def test_extract_subgraph_w_docs(input_dict):
     tool_msg = response["messages"][-2]
     assert tool_msg.name == "subgraph_extraction"
 
-    # Check extracted subgraph
-    assert isinstance(response["graph_dict"], dict)
-    assert len(response["graph_dict"]["nodes"]) > 0
-    assert len(response["graph_dict"]["edges"]) > 0
-    assert isinstance(response["graph_text"], str)
+    # Check extracted subgraph dictionary
+    current_state = app.get_state(config)
+    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    assert isinstance(dic_extracted_graph, dict)
+    assert dic_extracted_graph["name"] == "subkg_12345"
+    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["topk_nodes"] == 3
+    assert dic_extracted_graph["topk_edges"] == 3
+    assert isinstance(dic_extracted_graph["graph_dict"], dict)
+    assert len(dic_extracted_graph["graph_dict"]["nodes"]) > 0
+    assert len(dic_extracted_graph["graph_dict"]["edges"]) > 0
+    assert isinstance(dic_extracted_graph["graph_text"], str)
     # Check if the nodes are in the graph_text
-    assert all(n[0] in response["graph_text"] for n in response["graph_dict"]["nodes"])
+    assert all(
+        n[0] in dic_extracted_graph["graph_text"]
+        for n in dic_extracted_graph["graph_dict"]["nodes"]
+    )
     # Check if the edges are in the graph_text
     assert all(
         ",".join([e[0], '"' + str(tuple(e[2]["relation"])) + '"', e[1]])
-        in response["graph_text"]
-        for e in response["graph_dict"]["edges"]
+        in dic_extracted_graph["graph_text"]
+        for e in dic_extracted_graph["graph_dict"]["edges"]
     )

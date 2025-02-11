@@ -294,9 +294,9 @@ with main_col2:
                             "topk_edges": st.session_state.topk_edges,
                             "dic_source_graph": [
                                 {
-                                    "name": st.session_state.config["tkg_name"],
-                                    "tkg_pyg_path": st.session_state.config["tkg_pyg_path"],
-                                    "tkg_text_path": st.session_state.config["tkg_text_path"],
+                                    "name": st.session_state.config["kg_name"],
+                                    "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+                                    "kg_text_path": st.session_state.config["kg_text_path"],
                                 }
                             ],
                         },

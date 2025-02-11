@@ -2,9 +2,13 @@
 Tool for performing subgraph extraction.
 """
 
+from typing import Type, Annotated
 import logging
 import pickle
-from typing import Type, Annotated
+import numpy as np
+import pandas as pd
+import hydra
+import networkx as nx
 from pydantic import BaseModel, Field
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -17,9 +21,6 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
-import numpy as np
-import hydra
-import networkx as nx
 import torch
 from torch_geometric.data import Data
 from ..utils.extractions.pcst import PCSTPruning
@@ -124,68 +125,21 @@ class SubgraphExtractionTool(BaseTool):
 
         return prompt
 
-    def _run(
-        self,
-        tool_call_id: Annotated[str, InjectedToolCallId],
-        state: Annotated[dict, InjectedState],
-        prompt: str,
-        arg_data: ArgumentData = None,
-    ) -> Command:
+    def prepare_final_subgraph(self,
+                               subgraph: dict,
+                               pyg_graph: Data,
+                               textualized_graph: pd.DataFrame) -> dict:
         """
-        Run the subgraph extraction tool.
+        Prepare the subgraph based on the extracted subgraph.
 
         Args:
-            tool_call_id: The tool call ID for the tool.
-            state: Injected state for the tool.
-            prompt: The prompt to interact with the backend.
-            arg_data (ArgumentData): The argument data.
+            subgraph: The extracted subgraph.
+            pyg_graph: The PyTorch Geometric graph.
+            textualized_graph: The textualized graph.
 
         Returns:
-            Command: The command to be executed.
+            A dictionary containing the PyG graph, NetworkX graph, and textualized graph.
         """
-        logger.log(logging.INFO, "Invoking subgraph_extraction tool")
-
-        # Load hydra configuration
-        with hydra.initialize(version_base=None, config_path="../configs"):
-            cfg = hydra.compose(
-                config_name="config", overrides=["tools/subgraph_extraction=default"]
-            )
-            cfg = cfg.tools.subgraph_extraction
-
-        # Retrieve source graph from the state
-        source_graph = state["dic_source_graph"][-1]  # Get the last source graph as of now
-        logger.log(logging.INFO, "Source graph: %s", source_graph)
-
-        # Load the knowledge graph
-        with open(source_graph["tkg_pyg_path"], "rb") as f:
-            pyg_graph = pickle.load(f)
-        with open(source_graph["tkg_text_path"], "rb") as f:
-            textualized_graph = pickle.load(f)
-
-        # Prepare prompt construction along with a list of endotypes
-        if len(state["uploaded_files"]) != 0 and "endotype" in [
-            f["file_type"] for f in state["uploaded_files"]
-        ]:
-            prompt = self.perform_endotype_filtering(prompt, state, cfg)
-
-        # Prepare embedding model and embed the user prompt as query
-        query_emb = torch.tensor(
-            EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
-        ).float()
-
-        # Prepare the PCSTPruning object and extract the subgraph
-        # Parameters were set in the configuration file obtained from Hydra
-        subgraph = PCSTPruning(
-            state["topk_nodes"],
-            state["topk_edges"],
-            cfg.cost_e,
-            cfg.c_const,
-            cfg.root,
-            cfg.num_clusters,
-            cfg.pruning,
-            cfg.verbosity_level,
-        ).extract_subgraph(pyg_graph, query_emb)
-
         # Prepare the PyTorch Geometric graph
         mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
         pyg_graph = Data(
@@ -239,18 +193,92 @@ class SubgraphExtractionTool(BaseTool):
             + textualized_graph["edges"].iloc[subgraph["edges"]].to_csv(index=False)
         )
 
+        return {
+            "graph_pyg": pyg_graph,
+            "graph_nx": nx_graph,
+            "graph_text": textualized_graph,
+        }
+
+    def _run(
+        self,
+        tool_call_id: Annotated[str, InjectedToolCallId],
+        state: Annotated[dict, InjectedState],
+        prompt: str,
+        arg_data: ArgumentData = None,
+    ) -> Command:
+        """
+        Run the subgraph extraction tool.
+
+        Args:
+            tool_call_id: The tool call ID for the tool.
+            state: Injected state for the tool.
+            prompt: The prompt to interact with the backend.
+            arg_data (ArgumentData): The argument data.
+
+        Returns:
+            Command: The command to be executed.
+        """
+        logger.log(logging.INFO, "Invoking subgraph_extraction tool")
+
+        # Load hydra configuration
+        with hydra.initialize(version_base=None, config_path="../configs"):
+            cfg = hydra.compose(
+                config_name="config", overrides=["tools/subgraph_extraction=default"]
+            )
+            cfg = cfg.tools.subgraph_extraction
+
+        # Retrieve source graph from the state
+        initial_graph = {}
+        initial_graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
+        # logger.log(logging.INFO, "Source graph: %s", source_graph)
+
+        # Load the knowledge graph
+        with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
+            initial_graph["pyg"] = pickle.load(f)
+        with open(initial_graph["source"]["kg_text_path"], "rb") as f:
+            initial_graph["text"] = pickle.load(f)
+
+        # Prepare prompt construction along with a list of endotypes
+        if len(state["uploaded_files"]) != 0 and "endotype" in [
+            f["file_type"] for f in state["uploaded_files"]
+        ]:
+            prompt = self.perform_endotype_filtering(prompt, state, cfg)
+
+        # Prepare embedding model and embed the user prompt as query
+        query_emb = torch.tensor(
+            EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
+        ).float()
+
+        # Prepare the PCSTPruning object and extract the subgraph
+        # Parameters were set in the configuration file obtained from Hydra
+        subgraph = PCSTPruning(
+            state["topk_nodes"],
+            state["topk_edges"],
+            cfg.cost_e,
+            cfg.c_const,
+            cfg.root,
+            cfg.num_clusters,
+            cfg.pruning,
+            cfg.verbosity_level,
+        ).extract_subgraph(initial_graph["pyg"], query_emb)
+
+        # Prepare subgraph as a NetworkX graph and textualized graph
+        final_subgraph = self.prepare_final_subgraph(
+            subgraph, initial_graph["pyg"], initial_graph["text"]
+        )
+
         # Prepare the dictionary of extracted graph
         dic_extracted_graph = {
             "name": arg_data.extraction_name,
             "tool_call_id": tool_call_id,
-            "graph_source": source_graph["name"],
+            "graph_source": initial_graph["source"]["name"],
             "topk_nodes": state["topk_nodes"],
             "topk_edges": state["topk_edges"],
             "graph_dict": {
-                "nodes": list(nx_graph.nodes(data=True)),  # Include node attributes
-                "edges": list(nx_graph.edges(data=True)),  # Include edge attributes
+                "nodes": list(final_subgraph["graph_nx"].nodes(data=True)),
+                "edges": list(final_subgraph["graph_nx"].edges(data=True)),
             },
-            "graph_text": textualized_graph,
+            "graph_text": final_subgraph["graph_text"],
             "graph_summary": None,
         }
 

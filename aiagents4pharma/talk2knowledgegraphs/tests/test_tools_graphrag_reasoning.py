@@ -35,72 +35,84 @@ def input_dict_fixture():
                 "uploaded_timestamp": "2024-11-05 00:00:00",
             },
         ],
-        "input_tkg": f"{DATA_PATH}/kg_pyg_graph.pkl",
-        "input_text_tkg": f"{DATA_PATH}/kg_text_graph.pkl",
         "topk_nodes": 3,
         "topk_edges": 3,
-        "graph_dict": {
-            "nodes": [
-                ("g1", {}),
-                ("g4", {}),
-                ("g5", {}),
-                ("p5", {}),
-                ("p10", {}),
-                ("p1", {}),
-                ("p6", {}),
-            ],
-            "edges": [
-                (
-                    "g1",
-                    "p1",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g4",
-                    "p10",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g4",
-                    "p5",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p5",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p6",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-                (
-                    "g5",
-                    "p1",
-                    {
-                        "relation": ["gene", "member_of", "pathway"],
-                        "label": ["gene", "member_of", "pathway"],
-                    },
-                ),
-            ],
-        },
-        "graph_text": """
+        "dic_source_graph": [
+            {
+                "name": "PrimeKG",
+                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+            }
+        ],
+        "dic_extracted_graph": [
+            {
+                "name": "subkg_12345",
+                "tool_call_id": "tool_12345",
+                "graph_source": "PrimeKG",
+                "topk_nodes": 3,
+                "topk_edges": 3,
+                "graph_dict": {
+                    "nodes": [
+                        ("g1", {}),
+                        ("g4", {}),
+                        ("g5", {}),
+                        ("p5", {}),
+                        ("p10", {}),
+                        ("p1", {}),
+                        ("p6", {}),
+                    ],
+                    "edges": [
+                        (
+                            "g1",
+                            "p1",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g4",
+                            "p10",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g4",
+                            "p5",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p5",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p6",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                        (
+                            "g5",
+                            "p1",
+                            {
+                                "relation": ["gene", "member_of", "pathway"],
+                                "label": ["gene", "member_of", "pathway"],
+                            },
+                        ),
+                    ],
+                },
+                "graph_text": """
             node_id,node_attr
             g1,"NOD2 is a gene that contributes to immune responses and has been implicated in
             Crohn's disease, particularly through genetic mutations linked to inflammation."
@@ -129,7 +141,7 @@ def input_dict_fixture():
             g4,"('gene', 'member_of', 'pathway')",p5
             g5,"('gene', 'member_of', 'pathway')",p1
             """,
-        "graph_summary": """
+                "graph_summary": """
             The summarized subgraph focuses on **immune responses** and their regulation,
             particularly in relation to **inflammation**. Here are the key elements highlighted:
 
@@ -166,6 +178,8 @@ def input_dict_fixture():
             It highlights the roles of NOD2, IL10, TLR4, the Th17 activation pathway, autophagy,
             and the inflammasome pathway in immune regulation.
             """,
+            }
+        ],
     }
 
     return input_dict
@@ -192,12 +206,14 @@ def test_graphrag_reasoning_openai(input_dict):
         input_dict,
     )
     prompt = """
-    Please invoke `graphrag_reasoning` tool without calling any other tools 
+    Please directly invoke `graphrag_reasoning` tool without calling any other tools 
     to respond to the following prompt:
 
-    Without extracting a new subgraph, perform Graph RAG reasoning 
-    to get insights related to nodes of genes mentioned in the knowledge graph related to DrugA. 
+    Without extracting a new subgraph, based on subgraph extracted from `subkg_12345`
+    perform Graph RAG reasoning to get insights related to nodes of genes 
+    mentioned in the knowledge graph related to DrugA. 
 
+    Here is an additional context:
     DrugA is a human monoclonal antibody that binds to both 
     the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
     """

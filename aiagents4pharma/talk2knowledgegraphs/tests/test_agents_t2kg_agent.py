@@ -35,13 +35,16 @@ def input_dict_fixture():
                 "uploaded_timestamp": "2024-11-05 00:00:00",
             },
         ],
-        "input_tkg": f"{DATA_PATH}/kg_pyg_graph.pkl",
-        "input_text_tkg": f"{DATA_PATH}/kg_text_graph.pkl",
         "topk_nodes": 3,
         "topk_edges": 3,
-        "graph_dict": None,
-        "graph_text": None,
-        "graph_summary": None,
+        "dic_source_graph": [
+            {
+                "name": "PrimeKG",
+                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+            }
+        ],
+        "dic_extracted_graph": []
     }
 
     return input_dict
@@ -76,6 +79,8 @@ def test_t2kg_agent_openai(input_dict):
     Make sure to discover insights related to TNF and its interactions with other entities.
     Perform reasoning on the extracted subgraph to generate a concise
     summary of the mechanism of action of DrugA.
+
+    Please set the extraction name for the extraction process as `subkg_12345`.
     """
 
     # Test the tool get_modelinfo
@@ -85,6 +90,20 @@ def test_t2kg_agent_openai(input_dict):
     assistant_msg = response["messages"][-1].content
     assert isinstance(assistant_msg, str)
 
+    # Check extracted subgraph dictionary
+    current_state = app.get_state(config)
+    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    assert isinstance(dic_extracted_graph, dict)
+    assert dic_extracted_graph["name"] == "subkg_12345"
+    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["topk_nodes"] == 3
+    assert dic_extracted_graph["topk_edges"] == 3
+    assert isinstance(dic_extracted_graph["graph_dict"], dict)
+    assert len(dic_extracted_graph["graph_dict"]["nodes"]) > 0
+    assert len(dic_extracted_graph["graph_dict"]["edges"]) > 0
+    assert isinstance(dic_extracted_graph["graph_text"], str)
+    # Check summarized subgraph
+    assert isinstance(dic_extracted_graph["graph_summary"], str)
     # Check reasoning results
     assert "DrugA" in assistant_msg
     assert "TNF" in assistant_msg
