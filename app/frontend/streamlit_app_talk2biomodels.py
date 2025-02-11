@@ -23,11 +23,11 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
 
 
-# st.logo(
-#     image='docs/VPE.png',
-#     size='large',
-#     link='https://github.com/VirtualPatientEngine'
-# )
+st.logo(
+    image='docs/VPE.png',
+    size='large',
+    link='https://github.com/VirtualPatientEngine'
+)
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
@@ -137,21 +137,8 @@ with main_col1:
             on_change=streamlit_utils.update_llm_model
         )
 
-        # Upload panel
-        # with st.container(border=True):
-        #     get_uploaded_files()
         # Upload files
         uploaded_sbml_file = get_uploaded_files()
-
-        # # Upload files (placeholder)
-        # uploaded_file = st.file_uploader(
-        #     "Upload an XML/SBML file",
-        #     accept_multiple_files=False,
-        #     type=["xml", "sbml"],
-        #     help='''Upload an XML/SBML file to simulate
-        #         a biological model, and ask questions
-        #         about the simulation results.'''
-        #     )
 
         # Help text
         st.button("Know more ↗",
@@ -165,10 +152,10 @@ with main_col1:
 # Second column
 with main_col2:
     # Chat history panel
-    with st.container(border=True, height=575):
+    with st.container(border=True, height=600):
         st.write("#### 💬 Chat History")
 
-        # Display chat messages
+        # Display history of messages
         for count, message in enumerate(st.session_state.messages):
             if message["type"] == "message":
                 with st.chat_message(message["content"].role,
@@ -176,6 +163,12 @@ with main_col2:
                                      if message["content"].role != 'user'
                                      else "👩🏻‍💻"):
                     st.markdown(message["content"].content)
+                    st.empty()
+            elif message["type"] == "button":
+                if st.button(message["content"],
+                             key=message["key"]):
+                    # Trigger the question
+                    prompt = message["question"]
                     st.empty()
             elif message["type"] == "plotly":
                 streamlit_utils.render_plotly(message["content"],
@@ -195,20 +188,20 @@ with main_col2:
                     if message['tool_name'] == 'get_annotation':
                         df_selected = message["content"]
                         st.dataframe(df_selected,
-                                        use_container_width=True,
-                                        key=message["key"],
-                                        hide_index=True,
-                                        column_config={
-                                            "Id": st.column_config.LinkColumn(
-                                                label="Id",
-                                                help="Click to open the link associated with the Id",
-                                                validate=r"^http://.*$",  # Ensure the link is valid
-                                                display_text=r"^http://identifiers\.org/(.*?)$"
-                                            ),
-                                            "Species Name": st.column_config.TextColumn("Species Name"),
-                                            "Description": st.column_config.TextColumn("Description"),
-                                            "Database": st.column_config.TextColumn("Database"),
-                                        }
+                                    use_container_width=True,
+                                    key=message["key"],
+                                    hide_index=True,
+                                    column_config={
+                                        "Id": st.column_config.LinkColumn(
+                                            label="Id",
+                                            help="Click to open the link associated with the Id",
+                                            validate=r"^http://.*$",  # Ensure the link is valid
+                                            display_text=r"^http://identifiers\.org/(.*?)$"
+                                        ),
+                                        "Species Name": st.column_config.TextColumn("Species Name"),
+                                        "Description": st.column_config.TextColumn("Description"),
+                                        "Database": st.column_config.TextColumn("Database"),
+                                    }
                                 )
                 else:
                     streamlit_utils.render_table(message["content"],
@@ -216,6 +209,60 @@ with main_col2:
                                     # tool_name=message["tool_name"],
                                     save_table=False)
                 st.empty()
+        # Display intro message only the first time
+        # i.e. when there are no messages in the chat
+        if not st.session_state.messages:
+            with st.chat_message("assistant", avatar="🤖"):
+                with st.spinner("Initializing the agent ..."):
+                    config = {"configurable":
+                                {"thread_id": st.session_state.unique_id}
+                                }
+                    # Update the agent state with the selected LLM model
+                    current_state = app.get_state(config)
+                    app.update_state(
+                        config,
+                        {"llm_model": st.session_state.llm_model}
+                    )
+                    intro_prompt = "Tell your name and about yourself. Always start with a greeting."
+                    intro_prompt += " and tell about the tools you can run to perform analysis with short description."
+                    intro_prompt += " We have provided starter questions (separately) outisde your response."
+                    intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
+                    intro_prompt += " simply click on the questions to execute them."
+                    intro_prompt += " Let them know that they can check out the use cases"
+                    intro_prompt += " and FAQs described in the link below. Be friendly and helpful."
+                    intro_prompt += "\n"
+                    intro_prompt += "Here is the link to the use cases: [Use Cases](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/cases/Case_1/)"
+                    intro_prompt += "\n"
+                    intro_prompt += "Here is the link to the FAQs: [FAQs](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/faq/)"
+                    response = app.stream(
+                                    {"messages": [HumanMessage(content=intro_prompt)]},
+                                    config=config,
+                                    stream_mode="messages"
+                                )
+                    st.write_stream(streamlit_utils.stream_response(response))
+                    current_state = app.get_state(config)
+                    # Add response to chat history
+                    assistant_msg = ChatMessage(
+                                        current_state.values["messages"][-1].content,
+                                        role="assistant")
+                    st.session_state.messages.append({
+                                    "type": "message",
+                                    "content": assistant_msg
+                                })
+                    st.empty()
+        if len(st.session_state.messages) <= 1:
+            for count, question in enumerate(streamlit_utils.sample_questions()):
+                if st.button(f'Q{count+1}. {question}',
+                             key=f'sample_question_{count+1}'):
+                    # Trigger the question
+                    prompt = question
+                # Add button click to chat history
+                st.session_state.messages.append({
+                                "type": "button",
+                                "question": question,
+                                "content": f'Q{count+1}. {question}',
+                                "key": f'sample_question_{count+1}'
+                            })
 
         # When the user asks a question
         if prompt:
@@ -250,234 +297,7 @@ with main_col2:
                         for m in history
                     ]
 
-                    # Create config for the agent
-                    config = {"configurable": {"thread_id": st.session_state.unique_id}}
-                    # Update the agent state with the selected LLM model
-                    current_state = app.get_state(config)
-                    app.update_state(
-                        config,
-                        {"sbml_file_path": [st.session_state.sbml_file_path]}
-                    )
-                    app.update_state(
-                        config,
-                        {"llm_model": st.session_state.llm_model}
-                    )
-                    # print (current_state.values)
-                    # current_state = app.get_state(config)
-                    # print ('updated state', current_state.values["sbml_file_path"])
-
-                    ERROR_FLAG = False
-                    with collect_runs() as cb:
-                        # Add Langsmith tracer
-                        tracer = LangChainTracer(project_name=st.session_state.project_name)
-                        # Get response from the agent
-                        response = app.invoke(
-                            {"messages": [HumanMessage(content=prompt)]},
-                            config=config|{"callbacks": [tracer]}
-                        )
-                        st.session_state.run_id = cb.traced_runs[-1].id
-                    # print(response["messages"])
-                    current_state = app.get_state(config)
-                    print ('steady_state', len(current_state.values["dic_steady_state_data"]))
-                    # print (current_state.values["dic_steady_state_data"])
-
-                    # Add response to chat history
-                    assistant_msg = ChatMessage(
-                                        response["messages"][-1].content,
-                                        role="assistant")
-                    st.session_state.messages.append({
-                                    "type": "message",
-                                    "content": assistant_msg
-                                })
-                    # Display the response in the chat
-                    st.markdown(response["messages"][-1].content)
-                    st.empty()
-                    # Get the current state of the graph
-                    current_state = app.get_state(config)
-                    # Get the messages from the current state
-                    # and reverse the order
-                    reversed_messages = current_state.values["messages"][::-1]
-                    # Loop through the reversed messages until a 
-                    # HumanMessage is found i.e. the last message 
-                    # from the user. This is to display the results
-                    # of the tool calls made by the agent since the
-                    # last message from the user.
-                    for msg in reversed_messages:
-                        # print (msg)
-                        # Break the loop if the message is a HumanMessage
-                        # i.e. the last message from the user
-                        if isinstance(msg, HumanMessage):
-                            break
-                        # Skip the message if it is an AIMessage
-                        # i.e. a message from the agent. An agent
-                        # may make multiple tool calls before the
-                        # final response to the user.
-                        if isinstance(msg, AIMessage):
-                            # print ("AIMessage", msg)
-                            continue
-                        # Work on the message if it is a ToolMessage
-                        # These may contain additional visuals that
-                        # need to be displayed to the user.
-                        print("ToolMessage", msg)
-                        # Skip the Tool message if it is an error message
-                        if msg.status == "error":
-                            continue
-
-                        # Create a unique message id to identify the tool call
-                        # msg.name is the name of the tool
-                        # msg.tool_call_id is the unique id of the tool call
-                        # st.session_state.run_id is the unique id of the run
-                        uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
-                        if msg.name in ["simulate_model", "custom_plotter"]:
-                            if msg.name == "simulate_model":
-                                print ('-', len(current_state.values["dic_simulated_data"]), 'simulate_model')
-                                # Convert the simulated data to a single dictionary
-                                dic_simulated_data = {}
-                                for data in current_state.values["dic_simulated_data"]:
-                                    for key in data:
-                                        if key not in dic_simulated_data:
-                                            dic_simulated_data[key] = []
-                                        dic_simulated_data[key] += [data[key]]
-                                # Create a pandas dataframe from the dictionary
-                                df_simulated_data = pd.DataFrame.from_dict(dic_simulated_data)
-                                # Get the simulated data for the current tool call
-                                df_simulated = pd.DataFrame(
-                                    df_simulated_data[df_simulated_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
-                                df_selected = df_simulated
-                            elif msg.name == "custom_plotter":
-                                if msg.artifact:
-                                    df_selected = pd.DataFrame.from_dict(msg.artifact)
-                                    # print (df_selected)
-                                else:
-                                    continue
-                            # Display the toggle button to suppress the table
-                            streamlit_utils.render_toggle(
-                                key="toggle_plotly_"+uniq_msg_id,
-                                toggle_text="Show Plot",
-                                toggle_state=True,
-                                save_toggle=True)
-                            # Display the plotly chart
-                            streamlit_utils.render_plotly(
-                                df_selected,
-                                key="plotly_"+uniq_msg_id,
-                                title=msg.content,
-                                # tool_name=msg.name,
-                                # tool_call_id=msg.tool_call_id,
-                                save_chart=True)
-                            # Display the toggle button to suppress the table
-                            streamlit_utils.render_toggle(
-                                key="toggle_table_"+uniq_msg_id,
-                                toggle_text="Show Table",
-                                toggle_state=False,
-                                save_toggle=True)
-                            # Display the table
-                            streamlit_utils.render_table(
-                                df_selected,
-                                key="dataframe_"+uniq_msg_id,
-                                # tool_name=msg.name,
-                                # tool_call_id=msg.tool_call_id,
-                                save_table=True)
-                        elif msg.name == "parameter_scan":
-                            # Convert the scanned data to a single dictionary
-                            print ('-', len(current_state.values["dic_scanned_data"]))
-                            dic_scanned_data = {}
-                            for data in current_state.values["dic_scanned_data"]:
-                                print ('-', data['name'])
-                                for key in data:
-                                    if key not in dic_scanned_data:
-                                        dic_scanned_data[key] = []
-                                    dic_scanned_data[key] += [data[key]]
-                            # Create a pandas dataframe from the dictionary
-                            df_scanned_data = pd.DataFrame.from_dict(dic_scanned_data)
-                            # Get the scanned data for the current tool call
-                            df_scanned_current_tool_call = pd.DataFrame(
-                                df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id])
-                            # df_scanned_current_tool_call.drop_duplicates()
-                            # print (df_scanned_current_tool_call)
-                            for count in range(0, len(df_scanned_current_tool_call.index)):
-                                # Get the scanned data for the current tool call
-                                df_selected = pd.DataFrame(
-                                    df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[count])
-                                # Display the toggle button to suppress the table
-                                streamlit_utils.render_table_plotly(
-                                uniq_msg_id+'_'+str(count),
-                                df_scanned_current_tool_call['name'].iloc[count],
-                                df_selected)
-                        elif msg.name in ["get_annotation"]:
-                            if not msg.artifact:
-                                continue
-                            # Convert the annotated data to a single dictionary
-                            # print ('-', len(current_state.values["dic_annotations_data"]))
-                            dic_annotations_data = {}
-                            for data in current_state.values["dic_annotations_data"]:
-                                # print (data)
-                                for key in data:
-                                    if key not in dic_annotations_data:
-                                        dic_annotations_data[key] = []
-                                    dic_annotations_data[key] += [data[key]]
-                            df_annotations_data = pd.DataFrame.from_dict(dic_annotations_data)
-                            # Get the annotated data for the current tool call
-                            df_selected = pd.DataFrame(
-                                    df_annotations_data[df_annotations_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
-                            # print (df_selected)
-                            df_selected["Id"] = df_selected.apply(
-                                    lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
-                                )
-                            df_selected = df_selected.drop(columns=["Link"])
-                            # Directly use the "Link" column for the "Id" column
-                            streamlit_utils.render_toggle(
-                                key="toggle_table_"+uniq_msg_id,
-                                toggle_text="Show Table",
-                                toggle_state=True,
-                                save_toggle=True)
-                            st.dataframe(df_selected,
-                                    use_container_width=True,
-                                    key='dataframe_'+uniq_msg_id,
-                                    hide_index=True,
-                                    column_config={
-                                        "Id": st.column_config.LinkColumn(
-                                            label="Id",
-                                            help="Click to open the link associated with the Id",
-                                            validate=r"^http://.*$",  # Ensure the link is valid
-                                            display_text=r"^http://identifiers\.org/(.*?)$"
-                                        ),
-                                        "Species Name": st.column_config.TextColumn("Species Name"),
-                                        "Description": st.column_config.TextColumn("Description"),
-                                        "Database": st.column_config.TextColumn("Database"),
-                                    }
-                            )
-                            # Add data to the chat history
-                            st.session_state.messages.append({
-                                    "type": "dataframe",
-                                    "content": df_selected,
-                                    "key": "dataframe_"+uniq_msg_id,
-                                    "tool_name": msg.name
-                                })
-
-                        # elif msg.name in ["ask_question"]:
-                        #     # df_simulated = pd.DataFrame.from_dict(
-                        #     #                     current_state.values["dic_simulated_data"])
-                        #     dic_simulated = current_state.values["dic_simulated_data"]
-                        #     # print (dic_simulated)
-                        #     print (msg.tool_call_id)
-                        #     for entry in dic_simulated:
-                        #         print (entry.keys())
-                        #         if msg.tool_call_id in entry:
-                        #             df_simulated = pd.DataFrame.from_dict(entry[msg.tool_call_id]['data'])
-                        #             break
-                        #     # Display the toggle button to suppress the table
-                        #     streamlit_utils.render_toggle(
-                        #         key="toggle_table_"+uniq_msg_id,
-                        #         toggle_text="Show Table",
-                        #         toggle_state=False,
-                        #         save_toggle=True)
-                        #     # Display the table
-                        #     streamlit_utils.render_table(
-                        #         df_simulated,
-                        #         key="dataframe_"+uniq_msg_id,
-                        #         tool_name=msg.name,
-                        #         save_table=True)
-                        #     st.empty()
+                    streamlit_utils.get_response(app, st, prompt)
 
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

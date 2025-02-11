@@ -4,7 +4,9 @@ nav:
   - Home: index.md
 
   - Talk2Biomodels:
-      - Introduction: talk2biomodels/models/intro.md
+      - Introduction: talk2biomodels/intro.md
+      - FAQ: talk2biomodels/faq.md
+      - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
       - Case Studies:
         - Precision medicine: talk2biomodels/cases/Case_1.md
         - Epidemiology: talk2biomodels/cases/Case_2.md
@@ -12,9 +14,9 @@ nav:
       - Tutorials: 
         - ./notebooks/talk2biomodels/tutorial.ipynb
       - Agents:
-          - Talk2Biomodels agent: talk2biomodels/agents/t2b_agent.md
+          - T2B agent: talk2biomodels/agents/t2b_agent.md
       - States:
-          - Talk2Biomodels state: talk2biomodels/states/state_talk2biomodels.md
+          - T2B state: talk2biomodels/states/state_talk2biomodels.md
       - Models:
           - System Bio Model: talk2biomodels/models/sys_bio_model.md
           - Basico Model: talk2biomodels/models/basico_model.md
@@ -100,18 +102,22 @@ extra_css:
   - VPE.png
 theme:
   name: material
-  logo: ./robot.png
+  logo: assets/VPE.png
   palette:
-    - primary: teal
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+  - accent: black
+    primary: white
+    scheme: default
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to dark mode
+  - accent: black
+    primary: white
+    scheme: slate
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
   features:
+    - navigation.top
     - navigation.tabs
     - navigation.instant
     - navigation.expand
@@ -119,6 +125,7 @@ theme:
     - search.highlight
     - content.code.copy
     - navigation.scrollable
+
 plugins:
   - search:
       lang:

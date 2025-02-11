@@ -66,10 +66,10 @@ class AskQuestionTool(BaseTool):
                    question_context,
                    experiment_name)
         # Load hydra configuration
-        with hydra.initialize(version_base=None, config_path="../../configs"):
+        with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['talk2biomodels/tools/ask_question=default'])
-            cfg = cfg.talk2biomodels.tools.ask_question
+                                overrides=['tools/ask_question=default'])
+            cfg = cfg.tools.ask_question
         # Get the context of the question
         # and based on the context, get the data
         # and prompt content to ask the question
@@ -111,5 +111,6 @@ class AskQuestionTool(BaseTool):
                         verbose=True,
                         prefix=prompt_content)
         # Invoke the agent with the question
-        llm_result = df_agent.invoke(question)
+        llm_result = df_agent.invoke(question, stream_mode=None)
+        # print (llm_result)
         return llm_result["output"]

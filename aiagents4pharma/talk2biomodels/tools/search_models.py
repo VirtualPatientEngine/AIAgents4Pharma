@@ -29,7 +29,7 @@ class SearchModelsTool(BaseTool):
     name: str = "search_models"
     description: str = "Search models in the BioMmodels database based on keywords."
     args_schema: Type[BaseModel] = SearchModelsInput
-    return_direct: bool = True
+    return_direct: bool = False
 
     def _run(self,
              query: str,
