@@ -40,8 +40,8 @@ def test_steady_state_tool():
     #########################################################
     # In this case, we will test if the tool is indeed invoked
     # successfully
-    prompt = """Run a steady state analysis of model 64.
-    Set the initial concentration of `Pyruvate` to 0.2. The
+    prompt = """Bring model 64 to a steady state. Set the
+    initial concentration of `Pyruvate` to 0.2. The
     concentration of `NAD` resets to 100 every 2 time units."""
     # Invoke the agent
     app.invoke(

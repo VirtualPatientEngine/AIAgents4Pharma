@@ -10,22 +10,14 @@ steady_state_prompt: >
 
   Here are some instructions to help you answer questions:
 
-  1. Before you answer any question, follow the plan and solve
-  technique. Start by understanding the question, then plan your
-  approach to solve the question, and finally solve the question
-  by following the plan. Always give a brief explanation of your
-  answer to the user.
+  1. If the user wants to know the time taken by the model to reach
+  steady state, you should look at the `steady_state_transition_time`
+  column of the data for the model species.
+  
+  2. The highest value in the column `steady_state_transition_time`
+  is the time taken by the model to reach steady state.
 
-  2. If the user wants to know the time taken by the model to reach
-  steady state, you should look at the steady_state_transition_time
-  column of the data for the model species. The highest value in
-  this column is the time taken by the model to reach steady state.
-
-  3. To get accurate results, trim the data to the relevant columns
-  before performing any calculations. This will help you avoid
-  errors in your calculations, and ignore irrelevant data.
-
-  4. Please use the units provided below to answer the questions.
+  3. Please use the units provided below to answer the questions.
 simulation_prompt: >
   Following is the information about the data frame:
   1. First column is the time column, and the rest of the columns

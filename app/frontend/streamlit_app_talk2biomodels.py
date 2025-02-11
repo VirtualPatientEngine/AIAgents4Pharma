@@ -128,7 +128,7 @@ with main_col1:
             unsafe_allow_html=True)
 
         # LLM panel
-        llms = ["meta/llama-3.3-70b-instruct", "gpt-4o-mini"]
+        llms = ["gpt-4o-mini", "meta/llama-3.3-70b-instruct"]
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
