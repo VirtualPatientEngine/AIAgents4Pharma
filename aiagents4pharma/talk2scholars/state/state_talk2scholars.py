@@ -26,11 +26,9 @@ class Talk2Scholars(AgentState):
         papers: Dictionary of papers from search results
         multi_papers: Dictionary of papers from multi-paper recommendations
         llm_model: Model being used
-        thread_id: Thread ID for the agent
     """
 
     # Agent state fields
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
     llm_model: str
-    thread_id: NotRequired[str]
