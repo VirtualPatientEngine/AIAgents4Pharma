@@ -57,11 +57,19 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
         supervisor = make_supervisor_node(llm, cfg)
         workflow.add_node("supervisor", supervisor)
     """
+    # Load hydra configuration
+    logger.info("Load Hydra configuration for Talk2Scholars main agent.")
+    with hydra.initialize(version_base=None, config_path="../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["agents/talk2scholars/main_agent=default"]
+        )
+        cfg = cfg.agents.talk2scholars.main_agent
+        logger.info("Hydra configuration loaded with values: %s", cfg)
     # Create the supervisor agent using config's main_agent prompt
     supervisor_agent = create_react_agent(
         llm,
         tools=[],  # Supervisor doesn't need tools, just makes routing decisions
-        system_message=cfg.main_agent,
+        prompt=cfg.main_agent,
         state_schema=Talk2Scholars,
         checkpointer=MemorySaver(),
     )
@@ -131,7 +139,9 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
     return supervisor_node
 
 
-def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
+def get_app(
+    thread_id: str, llm_model: str = "gpt-4o-mini", cfg: Any = None
+) -> StateGraph:
     """
     Returns the compiled LangGraph application with hierarchical structure.
 
@@ -151,14 +161,6 @@ def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
         app = get_app("thread_123")
         result = app.invoke(initial_state)
     """
-    # Load hydra configuration
-    logger.info("Load Hydra configuration for Talk2Scholars main agent.")
-    with hydra.initialize(version_base=None, config_path="../../configs"):
-        cfg = hydra.compose(
-            config_name="config", overrides=["agents/talk2scholars/main_agent=default"]
-        )
-        cfg = cfg.agents.talk2scholars.main_agent
-        logger.info("Hydra configuration loaded with values: %s", cfg)
 
     def call_s2_agent(
         state: Talk2Scholars,
@@ -176,7 +178,7 @@ def get_app(thread_id: str, llm_model: str = "gpt-4o-mini") -> StateGraph:
             Command: Next action and state updates
         """
         logger.info("Calling S2 agent with state: %s", state)
-        app = s2_agent.get_app(thread_id, llm_model)
+        app = s2_agent.get_app(thread_id, llm_model, cfg)
 
         # Pass initial state in invoke
         response = app.invoke(

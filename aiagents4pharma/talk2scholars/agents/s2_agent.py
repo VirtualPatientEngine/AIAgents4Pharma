@@ -39,7 +39,7 @@ def get_app(uniq_id, llm_model="gpt-4o-mini"):
 
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2Scholars S2 agent.")
-    with hydra.initialize(version_base=None, config_path="../../configs"):
+    with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(
             config_name="config", overrides=["agents/talk2scholars/s2_agent=default"]
         )
@@ -57,7 +57,7 @@ def get_app(uniq_id, llm_model="gpt-4o-mini"):
         llm,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.s2_agent,
+        prompt=cfg.s2_agent,
         checkpointer=MemorySaver(),
     )
 
