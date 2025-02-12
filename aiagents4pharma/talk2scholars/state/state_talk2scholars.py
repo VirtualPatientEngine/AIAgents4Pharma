@@ -25,21 +25,12 @@ class Talk2Scholars(AgentState):
     Attributes:
         papers: Dictionary of papers from search results
         multi_papers: Dictionary of papers from multi-paper recommendations
-        search_table: Optional string containing formatted search results
-        next: Required for routing in LangGraph. Can be "s2_agent" or "FINISH"
-        current_agent: Current active agent
-        is_last_step: Required field for LangGraph
         llm_model: Model being used
-        need_search: Flag indicating if search is needed
+        thread_id: Thread ID for the agent
     """
 
     # Agent state fields
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
-    search_table: NotRequired[str]
-    next: Literal["s2_agent", "FINISH"]  # Supervisor routing options
-    current_agent: NotRequired[Optional[str]]
-    is_last_step: Required[bool]
     llm_model: str
-    need_search: NotRequired[bool]
     thread_id: NotRequired[str]
