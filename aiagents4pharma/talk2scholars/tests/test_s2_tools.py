@@ -3,35 +3,67 @@ Unit tests for S2 tools functionality.
 """
 
 from unittest.mock import patch
+from langchain_core.messages import ToolMessage
 import pytest
-
-from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.s2.display_results import display_results
 from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations
 from ..tools.s2.search import search_tool
 from ..tools.s2.single_paper_rec import get_single_paper_recommendations
-from .conftest import MOCK_SEARCH_RESPONSE, MOCK_STATE_PAPER
+
+
+@pytest.fixture
+def initial_state():
+    """Provides an empty initial state for tests."""
+    return {"papers": {}, "multi_papers": {}}
+
+
+# Fixed test data for deterministic results
+MOCK_SEARCH_RESPONSE = {
+    "data": [
+        {
+            "paperId": "123",
+            "title": "Machine Learning Basics",
+            "abstract": "An introduction to ML",
+            "year": 2023,
+            "citationCount": 100,
+            "url": "https://example.com/paper1",
+            "authors": [{"name": "Test Author"}],
+        }
+    ]
+}
+
+MOCK_STATE_PAPER = {
+    "123": {
+        "Title": "Machine Learning Basics",
+        "Abstract": "An introduction to ML",
+        "Year": 2023,
+        "Citation Count": 100,
+        "URL": "https://example.com/paper1",
+    }
+}
+
 
 class TestS2Tools:
     """Unit tests for individual S2 tools"""
 
-    def test_display_results_empty_state(self, initial_state: Talk2Scholars):
-        """Verifies display_results tool raises error when state is empty"""
+    def test_display_results_empty_state(self, initial_state):
+        """Verifies display_results tool behavior when state is empty"""
         state = initial_state
-        with pytest.raises(ValueError,
-                         match="No papers found in the state. Please trigger a search."):
-            display_results.invoke(input={"state": state})
+        result = display_results.invoke(input={"state": state})
+        assert "message" in result
+        assert "No papers found" in result["message"]
+        assert "papers" in result
+        assert "multi_papers" in result
 
-    def test_display_results_shows_papers(self, initial_state: Talk2Scholars):
+    def test_display_results_shows_papers(self, initial_state):
         """Verifies display_results tool correctly returns papers from state"""
         state = initial_state
         state["papers"] = MOCK_STATE_PAPER
         state["multi_papers"] = {}
         result = display_results.invoke(input={"state": state})
-        # Check that result contains both papers and multi_papers
         assert isinstance(result, dict)
-        assert result['papers'] == MOCK_STATE_PAPER
-        assert result['multi_papers'] == {}
+        assert result["papers"] == MOCK_STATE_PAPER
+        assert result["multi_papers"] == {}
 
     @patch("requests.get")
     def test_search_finds_papers(self, mock_get):
@@ -92,7 +124,7 @@ class TestS2Tools:
                     "url": "https://example.com/paper1",
                     # Missing title and authors
                 },
-                MOCK_SEARCH_RESPONSE["data"][0]  # This one is valid
+                MOCK_SEARCH_RESPONSE["data"][0],  # This one is valid
             ]
         }
         mock_get.return_value.json.return_value = mock_response
@@ -124,11 +156,10 @@ class TestS2Tools:
                 "paper_id": "123",
                 "limit": 1,
                 "tool_call_id": "test123",
-                "id": "test123",
             }
         )
         assert "papers" in result.update
-        assert len(result.update["messages"]) == 1
+        assert isinstance(result.update["messages"][0], ToolMessage)
 
     @patch("requests.get")
     def test_single_paper_rec_with_optional_params(self, mock_get):
@@ -162,11 +193,10 @@ class TestS2Tools:
                 "paper_ids": ["123", "456"],
                 "limit": 1,
                 "tool_call_id": "test123",
-                "id": "test123",
             }
         )
         assert "multi_papers" in result.update
-        assert len(result.update["messages"]) == 1
+        assert isinstance(result.update["messages"][0], ToolMessage)
 
     @patch("requests.post")
     def test_multi_paper_rec_with_optional_params(self, mock_post):
