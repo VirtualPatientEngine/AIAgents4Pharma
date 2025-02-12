@@ -23,7 +23,8 @@ def display_results(state: Annotated[dict, InjectedState]) -> Dict[str, Any]:
         state (dict): The state of the agent containing the papers.
 
     Returns:
-        dict: A dictionary containing the papers and multi_papers from the state.
+        dict: A dictionary containing the papers and multi_papers from the state, or a message
+              indicating that a search needs to be performed if no papers are found.
 
     Note:
         Updates state directly to indicate search requirement if papers are not found.
@@ -32,14 +33,9 @@ def display_results(state: Annotated[dict, InjectedState]) -> Dict[str, Any]:
 
     if not state.get("papers") and not state.get("multi_papers"):
         logger.info("No papers found in state, indicating search is needed")
-        state["need_search"] = True
-        return {
-            "papers": {},
-            "multi_papers": {},
-            "message": "No papers found. A search needs to be performed first.",
-        }
+        return "No papers found. A search needs to be performed first."
 
     return {
-        "papers": state.get("papers", {}),
-        "multi_papers": state.get("multi_papers", {}),
+        "papers": state.get("papers"),
+        "multi_papers": state.get("multi_papers"),
     }
