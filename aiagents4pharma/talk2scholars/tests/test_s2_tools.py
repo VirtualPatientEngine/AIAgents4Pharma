@@ -49,11 +49,9 @@ class TestS2Tools:
     def test_display_results_empty_state(self, initial_state):
         """Verifies display_results tool behavior when state is empty"""
         state = initial_state
-        result = display_results.invoke(input={"state": state})
-        assert "message" in result
-        assert "No papers found" in result["message"]
-        assert "papers" in result
-        assert "multi_papers" in result
+        result = display_results.invoke({"state": state})
+        assert isinstance(result, str)  
+        assert result == "No papers found. A search needs to be performed first."
 
     def test_display_results_shows_papers(self, initial_state):
         """Verifies display_results tool correctly returns papers from state"""
