@@ -8,34 +8,36 @@ import os
 import sys
 import random
 import streamlit as st
-import pandas as pd
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
-from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.tracers.context import collect_runs
-from langchain.callbacks.tracers import LangChainTracer
 from utils import streamlit_utils
-sys.path.append('./')
-from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
-# from talk2biomodels.agents.t2b_agent import get_app
 
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
-
-
+# Set the logo
 st.logo(
     image='docs/assets/VPE.png',
     size='large',
     link='https://github.com/VirtualPatientEngine'
 )
 
-# Check if env variable OPENAI_API_KEY exists
-# if "OPENAI_API_KEY" not in os.environ:
-#     st.error("Please set the OPENAI_API_KEY environment \
-#         variable in the terminal where you run the app.")
-#     st.stop()
+# Check if env variables OPENAI_API_KEY and/or
+# NVIDIA_API_KEY exist
+if "OPENAI_API_KEY" not in os.environ or "NVIDIA_API_KEY" not in os.environ:
+    st.error("Please set the OPENAI_API_KEY and NVIDIA_API_KEY "
+             "environment variables in the terminal where you run "
+             "the app. For more information, please refer to our "
+             "[documentation](https://virtualpatientengine.github.io/AIAgents4Pharma/#option-2-git).")
+    st.stop()
 
+# Import the agent
+sys.path.append('./')
+from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
+
+########################################################################################
+# Streamlit app
+########################################################################################
 # Create a chat prompt template
 prompt = ChatPromptTemplate.from_messages([
         ("system", "Welcome to Talk2Biomodels!"),
@@ -68,6 +70,7 @@ if "app" not in st.session_state:
     if "llm_model" not in st.session_state:
         st.session_state.app = get_app(st.session_state.unique_id)
     else:
+        print (st.session_state.llm_model)
         st.session_state.app = get_app(st.session_state.unique_id,
                             llm_model=streamlit_utils.get_base_chat_model(
                                 st.session_state.llm_model))
@@ -127,8 +130,9 @@ with main_col1:
             """,
             unsafe_allow_html=True)
 
-        # LLM panel
-        llms = ["gpt-4o-mini", "meta/llama-3.3-70b-instruct"]
+        # LLM model panel
+        llms = ["OpenAI/gpt-4o-mini",
+                "NVIDIA/llama-3.3-70b-instruct"]
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
@@ -139,13 +143,14 @@ with main_col1:
         )
 
         # Text embedding model panel
-        text_models = ["nvidia/llama-3.2-nv-embedqa-1b-v2", "text-embedding-ada-002"]
+        text_models = ["NVIDIA/llama-3.2-nv-embedqa-1b-v2",
+                       "OpenAI/text-embedding-ada-002"]
         st.selectbox(
             "Pick a text embedding model",
             text_models,
             index=0,
             key="text_embedding_model",
-            on_change=streamlit_utils.update_embed_model,
+            on_change=streamlit_utils.update_text_embedding_model,
             kwargs={"app": app},
             help="Used for Retrival Augmented Generation (RAG) and other tasks."
         )
@@ -236,7 +241,7 @@ with main_col2:
                         config,
                         {"llm_model": streamlit_utils.get_base_chat_model(
                             st.session_state.llm_model),
-                        "text_embedding_model": streamlit_utils.get_embedding_model(
+                        "text_embedding_model": streamlit_utils.get_text_embedding_model(
                             st.session_state.text_embedding_model)}
                     )
                     intro_prompt = "Tell your name and about yourself. Always start with a greeting."
