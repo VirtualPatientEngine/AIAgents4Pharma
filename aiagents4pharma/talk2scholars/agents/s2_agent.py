@@ -57,7 +57,8 @@ def get_app(uniq_id, llm_model="gpt-4o-mini"):
         llm,
         tools=tools,
         state_schema=Talk2Scholars,
-        prompt=cfg.s2_agent,
+        # prompt=cfg.s2_agent,
+        state_modifier=cfg.s2_agent,
         checkpointer=MemorySaver(),
     )
 

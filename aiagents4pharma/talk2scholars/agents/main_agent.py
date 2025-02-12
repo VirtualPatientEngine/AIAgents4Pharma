@@ -69,7 +69,8 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
     supervisor_agent = create_react_agent(
         llm,
         tools=[],  # Supervisor doesn't need tools, just makes routing decisions
-        prompt=cfg.main_agent,
+        # prompt=cfg.main_agent,
+        state_modifier=cfg.main_agent,
         state_schema=Talk2Scholars,
         checkpointer=MemorySaver(),
     )
@@ -107,21 +108,22 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
             {"configurable": {"thread_id": state.get("thread_id")}},
         )
         decision = result["messages"][-1].content
-        goto = decision["next"]
+        # goto = decision["next"]
+        goto = "s2_agent"
 
-        if goto == "FINISH":
-            return Command(
-                goto=END,
-                update={
-                    "messages": state["messages"]
-                    + [AIMessage(content=result["messages"][-1].content)],
-                    "is_last_step": True,
-                    "current_agent": None,
-                    "papers": state.get("papers", {}),
-                    "multi_papers": state.get("multi_papers", {}),
-                    "need_search": False,
-                },
-            )
+        # if goto == "FINISH":
+        #     return Command(
+        #         goto=END,
+        #         update={
+        #             "messages": state["messages"]
+        #             + [AIMessage(content=result["messages"][-1].content)],
+        #             "is_last_step": True,
+        #             "current_agent": None,
+        #             "papers": state.get("papers", {}),
+        #             "multi_papers": state.get("multi_papers", {}),
+        #             "need_search": False,
+        #         },
+        #     )
 
         return Command(
             goto=goto,
@@ -162,6 +164,13 @@ def get_app(
         result = app.invoke(initial_state)
     """
 
+    with hydra.initialize(version_base=None, config_path="../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["agents/talk2scholars/main_agent=default"]
+        )
+        cfg = cfg.agents.talk2scholars.main_agent
+        logger.info("Hydra configuration loaded with values: %s", cfg)
+
     def call_s2_agent(
         state: Talk2Scholars,
     ) -> Command[Literal["supervisor", "__end__"]]:
@@ -178,7 +187,7 @@ def get_app(
             Command: Next action and state updates
         """
         logger.info("Calling S2 agent with state: %s", state)
-        app = s2_agent.get_app(thread_id, llm_model, cfg)
+        app = s2_agent.get_app(thread_id, llm_model)
 
         # Pass initial state in invoke
         response = app.invoke(
@@ -195,7 +204,7 @@ def get_app(
         logger.info("S2 agent completed with response: %s", response)
 
         return Command(
-            goto="supervisor",  # Return to supervisor for next decision
+            goto=END,
             update={
                 "messages": response["messages"],
                 "papers": response.get("papers", {}),
@@ -206,14 +215,29 @@ def get_app(
                 "need_search": response.get("need_search", False),
             },
         )
+        # return Command(
+        #     goto="supervisor",  # Return to supervisor for next decision
+        #     update={
+        #         "messages": response["messages"],
+        #         "papers": response.get("papers", {}),
+        #         "multi_papers": response.get("multi_papers", {}),
+        #         "is_last_step": False,
+        #         "current_agent": "s2_agent",
+        #         "thread_id": thread_id,
+        #         "need_search": response.get("need_search", False),
+        #     },
+        # )
 
     # Initialize LLM
     logger.info(
         "Using OpenAI model %s with temperature %s",
         llm_model,
-        cfg.temperature,
+        # cfg.temperature,
     )
-    llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
+
+    llm = ChatOpenAI(model=llm_model,
+    # temperature=cfg.temperature
+    )
 
     # Build the graph
     workflow = StateGraph(Talk2Scholars)
@@ -225,9 +249,9 @@ def get_app(
 
     # Define edges
     workflow.add_edge(START, "supervisor")
-    workflow.add_edge("s2_agent", "supervisor")  # Report back to supervisor
+    workflow.add_edge("s2_agent", END)  # End the conversation
 
     # Compile the graph without initial state
-    app = workflow.compile()
+    app = workflow.compile(checkpointer=MemorySaver())
     logger.info("Main agent workflow compiled")
     return app
