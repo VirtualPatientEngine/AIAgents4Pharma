@@ -3,7 +3,10 @@ Test cases for Talk2Biomodels steady state tool.
 '''
 
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
+
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
 
 def test_steady_state_tool():
     '''
@@ -12,7 +15,7 @@ def test_steady_state_tool():
     unique_id = 123
     app = get_app(unique_id)
     config = {"configurable": {"thread_id": unique_id}}
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
+    app.update_state(config, {"llm_model": LLM_MODEL})
     #########################################################
     # In this case, we will test if the tool returns an error
     # when the model does not achieve a steady state. The tool
@@ -37,8 +40,8 @@ def test_steady_state_tool():
     #########################################################
     # In this case, we will test if the tool is indeed invoked
     # successfully
-    prompt = """Run a steady state analysis of model 64.
-    Set the initial concentration of `Pyruvate` to 0.2. The
+    prompt = """Bring model 64 to a steady state. Set the
+    initial concentration of `Pyruvate` to 0.2. The
     concentration of `NAD` resets to 100 every 2 time units."""
     # Invoke the agent
     app.invoke(

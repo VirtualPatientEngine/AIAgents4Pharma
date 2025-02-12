@@ -8,6 +8,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from langsmith import Client
+from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
+from langchain_nvidia_ai_endpoints import ChatNVIDIA, NVIDIAEmbeddings
+from langchain_openai.embeddings import OpenAIEmbeddings
+from langchain_core.language_models import BaseChatModel
+from langchain_core.embeddings import Embeddings
 from langchain_core.messages import AIMessageChunk, HumanMessage, ChatMessage, AIMessage
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
@@ -15,6 +21,9 @@ from langchain.callbacks.tracers import LangChainTracer
 def submit_feedback(user_response):
     '''
     Function to submit feedback to the developers.
+
+    Args:
+        user_response: dict: The user response
     '''
     client = Client()
     client.create_feedback(
@@ -69,6 +78,12 @@ def render_toggle(key: str,
                   save_toggle: bool = False):
     """
     Function to render the toggle button to show/hide the table.
+
+    Args:
+        key: str: The key for the toggle button
+        toggle_text: str: The text for the toggle button
+        toggle_state: bool: The state of the toggle button
+        save_toggle: bool: Flag to save the toggle button to the chat history
     """
     st.toggle(
         toggle_text,
@@ -89,7 +104,6 @@ def render_toggle(key: str,
 def render_plotly(df: pd.DataFrame,
                 key: str,
                 title: str,
-                # tool_name: str,
                 save_chart: bool = False
                 ):
     """
@@ -97,6 +111,9 @@ def render_plotly(df: pd.DataFrame,
 
     Args:
         df: pd.DataFrame: The input dataframe
+        key: str: The key for the plotly chart
+        title: str: The title of the plotly chart
+        save_chart: bool: Flag to save the chart to the chat history
     """
     # toggle_state = st.session_state[f'toggle_plotly_{tool_name}_{key.split("_")[-1]}']\
     toggle_state = st.session_state[f'toggle_plotly_{key.split("plotly_")[1]}']
@@ -128,12 +145,16 @@ def render_plotly(df: pd.DataFrame,
             })
 
 def render_table(df: pd.DataFrame,
-                #  tool_name: str,
                  key: str,
                  save_table: bool = False
                 ):
     """
     Function to render the table in the chat.
+
+    Args:
+        df: pd.DataFrame: The input dataframe
+        key: str: The key for the table
+        save_table: bool: Flag to save the table to the chat history
     """
     # print (st.session_state['toggle_simulate_model_'+key.split("_")[-1]])
     # toggle_state = st.session_state[f'toggle_table_{tool_name}_{key.split("_")[-1]}']
@@ -151,16 +172,10 @@ def render_table(df: pd.DataFrame,
                 # "tool_name": tool_name
             })
 
-def stream_response(response):
-    for chunk in response:
-        if not isinstance(chunk[0], AIMessageChunk):
-            # print (chunk)
-            continue
-        # print (chunk)
-        if 'branch:agent:should_continue:tools' not in chunk[1]['langgraph_triggers']:
-            yield chunk[0].content
-
 def sample_questions():
+    """
+    Function to get the sample questions.
+    """
     questions = [
         "Search for all the BioModels on Crohn's Disease",
         "Briefly describe biomodel 971 and simulate it for 50 days with an interval of 50.",
@@ -168,6 +183,22 @@ def sample_questions():
         "determine the Mpp concentration at the steady state."
     ]
     return questions
+
+def stream_response(response):
+    """
+    Function to stream the response from the agent.
+
+    Args:
+        response: dict: The response from the agent
+    """
+    for chunk in response:
+        # Stream only the AIMessageChunk
+        if not isinstance(chunk[0], AIMessageChunk):
+            continue
+        # print (chunk)
+        # Exclude the tool calls that are not part of the conversation
+        if 'branch:agent:should_continue:tools' not in chunk[1]['langgraph_triggers']:
+            yield chunk[0].content
 
 def get_response(app, st, prompt):
     # Create config for the agent
@@ -180,7 +211,7 @@ def get_response(app, st, prompt):
     )
     app.update_state(
         config,
-        {"llm_model": st.session_state.llm_model}
+        {"llm_model": get_base_chat_model(st.session_state.llm_model)}
     )
 
     ERROR_FLAG = False
@@ -188,12 +219,20 @@ def get_response(app, st, prompt):
         # Add Langsmith tracer
         tracer = LangChainTracer(project_name=st.session_state.project_name)
         # Get response from the agent
-        response = app.stream(
+        if current_state.values['llm_model']._llm_type == 'chat-nvidia-ai-playground':
+            response = app.invoke(
             {"messages": [HumanMessage(content=prompt)]},
             config=config|{"callbacks": [tracer]},
-            stream_mode="messages"
-        )
-        st.write_stream(stream_response(response))
+            # stream_mode="messages"
+            )
+            st.markdown(response["messages"][-1].content)
+        else:    
+            response = app.stream(
+                {"messages": [HumanMessage(content=prompt)]},
+                config=config|{"callbacks": [tracer]},
+                stream_mode="messages"
+            )
+            st.write_stream(stream_response(response))
         # print (cb.traced_runs)
         # Save the run id and use to save the feedback
         st.session_state.run_id = cb.traced_runs[-1].id
@@ -373,6 +412,47 @@ def get_response(app, st, prompt):
                     "tool_name": msg.name
                 })
 
+def get_text_embedding_model(model_name) -> Embeddings:
+    '''
+    Function to get the text embedding model.
+
+    Args:
+        model_name: str: The name of the model
+
+    Returns:
+        Embeddings: The text embedding model
+    '''
+    dic_text_embedding_models = {
+        "NVIDIA/llama-3.2-nv-embedqa-1b-v2": "nvidia/llama-3.2-nv-embedqa-1b-v2",
+        "OpenAI/text-embedding-ada-002": "text-embedding-ada-002"
+    }
+    if model_name.startswith("NVIDIA"):
+        return NVIDIAEmbeddings(model=dic_text_embedding_models[model_name])
+    return OpenAIEmbeddings(model=dic_text_embedding_models[model_name])
+
+def get_base_chat_model(model_name) -> BaseChatModel:
+    '''
+    Function to get the base chat model.
+
+    Args:
+        model_name: str: The name of the model
+
+    Returns:
+        BaseChatModel: The base chat model
+    '''
+    dic_llm_models = {
+        "NVIDIA/llama-3.3-70b-instruct": "meta/llama-3.3-70b-instruct",
+        "OpenAI/gpt-4o-mini": "gpt-4o-mini"
+    }
+    if model_name.startswith("Llama"):
+        return ChatOllama(model=dic_llm_models[model_name],
+                        temperature=0)
+    elif model_name.startswith("NVIDIA"):
+        return ChatNVIDIA(model=dic_llm_models[model_name],
+                        temperature=0)
+    return ChatOpenAI(model=dic_llm_models[model_name],
+                    temperature=0)
+
 @st.dialog("Warning ⚠️")
 def update_llm_model():
     """
@@ -393,6 +473,22 @@ def update_llm_model():
             if key in ["messages", "app"]:
                 del st.session_state[key]
         st.rerun()
+
+def update_text_embedding_model(app):
+    """
+    Function to update the text embedding model.
+
+    Args:
+        app: The LangGraph app
+    """
+    config = {"configurable":
+                {"thread_id": st.session_state.unique_id}
+                }
+    app.update_state(
+        config,
+        {"text_embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model)}
+    )
 
 @st.dialog("Get started with Talk2Biomodels 🚀")
 def help_button():

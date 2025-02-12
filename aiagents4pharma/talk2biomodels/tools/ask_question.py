@@ -12,7 +12,6 @@ import pandas as pd
 from pydantic import BaseModel, Field
 from langchain_core.tools.base import BaseTool
 from langchain_experimental.agents import create_pandas_dataframe_agent
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import InjectedState
 
 # Initialize logger
@@ -101,7 +100,7 @@ class AskQuestionTool(BaseTool):
         prompt_content += f"{basico.model_info.get_model_units()}\n\n"
         # Create a pandas dataframe agent
         df_agent = create_pandas_dataframe_agent(
-                        ChatOpenAI(model=state['llm_model']),
+                        state['llm_model'],
                         allow_dangerous_code=True,
                         agent_type='tool-calling',
                         df=df,

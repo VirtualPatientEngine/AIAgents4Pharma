@@ -3,6 +3,7 @@ Test cases for Talk2Biomodels.
 '''
 
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
 
 def test_ask_question_tool():
@@ -10,7 +11,7 @@ def test_ask_question_tool():
     Test the ask_question tool without the simulation results.
     '''
     unique_id = 12345
-    app = get_app(unique_id, llm_model='gpt-4o-mini')
+    app = get_app(unique_id)
     config = {"configurable": {"thread_id": unique_id}}
 
     ##########################################
@@ -20,7 +21,8 @@ def test_ask_question_tool():
     # case, the tool should return an error
     ##########################################
     # Update state
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
+    app.update_state(config,
+            {"llm_model": ChatOpenAI(model='gpt-4o-mini', temperature=0)})
     # Define the prompt
     prompt = "Call the ask_question tool to answer the "
     prompt += "question: What is the concentration of CRP "
