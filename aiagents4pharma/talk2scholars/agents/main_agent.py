@@ -37,23 +37,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
+def make_supervisor_node(llm: BaseChatModel, cfg: Any, thread_id: str) -> Callable:
     """
-    Creates a supervisor node using ReAct pattern for intelligent routing.
+    Creates and returns a supervisor node for intelligent routing using the ReAct pattern.
 
-    This function creates a supervisor agent that can make informed decisions
-    about routing queries to appropriate sub-agents. It uses the ReAct pattern
-    for structured reasoning and decision making.
+    This function initializes a supervisor agent that processes user queries and 
+    determines the appropriate sub-agent for further processing. It applies structured 
+    reasoning to manage conversations and direct queries based on context.
 
     Args:
-        llm (BaseChatModel): The language model to use for the supervisor
-        cfg (Any): Configuration object containing system prompts and settings
+        llm (BaseChatModel): The language model used by the supervisor agent.
+        cfg (Any): Configuration object containing system prompts and settings.
+        thread_id (str): Unique identifier for the conversation session.
 
     Returns:
-        Callable: A function that can be used as a node in the StateGraph
+        Callable: A function that acts as the supervisor node in the LangGraph workflow.
 
     Example:
-        supervisor = make_supervisor_node(llm, cfg)
+        supervisor = make_supervisor_node(llm, cfg, "thread_123")
         workflow.add_node("supervisor", supervisor)
     """
     # Load hydra configuration
@@ -78,18 +79,17 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
         state: Talk2Scholars,
     ) -> Command[Literal["s2_agent", "__end__"]]:
         """
-        Supervisor node that routes to appropriate sub-agents using ReAct pattern.
+        Processes user queries and determines the next step in the conversation flow.
 
-        This function takes the current state of the conversation and determines
-        the next action to take, either routing to a sub-agent or finishing
-        the conversation.
+        This function examines the conversation state and decides whether to forward 
+        the query to a specialized sub-agent (e.g., S2 agent) or conclude the interaction.
 
         Args:
-            state (Talk2Scholars): Current conversation state containing
-                messages, papers, and other relevant information
+            state (Talk2Scholars): The current state of the conversation, containing 
+                messages, papers, and metadata.
 
         Returns:
-            Command: Next action and state updates to be performed
+            Command: The next action to be executed, along with updated state data.
 
         Example:
             result = supervisor_node(current_state)
@@ -104,7 +104,7 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
         # Invoke the supervisor agent with configurable thread_id
         result = supervisor_agent.invoke(
             state,
-            {"configurable": {"thread_id": state.get("thread_id")}},
+            {"configurable": {"thread_id": thread_id}},
         )
         decision = result["messages"][-1].content
         print("decision", decision)
@@ -117,7 +117,6 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
                 "messages": state["messages"],
                 "papers": state.get("papers", {}),
                 "multi_papers": state.get("multi_papers", {}),
-                "thread_id": state.get("thread_id"),
             },
         )
 
@@ -128,19 +127,18 @@ def get_app(
     thread_id: str, llm_model: str = "gpt-4o-mini", cfg: Any = None
 ) -> StateGraph:
     """
-    Returns the compiled LangGraph application with hierarchical structure.
+    Initializes and returns the LangGraph application with a hierarchical agent system.
 
-    This function creates and configures the complete agent system, including
-    the supervisor and all sub-agents. It handles configuration loading,
-    state initialization, and graph compilation.
+    This function sets up the full agent architecture, including the supervisor 
+    and sub-agents, and compiles the LangGraph workflow for handling user queries.
 
     Args:
-        thread_id (str): Unique identifier for the conversation thread
-        llm_model (str, optional): Name of the LLM model to use.
-            Defaults to "gpt-4o-mini"
+        thread_id (str): Unique identifier for the conversation session.
+        llm_model (str, optional): The language model to be used. Defaults to "gpt-4o-mini".
+        cfg (Any, optional): Configuration object for customizing agent behavior.
 
     Returns:
-        StateGraph: The compiled application ready for invocation
+        StateGraph: A compiled LangGraph application ready for query invocation.
 
     Example:
         app = get_app("thread_123")
@@ -158,16 +156,21 @@ def get_app(
         state: Talk2Scholars,
     ) -> Command[Literal["supervisor", "__end__"]]:
         """
-        Node for calling the Semantic Scholar agent.
+        Calls the Semantic Scholar (S2) agent to process academic paper queries.
 
-        This function handles the invocation of the S2 agent and processes
-        its response, ensuring proper state updates and message passing.
+        This function invokes the S2 agent, retrieves relevant research papers, 
+        and updates the conversation state accordingly.
 
         Args:
-            state (Talk2Scholars): Current conversation state
+            state (Talk2Scholars): The current conversation state, including user queries 
+                and any previously retrieved papers.
 
         Returns:
-            Command: Next action and state updates
+            Command: The next action to execute, along with updated messages and papers.
+
+        Example:
+            result = call_s2_agent(current_state)
+            next_step = result.goto
         """
         logger.info("Calling S2 agent with state: %s", state)
         app = s2_agent.get_app(thread_id, llm_model)
@@ -176,7 +179,6 @@ def get_app(
         response = app.invoke(
             {
                 **state,
-                "thread_id": thread_id,
                 "papers": state.get("papers", {}),
                 "multi_papers": state.get("multi_papers", {}),
             }
@@ -189,7 +191,6 @@ def get_app(
                 "messages": response["messages"],
                 "papers": response.get("papers", {}),
                 "multi_papers": response.get("multi_papers", {}),
-                "thread_id": thread_id,
             },
         )
 
@@ -205,7 +206,7 @@ def get_app(
     workflow = StateGraph(Talk2Scholars)
 
     # Add nodes
-    supervisor = make_supervisor_node(llm, cfg)
+    supervisor = make_supervisor_node(llm, cfg, thread_id)
     workflow.add_node("supervisor", supervisor)
     workflow.add_node("s2_agent", call_s2_agent)
 
