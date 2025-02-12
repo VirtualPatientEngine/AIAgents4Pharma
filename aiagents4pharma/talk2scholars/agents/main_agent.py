@@ -24,7 +24,6 @@ import logging
 from typing import Any, Literal, Callable
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
@@ -68,7 +67,7 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
     # Create the supervisor agent using config's main_agent prompt
     supervisor_agent = create_react_agent(
         llm,
-        tools=[],  # Supervisor doesn't need tools, just makes routing decisions
+        tools=[],  # Will make tool of s2agent later
         # prompt=cfg.main_agent,
         state_modifier=cfg.main_agent,
         state_schema=Talk2Scholars,
@@ -108,33 +107,17 @@ def make_supervisor_node(llm: BaseChatModel, cfg: Any) -> Callable:
             {"configurable": {"thread_id": state.get("thread_id")}},
         )
         decision = result["messages"][-1].content
+        print("decision", decision)
         # goto = decision["next"]
         goto = "s2_agent"
-
-        # if goto == "FINISH":
-        #     return Command(
-        #         goto=END,
-        #         update={
-        #             "messages": state["messages"]
-        #             + [AIMessage(content=result["messages"][-1].content)],
-        #             "is_last_step": True,
-        #             "current_agent": None,
-        #             "papers": state.get("papers", {}),
-        #             "multi_papers": state.get("multi_papers", {}),
-        #             "need_search": False,
-        #         },
-        #     )
 
         return Command(
             goto=goto,
             update={
                 "messages": state["messages"],
-                "is_last_step": False,
-                "current_agent": goto,
                 "papers": state.get("papers", {}),
                 "multi_papers": state.get("multi_papers", {}),
                 "thread_id": state.get("thread_id"),
-                "need_search": state.get("need_search", False),
             },
         )
 
@@ -196,9 +179,6 @@ def get_app(
                 "thread_id": thread_id,
                 "papers": state.get("papers", {}),
                 "multi_papers": state.get("multi_papers", {}),
-                "is_last_step": False,
-                "current_agent": "s2_agent",
-                "need_search": state.get("need_search", False),
             }
         )
         logger.info("S2 agent completed with response: %s", response)
@@ -209,35 +189,17 @@ def get_app(
                 "messages": response["messages"],
                 "papers": response.get("papers", {}),
                 "multi_papers": response.get("multi_papers", {}),
-                "is_last_step": False,
-                "current_agent": "s2_agent",
                 "thread_id": thread_id,
-                "need_search": response.get("need_search", False),
             },
         )
-        # return Command(
-        #     goto="supervisor",  # Return to supervisor for next decision
-        #     update={
-        #         "messages": response["messages"],
-        #         "papers": response.get("papers", {}),
-        #         "multi_papers": response.get("multi_papers", {}),
-        #         "is_last_step": False,
-        #         "current_agent": "s2_agent",
-        #         "thread_id": thread_id,
-        #         "need_search": response.get("need_search", False),
-        #     },
-        # )
 
     # Initialize LLM
     logger.info(
         "Using OpenAI model %s with temperature %s",
         llm_model,
-        # cfg.temperature,
+        cfg.temperature,
     )
-
-    llm = ChatOpenAI(model=llm_model,
-    # temperature=cfg.temperature
-    )
+    llm = ChatOpenAI(model=llm_model, temperature=cfg.temperature)
 
     # Build the graph
     workflow = StateGraph(Talk2Scholars)
