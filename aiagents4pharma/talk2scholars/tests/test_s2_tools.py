@@ -1,7 +1,7 @@
 """
 Unit tests for S2 tools functionality.
 """
-
+# pylint: disable=redefined-outer-name
 from unittest.mock import patch
 from langchain_core.messages import ToolMessage
 import pytest
@@ -48,20 +48,20 @@ class TestS2Tools:
 
     def test_display_results_empty_state(self, initial_state):
         """Verifies display_results tool behavior when state is empty"""
-        state = initial_state
-        result = display_results.invoke({"state": state})
-        assert isinstance(result, str)  
+        result = display_results.invoke({"state": initial_state})
+        assert isinstance(result, str)
         assert result == "No papers found. A search needs to be performed first."
 
     def test_display_results_shows_papers(self, initial_state):
         """Verifies display_results tool correctly returns papers from state"""
-        state = initial_state
+        state = initial_state.copy()
         state["papers"] = MOCK_STATE_PAPER
         state["multi_papers"] = {}
         result = display_results.invoke(input={"state": state})
         assert isinstance(result, dict)
         assert result["papers"] == MOCK_STATE_PAPER
         assert result["multi_papers"] == {}
+
 
     @patch("requests.get")
     def test_search_finds_papers(self, mock_get):
