@@ -70,26 +70,27 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
-    "talk2biomodels/configs*",
-    "talk2biomodels/configs/agents/t2b_agent/*",
-    "talk2biomodels/configs/tools/ask_question/*",
-    "talk2biomodels/configs/tools/get_annotation/*",
-    "talk2knowledgegraphs/configs/*",
-    "talk2knowledgegraphs/configs/agents/t2kg_agent/*",
-    "talk2knowledgegraphs/configs/app/frontend/*",
-    "talk2knowledgegraphs/configs/tools/subgraph_extraction/*",
-    "talk2knowledgegraphs/configs/tools/subgraph_summarization/*",
-    "talk2knowledgegraphs/configs/tools/graphrag_reasoning/*",
-    "talk2scholars/configs/*",
-    "talk2scholars/configs/agents/talk2scholars/main_agent/*",
-    "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
-    "talk2scholars/configs/app/frontend/*",
-    "talk2scholars/configs/tools/multi_paper_recommendation/*",
-    "talk2scholars/configs/tools/search/*",
-    "talk2scholars/configs/tools/single_paper_recommendation/*",
+  "talk2biomodels/configs*",
+  "talk2biomodels/configs/agents/t2b_agent/*",
+  "talk2biomodels/configs/tools/ask_question/*",
+  "talk2biomodels/configs/tools/get_annotation/*",
+  "talk2knowledgegraphs/configs/*",
+  "talk2knowledgegraphs/configs/agents/t2kg_agent/*",
+  "talk2knowledgegraphs/configs/app/frontend/*",
+  "talk2knowledgegraphs/configs/tools/subgraph_extraction/*",
+  "talk2knowledgegraphs/configs/tools/subgraph_summarization/*",
+  "talk2knowledgegraphs/configs/tools/graphrag_reasoning/*",
+  "talk2scholars/configs/*",
+  "talk2scholars/configs/agents/talk2scholars/main_agent/*",
+  "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
+  "talk2scholars/configs/app/frontend/*",
+  "talk2scholars/configs/tools/multi_paper_recommendation/*",
+  "talk2scholars/configs/tools/search/*",
+  "talk2scholars/configs/tools/single_paper_recommendation/*",
 
 ]
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 markers = ["integration: marks tests as integration tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
