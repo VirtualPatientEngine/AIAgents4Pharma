@@ -7,7 +7,6 @@ This tool is used to return recommendations for a single paper.
 import logging
 from typing import Annotated, Any, Dict, Optional
 import hydra
-import pandas as pd
 import requests
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
@@ -84,7 +83,6 @@ def get_single_paper_recommendations(
 
     response = requests.get(endpoint, params=params, timeout=cfg.request_timeout)
     data = response.json()
-    papers = data.get("data", [])
     response = requests.get(endpoint, params=params, timeout=10)
     # print(f"API Response Status: {response.status_code}")
     logging.info(
@@ -106,42 +104,19 @@ def get_single_paper_recommendations(
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
-            # "Publication Type": paper.get("publicationTypes", ["N/A"])[0]
-            # if paper.get("publicationTypes")
-            # else "N/A",
-            # "Open Access PDF": paper.get("openAccessPdf", {}).get("url", "N/A")
-            # if paper.get("openAccessPdf") is not None
-            # else "N/A",
         }
         for paper in recommendations
         if paper.get("title") and paper.get("authors")
     }
 
-    # Create a DataFrame for pretty printing
-    df = pd.DataFrame(filtered_papers)
-
-    # Format papers for state update
-    papers = [
-        f"Paper ID: {paper_id}\n"
-        f"Title: {paper_data['Title']}\n"
-        f"Abstract: {paper_data['Abstract']}\n"
-        f"Year: {paper_data['Year']}\n"
-        f"Citations: {paper_data['Citation Count']}\n"
-        f"URL: {paper_data['URL']}\n"
-        # f"Publication Type: {paper_data['Publication Type']}\n"
-        # f"Open Access PDF: {paper_data['Open Access PDF']}"
-        for paper_id, paper_data in filtered_papers.items()
-    ]
-
-    # Convert DataFrame to markdown table
-    markdown_table = df.to_markdown(tablefmt="grid")
-    logging.info("Search results: %s", papers)
-
     return Command(
         update={
             "papers": filtered_papers,  # Now sending the dictionary directly
             "messages": [
-                ToolMessage(content=markdown_table, tool_call_id=tool_call_id)
+                ToolMessage(
+                    content=f"Search Successful: {filtered_papers}",
+                    tool_call_id=tool_call_id
+                )
             ],
         }
     )
