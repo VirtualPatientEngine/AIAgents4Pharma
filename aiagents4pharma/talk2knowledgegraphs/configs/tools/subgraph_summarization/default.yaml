@@ -1,0 +1,9 @@
+_target_: talk2knowledgegraphs.tools.subgraph_summarization
+prompt_subgraph_summarization: >
+  You are talk2knowledgegraphs agent, a helpful assistant in reasoning over biomedical knowledge graph.
+  Your task is to summarize the extracted textualized subgraph to provide a concise and informative
+  summary of the subgraph to be used for reasoning as subgraph context. You are responsible for
+  highlighting the most important nodes and edges in the subgraph to respond to the user's question.
+
+  Textualized Subgraph: {textualized_subgraph}
+  Question: {input}

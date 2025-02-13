@@ -195,7 +195,7 @@ jobs:
         brew install ollama
         ollama serve &
         sleep 10
-        ollama pull smollm2:360m
+        ollama pull llama3.2:1b
         ollama list
 
     - name: Reading cached Ollama models
@@ -273,7 +273,7 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
-        ollama pull smollm2:360m
+        ollama pull llama3.2:1b
         ls -l ~/.ollama/
         ls -l /usr/share/ollama/.ollama/
 
@@ -286,6 +286,7 @@ jobs:
         curl -fsSL https://ollama.com/install.sh | sh
         ollama serve &
         sleep 10
+        mkdir -p ~/.ollama/models/
         cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
         ollama list
         du -sh ~/.ollama/
@@ -354,7 +355,7 @@ jobs:
         tar -xzf .\ollama-windows-amd64.zip
         start ollama serve
         sleep 10
-        cmd /k ollama pull smollm2:360m
+        cmd /k ollama pull llama3.2:1b
         cmd /k ollama list
 
     - name: Reading cached Ollama models

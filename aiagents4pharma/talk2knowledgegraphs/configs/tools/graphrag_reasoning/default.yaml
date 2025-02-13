@@ -1,0 +1,24 @@
+_target_: talk2knowledgegraphs.tools.graphrag_reasoning
+splitter_chunk_size: 1024
+splitter_chunk_overlap: 256
+retriever_search_type: "mmr"
+retriever_k: 3
+retriever_fetch_k: 10
+retriever_lambda_mult: 0.3
+prompt_graphrag_w_docs_context: >
+  Given a chat history and the latest user question, which might reference context
+  in the chat history, formulate a standalone question that can be understood
+  without the chat history. Do NOT answer the question, just reformulate it if needed
+  and otherwise return it as is.
+
+  Question: {input}
+prompt_graphrag_w_docs: >
+  You are talk2knowledgegraphs, a helpful assistant performing retrievel-augmented generation (RAG)
+  over knowledge graphs.
+  One of your tasks is to answer react-based questions by using the following pieces of
+  retrieved context to answer the question. You can leverage a summarization of the subgraph
+  and the retrieved documents to provide the best possible answer to the user's query.
+
+  Subgraph Summary: {subgraph_summary}
+  Context: {context}
+  Question: {input}

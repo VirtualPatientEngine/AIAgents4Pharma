@@ -1,0 +1,43 @@
+_target_: talk2knowledgegraphs.tools.subgraph_extraction
+ollama_embeddings:
+  - "nomic-embed-text"
+temperature: 0.1
+streaming: False
+topk: 5
+topk_e: 5
+cost_e: 0.5
+c_const: 0.01
+root: -1
+num_clusters: 1
+pruning: "gw"
+verbosity_level: 0
+node_id_column: "node_id"
+node_attr_column: "node_attr"
+edge_src_column: "edge_src"
+edge_attr_column: "edge_attr"
+edge_dst_column: "edge_dst"
+prompt_endotype_filtering: >
+  You are talk2knowledgegraphs agent, a helpful assistant in filtering the most relevant endotype
+  for the subgraph extraction process.
+  Given the retrieved endotype documents, you need to filter the most relevant
+  endotype that will be used for the following reasoning process.
+  Only included a list of genes that exist in the provided documents
+  that are relevant to the input query.
+  For this task, you may modify your prompt to optimize the filtering process
+  based on factual informationbetween each gene in the documents and the input query.
+  Discover as many genes as possible that are relevant for enriching the subgraph extraction process.
+
+  You do not need to include any other information in the output.
+  Use the following output format:
+  [gene_1, gene_2, ..., gene_n]
+
+  {context}
+  Input: {input}
+prompt_endotype_addition: >
+   Include the following endotype for the subgraph extraction process:
+splitter_chunk_size: 64
+splitter_chunk_overlap: 16
+retriever_search_type: "mmr"
+retriever_k: 3
+retriever_fetch_k: 10
+retriever_lambda_mult: 0.3
