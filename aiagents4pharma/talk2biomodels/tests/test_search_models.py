@@ -3,6 +3,7 @@ Test cases for Talk2Biomodels search models tool.
 '''
 
 from langchain_core.messages import HumanMessage
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from ..agents.t2b_agent import get_app
 
 def test_search_models_tool():
@@ -13,7 +14,8 @@ def test_search_models_tool():
     app = get_app(unique_id)
     config = {"configurable": {"thread_id": unique_id}}
     # Update state
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
+    app.update_state(config,
+            {"llm_model": ChatNVIDIA(model="meta/llama-3.3-70b-instruct")})
     prompt = "Search for models on Crohn's disease."
     # Test the tool get_modelinfo
     response = app.invoke(

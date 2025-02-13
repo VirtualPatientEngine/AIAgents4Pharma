@@ -5,7 +5,7 @@ This module contains the `GetAnnotationTool` for fetching species annotations
 based on the provided model and species names.
 """
 import math
-from typing import List, Annotated, Type, TypedDict, Union, Literal
+from typing import List, Annotated, Type, Union, Literal
 import logging
 from dataclasses import dataclass
 import hydra
@@ -17,7 +17,7 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools.base import BaseTool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from .load_biomodel import ModelData, load_biomodel
 from ..api.uniprot import search_uniprot_labels
 from ..api.ols import search_ols_labels
@@ -49,7 +49,7 @@ def extract_relevant_species_names(model_object, arg_data, state):
     all_species_names = df_species.index.tolist()
 
     # Define a structured output for the LLM model
-    class CustomHeader(TypedDict):
+    class CustomHeader(BaseModel):
         """
         A list of species based on user question.
         """
@@ -58,17 +58,21 @@ def extract_relevant_species_names(model_object, arg_data, state):
                 If no relevant species are found, it must be None.""")
 
     # Create an instance of the LLM model
-    llm = ChatOpenAI(model=state['llm_model'], temperature=0)
+    llm = state['llm_model']
     # Get the structured output from the LLM model
     llm_with_structured_output = llm.with_structured_output(CustomHeader)
     # Define the question for the LLM model using the prompt
     question = cfg.prompt
     question += f'Here is the user question: {arg_data.user_question}'
     # Invoke the LLM model with the user question
-    dic = llm_with_structured_output.invoke(question)
+    results = llm_with_structured_output.invoke(question)
+    logging.info("Results from the LLM model: %s", results)
+    # Check if the returned species names are empty
+    if not results.relevant_species:
+        raise ValueError("Model does not contain the requested species.")
     extracted_species = []
     # Extract all the species names from the model
-    for species in dic['relevant_species']:
+    for species in results.relevant_species:
         if species in all_species_names:
             extracted_species.append(species)
     logger.info("Extracted species: %s", extracted_species)
@@ -136,10 +140,7 @@ class GetAnnotationTool(BaseTool):
 
         # Extract relevant species names based on the user question
         list_species_names = extract_relevant_species_names(model_object, arg_data, state)
-
-        # Check if the returned species names are empty
-        if not list_species_names:
-            raise ValueError("Model does not contain the requested species.")
+        print (list_species_names)
 
         (annotations_df,
          species_without_description) = self._fetch_annotations(list_species_names)

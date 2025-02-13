@@ -9,7 +9,6 @@ from typing import Type, Annotated
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langgraph.prebuilt import InjectedState
 
@@ -51,8 +50,13 @@ class QueryArticle(BaseTool):
         pages = []
         for page in loader.lazy_load():
             pages.append(page)
+        # Set up text embedding model
+        text_embedding_model = state['text_embedding_model']
+        logging.info("Loaded text embedding model %s", text_embedding_model)
         # Create a vector store from the pages
-        vector_store = InMemoryVectorStore.from_documents(pages, OpenAIEmbeddings())
+        vector_store = InMemoryVectorStore.from_documents(
+                                            pages,
+                                            text_embedding_model)
         # Search the article with the question
         docs = vector_store.similarity_search(question)
         # Return the content of the pages

@@ -44,10 +44,16 @@ Check out the tutorials on each agent for detailed instrcutions.
    ```bash
    pip install .
    ```
-3. **Initialize OPENAI_API_KEY**
+3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
    ```bash
    export OPENAI_API_KEY=....
    ```
+   ```bash
+   export NVIDIA_API_KEY=....
+   ```
+_You can create a free account at NVIDIA and apply for their
+free credits [here](https://build.nvidia.com/explore/discover)._
+
 4. **[Optional] Initialize LANGSMITH_API_KEY**
    ```bash
    export LANGCHAIN_TRACING_V2=true

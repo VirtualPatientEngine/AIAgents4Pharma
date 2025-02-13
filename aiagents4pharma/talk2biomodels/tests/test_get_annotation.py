@@ -5,6 +5,7 @@ Test cases for Talk2Biomodels get_annotation tool.
 import random
 import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
 from ..tools.get_annotation import prepare_content_msg
 
@@ -16,7 +17,9 @@ def make_graph_fixture():
     unique_id = random.randint(1000, 9999)
     graph = get_app(unique_id)
     config = {"configurable": {"thread_id": unique_id}}
-    graph.update_state(config, {"llm_model": "gpt-4o-mini"})
+    graph.update_state(config, {"llm_model": ChatOpenAI(model='gpt-4o-mini',
+                                    temperature=0)
+                                })
     return graph, config
 
 def test_no_model_provided(make_graph):
@@ -85,7 +88,6 @@ def test_invalid_species_provided(make_graph):
                 # (likely due to an invalid species).
                 test_condition = True
                 break
-    # assert test_condition
     assert test_condition
 
 def test_invalid_and_valid_species_provided(make_graph):

@@ -5,10 +5,9 @@ Tool for plotting a custom figure.
 """
 
 import logging
-from typing import Type, List, TypedDict, Annotated, Tuple, Union, Literal
+from typing import Type, Annotated, List, Tuple, Union, Literal
 from pydantic import BaseModel, Field
 import pandas as pd
-from langchain_openai import ChatOpenAI
 from langchain_core.tools import BaseTool
 from langgraph.prebuilt import InjectedState
 
@@ -71,30 +70,44 @@ class CustomPlotterTool(BaseTool):
         species_names = df.columns.tolist()
         # Exclude the time column
         species_names.remove('Time')
+        logging.log(logging.INFO, "Species names: %s", species_names)
         # In the following code, we extract the species
         # from the user question. We use Literal to restrict
         # the species names to the ones available in the
         # simulation results.
-        class CustomHeader(TypedDict):
+        class CustomHeader(BaseModel):
             """
             A list of species based on user question.
+
+            This is a Pydantic model that restricts the species
+            names to the ones available in the simulation results.
+            
+            If no species is relevant, set the attribute
+            `relevant_species` to None.
             """
             relevant_species: Union[None, List[Literal[*species_names]]] = Field(
-                    description="""List of species based on user question.
-                    If no relevant species are found, it will be None.""")
+                    description="This is a list of species based on the user question."
+                    "It is restricted to the species available in the simulation results."
+                    "If no species is relevant, set this attribute to None."
+                    "If the user asks for very specific species (for example, using the"
+                    "keyword `only` in the question), set this attribute to correspond "
+                    "to the species available in the simulation results, otherwise set it to None."
+                    )
         # Create an instance of the LLM model
-        llm = ChatOpenAI(model=state['llm_model'], temperature=0)
+        logging.log(logging.INFO, "LLM model: %s", state['llm_model'])
+        llm = state['llm_model']
         llm_with_structured_output = llm.with_structured_output(CustomHeader)
         results = llm_with_structured_output.invoke(question)
+        if results.relevant_species is None:
+            raise ValueError("No species found in the simulation results \
+                             that matches the user prompt.")
         extracted_species = []
         # Extract the species from the results
         # that are available in the simulation results
-        for species in results['relevant_species']:
+        for species in results.relevant_species:
             if species in species_names:
                 extracted_species.append(species)
-        logger.info("Extracted species: %s", extracted_species)
-        if len(extracted_species) == 0:
-            return "No species found in the simulation results that matches the user prompt.", None
+        logging.info("Extracted species: %s", extracted_species)
         # Include the time column
         extracted_species.insert(0, 'Time')
         return f"Custom plot {simulation_name}", df[extracted_species].to_dict(orient='records')
