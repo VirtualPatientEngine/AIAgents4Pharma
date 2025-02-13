@@ -2,6 +2,7 @@
 Unit tests for main agent functionality.
 Tests the supervisor agent's routing logic and state management.
 """
+
 # pylint: disable=redefined-outer-name
 from unittest.mock import Mock, patch, MagicMock
 import pytest
@@ -13,7 +14,7 @@ from ..state.state_talk2scholars import Talk2Scholars
 @pytest.fixture(autouse=True)
 def mock_hydra():
     """Mock Hydra configuration."""
-    with patch('hydra.initialize'), patch('hydra.compose') as mock_compose:
+    with patch("hydra.initialize"), patch("hydra.compose") as mock_compose:
         cfg_mock = MagicMock()
         cfg_mock.agents.talk2scholars.main_agent.temperature = 0
         cfg_mock.agents.talk2scholars.main_agent.main_agent = "Test prompt"
@@ -30,11 +31,14 @@ def test_get_app():
     mock_llm = Mock()
 
     with patch(
-        'aiagents4pharma.talk2scholars.agents.main_agent.ChatOpenAI',
-        return_value=mock_llm
+        "aiagents4pharma.talk2scholars.agents.main_agent.ChatOpenAI",
+        return_value=mock_llm,
     ):
+
         app = get_app(thread_id, llm_model)
         assert app is not None
+        assert "supervisor" in app.nodes
+        assert "s2_agent" in app.nodes  # Ensure nodes exist
 
 
 def test_supervisor_node_execution():
@@ -47,10 +51,10 @@ def test_supervisor_node_execution():
     mock_supervisor.invoke.return_value = {"messages": [AIMessage(content="s2_agent")]}
 
     with patch(
-        'aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent',
-        return_value=mock_supervisor
+        "aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent",
+        return_value=mock_supervisor,
     ):
-        supervisor_node = make_supervisor_node(mock_llm, None, thread_id)
+        supervisor_node = make_supervisor_node(mock_llm, thread_id)
 
         # Create a mock state
         mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
@@ -60,7 +64,9 @@ def test_supervisor_node_execution():
 
         # Validate
         assert result.goto == "s2_agent"
-        assert "messages" in result.update
+        mock_supervisor.invoke.assert_called_once_with(
+            mock_state, {"configurable": {"thread_id": thread_id}}
+        )  # Ensure invoke was called correctly
 
 
 def test_call_s2_agent():
@@ -68,7 +74,7 @@ def test_call_s2_agent():
     thread_id = "test_thread"
     mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
 
-    with patch('aiagents4pharma.talk2scholars.agents.s2_agent.get_app') as mock_s2_app:
+    with patch("aiagents4pharma.talk2scholars.agents.s2_agent.get_app") as mock_s2_app:
         mock_s2_app.return_value.invoke.return_value = {
             "messages": [AIMessage(content="Here are the papers")],
             "papers": {"id123": "Sample Paper"},
@@ -81,20 +87,22 @@ def test_call_s2_agent():
                 "configurable": {
                     "thread_id": thread_id,
                     "checkpoint_ns": "test_ns",
-                    "checkpoint_id": "test_checkpoint"
+                    "checkpoint_id": "test_checkpoint",
                 }
-            }
+            },
         )
 
         assert "messages" in result
         assert "papers" in result
         assert result["papers"]["id123"] == "Sample Paper"
 
+        mock_s2_app.return_value.invoke.assert_called_once()
+
 
 def test_hydra_failure():
     """Test exception handling when Hydra fails to load config."""
     thread_id = "test_thread"
-    with patch('hydra.initialize', side_effect=Exception("Hydra error")):
+    with patch("hydra.initialize", side_effect=Exception("Hydra error")):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id)
 
@@ -110,27 +118,31 @@ class TestMainAgent:
         thread_id = "test_thread"
 
         with patch(
-            'aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent'
+            "aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent"
         ) as mock_create:
             mock_create.return_value = Mock()
-            supervisor = make_supervisor_node(mock_llm, None, thread_id)
+            supervisor = make_supervisor_node(mock_llm, thread_id)
 
             assert supervisor is not None
             assert mock_create.called
             # Verify Hydra was called with correct parameters
-            mock_hydra.assert_called_once()
+            assert mock_hydra.call_count == 1  # Updated assertion
 
     def test_supervisor_config_loading(self, mock_hydra):
         """Test that supervisor loads configuration correctly"""
         mock_llm = Mock()
         thread_id = "test_thread"
 
-        with patch('aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent'):
-            make_supervisor_node(mock_llm, None, thread_id)
+        with patch(
+            "aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent"
+        ):
+            make_supervisor_node(mock_llm, thread_id)
 
             # Verify Hydra initialization
             assert mock_hydra.call_count == 1
-            assert "agents/talk2scholars/main_agent=default" in str(mock_hydra.call_args_list[0])
+            assert "agents/talk2scholars/main_agent=default" in str(
+                mock_hydra.call_args_list[0]
+            )
 
     def test_react_agent_params(self):
         """Test that react agent is created with correct parameters"""
@@ -138,10 +150,10 @@ class TestMainAgent:
         thread_id = "test_thread"
 
         with patch(
-            'aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent'
+            "aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent"
         ) as mock_create:
             mock_create.return_value = Mock()
-            make_supervisor_node(mock_llm, None, thread_id)
+            make_supervisor_node(mock_llm, thread_id)
 
             # Verify create_react_agent was called
             assert mock_create.called
@@ -150,16 +162,19 @@ class TestMainAgent:
             args, kwargs = mock_create.call_args
             assert args[0] == mock_llm  # First argument should be the LLM
             assert "state_schema" in kwargs  # Should have state_schema
-            assert hasattr(mock_create.return_value, 'invoke')  # Should have invoke method
+            assert hasattr(
+                mock_create.return_value, "invoke"
+            )  # Should have invoke method
 
     def test_supervisor_custom_config(self, mock_hydra):
         """Test supervisor with custom configuration"""
         mock_llm = Mock()
-        custom_config = {"custom_param": "test_value"}
         thread_id = "test_thread"
 
-        with patch('aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent'):
-            make_supervisor_node(mock_llm, custom_config, thread_id)
+        with patch(
+            "aiagents4pharma.talk2scholars.agents.main_agent.create_react_agent"
+        ):
+            make_supervisor_node(mock_llm, thread_id)
 
             # Verify Hydra was called
             mock_hydra.assert_called_once()

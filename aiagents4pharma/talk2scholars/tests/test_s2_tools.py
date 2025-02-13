@@ -1,11 +1,12 @@
 """
 Unit tests for S2 tools functionality.
 """
+
 # pylint: disable=redefined-outer-name
 from unittest.mock import patch
 from langchain_core.messages import ToolMessage
 import pytest
-from ..tools.s2.display_results import display_results
+from ..tools.s2.display_results import display_results, NoPapersFoundError
 from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations
 from ..tools.s2.search import search_tool
 from ..tools.s2.single_paper_rec import get_single_paper_recommendations
@@ -47,10 +48,12 @@ class TestS2Tools:
     """Unit tests for individual S2 tools"""
 
     def test_display_results_empty_state(self, initial_state):
-        """Verifies display_results tool behavior when state is empty"""
-        result = display_results.invoke({"state": initial_state})
-        assert isinstance(result, str)
-        assert result == "No papers found. A search needs to be performed first."
+        """Verifies display_results tool behavior when state is empty and raises an exception"""
+        with pytest.raises(
+            NoPapersFoundError,
+            match="No papers found. A search needs to be performed first.",
+        ):
+            display_results.invoke({"state": initial_state})
 
     def test_display_results_shows_papers(self, initial_state):
         """Verifies display_results tool correctly returns papers from state"""
@@ -61,7 +64,6 @@ class TestS2Tools:
         assert isinstance(result, dict)
         assert result["papers"] == MOCK_STATE_PAPER
         assert result["multi_papers"] == {}
-
 
     @patch("requests.get")
     def test_search_finds_papers(self, mock_get):
