@@ -21,8 +21,8 @@ def input_dict_fixture():
         "embedding_model": None,  # TBA for each test case
         "uploaded_files": [
             {
-                "file_name": "DrugA.pdf",
-                "file_path": f"{DATA_PATH}/DrugA.pdf",
+                "file_name": "adalimumab.pdf",
+                "file_path": f"{DATA_PATH}/adalimumab.pdf",
                 "file_type": "drug_data",
                 "uploaded_by": "VPEUser",
                 "uploaded_timestamp": "2024-11-05 00:00:00",
@@ -71,15 +71,15 @@ def test_t2kg_agent_openai(input_dict):
         input_dict,
     )
     prompt = """
-    DrugA is a human monoclonal antibody that binds to both
-    the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
+    Adalimumab is a fully human monoclonal antibody (IgG1) 
+    that specifically binds to tumor necrosis factor-alpha (TNF-α), a pro-inflammatory cytokine.
 
     I would like to get evidence from the knowledge graph about the mechanism of actions related to
-    DrugA in treating inflammatory bowel disease 
-    (IBD). Make sure to highlights key nodes and edges in the extracted subgraph.
-    Make sure to discover insights related to TNF and its interactions with other entities.
-    Perform reasoning on the extracted subgraph to generate a concise
-    summary of the mechanism of action of DrugA.
+    Adalimumab in treating inflammatory bowel disease 
+    (IBD). Please follow these steps:
+    - Extract a subgraph from the PrimeKG that contains information about Adalimumab.
+    - Summarize the extracted subgraph.
+    - Reason about the mechanism of action of Adalimumab in treating IBD.
 
     Please set the extraction name for the extraction process as `subkg_12345`.
     """
@@ -106,5 +106,5 @@ def test_t2kg_agent_openai(input_dict):
     # Check summarized subgraph
     assert isinstance(dic_extracted_graph["graph_summary"], str)
     # Check reasoning results
-    assert "DrugA" in assistant_msg
+    assert "Adalimumab" in assistant_msg
     assert "TNF" in assistant_msg

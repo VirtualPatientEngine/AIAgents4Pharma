@@ -21,8 +21,8 @@ def input_dict_fixture():
         "embedding_model": None,  # TBA for each test case
         "uploaded_files": [
             {
-                "file_name": "DrugA.pdf",
-                "file_path": f"{DATA_PATH}/DrugA.pdf",
+                "file_name": "adalimumab.pdf",
+                "file_path": f"{DATA_PATH}/adalimumab.pdf",
                 "file_type": "drug_data",
                 "uploaded_by": "VPEUser",
                 "uploaded_timestamp": "2024-11-05 00:00:00",
@@ -185,16 +185,13 @@ def test_graphrag_reasoning_openai(input_dict):
         input_dict,
     )
     prompt = """
-    Please directly invoke `graphrag_reasoning` tool without calling any other tools 
-    to respond to the following prompt:
-
     Without extracting a new subgraph, based on subgraph extracted from `subkg_12345`
     perform Graph RAG reasoning to get insights related to nodes of genes 
-    mentioned in the knowledge graph related to DrugA. 
+    mentioned in the knowledge graph related to Adalimumab. 
 
     Here is an additional context:
-    DrugA is a human monoclonal antibody that binds to both 
-    the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
+    Adalimumab is a fully human monoclonal antibody (IgG1) 
+    that specifically binds to tumor necrosis factor-alpha (TNF-α), a pro-inflammatory cytokine.
     """
 
     # Test the tool  graphrag_reasoning
@@ -209,5 +206,5 @@ def test_graphrag_reasoning_openai(input_dict):
     assert tool_msg.name == "graphrag_reasoning"
 
     # Check reasoning results
-    assert "DrugA" in assistant_msg
+    assert "Adalimumab" in assistant_msg
     assert "TNF" in assistant_msg
