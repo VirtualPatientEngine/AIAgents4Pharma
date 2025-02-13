@@ -40,8 +40,8 @@ def input_dict_fixture():
         "dic_source_graph": [
             {
                 "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
             }
         ],
         "dic_extracted_graph": [
@@ -52,131 +52,110 @@ def input_dict_fixture():
                 "topk_nodes": 3,
                 "topk_edges": 3,
                 "graph_dict": {
-                    "nodes": [
-                        ("g1", {}),
-                        ("g4", {}),
-                        ("g5", {}),
-                        ("p5", {}),
-                        ("p10", {}),
-                        ("p1", {}),
-                        ("p6", {}),
-                    ],
-                    "edges": [
-                        (
-                            "g1",
-                            "p1",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                        (
-                            "g4",
-                            "p10",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                        (
-                            "g4",
-                            "p5",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                        (
-                            "g5",
-                            "p5",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                        (
-                            "g5",
-                            "p6",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                        (
-                            "g5",
-                            "p1",
-                            {
-                                "relation": ["gene", "member_of", "pathway"],
-                                "label": ["gene", "member_of", "pathway"],
-                            },
-                        ),
-                    ],
-                },
+                    'nodes': [('IFNG_(3495)', {}), 
+                              ('IKBKG_(3672)', {}), 
+                              ('ATG16L1_(6661)', {}), 
+                              ('inflammatory bowel disease_(28158)', {}), 
+                              ('Crohn ileitis and jejunitis_(35814)', {}), 
+                              ("Crohn's colitis_(83770)", {})], 
+                    'edges': [('IFNG_(3495)', 'inflammatory bowel disease_(28158)', 
+                               {'relation': ['gene/protein', 'associated with', 'disease'], 
+                                'label': ['gene/protein', 'associated with', 'disease']}), 
+                              ('IFNG_(3495)', "Crohn's colitis_(83770)", 
+                               {'relation': ['gene/protein', 'associated with', 'disease'], 
+                                'label': ['gene/protein', 'associated with', 'disease']}), 
+                              ('IFNG_(3495)', 'Crohn ileitis and jejunitis_(35814)', 
+                               {'relation': ['gene/protein', 'associated with', 'disease'], 
+                                'label': ['gene/protein', 'associated with', 'disease']}), 
+                              ('ATG16L1_(6661)', 'IKBKG_(3672)',
+                               {'relation': ['gene/protein', 'ppi', 'gene/protein'], 
+                                'label': ['gene/protein', 'ppi', 'gene/protein']}), 
+                              ("Crohn's colitis_(83770)", 'ATG16L1_(6661)', 
+                               {'relation': ['disease', 'associated with', 'gene/protein'], 
+                                'label': ['disease', 'associated with', 'gene/protein']})]},
                 "graph_text": """
             node_id,node_attr
-            g1,"NOD2 is a gene that contributes to immune responses and has been implicated in
-            Crohn's disease, particularly through genetic mutations linked to inflammation."
-            g4,"IL10 is an anti-inflammatory cytokine that regulates immune responses,
-            particularly in limiting host immune response to pathogens to prevent
-            damage to the body."
-            g5,"TLR4 is a receptor for lipopolysaccharides from Gram-negative bacteria,
-            which triggers an innate immune response and plays a role in inflammation
-            and infection defense."
-            p5,"IL-27 signaling pathway plays a crucial role in regulating immune responses,
-            particularly in the context of chronic inflammation and autoimmunity."
-            p10,"Th17 Activation Pathway refers to a subset of CD4+ T helper cells that produce
-            IL-17 cytokine, playing a crucial role in autoimmune diseases such as
-            multiple sclerosis and rheumatoid arthritis."
-            p1,"Autophagy is a cellular process responsible for recycling and removing damaged or
-            dysfunctional cellular components, playing a crucial role in maintaining cellular
-            homeostasis and preventing disease."
-            p6,Inflammasome pathway refers to the multi-protein complexes that activate
-            inflammatory processes through the cleavage of pro-inflammatory cytokines like IL-1β.
+            IFNG_(3495),"IFNG belongs to gene/protein category. 
+            This gene encodes a soluble cytokine that is a member of the type II interferon class. 
+            The encoded protein is secreted by cells of both the innate and adaptive immune systems. 
+            The active protein is a homodimer that binds to the interferon gamma receptor 
+            which triggers a cellular response to viral and microbial infections. 
+            Mutations in this gene are associated with an increased susceptibility to viral, 
+            bacterial and parasitic infections and to several autoimmune diseases. 
+            [provided by RefSeq, Dec 2015]."
+            IKBKG_(3672),"IKBKG belongs to gene/protein category. This gene encodes the regulatory 
+            subunit of the inhibitor of kappaB kinase (IKK) complex, which activates NF-kappaB 
+            resulting in activation of genes involved in inflammation, immunity, cell survival, 
+            and other pathways. Mutations in this gene result in incontinentia pigmenti, 
+            hypohidrotic ectodermal dysplasia, and several other types of immunodeficiencies. 
+            A pseudogene highly similar to this locus is located in an adjacent region of the 
+            X chromosome. [provided by RefSeq, Mar 2016]."
+            ATG16L1_(6661),"ATG16L1 belongs to gene/protein category. The protein encoded 
+            by this gene is part of a large protein complex that is necessary for autophagy, 
+            the major process by which intracellular components are targeted to lysosomes 
+            for degradation. Defects in this gene are a cause of susceptibility to inflammatory 
+            bowel disease type 10 (IBD10). Several transcript variants encoding different 
+            isoforms have been found for this gene.[provided by RefSeq, Jun 2010]."
+            inflammatory bowel disease_(28158),inflammatory bowel disease belongs to disease 
+            category. Any inflammatory bowel disease in which the cause of the disease 
+            is a mutation in the NOD2 gene.  
+            Crohn ileitis and jejunitis_(35814),Crohn ileitis and jejunitis belongs to 
+            disease category. An Crohn disease involving a pathogenic inflammatory 
+            response in the ileum.  
+            Crohn's colitis_(83770),Crohn's colitis belongs to disease category. 
+            Crohn's disease affecting the colon.  
 
-            source,edge_attr,target
-            g5,"('gene', 'member_of', 'pathway')",p5
-            g5,"('gene', 'member_of', 'pathway')",p6
-            g4,"('gene', 'member_of', 'pathway')",p10
-            g1,"('gene', 'member_of', 'pathway')",p1
-            g4,"('gene', 'member_of', 'pathway')",p5
-            g5,"('gene', 'member_of', 'pathway')",p1
+            head_id,edge_type,tail_id
+            Crohn's colitis_(83770),"('disease', 'associated with', 'gene/protein')",
+            ATG16L1_(6661)
+            ATG16L1_(6661),"('gene/protein', 'ppi', 'gene/protein')",IKBKG_(3672)
+            IFNG_(3495),"('gene/protein', 'associated with', 'disease')",
+            inflammatory bowel disease_(28158)
+            IFNG_(3495),"('gene/protein', 'associated with', 'disease')",Crohn's colitis_(83770)
+            IFNG_(3495),"('gene/protein', 'associated with', 'disease')",
+            Crohn ileitis and jejunitis_(35814)
             """,
                 "graph_summary": """
-            The summarized subgraph focuses on **immune responses** and their regulation,
-            particularly in relation to **inflammation**. Here are the key elements highlighted:
+            The subgraph extracted from `subkg_12345` includes several important genes and 
+            their associations with inflammatory bowel diseases, particularly Crohn's disease.
 
-            ### Important Nodes:
-            - **NOD2:** A gene involved in immune responses, linked to Crohn's disease through
-            genetic mutations associated with inflammation.
-            - **IL10:** An anti-inflammatory cytokine that regulates immune responses,
-            particularly limiting the host's immune response to pathogens.
-            - **TLR4:** A receptor for lipopolysaccharides from Gram-negative bacteria,
-            triggering innate immune responses and playing a role in inflammation
-            and infection defense.
-            - **Th17 Activation Pathway:** A subset of CD4+ T helper cells that produce IL-17,
-            crucial in autoimmune diseases like multiple sclerosis and rheumatoid arthritis.
-            - **Autophagy:** A cellular process responsible for recycling and removing damaged
-            components, maintaining cellular homeostasis and preventing disease.
-            - **Inflammasome Pathway:** A multi-protein complex that activates inflammatory
-            processes through the cleavage of pro-inflammatory cytokines like IL-1β.
+            Key Nodes:
+            1. **IFNG (Interferon gamma)**: This gene encodes a cytokine that plays a crucial 
+            role in immune response. It is associated with several diseases, including 
+            inflammatory bowel disease and specifically Crohn's colitis and Crohn ileitis and 
+            jejunitis. Mutations in IFNG can lead to increased susceptibility to infections 
+            and autoimmune diseases.
 
-            ### Important Edges:
-            - **g5 to p5:** TLR4 is a gene member of the IL-27 signaling pathway, crucial for
-            regulating immune responses.
-            - **g5 to p6:** TLR4 is a gene member of the Inflammasome pathway,
-            which activates inflammatory processes.
-            - **g4 to p10:** IL10 is a gene member of the Th17 activation pathway,
-            significant in autoimmune diseases.
-            - **g4 to p5:** IL10 is a gene member of the IL-27 signaling pathway,
-            important for regulating immune responses.
-            - **g5 to p1:** Autophagy is a cellular process that plays a crucial role in maintaining
-            cellular homeostasis and preventing disease.
+            2. **IKBKG (Inhibitor of kappaB kinase gamma)**: This gene is involved in the 
+            regulation of NF-kappaB, which is critical for inflammation and immune responses. 
+            Mutations can lead to immunodeficiencies and other disorders.
 
-            ### Summary:
-            This subgraph emphasizes the interactions among various genes and pathways that regulate
-            immune responses, particularly in the context of inflammation.
-            It highlights the roles of NOD2, IL10, TLR4, the Th17 activation pathway, autophagy,
-            and the inflammasome pathway in immune regulation.
+            3. **ATG16L1**: This gene is essential for autophagy, a process that helps in 
+            degrading intracellular components. Defects in ATG16L1 are linked to inflammatory 
+            bowel disease type 10 (IBD10) and are associated with Crohn's colitis.
+
+            4. **Inflammatory Bowel Disease**: A category of diseases characterized by 
+            chronic inflammation of the gastrointestinal tract, with specific mention of 
+            mutations in the NOD2 gene as a cause.
+
+            5. **Crohn's Colitis**: A specific type of Crohn's disease affecting the colon, 
+            indicating a pathogenic inflammatory response.
+
+            6. **Crohn Ileitis and Jejunitis**: Another form of Crohn's disease that involves 
+            inflammation in the ileum.
+
+            Key Edges:
+            - **IFNG is associated with inflammatory bowel disease, Crohn's colitis, and 
+            Crohn ileitis and jejunitis**: This highlights the role of IFNG in these diseases.
+            - **ATG16L1 is associated with Crohn's colitis**: This indicates a direct link 
+            between the gene and the disease.
+            - **ATG16L1 interacts with IKBKG**: This protein-protein interaction suggests a 
+            functional relationship between these two genes in the context of immune response 
+            and inflammation.
+
+            In summary, the subgraph illustrates the connections between key genes 
+            (IFNG, IKBKG, ATG16L1) and their associations with inflammatory bowel diseases, 
+            particularly Crohn's disease, emphasizing the genetic underpinnings of these conditions.
             """,
             }
         ],

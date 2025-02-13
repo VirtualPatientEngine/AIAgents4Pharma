@@ -5,7 +5,6 @@ Test cases for tools/subgraph_extraction.py
 import pytest
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_ollama import OllamaEmbeddings, ChatOllama
 from ..agents.t2kg_agent import get_app
 
 # Define the data path
@@ -26,8 +25,8 @@ def input_dict_fixture():
         "dic_source_graph": [
             {
                 "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
             }
         ],
     }
@@ -37,14 +36,14 @@ def input_dict_fixture():
 
 def test_extract_subgraph_wo_docs(input_dict):
     """
-    Test the subgraph extraction tool without any documents using Ollama model.
+    Test the subgraph extraction tool without any documents using OpenAI model.
 
     Args:
         input_dict: Input dictionary.
     """
     # Prepare LLM and embedding model
-    input_dict["llm_model"] = ChatOllama(model="llama3.2:1b", temperature=0.0)
-    input_dict["embedding_model"] = OllamaEmbeddings(model="nomic-embed-text")
+    input_dict["llm_model"] = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+    input_dict["embedding_model"] = OpenAIEmbeddings(model="text-embedding-3-small")
 
     # Setup the app
     unique_id = 12345
@@ -59,9 +58,9 @@ def test_extract_subgraph_wo_docs(input_dict):
     Please directly invoke `subgraph_extraction` tool without calling any other tools 
     to respond to the following prompt:
 
-    Extract all relevant information related to nodes of genes existed in the knowledge graph.
-    Before starting, do not forget to set the arg_data.extraction_name 
-    for this process as `subkg_12345`. 
+    Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
+    (IBD) that existed in the knowledge graph.
+    Please set the extraction name for this process as `subkg_12345`.
     """
 
     # Test the tool subgraph_extraction
@@ -134,7 +133,8 @@ def test_extract_subgraph_w_docs(input_dict):
     Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
     to respond to the following prompt:
 
-    Extract all relevant information related to nodes of genes existed in the knowledge graph.
+    Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
+    (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
     """
 

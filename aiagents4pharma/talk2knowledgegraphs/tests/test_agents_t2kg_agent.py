@@ -40,8 +40,8 @@ def input_dict_fixture():
         "dic_source_graph": [
             {
                 "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/kg_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/kg_text_graph.pkl",
+                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
             }
         ],
         "dic_extracted_graph": []
@@ -75,7 +75,8 @@ def test_t2kg_agent_openai(input_dict):
     the soluble and transmembrane bioactive forms of human TNFa (UniProt Acc: P01375).
 
     I would like to get evidence from the knowledge graph about the mechanism of actions related to
-    DrugA. Make sure to highlights key nodes and edges in the extracted subgraph.
+    DrugA in treating inflammatory bowel disease 
+    (IBD). Make sure to highlights key nodes and edges in the extracted subgraph.
     Make sure to discover insights related to TNF and its interactions with other entities.
     Perform reasoning on the extracted subgraph to generate a concise
     summary of the mechanism of action of DrugA.

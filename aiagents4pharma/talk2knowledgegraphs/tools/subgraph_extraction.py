@@ -140,6 +140,7 @@ class SubgraphExtractionTool(BaseTool):
         Returns:
             A dictionary containing the PyG graph, NetworkX graph, and textualized graph.
         """
+        # print(subgraph)
         # Prepare the PyTorch Geometric graph
         mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
         pyg_graph = Data(

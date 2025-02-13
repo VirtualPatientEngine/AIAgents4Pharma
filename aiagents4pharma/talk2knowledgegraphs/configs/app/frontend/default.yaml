@@ -6,8 +6,8 @@ endotype_allowed_file_types:
   - "pdf"
 upload_data_dir: "../files"
 kg_name: "PrimeKG"
-kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/kg_pyg_graph.pkl"
-kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/kg_text_graph.pkl"
+kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/primekg_ibd_pyg_graph.pkl"
+kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/primekg_ibd_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
 openai_llms:
   - "gpt-4o-mini"
