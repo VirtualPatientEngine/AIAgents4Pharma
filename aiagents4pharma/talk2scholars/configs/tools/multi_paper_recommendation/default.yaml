@@ -9,6 +9,7 @@ api_fields:
   - "authors"
   - "citationCount"
   - "url"
+  # - "externalIds"
 
 # Default headers and params
 headers:

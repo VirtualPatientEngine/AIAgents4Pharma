@@ -9,6 +9,7 @@ api_fields:
   - "authors"
   - "citationCount"
   - "url"
+  # - "externalIds"
 # Commented fields that could be added later if needed
 #  - "publicationTypes"
 #  - "openAccessPdf"
