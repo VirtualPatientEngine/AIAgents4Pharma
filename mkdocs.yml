@@ -8,11 +8,11 @@ nav:
       - FAQ: talk2biomodels/faq.md
       - Tutorials: ./notebooks/talk2biomodels/tutorial.ipynb
       - Case Studies:
-        - Precision medicine: talk2biomodels/cases/Case_1.md
-        - Epidemiology: talk2biomodels/cases/Case_2.md
-        - Emergent system properties: talk2biomodels/cases/Case_3.md
-      - Tutorials: 
-        - ./notebooks/talk2biomodels/tutorial.ipynb
+          - Precision medicine: talk2biomodels/cases/Case_1.md
+          - Epidemiology: talk2biomodels/cases/Case_2.md
+          - Emergent system properties: talk2biomodels/cases/Case_3.md
+      - Tutorials:
+          - ./notebooks/talk2biomodels/tutorial.ipynb
       - Agents:
           - T2B agent: talk2biomodels/agents/t2b_agent.md
       - States:
@@ -50,21 +50,21 @@ nav:
           - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
-          - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb 
+          - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb
       - Datasets:
           - Dataset: talk2knowledgegraphs/datasets/dataset.md
           - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
           - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
           - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
-        - Embeddings:
-          - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
-          - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
-          - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
-          - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
-        - Enrichments:
-          - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
-          - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
+          - Embeddings:
+              - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
+              - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
+              - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+              - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
+          - Enrichments:
+              - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
+              - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
       - Agents:
           - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
       - States:
@@ -88,6 +88,8 @@ nav:
           - Single paper recommendation: talk2scholars/tools/single_paper_rec.md
           - Multi paper recommendation: talk2scholars/tools/multi_paper_rec.md
           - Display results: talk2scholars/tools/display_results.md
+          - Query results: talk2scholars/tools/query_results.md
+          - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
 
   - Documentation:
       - Ops:
@@ -106,18 +108,18 @@ theme:
   name: material
   logo: assets/VPE.png
   palette:
-  - accent: black
-    primary: white
-    scheme: default
-    toggle:
-      icon: material/toggle-switch-off-outline
-      name: Switch to dark mode
-  - accent: black
-    primary: white
-    scheme: slate
-    toggle:
-      icon: material/toggle-switch
-      name: Switch to light mode
+    - accent: black
+      primary: white
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - accent: black
+      primary: white
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
   features:
     - navigation.top
     - navigation.tabs
