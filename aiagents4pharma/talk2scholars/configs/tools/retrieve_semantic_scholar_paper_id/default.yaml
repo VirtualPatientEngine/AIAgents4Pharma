@@ -1,0 +1,11 @@
+api_endpoint: "https://api.semanticscholar.org/graph/v1/paper/search"
+request_timeout: 10
+api_fields:
+  - "paperId"
+  - "title"
+  - "abstract"
+  - "year"
+  - "authors"
+  - "citationCount"
+  - "url"
+  # - "externalIds"
