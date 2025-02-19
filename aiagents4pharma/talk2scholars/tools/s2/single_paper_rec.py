@@ -5,7 +5,7 @@ This tool is used to return recommendations for a single paper.
 """
 
 import logging
-from typing import Annotated, Any, Dict, Optional
+from typing import Annotated, Any, Optional
 import hydra
 import requests
 from langchain_core.messages import ToolMessage
@@ -26,7 +26,7 @@ class SinglePaperRecInput(BaseModel):
         description="Semantic Scholar Paper ID to get recommendations for (40-character string)"
     )
     limit: int = Field(
-        default=2,
+        default=5,
         description="Maximum number of recommendations to return",
         ge=1,
         le=500,
@@ -48,15 +48,16 @@ with hydra.initialize(version_base=None, config_path="../../configs"):
     cfg = cfg.tools.single_paper_recommendation
 
 
-@tool(args_schema=SinglePaperRecInput)
+@tool(args_schema=SinglePaperRecInput, parse_docstring=True)
 def get_single_paper_recommendations(
     paper_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    limit: int = 2,
+    limit: int = 5,
     year: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> Command[Any]:
     """
-    Get paper recommendations based on a single paper.
+    Get recommendations for on a single paper using its Semantic Scholar ID.
+    No other ID types are supported.
 
     Args:
         paper_id (str): The Semantic Scholar Paper ID to get recommendations for.
@@ -68,7 +69,9 @@ def get_single_paper_recommendations(
     Returns:
         Dict[str, Any]: The recommendations and related information.
     """
-    logger.info("Starting single paper recommendations search.")
+    logger.info(
+        "Starting single paper recommendations search with paper ID: %s", paper_id
+    )
 
     endpoint = f"{cfg.api_endpoint}/{paper_id}"
     params = {
@@ -90,32 +93,65 @@ def get_single_paper_recommendations(
         paper_id,
         response.status_code,
     )
+    if response.status_code != 200:
+        raise ValueError("Invalid paper ID or API error.")
     # print(f"Request params: {params}")
     logging.info("Request params: %s", params)
 
     data = response.json()
     recommendations = data.get("recommendedPapers", [])
 
+    if not recommendations:
+        return Command(
+            update={
+                "papers": {},
+                "messages": [
+                    ToolMessage(
+                        content=f"No recommendations found for {paper_id}.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
+
     # Extract paper ID and title from recommendations
     filtered_papers = {
         paper["paperId"]: {
+            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
+            # "arXiv_ID": paper.get("externalIds", {}).get(
+            #     "ArXiv", "N/A"
+            # ),  # Extract arXiv ID
         }
         for paper in recommendations
         if paper.get("title") and paper.get("authors")
     }
 
+    content_lines = [
+        "Recommendations based on a single paper were successful.",
+        "Here is a summary of the recommendations:",
+        f"Number of papers found: {len(filtered_papers)}",
+        f"Query Paper ID: {paper_id}",
+    ]
+
+    if year:
+        content_lines.append(f"Year: {year}")
+
+    content = "\n".join(content_lines)
+
     return Command(
         update={
             "papers": filtered_papers,  # Now sending the dictionary directly
+            "last_displayed_papers": "papers",
             "messages": [
                 ToolMessage(
-                    content=f"Search Successful: {filtered_papers}",
-                    tool_call_id=tool_call_id
+                    content=content,
+                    tool_call_id=tool_call_id,
+                    artifact=filtered_papers,
                 )
             ],
         }
