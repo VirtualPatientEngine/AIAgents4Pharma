@@ -22,14 +22,6 @@ from utils import streamlit_utils
 sys.path.append("./")
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
-st.set_page_config(page_title="Talk2Scholars", page_icon="🤖", layout="wide")
-# Set the logo
-st.logo(
-    image="docs/assets/VPE.png",
-    size="large",
-    link="https://github.com/VirtualPatientEngine",
-)
-
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
@@ -44,8 +36,19 @@ if "config" not in st.session_state:
 else:
     cfg = st.session_state.config
 
+st.set_page_config(
+    page_title=cfg.page.title, page_icon=cfg.page.icon, layout=cfg.page.layout
+)
+# Set the logo
+st.logo(
+    image="docs/assets/VPE.png",
+    size="large",
+    link="https://github.com/VirtualPatientEngine",
+)
+
+
 # Check if env variables OPENAI_API_KEY and/or NVIDIA_API_KEY exist
-if "OPENAI_API_KEY" not in os.environ:
+if cfg.api_keys.openai_key not in os.environ:
     st.error(
         "Please set the OPENAI_API_KEY "
         "environment variables in the terminal where you run "
@@ -124,7 +127,7 @@ with main_col1:
         )
 
         # LLM model panel
-        llms = ["OpenAI/gpt-4o-mini"]
+        llms = list(cfg.llms.available_models)
         # llms = ["NVIDIA/llama-3.3-70b-instruct"]
         st.selectbox(
             "Pick an LLM to power the agent",
