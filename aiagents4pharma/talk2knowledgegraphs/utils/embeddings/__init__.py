@@ -5,3 +5,4 @@ from . import embeddings
 from . import sentence_transformer
 from . import huggingface
 from . import ollama
+from . import nim_molmim
