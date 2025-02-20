@@ -167,6 +167,3 @@ experiment/web/vectordb
 
 # macOS metadata file
 .DS_Store
-
-# Test notebooks
-*.ipynb
