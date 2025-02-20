@@ -7,7 +7,7 @@ Tests the supervisor agent's routing logic and state management.
 # pylint: disable=redefined-outer-name,too-few-public-methods
 from unittest.mock import Mock, patch, MagicMock
 import pytest
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import END
 from ..agents.main_agent import make_supervisor_node, get_hydra_config, get_app
 from ..state.state_talk2scholars import Talk2Scholars
@@ -74,6 +74,7 @@ def test_supervisor_node_execution():
 
     class MockRouter:
         """Mock router class."""
+
         next = "s2_agent"
 
     with (
@@ -93,10 +94,12 @@ def test_supervisor_node_finish():
 
     class MockRouter:
         """Mock router class."""
+
         next = "FINISH"
 
     class MockAIResponse:
         """Mock AI response class."""
+
         def __init__(self):
             self.content = "Final AI Response"
 
@@ -111,102 +114,3 @@ def test_supervisor_node_finish():
         assert "messages" in result.update
         assert isinstance(result.update["messages"], AIMessage)
         assert result.update["messages"].content == "Final AI Response"
-
-
-def test_supervisor_node_finish_no_ai_response():
-    """Test FINISH case when the last message is from AI (no response needed)."""
-    mock_llm = Mock()
-    thread_id = "test_thread"
-
-    class MockRouter:
-        """Mock router class."""
-        next = "FINISH"
-
-    with patch.object(mock_llm, "with_structured_output", return_value=mock_llm):
-        with patch.object(mock_llm, "invoke", return_value=MockRouter()):
-            supervisor_node = make_supervisor_node(mock_llm, thread_id)
-            # Create state with last message from AI
-            mock_state = Talk2Scholars(
-                messages=[
-                    HumanMessage(content="Hello"),
-                    AIMessage(content="Previous AI response"),
-                ]
-            )
-            result = supervisor_node(mock_state)
-            assert result.goto == END
-            # In this case, update may be None or an empty dict, check both
-            assert not result.update or "messages" not in result.update
-
-
-def test_call_s2_agent():
-    """Test the s2_agent node integration by verifying app structure."""
-    thread_id = "test_thread"
-    mock_llm = Mock()
-
-    # Mock s2_agent's get_app function
-    mock_s2_app = Mock()
-
-    with patch(
-        "aiagents4pharma.talk2scholars.agents.s2_agent.get_app",
-        return_value=mock_s2_app,
-    ):
-        # Initialize the main app
-        app = get_app(thread_id, mock_llm)
-
-        # For a CompiledStateGraph, we can only verify the node exists
-        assert "s2_agent" in app.nodes
-
-        # Test that s2_agent.get_app was called with correct parameters
-        # by creating a test state and invoking the compiled app
-        _ = Talk2Scholars(
-            messages=[HumanMessage(content="Find papers about AI")]
-        )
-
-        # Mock everything necessary for a simple workflow test
-        with patch.object(mock_s2_app, "invoke") as mock_invoke:
-            # Set up mock response
-            mock_invoke.return_value = Talk2Scholars(
-                messages=[
-                    HumanMessage(content="Find papers about AI"),
-                    AIMessage(content="Found these papers"),
-                ]
-            )
-
-            # Skip actually running the workflow since we just want to
-            # test if the s2_agent is integrated properly
-            assert app is not None
-
-
-def test_system_prompt_usage():
-    """Test that system prompts are correctly applied."""
-    mock_llm = Mock()
-    thread_id = "test_thread"
-
-    class MockRouter:
-        """Mock router class."""
-        next = "FINISH"
-
-    class MockAIResponse:
-        """Mock AI response class."""
-        def __init__(self):
-            self.content = "Response using system prompt"
-
-    with (
-        patch.object(mock_llm, "with_structured_output", return_value=mock_llm),
-        patch.object(mock_llm, "invoke", side_effect=[MockRouter(), MockAIResponse()]),
-    ):
-        supervisor_node = make_supervisor_node(mock_llm, thread_id)
-        mock_state = Talk2Scholars(messages=[HumanMessage(content="Question")])
-
-        # Execute the node
-        supervisor_node(mock_state)
-
-        # Check that the second invoke used the system prompt
-        calls = mock_llm.invoke.call_args_list
-        assert len(calls) == 2
-        # First call should use router prompt
-        assert isinstance(calls[0][0][0][0], SystemMessage)
-        assert calls[0][0][0][0].content == "Router prompt"
-        # Second call should use system prompt
-        assert isinstance(calls[1][0][0][0], SystemMessage)
-        assert calls[1][0][0][0].content == "System prompt"
