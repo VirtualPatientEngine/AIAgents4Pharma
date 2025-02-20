@@ -114,3 +114,43 @@ def test_supervisor_node_finish():
         assert "messages" in result.update
         assert isinstance(result.update["messages"], AIMessage)
         assert result.update["messages"].content == "Final AI Response"
+
+
+def test_call_s2_agent_failure_in_get_app():
+    """Test handling failure when calling s2_agent.get_app()."""
+    thread_id = "test_thread"
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
+
+    with patch(
+        "aiagents4pharma.talk2scholars.agents.s2_agent.get_app",
+        side_effect=Exception("S2 Agent Failure"),
+    ):
+        with pytest.raises(Exception) as exc_info:
+            app = get_app(thread_id)  # Get the compiled workflow
+            app.invoke(
+                mock_state,
+                {"configurable": {"config_id": thread_id, "thread_id": thread_id}},
+            )
+
+        assert "S2 Agent Failure" in str(exc_info.value)
+
+
+def test_call_s2_agent_failure_in_invoke():
+    """Test handling failure when invoking s2_agent app."""
+    thread_id = "test_thread"
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
+
+    mock_app = Mock()
+    mock_app.invoke.side_effect = Exception("S2 Agent Invoke Failure")
+
+    with patch(
+        "aiagents4pharma.talk2scholars.agents.s2_agent.get_app", return_value=mock_app
+    ):
+        with pytest.raises(Exception) as exc_info:
+            app = get_app(thread_id)  # Get the compiled workflow
+            app.invoke(
+                mock_state,
+                {"configurable": {"config_id": thread_id, "thread_id": thread_id}},
+            )
+
+        assert "S2 Agent Invoke Failure" in str(exc_info.value)
