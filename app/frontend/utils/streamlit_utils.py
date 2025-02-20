@@ -550,31 +550,68 @@ def help_button():
 modeling and simulations. I can assist with tasks such as:
 1. Search specific models in the BioModels database.
 
-`Search models on Crohns disease`
+```
+Search models on Crohns disease
+```
 
 2. Extract information about models, including species, parameters, units,
 name and descriptions.
 
-`Show me the name of the model 537 and parameters related to drug dosage`
+```
+Briefly describe model 537 and 
+its parameters related to drug dosage
+```
 
 3. Simulate models:
     - Run simulations of models to see how they behave over time.
     - Set the duration and the interval.
-    - Specify which species/parameters you want to include and their starting concentrations.
+    - Specify which species/parameters you want to include and their starting concentrations/values.
     - Include recurring events.
 
-`Simulate the model for 2016 hours and intervals 2016 with an initial concentration
-of `DoseQ2W` set to 300 and `Dose` set to 0.`
+```
+Simulate the model 537 for 2016 hours and
+intervals 300 with an initial value
+of `DoseQ2W` set to 300 and `Dose` set to 0.
+```
 
 4. Answer questions about simulation results.
 
-`What is the concentration of species IL6 in serum at time 1000?`
+```
+What is the concentration of species IL6 in serum
+at the end of simulation?
+```
 
 5. Create custom plots to visualize the simulation results.
 
-`Plot the concentration of all the interleukins over time`
+```
+Plot the concentration of all
+the interleukins over time.
+```
 
-6. Provide feedback to the developers by clicking on the feedback button.
+6. Bring a model to a steady state and determine the concentration of a species at the steady state.
+
+```
+Bring BioModel 27 to a steady state,
+and then determine the Mpp concentration
+at the steady state.
+```
+
+7. Perform parameter scans to determine the effect of changing parameters on the model behavior.
+
+```
+How does the value of Pyruvate change in
+model 64 if the concentration of Extracellular Glucose
+is changed from 10 to 100 with a step size of 10?
+The simulation should run for 5 time units with an
+interval of 10.
+```
+
+8. Check out the [Use Cases](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/cases/Case_1/)
+for more examples, and the [FAQs](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/faq/)
+for common questions.
+
+9. Provide feedback to the developers by clicking on the feedback button.
+                
 ''')
 
 def apply_css():

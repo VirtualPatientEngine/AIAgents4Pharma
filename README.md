@@ -58,7 +58,7 @@ free credits [here](https://build.nvidia.com/explore/discover)._
    ```
 2. **Install dependencies:**
    ```bash
-   pip install .
+   pip install -r requirements.txt
    ```
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
    ```bash

@@ -70,7 +70,7 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
-  "talk2biomodels/configs*",
+  "talk2biomodels/configs/*",
   "talk2biomodels/configs/agents/t2b_agent/*",
   "talk2biomodels/configs/tools/ask_question/*",
   "talk2biomodels/configs/tools/get_annotation/*",

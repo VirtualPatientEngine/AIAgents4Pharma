@@ -41,6 +41,7 @@ dynamic = ["version"]
 [tool.setuptools]
 packages = [
     "talk2biomodels",
+    "talk2biomodels.configs",
     "talk2biomodels.models",
     "talk2biomodels.api",
     "talk2biomodels.tools",
