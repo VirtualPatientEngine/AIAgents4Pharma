@@ -2,6 +2,7 @@
 Updated Unit Tests for the S2 agent (Semantic Scholar sub-agent).
 """
 
+# pylint: disable=redefined-outer-name
 from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
@@ -31,7 +32,8 @@ def mock_tools_fixture():
             "aiagents4pharma.talk2scholars.tools.s2.display_results.display_results"
         ) as mock_s2_display,
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.s2.single_paper_rec.get_single_paper_recommendations"
+            "aiagents4pharma.talk2scholars.tools.s2.single_paper_rec."
+            "get_single_paper_recommendations"
         ) as mock_s2_single_rec,
         mock.patch(
             "aiagents4pharma.talk2scholars.tools.s2.multi_paper_rec.get_multi_paper_recommendations"
@@ -40,7 +42,8 @@ def mock_tools_fixture():
             "aiagents4pharma.talk2scholars.tools.s2.query_results.query_results"
         ) as mock_s2_query_results,
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.s2.retrieve_semantic_scholar_paper_id.retrieve_semantic_scholar_paper_id"
+            "aiagents4pharma.talk2scholars.tools.s2.retrieve_semantic_scholar_paper_id."
+            "retrieve_semantic_scholar_paper_id"
         ) as mock_s2_retrieve_id,
     ):
         mock_s2_search.return_value = {"result": "Mock Search Result"}

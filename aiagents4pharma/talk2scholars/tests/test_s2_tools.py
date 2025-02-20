@@ -4,8 +4,8 @@ Unit tests for S2 tools functionality.
 
 # pylint: disable=redefined-outer-name
 from unittest.mock import patch
-import pytest
 from unittest.mock import MagicMock
+import pytest
 from langgraph.types import Command
 from ..tools.s2.display_results import (
     display_results,
@@ -264,7 +264,7 @@ class TestS2Tools:
         state["last_displayed_papers"] = "papers"
         state["papers"] = MOCK_STATE_PAPER
 
-        # ✅ Mock the dataframe agent instead of the LLM
+        # Mock the dataframe agent instead of the LLM
         mock_agent = MagicMock()
         mock_agent.invoke.return_value = {"output": "Mocked response"}
 
