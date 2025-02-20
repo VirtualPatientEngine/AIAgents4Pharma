@@ -131,17 +131,11 @@ def get_single_paper_recommendations(
         if paper.get("title") and paper.get("authors")
     }
 
-    content_lines = [
-        "Recommendations based on a single paper were successful.",
-        "Here is a summary of the recommendations:",
-        f"Number of papers found: {len(filtered_papers)}",
-        f"Query Paper ID: {paper_id}",
-    ]
-
-    if year:
-        content_lines.append(f"Year: {year}")
-
-    content = "\n".join(content_lines)
+    content = "Recommendations based on a single paper were successful."
+    content += " Here is a summary of the recommendations:"
+    content += f"Number of papers found: {len(filtered_papers)}\n"
+    content += f"Query Paper ID: {paper_id}\n"
+    content += f"Year: {year}\n" if year else ""
 
     return Command(
         update={

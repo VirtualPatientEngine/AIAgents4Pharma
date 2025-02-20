@@ -109,17 +109,11 @@ def search_tool(
 
     logger.info("Filtered %d papers", len(filtered_papers))
 
-    content_lines = [
-        "Search was successful.",
-        "Here is a summary of the search results:",
-        f"Number of papers found: {len(filtered_papers)}",
-        f"Query: {query}",
-    ]
-
-    if year:
-        content_lines.append(f"Year: {year}")
-
-    content = "\n".join(content_lines)
+    content = "Search was successful."
+    content += " Here is a summary of the search results:"
+    content += f"Number of papers found: {len(filtered_papers)}\n"
+    content += f"Query: {query}\n"
+    content += f"Year: {year}\n" if year else ""
 
     return Command(
         update={

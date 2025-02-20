@@ -133,17 +133,11 @@ def get_multi_paper_recommendations(
         if paper.get("title") and paper.get("authors")
     }
 
-    content_lines = [
-        "Recommendations based on multiple papers was successful.",
-        "Here is a summary of the recommendations:",
-        f"Number of papers found: {len(filtered_papers)}",
-        f"Query Paper IDs: {', '.join(paper_ids)}",
-    ]
-
-    if year:
-        content_lines.append(f"Year: {year}")
-
-    content = "\n".join(content_lines)
+    content = "Recommendations based on multiple papers was successful."
+    content += " Here is a summary of the recommendations:"
+    content += f"Number of papers found: {len(filtered_papers)}\n"
+    content += f"Query Paper IDs: {', '.join(paper_ids)}\n"
+    content += f"Year: {year}\n" if year else ""
 
     return Command(
         update={
