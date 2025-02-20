@@ -1,0 +1,23 @@
+_target_: talk2knowledgegraphs.tools.named_entity_recognition
+prompt_ner: >
+  Your task is to conduct named-entity recognition given a user's prompt.
+  Following are header column of the dataframe:
+  `node_id`: ID of the node
+
+  Here are step-by-step instructions to help you prepare the output:
+  1. Extract unique candidates of named entities from the prompt. 
+  2. Perform cross-referencing with the biomedical nodes in the knowledge graph. 
+     This includes renaming the candidate names to match existing data in the knowledge graph.
+     Do not include any entities that do not exist in the knowledge graph.
+     Make sure to drop any duplicates in the final list of recognized entities.
+  3. Return the recognized entities with their corresponding unique node IDs and types using the following format:
+  Example:
+  NER: ["TNF", "IL21", "inflammatory bowel disease"]
+  OUTPUT: ['TNF_(2329)', 'IL21_(34967)', 'inflammatory bowel disease_(28158)']
+   
+  Return only the OUPUT as a list of `node_id`.
+  DO NOT include any additional information (prior information, extraction_name, "OUTPUT:", etc) in the output other than a list of recognized entities.
+  If no entities are recognized, tell the user that no entities were found in the existing knowledge graph.
+  Lastly, make sure that the output can be correctly parsed.
+
+  Prompt: {input}

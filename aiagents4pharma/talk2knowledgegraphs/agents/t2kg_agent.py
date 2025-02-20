@@ -10,6 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode, InjectedState
+from ..tools.named_entity_recognition import NamedEntityRecognitionTool
 from ..tools.subgraph_extraction import SubgraphExtractionTool
 from ..tools.subgraph_summarization import SubgraphSummarizationTool
 from ..tools.graphrag_reasoning import GraphRAGReasoningTool
@@ -40,10 +41,12 @@ def get_app(uniq_id, llm_model: BaseChatModel=ChatOllama(model='llama3.2:1b', te
         cfg = cfg.agents.t2kg_agent
 
     # Define the tools
+    named_entity_recognition = NamedEntityRecognitionTool()
     subgraph_extraction = SubgraphExtractionTool()
     subgraph_summarization = SubgraphSummarizationTool()
     graphrag_reasoning = GraphRAGReasoningTool()
     tools = ToolNode([
+                    named_entity_recognition,
                     subgraph_extraction,
                     subgraph_summarization,
                     graphrag_reasoning,

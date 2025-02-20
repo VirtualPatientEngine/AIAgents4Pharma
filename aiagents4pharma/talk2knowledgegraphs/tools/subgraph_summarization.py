@@ -38,7 +38,7 @@ class SubgraphSummarizationInput(BaseModel):
     prompt: str = Field(description="Prompt to interact with the backend.")
     extraction_name: str = Field(
         description="""Name assigned to the subgraph extraction process
-                                 when the subgraph_extraction tool is invoked."""
+                       when the subgraph_extraction tool is invoked."""
     )
 
 
@@ -80,9 +80,9 @@ class SubgraphSummarizationTool(BaseTool):
             )
             cfg = cfg.tools.subgraph_summarization
 
-        # Load the extracted graph
-        extracted_graph = {dic["name"]: dic for dic in state["dic_extracted_graph"]}
-        # logger.log(logging.INFO, "Extracted graph: %s", extracted_graph)
+        # Load the graph extraction data
+        graph_ext = {dic["name"]: dic for dic in state["dic_extracted_graph"]}
+        # logger.log(logging.INFO, "Extracted graph: %s", graph_ext)
 
         # Prepare prompt template
         prompt_template = ChatPromptTemplate.from_messages(
@@ -99,19 +99,19 @@ class SubgraphSummarizationTool(BaseTool):
         response = chain.invoke(
             {
                 "input": prompt,
-                "textualized_subgraph": extracted_graph[extraction_name]["graph_text"],
+                "textualized_subgraph": graph_ext[extraction_name]["graph_text"],
             }
         )
 
         # Store the response as graph_summary in the extracted graph
-        for key, value in extracted_graph.items():
+        for key, value in graph_ext.items():
             if key == extraction_name:
                 value["graph_summary"] = response
 
         # Prepare the dictionary of updated state
         dic_updated_state_for_model = {}
         for key, value in {
-            "dic_extracted_graph": list(extracted_graph.values()),
+            "dic_extracted_graph": list(graph_ext.values()),
         }.items():
             if value:
                 dic_updated_state_for_model[key] = value

@@ -23,9 +23,9 @@ from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 import torch
 from torch_geometric.data import Data
-from ..utils.extractions.pcst import PCSTPruning
+from ..utils.extractions.pcst import PCSTPruningMultiModal
 from ..utils.embeddings.ollama import EmbeddingWithOllama
-from .load_arguments import ArgumentData
+# from .load_arguments import ArgumentData
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -40,7 +40,7 @@ class SubgraphExtractionInput(BaseModel):
         prompt: Prompt to interact with the backend.
         tool_call_id: Tool call ID.
         state: Injected state.
-        arg_data: Argument for analytical process over graph data.
+        extraction_name: Name assigned to the subgraph extraction process
     """
 
     tool_call_id: Annotated[str, InjectedToolCallId] = Field(
@@ -48,8 +48,9 @@ class SubgraphExtractionInput(BaseModel):
     )
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
-    arg_data: ArgumentData = Field(
-        description="Experiment over graph data.", default=None
+    extraction_name: str = Field(
+        description="""Name assigned to the subgraph extraction process
+                       when the subgraph_extraction tool is invoked."""
     )
 
 
@@ -125,10 +126,9 @@ class SubgraphExtractionTool(BaseTool):
 
         return prompt
 
-    def prepare_final_subgraph(self,
-                               subgraph: dict,
-                               pyg_graph: Data,
-                               textualized_graph: pd.DataFrame) -> dict:
+    def prepare_final_subgraph(
+        self, subgraph: dict, pyg_graph: Data, textualized_graph: pd.DataFrame
+    ) -> dict:
         """
         Prepare the subgraph based on the extracted subgraph.
 
@@ -145,7 +145,8 @@ class SubgraphExtractionTool(BaseTool):
         mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
         pyg_graph = Data(
             # Node features
-            x=pyg_graph.x[subgraph["nodes"]],
+            # x=pyg_graph.x[subgraph["nodes"]],
+            x=[pyg_graph.x[n] for n in subgraph["nodes"]], # Since diverse embedding dimensions
             node_id=np.array(pyg_graph.node_id)[subgraph["nodes"]].tolist(),
             node_name=np.array(pyg_graph.node_id)[subgraph["nodes"]].tolist(),
             enriched_node=np.array(pyg_graph.enriched_node)[subgraph["nodes"]].tolist(),
@@ -205,7 +206,7 @@ class SubgraphExtractionTool(BaseTool):
         tool_call_id: Annotated[str, InjectedToolCallId],
         state: Annotated[dict, InjectedState],
         prompt: str,
-        arg_data: ArgumentData = None,
+        extraction_name: str,
     ) -> Command:
         """
         Run the subgraph extraction tool.
@@ -214,7 +215,7 @@ class SubgraphExtractionTool(BaseTool):
             tool_call_id: The tool call ID for the tool.
             state: Injected state for the tool.
             prompt: The prompt to interact with the backend.
-            arg_data (ArgumentData): The argument data.
+            extraction_name: The name assigned to the subgraph extraction process.
 
         Returns:
             Command: The command to be executed.
@@ -229,15 +230,19 @@ class SubgraphExtractionTool(BaseTool):
             cfg = cfg.tools.subgraph_extraction
 
         # Retrieve source graph from the state
-        initial_graph = {}
-        initial_graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
+        graph_data = {}
+        graph_data["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
         # logger.log(logging.INFO, "Source graph: %s", source_graph)
 
         # Load the knowledge graph
-        with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
-            initial_graph["pyg"] = pickle.load(f)
-        with open(initial_graph["source"]["kg_text_path"], "rb") as f:
-            initial_graph["text"] = pickle.load(f)
+        with open(graph_data["source"]["kg_pyg_path"], "rb") as f:
+            graph_data["pyg"] = pickle.load(f)
+        with open(graph_data["source"]["kg_text_path"], "rb") as f:
+            graph_data["text"] = pickle.load(f)
+
+        # Load the graph extraction data
+        graph_ext = {dic["name"]: dic for dic in state["dic_extracted_graph"]}
+        # logger.log(logging.INFO, "Extracted graph: %s", graph_ext)
 
         # Prepare prompt construction along with a list of endotypes
         if len(state["uploaded_files"]) != 0 and "endotype" in [
@@ -246,13 +251,32 @@ class SubgraphExtractionTool(BaseTool):
             prompt = self.perform_endotype_filtering(prompt, state, cfg)
 
         # Prepare embedding model and embed the user prompt as query
-        query_emb = torch.tensor(
+        prompt_emb = torch.tensor(
             EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
         ).float()
 
+        # Prepare entity embeddings
+        graph_data["ner_node_idx"] = [
+            n["node_id"] for n in graph_ext[extraction_name]["ner_nodes"]
+        ]
+        # Construct a pandas dataframe over nodes
+        graph_data["nodes_df"] = pd.DataFrame(
+            {
+                "node_id": graph_data["pyg"].node_id,
+                "node_name": graph_data["pyg"].node_name,
+                "node_type": graph_data["pyg"].node_type,
+                "x": graph_data["pyg"].x,
+            }
+        )
+        graph_data["query_df"] = graph_data["nodes_df"][
+            graph_data["nodes_df"].node_id.isin(graph_data["ner_node_idx"])
+        ].reset_index(drop=True)
+        logger.log(logging.INFO, "Len of NER Node Index: %s", len(graph_data["ner_node_idx"]))
+        logger.log(logging.INFO, "Shape of Query DF: %s", graph_data["query_df"].shape)
+
         # Prepare the PCSTPruning object and extract the subgraph
         # Parameters were set in the configuration file obtained from Hydra
-        subgraph = PCSTPruning(
+        subgraph = PCSTPruningMultiModal(
             state["topk_nodes"],
             state["topk_edges"],
             cfg.cost_e,
@@ -261,43 +285,45 @@ class SubgraphExtractionTool(BaseTool):
             cfg.num_clusters,
             cfg.pruning,
             cfg.verbosity_level,
-        ).extract_subgraph(initial_graph["pyg"], query_emb)
+        ).extract_subgraph(graph_data["pyg"], graph_data["query_df"], prompt_emb)
+        # logger.log(logging.INFO, "Subgraph extracted: %s", subgraph)
+        logger.log(logging.INFO, "Subgraph nodes: %s", subgraph["nodes"])
+        logger.log(logging.INFO, "Subgraph nodes length: %s", subgraph["nodes"].shape)
+        logger.log(logging.INFO, "Subgraph edges: %s", subgraph["edges"])
+        logger.log(logging.INFO, "Subgraph edges length: %s", subgraph["edges"].shape)
 
         # Prepare subgraph as a NetworkX graph and textualized graph
         final_subgraph = self.prepare_final_subgraph(
-            subgraph, initial_graph["pyg"], initial_graph["text"]
+            subgraph, graph_data["pyg"], graph_data["text"]
         )
 
-        # Prepare the dictionary of extracted graph
-        dic_extracted_graph = {
-            "name": arg_data.extraction_name,
-            "tool_call_id": tool_call_id,
-            "graph_source": initial_graph["source"]["name"],
-            "topk_nodes": state["topk_nodes"],
-            "topk_edges": state["topk_edges"],
-            "graph_dict": {
-                "nodes": list(final_subgraph["graph_nx"].nodes(data=True)),
-                "edges": list(final_subgraph["graph_nx"].edges(data=True)),
-            },
-            "graph_text": final_subgraph["graph_text"],
-            "graph_summary": None,
-        }
+        # Store the response as graph_summary in the extracted graph
+        for key, value in graph_ext.items():
+            if key == extraction_name:
+                value["topk_nodes"] = state["topk_nodes"]
+                value["topk_edges"] = state["topk_edges"]
+                value["graph_dict"] = {
+                    "nodes": list(final_subgraph["graph_nx"].nodes(data=True)),
+                    "edges": list(final_subgraph["graph_nx"].edges(data=True)),
+                }
+                value["graph_text"] = final_subgraph["graph_text"]
 
         # Prepare the dictionary of updated state
         dic_updated_state_for_model = {}
         for key, value in {
-            "dic_extracted_graph": [dic_extracted_graph],
+            "dic_extracted_graph": list(graph_ext.values()),
         }.items():
             if value:
                 dic_updated_state_for_model[key] = value
 
         # Return the updated state of the tool
         return Command(
-            update=dic_updated_state_for_model | {
+            update=dic_updated_state_for_model
+            | {
                 # update the message history
                 "messages": [
                     ToolMessage(
-                        content=f"Subgraph Extraction Result of {arg_data.extraction_name}",
+                        content=f"Subgraph Extraction Result of {extraction_name}",
                         tool_call_id=tool_call_id,
                     )
                 ],
