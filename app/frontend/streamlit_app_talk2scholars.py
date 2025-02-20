@@ -166,7 +166,6 @@ with main_col2:
                 if "tool_name" in message:
                     if message["tool_name"] in [
                         "display_results",
-                        "zotero_search_tool",
                     ]:
                         df_papers = message["content"]
                         st.dataframe(
@@ -310,7 +309,7 @@ with main_col2:
                         # if msg.name in ['search_tool',
                         #                 'get_single_paper_recommendations',
                         #                 'get_multi_paper_recommendations']:
-                        if msg.name in ["display_results", "zotero_search_tool"]:
+                        if msg.name in ["display_results"]:
                             # Display the results of the tool call
                             # for msg_artifact in msg.artifact:
                             # dic_papers = msg.artifact[msg_artifact]
