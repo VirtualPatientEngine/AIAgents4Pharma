@@ -237,35 +237,31 @@ with main_col2:
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
 
-                    # with collect_runs() as cb:
-                    #     # Add Langsmith tracer
-                    #     tracer = LangChainTracer(
-                    #         project_name=st.session_state.project_name
-                    #     )
-                    ######################################################
-                    # Get response from the agent
-                    # response = app.invoke(
-                    #     {"messages": [HumanMessage(content=prompt)]},
-                    #     config=config | {"callbacks": [tracer]},
-                    # )
+                    with collect_runs() as cb:
+                        # Add Langsmith tracer
+                        tracer = LangChainTracer(
+                            project_name=st.session_state.project_name
+                        )
+
+                        # Get response from the agent with Langsmith tracing enabled
+                        response = app.invoke(
+                            {"messages": [HumanMessage(content=prompt)]},
+                            config=config | {"callbacks": [tracer]},
+                        )
+
+                        # Assign the traced run ID to session state
+                        if cb.traced_runs:
+                            st.session_state.run_id = cb.traced_runs[-1].id
+
+                    # Get the latest agent state after the response
+                    current_state = app.get_state(config)
 
                     response = app.invoke(
                         {"messages": [HumanMessage(content=prompt)]},
                         config=config,
                     )
 
-                    # response = app.stream(
-                    #     {"messages": [HumanMessage(content=prompt)]},
-                    #     config=config,
-                    #     stream_mode="messages"
-                    # )
-                    # st.write_stream(streamlit_utils.stream_response(response))
-                    #######################################################
-                    # st.session_state.run_id = cb.traced_runs[-1].id
-                    # Print the response
-                    # print (response["messages"][-1])
                     current_state = app.get_state(config)
-                    # print (current_state.values["messages"])
 
                     # Add assistant response to chat history
                     assistant_msg = ChatMessage(
