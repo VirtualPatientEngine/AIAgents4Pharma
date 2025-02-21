@@ -127,11 +127,9 @@ with main_col1:
         )
 
         # LLM model panel
-        llms = list(cfg.llms.available_models)
-        # llms = ["NVIDIA/llama-3.3-70b-instruct"]
         st.selectbox(
             "Pick an LLM to power the agent",
-            llms,
+            list(cfg.llms.available_models),
             index=0,
             key="llm_model",
             on_change=streamlit_utils.update_llm_model,
