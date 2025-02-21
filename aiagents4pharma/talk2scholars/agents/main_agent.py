@@ -60,9 +60,8 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
         Callable: The supervisor node function that processes user queries and
         decides the next step.
     """
-    logger.info("Loading Hydra configuration for Talk2Scholars main agent.")
     cfg = get_hydra_config()
-    logger.info("Hydra configuration loaded with values: %s", cfg)
+    logger.info("Hydra configuration for Talk2Scholars main agent loaded: %s", cfg)
     members = ["s2_agent"]
     options = ["FINISH"] + members
     # Define system prompt for general interactions
@@ -95,14 +94,8 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
         structured_llm = llm_model.with_structured_output(Router)
         response = structured_llm.invoke(messages)
         goto = response.next
-        # if "next" in response:
-        #     goto = response["next"]
-        # else:
-        #     goto = response["properties"]["next"]
         logger.info("Routing to: %s, Thread ID: %s", goto, thread_id)
-        print("GOTO: ", goto)
         if goto == "FINISH":
-            print("GOTO: ", goto)
             goto = END  # Using END from langgraph.graph
             # If no agents were called, and the last message was
             # from the user, call the LLM to respond to the user
