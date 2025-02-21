@@ -89,7 +89,6 @@ def get_app(
         cfg = cfg.agents.talk2scholars.s2_agent
 
     # Define the tools
-    # tools = ToolNode([s2_search, s2_display, s2_single_rec, s2_multi_rec])
     tools = ToolNode(
         [
             s2_search,
@@ -109,7 +108,6 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        # prompt=cfg.s2_agent,
         state_modifier=cfg.s2_agent,
         checkpointer=MemorySaver(),
     )
@@ -117,7 +115,6 @@ def get_app(
     workflow = StateGraph(Talk2Scholars)
     workflow.add_node("agent_s2", agent_s2_node)
     workflow.add_edge(START, "agent_s2")
-    # workflow.add_edge("agent_s2", "supervisor")
 
     # Initialize memory to persist state between graph runs
     checkpointer = MemorySaver()
