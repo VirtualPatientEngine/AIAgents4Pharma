@@ -12,17 +12,6 @@ class EnrichmentWithPubChem(Enrichments):
     """
     Enrichment class using PubChem
     """
-    def __init__(self):
-        """
-        Initialize the EnrichmentWithPubChem class.
-
-        Args:
-            model_name: The name of the Ollama model to be used.
-            prompt_enrichment: The prompt enrichment template.
-            temperature: The temperature for the Ollama model.
-            streaming: The streaming flag for the Ollama model.
-        """
-
     def enrich_documents(self, texts: List[str]) -> List[str]:
         """
         Enrich a list of input PubChem IDs with their STRINGS representation.
@@ -52,7 +41,7 @@ class EnrichmentWithPubChem(Enrichments):
 
         Args:
             texts: The list of pubchem IDs to be enriched.
-            docs: The list of documents to be enriched.
+            docs: None
 
         Returns:
             The list of enriched STRINGS

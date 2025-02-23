@@ -1,5 +1,5 @@
 """
-Embedding class using Ollama model based on LangChain Embeddings class.
+Embedding class using MOLMIM model from NVIDIA NIM.
 """
 
 import json
@@ -13,10 +13,10 @@ class EmbeddingWithMOLMIM(Embeddings):
     """
     def __init__(self, base_url: str):
         """
-        Initialize the EmbeddingWithNIM_MOLMIM class.
+        Initialize the EmbeddingWithMOLMIM class.
 
         Args:
-            base_url: The base URL for the NIM MOLMIM model.
+            base_url: The base URL for the NIM/MOLMIM model.
         """
         # Set base URL
         self.base_url = base_url

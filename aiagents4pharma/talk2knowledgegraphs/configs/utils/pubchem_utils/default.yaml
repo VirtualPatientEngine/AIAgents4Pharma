@@ -1,0 +1,2 @@
+_target_: talk2knowledgegraphs.utils.pubchem_utils
+drugbank_id_to_pubchem_cid_url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sourceid/drugbank/

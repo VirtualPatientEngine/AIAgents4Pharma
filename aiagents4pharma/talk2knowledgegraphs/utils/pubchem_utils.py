@@ -4,9 +4,13 @@
 Enrichment class for enriching PubChem IDs with their STRINGS representation.
 """
 
+import logging
 import requests
+import hydra
 
-PUBCHEM_BASE_URL = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sourceid/drugbank/'
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def drugbank_id2pubchem_cid(drugbank_id):
     """
@@ -18,8 +22,13 @@ def drugbank_id2pubchem_cid(drugbank_id):
     Returns:
         The PubChem CID of the drug.
     """
+    logger.log(logging.INFO, "Load Hydra configuration for PubChem ID conversion.")
+    with hydra.initialize(version_base=None, config_path="../configs"):
+        cfg = hydra.compose(config_name='config',
+                            overrides=['utils/pubchem_utils=default'])
+        cfg = cfg.utils.pubchem_utils
     # Prepare the URL
-    pubchem_url_for_drug = PUBCHEM_BASE_URL + drugbank_id + '/JSON'
+    pubchem_url_for_drug = cfg.drugbank_id_to_pubchem_cid_url + drugbank_id + '/JSON'
     # Get the data
     response = requests.get(pubchem_url_for_drug, timeout=60)
     data = response.json()

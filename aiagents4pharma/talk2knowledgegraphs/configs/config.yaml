@@ -4,4 +4,5 @@ defaults:
   - tools/subgraph_extraction: default
   - tools/subgraph_summarization: default
   - tools/graphrag_reasoning: default
+  - utils/pubchem_utils: default
   - app/frontend: default

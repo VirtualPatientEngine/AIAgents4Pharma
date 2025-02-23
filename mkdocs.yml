@@ -63,7 +63,7 @@ nav:
           - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
           - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
           - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
-          - EmbeddingWithNIM_MOLMIM: talk2knowledgegraphs/utils/embeddings/nim_molmim.md
+          - EmbeddingWithMOLMIM: talk2knowledgegraphs/utils/embeddings/nim_molmim.md
         - Enrichments:
           - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
           - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
