@@ -1,14 +1,13 @@
-# # Page configuration
-# page:
-#   title: "Talk2Scholars"
-#   icon: "🤖"
-#   layout: "wide"
+# Page configuration
+page:
+  title: "Talk2Scholars"
+  icon: "🤖"
+  layout: "wide"
 
 # Available LLM models
-llm_models:
-  - "gpt-4o-mini"
-  - "gpt-4-turbo"
-  - "gpt-3.5-turbo"
+llms:
+  available_models:
+    - "OpenAI/gpt-4o-mini"
 # # Chat UI configuration
 # chat:
 #   assistant_avatar: "🤖"
@@ -16,6 +15,9 @@ llm_models:
 #   input_placeholder: "Say something ..."
 #   spinner_text: "Fetching response ..."
 
+api_keys:
+  openai_key: "OPENAI_API_KEY"
+  nvidia_key: "NVIDIA_API_KEY"
 # # Feedback configuration
 # feedback:
 #   type: "thumbs"

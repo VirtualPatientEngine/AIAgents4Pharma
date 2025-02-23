@@ -9,6 +9,7 @@ import sys
 import random
 import streamlit as st
 import hydra
+import pandas as pd
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
@@ -16,11 +17,10 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
 from langsmith import Client
+from utils import streamlit_utils
 
 sys.path.append("./")
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
-
-st.set_page_config(page_title="Talk2Scholars", page_icon="🤖", layout="wide")
 
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
@@ -36,13 +36,27 @@ if "config" not in st.session_state:
 else:
     cfg = st.session_state.config
 
-# Check if env variable OPENAI_API_KEY exists
-if "OPENAI_API_KEY" not in os.environ:
+st.set_page_config(
+    page_title=cfg.page.title, page_icon=cfg.page.icon, layout=cfg.page.layout
+)
+# Set the logo
+st.logo(
+    image="docs/assets/VPE.png",
+    size="large",
+    link="https://github.com/VirtualPatientEngine",
+)
+
+
+# Check if env variables OPENAI_API_KEY and/or NVIDIA_API_KEY exist
+if cfg.api_keys.openai_key not in os.environ:
     st.error(
-        "Please set the OPENAI_API_KEY environment \
-        variable in the terminal where you run the app."
+        "Please set the OPENAI_API_KEY "
+        "environment variables in the terminal where you run "
+        "the app. For more information, please refer to our "
+        "[documentation](https://virtualpatientengine.github.io/AIAgents4Pharma/#option-2-git)."
     )
     st.stop()
+
 
 # Create a chat prompt template
 prompt = ChatPromptTemplate.from_messages(
@@ -71,14 +85,14 @@ if "run_id" not in st.session_state:
 if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
 if "app" not in st.session_state:
-    # st.session_state.app = get_app(st.session_state.unique_id)
     if "llm_model" not in st.session_state:
         st.session_state.app = get_app(st.session_state.unique_id)
     else:
+        print(st.session_state.llm_model)
         st.session_state.app = get_app(
-            st.session_state.unique_id, llm_model=st.session_state.llm_model
+            st.session_state.unique_id,
+            llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
         )
-
 # Get the app
 app = st.session_state.app
 
@@ -97,27 +111,6 @@ def _submit_feedback(user_response):
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
 
-@st.dialog("Warning ⚠️")
-def update_llm_model():
-    """
-    Function to update the LLM model.
-    """
-    llm_model = st.session_state.llm_model
-    st.warning(
-        f"Clicking 'Continue' will reset all agents, \
-            set the selected LLM to {llm_model}. \
-            This action will reset the entire app, \
-            and agents will lose access to the \
-            conversation history. Are you sure \
-            you want to proceed?"
-    )
-    if st.button("Continue"):
-        # Delete all the messages and the app key
-        for key in st.session_state.keys():
-            if key in ["messages", "app"]:
-                del st.session_state[key]
-
-
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
 # First column
@@ -133,20 +126,14 @@ with main_col1:
             unsafe_allow_html=True,
         )
 
-        # LLM panel (Only at the front-end for now)
-        llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
-        # llm_option = st.selectbox(
-        #     "Pick an LLM to power the agent",
-        #     llms,
-        #     index=0,
-        #     key="st_selectbox_llm"
-        # )
+        # LLM model panel
         st.selectbox(
             "Pick an LLM to power the agent",
-            llms,
+            list(cfg.llms.available_models),
             index=0,
             key="llm_model",
-            on_change=update_llm_model,
+            on_change=streamlit_utils.update_llm_model,
+            help="Used for tool calling and generating responses.",
         )
 
         # Upload files (placeholder)
@@ -169,11 +156,35 @@ with main_col2:
 
         # Display chat messages
         for count, message in enumerate(st.session_state.messages):
-            with st.chat_message(
-                message["content"].role,
-                avatar="🤖" if message["content"].role != "user" else "👩🏻‍💻",
-            ):
-                st.markdown(message["content"].content)
+            if message["type"] == "message":
+                with st.chat_message(
+                    message["content"].role,
+                    avatar="🤖" if message["content"].role != "user" else "👩🏻‍💻",
+                ):
+                    st.markdown(message["content"].content)
+                    st.empty()
+            elif message["type"] == "dataframe":
+                if "tool_name" in message:
+                    if message["tool_name"] in [
+                        "display_results",
+                    ]:
+                        df_papers = message["content"]
+                        st.dataframe(
+                            df_papers,
+                            use_container_width=True,
+                            key=message["key"],
+                            hide_index=True,
+                            column_config={
+                                "URL": st.column_config.LinkColumn(
+                                    display_text="Open",
+                                ),
+                            },
+                        )
+                # else:
+                #     streamlit_utils.render_table(message["content"],
+                #                     key=message["key"],
+                #                     # tool_name=message["tool_name"],
+                #                     save_table=False)
                 st.empty()
 
         # When the user asks a question
@@ -214,24 +225,43 @@ with main_col2:
 
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
-
+                    # Update the LLM model
+                    app.update_state(
+                        config,
+                        {
+                            "llm_model": streamlit_utils.get_base_chat_model(
+                                st.session_state.llm_model
+                            )
+                        },
+                    )
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
-                    app.update_state(config, {"llm_model": st.session_state.llm_model})
 
                     with collect_runs() as cb:
                         # Add Langsmith tracer
                         tracer = LangChainTracer(
                             project_name=st.session_state.project_name
                         )
-                        # Get response from the agent
+
+                        # Get response from the agent with Langsmith tracing enabled
                         response = app.invoke(
                             {"messages": [HumanMessage(content=prompt)]},
                             config=config | {"callbacks": [tracer]},
                         )
-                        st.session_state.run_id = cb.traced_runs[-1].id
-                    # Print the response
-                    # print (response)
+
+                        # Assign the traced run ID to session state
+                        if cb.traced_runs:
+                            st.session_state.run_id = cb.traced_runs[-1].id
+
+                    # Get the latest agent state after the response
+                    current_state = app.get_state(config)
+
+                    response = app.invoke(
+                        {"messages": [HumanMessage(content=prompt)]},
+                        config=config,
+                    )
+
+                    current_state = app.get_state(config)
 
                     # Add assistant response to chat history
                     assistant_msg = ChatMessage(
@@ -243,6 +273,74 @@ with main_col2:
                     # Display the response in the chat
                     st.markdown(response["messages"][-1].content)
                     st.empty()
+                    reversed_messages = current_state.values["messages"][::-1]
+                    # Loop through the reversed messages until a
+                    # HumanMessage is found i.e. the last message
+                    # from the user. This is to display the results
+                    # of the tool calls made by the agent since the
+                    # last message from the user.
+                    for msg in reversed_messages:
+                        # print (msg)
+                        # Break the loop if the message is a HumanMessage
+                        # i.e. the last message from the user
+                        if isinstance(msg, HumanMessage):
+                            break
+                        # Skip the message if it is an AIMessage
+                        # i.e. a message from the agent. An agent
+                        # may make multiple tool calls before the
+                        # final response to the user.
+                        if isinstance(msg, AIMessage):
+                            # print ('AIMessage', msg)
+                            continue
+                        # Work on the message if it is a ToolMessage
+                        # These may contain additional visuals that
+                        # need to be displayed to the user.
+                        # print("ToolMessage", msg)
+                        # Skip the Tool message if it is an error message
+                        if msg.status == "error":
+                            continue
+                        # print("ToolMessage", msg)
+                        uniq_msg_id = "_".join(
+                            [msg.name, msg.tool_call_id, str(st.session_state.run_id)]
+                        )
+                        # if msg.name in ['search_tool',
+                        #                 'get_single_paper_recommendations',
+                        #                 'get_multi_paper_recommendations']:
+                        if msg.name in ["display_results"]:
+                            # Display the results of the tool call
+                            # for msg_artifact in msg.artifact:
+                            # dic_papers = msg.artifact[msg_artifact]
+                            dic_papers = msg.artifact
+                            if not dic_papers:
+                                continue
+                            df_papers = pd.DataFrame.from_dict(
+                                dic_papers, orient="index"
+                            )
+                            # Add index as a column "key"
+                            df_papers["Key"] = df_papers.index
+                            # Drop index
+                            df_papers.reset_index(drop=True, inplace=True)
+                            # Drop colum abstract
+                            df_papers.drop(columns=["Abstract"], inplace=True)
+                            st.dataframe(
+                                df_papers,
+                                hide_index=True,
+                                column_config={
+                                    "URL": st.column_config.LinkColumn(
+                                        display_text="Open",
+                                    ),
+                                },
+                            )
+                            # Add data to the chat history
+                            st.session_state.messages.append(
+                                {
+                                    "type": "dataframe",
+                                    "content": df_papers,
+                                    "key": "dataframe_" + uniq_msg_id,
+                                    "tool_name": msg.name,
+                                }
+                            )
+                            st.empty()
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

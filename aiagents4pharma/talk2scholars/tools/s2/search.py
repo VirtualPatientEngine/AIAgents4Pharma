@@ -5,7 +5,7 @@ This tool is used to search for academic papers on Semantic Scholar.
 """
 
 import logging
-from typing import Annotated, Any, Dict, Optional
+from typing import Annotated, Any, Optional
 import hydra
 import requests
 from langchain_core.messages import ToolMessage
@@ -13,7 +13,6 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
-
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +27,7 @@ class SearchInput(BaseModel):
         "Be specific and include relevant academic terms."
     )
     limit: int = Field(
-        default=2, description="Maximum number of results to return", ge=1, le=100
+        default=5, description="Maximum number of results to return", ge=1, le=100
     )
     year: Optional[str] = Field(
         default=None,
@@ -44,13 +43,13 @@ with hydra.initialize(version_base=None, config_path="../../configs"):
     cfg = cfg.tools.search
 
 
-@tool(args_schema=SearchInput)
+@tool("search_tool", args_schema=SearchInput, parse_docstring=True)
 def search_tool(
     query: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    limit: int = 2,
+    limit: int = 5,
     year: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> Command[Any]:
     """
     Search for academic papers on Semantic Scholar.
 
@@ -62,9 +61,9 @@ def search_tool(
         Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
 
     Returns:
-        Dict[str, Any]: The search results and related information.
+        The number of papers found on Semantic Scholar.
     """
-    print("Starting paper search...")
+    logger.info("Searching for papers on %s", query)
     endpoint = cfg.api_endpoint
     params = {
         "query": query,
@@ -80,26 +79,51 @@ def search_tool(
     data = response.json()
     papers = data.get("data", [])
     logger.info("Received %d papers", len(papers))
+    if not papers:
+        return Command(
+            update={  # Place 'messages' inside 'update'
+                "messages": [
+                    ToolMessage(
+                        content="No papers found. Please try a different search query.",
+                        tool_call_id=tool_call_id,
+                    )
+                ]
+            }
+        )
     # Create a dictionary to store the papers
     filtered_papers = {
         paper["paperId"]: {
+            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
+            # "arXiv_ID": paper.get("externalIds", {}).get(
+            #     "ArXiv", "N/A"
+            # ),  # Extract arXiv ID
         }
         for paper in papers
         if paper.get("title") and paper.get("authors")
     }
 
+    logger.info("Filtered %d papers", len(filtered_papers))
+
+    content = "Search was successful."
+    content += " Here is a summary of the search results:"
+    content += f"Number of papers found: {len(filtered_papers)}\n"
+    content += f"Query: {query}\n"
+    content += f"Year: {year}\n" if year else ""
+
     return Command(
         update={
             "papers": filtered_papers,  # Now sending the dictionary directly
+            "last_displayed_papers": "papers",
             "messages": [
                 ToolMessage(
-                    content=f"Search Successful: {filtered_papers}",
-                    tool_call_id=tool_call_id
+                    content=content,
+                    tool_call_id=tool_call_id,
+                    artifact=filtered_papers,
                 )
             ],
         }
