@@ -7,6 +7,7 @@ Tool for simulating a model.
 import logging
 from typing import Type, Annotated
 from pydantic import BaseModel, Field
+import basico
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools import BaseTool
@@ -18,6 +19,21 @@ from .load_arguments import ArgumentData, add_rec_events
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def get_model_units(model_object):
+    """
+    Get the units of the model.
+
+    Args:
+        model_object: The model object.
+
+    Returns:
+        dict: The units of the model.
+    """
+    model_units = basico.model_info.get_model_units(model=model_object.copasi_model)
+    model_units_y = model_units['quantity_unit']
+    model_units_x = model_units['time_unit']
+    return {'y_axis_label': model_units_y, 'x_axis_label': model_units_x}
 
 class SimulateModelInput(BaseModel):
     """
@@ -116,7 +132,8 @@ class SimulateModelTool(BaseTool):
                 "messages": [
                     ToolMessage(
                         content=f"Simulation results of {arg_data.experiment_name}",
-                        tool_call_id=tool_call_id
+                        tool_call_id=tool_call_id,
+                        artifact=get_model_units(model_object)
                         )
                     ],
                 }

@@ -100,6 +100,9 @@ class GetModelInfoTool(BaseTool):
         # Extract parameters from the model
         if requested_model_info.parameters:
             df_parameters = basico.model_info.get_parameters(model=model_obj.copasi_model)
+            print (df_parameters, 'df_parameters')
+            if df_parameters is None:
+                raise ValueError("Unable to extract parameters from the model.")
             # Convert index into a column
             df_parameters.reset_index(inplace=True)
             dic_results['Parameters'] = df_parameters[

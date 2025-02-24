@@ -21,7 +21,8 @@ class BasicoModel(SysBioModel):
     Model that loads and simulates SBML models using the basico package.
     Can load models from an SBML file or download them using a BioModels biomodel_id.
     """
-    biomodel_id: Optional[int] = Field(None, description="BioModels model ID to download and load")
+    biomodel_id: Optional[Union[int, str]] = Field(None,
+                                description="BioModels model ID to download and load")
     sbml_file_path: Optional[str] = Field(None, description="Path to an SBML file to load")
     simulation_results: Optional[str] = None
     name: Optional[str] = Field("", description="Name of the model")

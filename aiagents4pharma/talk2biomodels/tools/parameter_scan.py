@@ -22,6 +22,21 @@ from .load_arguments import TimeData, SpeciesInitialData
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_model_units(model_object):
+    """
+    Get the units of the model.
+
+    Args:
+        model_object: The model object.
+
+    Returns:
+        dict: The units of the model.
+    """
+    model_units = basico.model_info.get_model_units(model=model_object.copasi_model)
+    model_units_y = model_units['quantity_unit']
+    model_units_x = model_units['time_unit']
+    return {'y_axis_label': model_units_y, 'x_axis_label': model_units_x}
+
 @dataclass
 class ParameterScanData(BaseModel):
     """
@@ -119,7 +134,11 @@ def run_parameter_scan(model_object,
     """
     # Extract all parameter names from the model
     df_all_parameters = basico.model_info.get_parameters(model=model_object.copasi_model)
-    all_parameters = df_all_parameters.index.tolist()
+    all_parameters = []
+    if df_all_parameters is not None:
+        # For example model 10 in the BioModels database
+        # has no parameters
+        all_parameters = df_all_parameters.index.tolist()
 
     # Extract all species name from the model
     df_all_species = basico.model_info.get_species(model=model_object.copasi_model)
@@ -280,7 +299,8 @@ class ParameterScanTool(BaseTool):
                 "messages": [
                     ToolMessage(
                         content=f"Parameter scan results of {arg_data.experiment_name}",
-                        tool_call_id=tool_call_id
+                        tool_call_id=tool_call_id,
+                        artifact=get_model_units(model_object)
                         )
                     ],
                 }
