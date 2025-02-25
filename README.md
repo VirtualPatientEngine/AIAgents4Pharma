@@ -60,12 +60,18 @@ _Please note that this option is currently available only for Talk2Biomodels._
    pip install -r requirements.txt
    ```
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
+
    ```bash
    export OPENAI_API_KEY=....
    ```
+
    ```bash
    export NVIDIA_API_KEY=....
    ```
+
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
+
 4. **Initialize ZOTERO_API_KEY and ZOTERO_USER_ID**
 
    ```bash
@@ -73,10 +79,7 @@ _Please note that this option is currently available only for Talk2Biomodels._
    export ZOTERO_USER_ID=....
    ```
 
-_You can create a free account at NVIDIA and apply for their
-free credits [here](https://build.nvidia.com/explore/discover)._
-
-4. **[Optional] Initialize LANGSMITH_API_KEY**
+5. **[Optional] Initialize LANGSMITH_API_KEY**
 
    ```bash
    export LANGCHAIN_TRACING_V2=true
@@ -89,7 +92,7 @@ free credits [here](https://build.nvidia.com/explore/discover)._
    default to the name `default`. `xxxx` will be the 4-digit ID created for the
    session._
 
-5. **Launch the app:**
+6. **Launch the app:**
    ```bash
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
