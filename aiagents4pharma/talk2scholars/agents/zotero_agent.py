@@ -26,13 +26,44 @@ def get_app(
     uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 ):
     """
-    This function returns the langraph app.
+    Initializes and returns the LangGraph application for the Zotero agent.
+
+    This function sets up the Zotero agent, which integrates various tools to search,
+    retrieve, and display research papers from Zotero. The agent follows the ReAct
+    pattern for structured interaction.
+
+    Args:
+        uniq_id (str): Unique identifier for the current conversation session.
+        llm_model (BaseChatModel, optional): The language model to be used by the agent.
+            Defaults to `ChatOpenAI(model="gpt-4o-mini", temperature=0)`.
+
+    Returns:
+        StateGraph: A compiled LangGraph application that enables the Zotero agent to
+            process user queries and retrieve research papers.
+
+    Example:
+        >>> app = get_app("thread_123")
+        >>> result = app.invoke(initial_state)
     """
 
-    # def agent_zotero_node(state: Talk2Scholars) -> Command[Literal["supervisor"]]:
     def agent_zotero_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
-        This function calls the model and always returns to supervisor.
+        Processes the user query and retrieves relevant research papers from Zotero.
+
+        This function calls the language model using the configured `ReAct` agent to
+        analyze the state and generate an appropriate response. The function then
+        returns control to the main supervisor.
+
+        Args:
+            state (Talk2Scholars): The current conversation state, including messages exchanged
+                and any previously retrieved research papers.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the updated conversation state.
+
+        Example:
+            >>> result = agent_zotero_node(current_state)
+            >>> papers = result.get("papers", [])
         """
         logger.log(
             logging.INFO, "Creating Agent_Zotero node with thread_id %s", uniq_id
