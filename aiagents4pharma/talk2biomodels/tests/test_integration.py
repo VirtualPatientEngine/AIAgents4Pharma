@@ -20,7 +20,7 @@ def test_integration():
     # ##########################################
     # ## Test simulate_model tool
     # ##########################################
-    prompt = '''Simulate the model 537 for 100 hours and time intervals
+    prompt = '''Simulate the model BIOMD0000000537 for 100 hours and time intervals
     100 with an initial concentration of `DoseQ2W` set to 300 and `Dose`
     set to 0. Reset the concentration of `Ab{serum}` to 100 every 25 hours.'''
     # Test the tool get_modelinfo
@@ -51,12 +51,12 @@ def test_integration():
     assert '211' in assistant_msg
 
     ##########################################
-    # Test custom_plotter tool when the
+    # Test the custom_plotter tool when the
     # simulation results are available but
     # the species is not available
     ##########################################
     prompt = """Call the custom_plotter tool to make a plot
-        showing only species `TP53` and `Pyruvate`. Let me
+        showing only species 'Infected cases'. Let me
         know if these species were not found. Do not
         invoke any other tool."""
     # Update state
@@ -117,7 +117,7 @@ def test_integration():
             # These may contain additional visuals that
             # need to be displayed to the user.
             if msg.name == "custom_plotter":
-                predicted_artifact = msg.artifact
+                predicted_artifact = msg.artifact['dic_data']
                 break
     # Convert the artifact into a pandas dataframe
     # for easy comparison
