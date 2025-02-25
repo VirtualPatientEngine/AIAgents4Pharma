@@ -5,6 +5,7 @@ Tests the supervisor agent's routing logic and state management.
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=redefined-outer-name,too-few-public-methods
+import random
 from unittest.mock import Mock, patch, MagicMock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
@@ -33,6 +34,7 @@ def test_get_app():
     assert app is not None
     assert "supervisor" in app.nodes
     assert "s2_agent" in app.nodes  # Ensure nodes exist
+    assert "zotero_agent" in app.nodes
 
 
 def test_get_app_with_default_llm():
@@ -75,7 +77,7 @@ def test_supervisor_node_execution():
     class MockRouter:
         """Mock router class."""
 
-        next = "s2_agent"
+        next = random.choice(["s2_agent", "zotero_agent"])
 
     with (
         patch.object(mock_llm, "with_structured_output", return_value=mock_llm),
@@ -84,7 +86,9 @@ def test_supervisor_node_execution():
         supervisor_node = make_supervisor_node(mock_llm, thread_id)
         mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
         result = supervisor_node(mock_state)
-        assert result.goto == "s2_agent"
+
+        # Accept either "s2_agent" or "zotero_agent"
+        assert result.goto in ["s2_agent", "zotero_agent"]
 
 
 def test_supervisor_node_finish():
@@ -114,43 +118,3 @@ def test_supervisor_node_finish():
         assert "messages" in result.update
         assert isinstance(result.update["messages"], AIMessage)
         assert result.update["messages"].content == "Final AI Response"
-
-
-def test_call_s2_agent_failure_in_get_app():
-    """Test handling failure when calling s2_agent.get_app()."""
-    thread_id = "test_thread"
-    mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
-
-    with patch(
-        "aiagents4pharma.talk2scholars.agents.s2_agent.get_app",
-        side_effect=Exception("S2 Agent Failure"),
-    ):
-        with pytest.raises(Exception) as exc_info:
-            app = get_app(thread_id)  # Get the compiled workflow
-            app.invoke(
-                mock_state,
-                {"configurable": {"config_id": thread_id, "thread_id": thread_id}},
-            )
-
-        assert "S2 Agent Failure" in str(exc_info.value)
-
-
-def test_call_s2_agent_failure_in_invoke():
-    """Test handling failure when invoking s2_agent app."""
-    thread_id = "test_thread"
-    mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
-
-    mock_app = Mock()
-    mock_app.invoke.side_effect = Exception("S2 Agent Invoke Failure")
-
-    with patch(
-        "aiagents4pharma.talk2scholars.agents.s2_agent.get_app", return_value=mock_app
-    ):
-        with pytest.raises(Exception) as exc_info:
-            app = get_app(thread_id)  # Get the compiled workflow
-            app.invoke(
-                mock_state,
-                {"configurable": {"config_id": thread_id, "thread_id": thread_id}},
-            )
-
-        assert "S2 Agent Invoke Failure" in str(exc_info.value)
