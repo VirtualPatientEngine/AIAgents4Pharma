@@ -58,19 +58,24 @@ class BasicoModel(SysBioModel):
             # check if the param_name is not None
             if param_name is None:
                 continue
-            # if param is a kinetic parameter
+            # Extract all parameters and species from the model
             df_all_params = basico.model_info.get_parameters(model=self.copasi_model)
+            df_all_species = basico.model_info.get_species(model=self.copasi_model)
+            # if param is a kinetic parameter
             if param_name in df_all_params.index.tolist():
                 basico.model_info.set_parameters(name=param_name,
                                             exact=True,
                                             initial_value=param_value,
                                             model=self.copasi_model)
             # if param is a species
-            else:
+            elif param_name in df_all_species.index.tolist():
                 basico.model_info.set_species(name=param_name,
                                             exact=True,
                                             initial_concentration=param_value,
                                             model=self.copasi_model)
+            else:
+                logger.error("Parameter/Species %s not found in the model.", param_name)
+                raise ValueError(f"Parameter/Species {param_name} not found in the model.")
 
     def simulate(self, duration: Union[int, float] = 10, interval: int = 10) -> pd.DataFrame:
         """
