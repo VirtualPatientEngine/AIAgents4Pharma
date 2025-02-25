@@ -7,31 +7,17 @@ Tool for plotting a custom y-axis of a simulation plot.
 import logging
 from typing import Type, Annotated, List, Tuple, Union, Literal
 from pydantic import BaseModel, Field
-import basico
+import hydra
 import pandas as pd
 from langchain_core.tools import BaseTool
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import InjectedState
 from .load_biomodel import ModelData, load_biomodel
+from .utils import get_model_units
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-def get_model_units(model_object):
-    """
-    Get the units of the model.
-
-    Args:
-        model_object: The model object.
-
-    Returns:
-        dict: The units of the model.
-    """
-    model_units = basico.model_info.get_model_units(model=model_object.copasi_model)
-    model_units_y = model_units['quantity_unit']
-    model_units_x = model_units['time_unit']
-    return {'y_axis_label': model_units_y, 'x_axis_label': model_units_x}
 
 def extract_relevant_species(question, species_names, state):
     """
@@ -67,20 +53,20 @@ def extract_relevant_species(question, species_names, state):
                 "keyword `only` in the question), set this attribute to correspond "
                 "to the species available in the simulation results, otherwise set it to None."
                 )
-    system = '''You are custom plotter tool. You can extract species from the given
-                list of species names based on user question. If no species is relevant,
-                set the attribute `relevant_species` to None.
-                If the user asks for very specific species (for example, using the
-                keyword `only` or `exactly` in the question), set this attribute to
-                correspond strictly to the species available in the simulation results,
-                otherwise set it to None.'''
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../configs"):
+        cfg = hydra.compose(config_name='config',
+                            overrides=['tools/custom_plotter=default'])
+        cfg = cfg.tools.custom_plotter
+    # Get the system prompt
+    system_prompt = cfg.system_prompt_custom_header
     # Create an instance of the LLM model
     logging.log(logging.INFO, "LLM model: %s", state['llm_model'])
     llm = state['llm_model']
     llm_with_structured_output = llm.with_structured_output(CustomHeader)
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", "{input}")])
+    prompt = ChatPromptTemplate.from_messages([("system", system_prompt),
+                                               ("human", "{input}")])
     few_shot_structured_llm = prompt | llm_with_structured_output
-    # return llm_with_structured_output.invoke(question)
     return few_shot_structured_llm.invoke(question)
 
 class CustomPlotterInput(BaseModel):
