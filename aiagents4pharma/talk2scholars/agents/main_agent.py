@@ -19,6 +19,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 from ..agents import s2_agent
+from ..agents import zotero_agent
 from ..state.state_talk2scholars import Talk2Scholars
 
 # Configure logging
@@ -49,7 +50,7 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
 
     This function initializes the routing logic by leveraging the system and router prompts defined
     in the Hydra configuration. The supervisor determines whether to
-    call a sub-agent (like `s2_agent`)
+    call a sub-agent (like `s2_agent`, `zotero_agent`)
     or directly generate a response using the language model.
 
     Args:
@@ -62,12 +63,12 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
     """
     cfg = get_hydra_config()
     logger.info("Hydra configuration for Talk2Scholars main agent loaded: %s", cfg)
-    members = ["s2_agent"]
+    members = ["s2_agent", "zotero_agent"]
     options = ["FINISH"] + members
     # Define system prompt for general interactions
     system_prompt = cfg.system_prompt
     # Define router prompt for routing to sub-agents
-    router_prompt = cfg.router_prompt
+    router_prompt = cfg.router_prompt + " " + " ".join(members)
 
     class Router(BaseModel):
         """Worker to route to next. If no workers needed, route to FINISH."""
@@ -90,7 +91,7 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
         Returns:
             Command: A command dictating whether to invoke a sub-agent or generate a final response.
         """
-        messages = [SystemMessage(content=router_prompt)] + state["messages"]
+        messages = [SystemMessage(content=router_prompt)] + list(state["messages"])
         structured_llm = llm_model.with_structured_output(Router)
         response = structured_llm.invoke(messages)
         goto = response.next
@@ -189,6 +190,51 @@ def get_app(
             goto="supervisor",
         )
 
+    def call_zotero_agent(
+        state: Talk2Scholars,
+    ) -> Command[Literal["supervisor"]]:
+        """
+        Invokes the Zotero agent to retrieve and process papers from the user's Zotero library.
+
+        This function calls the Zotero agent, which interacts with the user's Zotero database
+        to retrieve relevant papers based on the conversation context. It updates the
+        conversation state with the retrieved papers and relevant metadata.
+
+        Args:
+            state (Talk2Scholars): The current conversation state, containing user messages
+                and any previously retrieved Zotero data.
+
+        Returns:
+            Command: A command that updates the conversation state with retrieved Zotero
+                papers and metadata before returning control to the supervisor node.
+
+        Example:
+            >>> result = call_zotero_agent(current_state)
+            >>> next_step = result.goto
+        """
+        logger.info("Calling Zotero agent")
+        app = zotero_agent.get_app(thread_id, llm_model)
+        # Invoke the Zotero agent, passing state
+        response = app.invoke(
+            state,
+            {
+                "configurable": {
+                    "config_id": thread_id,
+                    "thread_id": thread_id,
+                }
+            },
+        )
+        logger.info("Zotero agent completed with response")
+        return Command(
+            update={
+                "messages": response["messages"],
+                "zotero_read": response.get("zotero_read", {}),
+                "last_displayed_papers": response.get("last_displayed_papers", {}),
+            },
+            # Always return to supervisor
+            goto="supervisor",
+        )
+
     # Initialize LLM
     logger.info("Using model %s with temperature %s", llm_model, cfg.temperature)
 
@@ -198,6 +244,7 @@ def get_app(
     # Add nodes
     workflow.add_node("supervisor", supervisor)
     workflow.add_node("s2_agent", call_s2_agent)
+    workflow.add_node("zotero_agent", call_zotero_agent)
     # Add edges
     workflow.add_edge(START, "supervisor")
     # Compile the workflow
