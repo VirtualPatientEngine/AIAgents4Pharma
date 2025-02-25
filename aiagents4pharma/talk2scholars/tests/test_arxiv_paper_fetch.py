@@ -1,21 +1,33 @@
+# tests/test_arxiv_paper_fetch.py
+
 import pytest
 from unittest.mock import patch, MagicMock
 import requests
-
+from aiagents4pharma.talk2scholars.tools.arxiv.download_pdf_arxiv import FetchArxivPaperInput
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 
 # Import the tool and the hydra config used by the tool.
-# Adjust the relative import based on your project structure.
 from ..tools.arxiv.download_pdf_arxiv import fetch_arxiv_paper, cfg
 
+# Dummy state class that supports attribute access and required callback attributes.
+class DummyState(dict):
+    def __init__(self, *args, parent_run_id="dummy", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parent_run_id = parent_run_id
+        # Provide empty defaults for expected callback attributes:
+        self.handlers = []
+        self.inheritable_handlers = []
+        self.tags = []
+        self.inheritable_tags = []
+        self.metadata = {}
+        self.inheritable_metadata = {}
 
-# Override the hydra config for the tests
+# Override the hydra config for the tests.
 @pytest.fixture(autouse=True)
 def override_cfg():
     cfg.api_url = "http://arxiv.org/api/query"
     cfg.request_timeout = 10
-
 
 @patch("requests.get")
 def test_fetch_arxiv_paper_success(mock_get):
@@ -25,10 +37,9 @@ def test_fetch_arxiv_paper_success(mock_get):
     """
     paper_id = "1905.02244"
     tool_call_id = "test123"
-    # The state should contain an entry mapping the paper_id to its arXiv ID.
-    state = {paper_id: {"arXiv ID": paper_id}}
+    state = DummyState({paper_id: {"arXiv ID": paper_id}})
 
-    # Fake metadata XML response containing a pdf link.
+    # Fake metadata XML response containing a PDF link.
     metadata_xml = """<?xml version="1.0" encoding="UTF-8"?>
     <feed xmlns="http://www.w3.org/2005/Atom">
       <entry>
@@ -51,7 +62,12 @@ def test_fetch_arxiv_paper_success(mock_get):
     # and the second returns the PDF response.
     mock_get.side_effect = [metadata_response, pdf_response]
 
-    result = fetch_arxiv_paper(paper_id, tool_call_id, state)
+    # Use a flat dictionary for the tool input.
+    input_dict = {
+        "paper_id": paper_id,
+        "tool_call_id": tool_call_id,
+    }
+    result = fetch_arxiv_paper.invoke(input_dict, state=state)
 
     # Verify that a Command object is returned and state is updated correctly.
     assert isinstance(result, Command)
@@ -62,10 +78,8 @@ def test_fetch_arxiv_paper_success(mock_get):
     assert paper_update["pdf"] == pdf_data, "PDF content does not match"
     assert "pdf_url" in paper_update, "PDF URL should be stored in state"
     assert paper_update["pdf_url"] == "http://arxiv.org/pdf/1905.02244.pdf"
-    # Check that a success message was returned.
     messages = update.get("messages", [])
     assert any("Successfully downloaded PDF" in msg.content for msg in messages)
-
 
 @patch("requests.get")
 def test_fetch_arxiv_paper_failure(mock_get):
@@ -75,7 +89,7 @@ def test_fetch_arxiv_paper_failure(mock_get):
     """
     paper_id = "1905.02244"
     tool_call_id = "test123"
-    state = {paper_id: {"arXiv ID": paper_id}}
+    state = DummyState({paper_id: {"arXiv ID": paper_id}})
 
     # Fake metadata XML response with no PDF link.
     metadata_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -90,7 +104,12 @@ def test_fetch_arxiv_paper_failure(mock_get):
     # Only one requests.get call is made (for metadata).
     mock_get.return_value = metadata_response
 
-    result = fetch_arxiv_paper(paper_id, tool_call_id, state)
+    # Use a flat dictionary for the tool input.
+    input_dict = {
+        "paper_id": paper_id,
+        "tool_call_id": tool_call_id,
+    }
+    result = fetch_arxiv_paper.invoke(input_dict, state=state)
 
     # Verify that a failure message is returned.
     assert isinstance(result, Command)
@@ -110,7 +129,7 @@ def test_fetch_arxiv_paper_api_failure(mock_get):
     """
     paper_id = "1905.02244"
     tool_call_id = "test123"
-    state = {paper_id: {"arXiv ID": paper_id}}
+    state = DummyState({paper_id: {"arXiv ID": paper_id}})
 
     # Simulate an API failure with a non-200 status code.
     metadata_response = MagicMock()
@@ -119,5 +138,10 @@ def test_fetch_arxiv_paper_api_failure(mock_get):
 
     mock_get.return_value = metadata_response
 
+    # Use a flat dictionary for the tool input.
+    input_dict = {
+        "paper_id": paper_id,
+        "tool_call_id": tool_call_id,
+    }
     with pytest.raises(requests.HTTPError, match="Internal Server Error"):
-        fetch_arxiv_paper(paper_id, tool_call_id, state)
+        fetch_arxiv_paper.invoke(input_dict, state=state)

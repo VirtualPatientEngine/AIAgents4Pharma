@@ -28,7 +28,7 @@ class FetchArxivPaperInput(BaseModel):
     """Input schema for the arXiv paper fetching tool."""
 
     paper_id: str = Field(
-        description="The paper ID to fetch. Example: '1905.02244' or '2109.12345v2'."
+        description="The paper ID to fetch a paper."
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -48,8 +48,10 @@ with hydra.initialize(version_base=None, config_path="../../configs"):
 def fetch_arxiv_paper(
     paper_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    state: Annotated[dict, InjectedState],
+    state: Annotated[dict, InjectedState]= None,
 ) -> Command[Any]:
+    if state is None:
+        state = {}
     """
     Fetch an arXiv paper's metadata and download its PDF, returning the PDF as an object.
 
@@ -66,7 +68,7 @@ def fetch_arxiv_paper(
     logger.info("Starting download from arXiv with paper ID: %s", paper_id)
 
     # Construct the API URL using the paper ID and fetch metadata.
-    arxiv_id = state.get(paper_id, {}).get("arXiv ID", None)
+    arxiv_id = state.get(paper_id, {}).get("arXiv_ID")
     api_url = f"{api}?search_query=id:{arxiv_id}&start=0&max_results=1"
     logger.info("Fetching metadata from: %s", api_url)
     response = requests.get(api_url, timeout=timeout)
@@ -106,7 +108,7 @@ def fetch_arxiv_paper(
         chunk for chunk in pdf_response.iter_content(chunk_size=1024) if chunk
     )
 
-    content = f"Successfully downloaded PDF for arXiv ID {paper_id} and it is available in state."
+    content = f"Successfully downloaded PDF for arXiv ID {arxiv_id} and it is available in state."
 
     # Update the state by saving the PDF data along with its URL using the paper_id as the key.
     return Command(

@@ -26,7 +26,7 @@ def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", 
         """
         Fetches the arXiv paper using the paper ID extracted from state.
         """
-        logger.log(logger.info("Creating Agent Arxiv node with thread_id: %s",uniq_id))
+        logger.log(logging.INFO, "Creating Agent Arxiv node with thread_id: %s", uniq_id)
         result = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
 
         return result
