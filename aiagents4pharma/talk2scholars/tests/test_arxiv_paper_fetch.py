@@ -23,21 +23,15 @@ class DummyState(dict):
         self.metadata = {}
         self.inheritable_metadata = {}
 
-# Override the hydra config for the tests.
-@pytest.fixture(autouse=True)
-def override_cfg():
-    cfg.api_url = "http://arxiv.org/api/query"
-    cfg.request_timeout = 10
-
 @patch("requests.get")
 def test_fetch_arxiv_paper_success(mock_get):
     """
     Test the successful download of a PDF.
     Simulate a metadata response with a valid PDF link and a PDF download response.
     """
-    paper_id = "1905.02244"
+    arxiv_id = "1905.02244"
     tool_call_id = "test123"
-    state = DummyState({paper_id: {"arXiv ID": paper_id}})
+    state = DummyState({arxiv_id: {"paper_id": arxiv_id}})
 
     # Fake metadata XML response containing a PDF link.
     metadata_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -64,7 +58,7 @@ def test_fetch_arxiv_paper_success(mock_get):
 
     # Use a flat dictionary for the tool input.
     input_dict = {
-        "paper_id": paper_id,
+        "arxiv_id": arxiv_id,
         "tool_call_id": tool_call_id,
     }
     result = fetch_arxiv_paper.invoke(input_dict, state=state)
@@ -72,12 +66,20 @@ def test_fetch_arxiv_paper_success(mock_get):
     # Verify that a Command object is returned and state is updated correctly.
     assert isinstance(result, Command)
     update = result.update
-    assert paper_id in update, "State update should include the paper_id"
-    paper_update = update[paper_id]
-    assert "pdf" in paper_update, "PDF data should be stored in state"
-    assert paper_update["pdf"] == pdf_data, "PDF content does not match"
-    assert "pdf_url" in paper_update, "PDF URL should be stored in state"
-    assert paper_update["pdf_url"] == "http://arxiv.org/pdf/1905.02244.pdf"
+
+    # Verify that the pdf_data key is present.
+    assert "pdf_data" in update, "State update should include the 'pdf_data' key"
+
+    pdf_update = update["pdf_data"]
+    # Check that the PDF data dictionary has the required keys.
+    assert "arxiv_id" in pdf_update, "pdf_data should include the arxiv_id key"
+    assert pdf_update["arxiv_id"] == arxiv_id, "arxiv_id does not match"
+    assert "pdf" in pdf_update, "PDF data should be stored in pdf_data"
+    assert pdf_update["pdf"] == pdf_data, "PDF content does not match"
+    assert "pdf_url" in pdf_update, "PDF URL should be stored in pdf_data"
+    assert pdf_update["pdf_url"] == "http://arxiv.org/pdf/1905.02244.pdf", "PDF URL does not match"
+
+    # Verify that the messages key is present and contains a success message.
     messages = update.get("messages", [])
     assert any("Successfully downloaded PDF" in msg.content for msg in messages)
 
@@ -85,11 +87,11 @@ def test_fetch_arxiv_paper_success(mock_get):
 def test_fetch_arxiv_paper_failure(mock_get):
     """
     Test the failure scenario where the metadata response does not contain a PDF link.
-    The tool should return a Command with a failure message.
+    The tool should raise an Exception with an appropriate error message.
     """
-    paper_id = "1905.02244"
+    arxiv_id = "1905.02244"
     tool_call_id = "test123"
-    state = DummyState({paper_id: {"arXiv ID": paper_id}})
+    state = DummyState({arxiv_id: {"arXiv ID": arxiv_id}})
 
     # Fake metadata XML response with no PDF link.
     metadata_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -106,20 +108,15 @@ def test_fetch_arxiv_paper_failure(mock_get):
 
     # Use a flat dictionary for the tool input.
     input_dict = {
-        "paper_id": paper_id,
+        "arxiv_id": arxiv_id,
         "tool_call_id": tool_call_id,
     }
-    result = fetch_arxiv_paper.invoke(input_dict, state=state)
 
-    # Verify that a failure message is returned.
-    assert isinstance(result, Command)
-    update = result.update
-    messages = update.get("messages", [])
-    expected_message = f"Failed to download PDF for arXiv ID {paper_id}."
-    assert any(expected_message in msg.content for msg in messages)
-    # In this failure case, there should be no PDF data saved under paper_id.
-    paper_info = update.get(paper_id, {})
-    assert "pdf" not in paper_info
+    with pytest.raises(RuntimeError) as exc_info:
+        fetch_arxiv_paper.invoke(input_dict, state=state)
+
+    expected_error = f"Failed to download PDF for arXiv ID {arxiv_id}."
+    assert expected_error in str(exc_info.value)
 
 
 @patch("requests.get")
@@ -127,9 +124,9 @@ def test_fetch_arxiv_paper_api_failure(mock_get):
     """
     Test that an HTTP error in the metadata request raises an exception.
     """
-    paper_id = "1905.02244"
+    arxiv_id = "1905.02244"
     tool_call_id = "test123"
-    state = DummyState({paper_id: {"arXiv ID": paper_id}})
+    state = DummyState({arxiv_id: {"arXiv ID": arxiv_id}})
 
     # Simulate an API failure with a non-200 status code.
     metadata_response = MagicMock()
@@ -140,7 +137,7 @@ def test_fetch_arxiv_paper_api_failure(mock_get):
 
     # Use a flat dictionary for the tool input.
     input_dict = {
-        "paper_id": paper_id,
+        "arxiv_id": arxiv_id,
         "tool_call_id": tool_call_id,
     }
     with pytest.raises(requests.HTTPError, match="Internal Server Error"):

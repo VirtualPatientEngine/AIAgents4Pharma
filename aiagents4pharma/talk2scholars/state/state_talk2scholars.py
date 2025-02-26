@@ -60,3 +60,4 @@ class Talk2Scholars(AgentState):
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
+    pdf_data: Annotated[Dict[str, Any], replace_dict]

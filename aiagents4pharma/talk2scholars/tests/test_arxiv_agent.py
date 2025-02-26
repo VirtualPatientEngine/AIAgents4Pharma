@@ -10,29 +10,20 @@ from langchain_core.messages import HumanMessage, AIMessage
 from ..agents.arxiv_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
-@pytest.fixture(autouse=True)
-def mock_hydra_fixture():
-    """
-    Mock Hydra configuration to prevent external dependencies.
-    Adjusts the configuration for the arXiv agent.
-    """
-    with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
-        cfg_mock = mock.MagicMock()
-        # Set a dummy configuration for the arXiv agent
-        cfg_mock.agents.talk2scholars.arxiv_agent.arxiv_agent = "Test prompt"
-        mock_compose.return_value = cfg_mock
-        yield mock_compose
 
-@pytest.fixture
-def mock_tools_fixture():
-    """
-    Mock the fetch_arxiv_paper tool to avoid real API calls.
-    """
-    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.fetch_arxiv_paper") as mock_fetch:
-        mock_fetch.return_value = {"pdf": "Mock PDF"}
-        yield mock_fetch
+# def mock_hydra_fixture():
+#     """
+#     Mock Hydra configuration to prevent external dependencies.
+#     Adjusts the configuration for the arXiv agent.
+#     """
+#     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
+#         cfg_mock = mock.MagicMock()
+#         # Set a dummy configuration for the arXiv agent
+#         cfg_mock.agents.talk2scholars.arxiv_agent.arxiv_agent = "Test prompt"
+#         mock_compose.return_value = cfg_mock
+#         yield mock_compose
 
-@pytest.mark.usefixtures("mock_hydra_fixture")
+
 def test_arxiv_agent_initialization():
     """
     Test that the arXiv agent initializes correctly with the mock configuration.

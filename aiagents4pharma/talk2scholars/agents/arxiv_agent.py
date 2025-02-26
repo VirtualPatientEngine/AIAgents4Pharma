@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-This module contains the arxiv_agent used for interacting with arXiv API
-to fetch paper metadata and PDFs for the Talk2Scholars project.
+This module defines the arXiv agent that connects to the arXiv API to fetch paper details and PDFs.
+It is part of the Talk2Scholars project.
 """
+
 import logging
 from typing import Any, Dict
 import hydra
@@ -13,18 +14,39 @@ from langgraph.prebuilt import ToolNode, create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.arxiv.download_pdf_arxiv import fetch_arxiv_paper
-
+from ..tools.s2.query_results import query_results as arxiv_query_results
 #initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)):
-    """""
-    This function returns the langgraph app.
-    """""
+    """
+    Create and return the langgraph app for the Talk2Scholars arXiv agent.
+
+    This function sets up the workflow, tools, and language model needed to fetch arXiv papers.
+
+    Parameters:
+        uniq_id: A unique identifier for tracking this session.
+        llm_model: The language model to use (default is ChatOpenAI with the "gpt-4o-mini" model).
+
+    Returns:
+        The compiled langgraph app ready to run.
+    """
+
     def agent_arxiv_node(state: Talk2Scholars) -> Dict[str,Any]:
         """
-        Fetches the arXiv paper using the paper ID extracted from state.
+
+        Get the arXiv paper using the paper ID from the state.
+
+        This function takes the current state, which contains the paper ID,
+        calls the model to fetch the paper, and returns the result.
+
+        Parameters:
+            state: The current state with the paper ID and related data.
+
+        Returns:
+            A dictionary with the result of the fetch operation.
+
         """
         logger.log(logging.INFO, "Creating Agent Arxiv node with thread_id: %s", uniq_id)
         result = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
@@ -42,7 +64,7 @@ def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", 
         cfg = cfg.agents.talk2scholars.arxiv_agent
 
 #define the tools
-    tools = ToolNode([fetch_arxiv_paper])
+    tools = ToolNode([fetch_arxiv_paper, arxiv_query_results])
 
 #define the model
     logger.log(logging.INFO, "Using OpenAI model %s", llm_model)
