@@ -46,7 +46,7 @@ router_prompt: >
   - Read from the zotero liabrary using `zotero_read` tool
 
   Here are some instructions for the workers:
-  1. Call the S2 agent for general paper finding or searches and recommendations.
+  1. Call the S2 agent to find papers, search papers, and/or recommend papers.
   2. The S2 agent has access to tools for querying and displaying papers.
   3. If the user wants suggestions for papers and you don’t have 
     a Semantic Scholar ID for it but do have the title from
