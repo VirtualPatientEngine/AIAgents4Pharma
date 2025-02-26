@@ -31,13 +31,25 @@ def mock_tools_fixture():
         mock.patch(
             "aiagents4pharma.talk2scholars.tools.s2.query_results.query_results"
         ) as mock_s2_query_results,
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.s2."
+            "retrieve_semantic_scholar_paper_id."
+            "retrieve_semantic_scholar_paper_id"
+        ) as mock_s2_retrieve_id,
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search_tool"
+        ) as mock_zotero_query_results,
     ):
         mock_s2_display.return_value = {"result": "Mock Display Result"}
         mock_s2_query_results.return_value = {"result": "Mock Query Result"}
+        mock_s2_retrieve_id.return_value = {"paper_id": "MockPaper123"}
+        mock_zotero_query_results.return_value = {"result": "Mock Search Result"}
 
         yield [
             mock_s2_display,
             mock_s2_query_results,
+            mock_s2_retrieve_id,
+            mock_zotero_query_results,
         ]
 
 
@@ -102,7 +114,7 @@ def test_zotero_agent_tools_assignment(request):
         mock_toolnode.return_value = mock_tool_instance
         get_app(thread_id)
         assert mock_toolnode.called
-        assert len(mock_tool_instance.tools) == 2
+        assert len(mock_tool_instance.tools) == 4
 
 
 def test_s2_query_results_tool():
