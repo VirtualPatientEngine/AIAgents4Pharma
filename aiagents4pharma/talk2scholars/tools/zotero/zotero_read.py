@@ -127,6 +127,7 @@ def zotero_search_tool(
                 ToolMessage(
                     content=content,
                     tool_call_id=tool_call_id,
+                    artifact=filtered_papers,
                 )
             ],
         }
