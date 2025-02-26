@@ -91,6 +91,7 @@ aiagents4pharma = [
   "talk2scholars/configs/tools/search/*",
   "talk2scholars/configs/tools/single_paper_recommendation/*",
   "talk2scholars/configs/tools/zotero_read/*",
+  "talk2scholars/configs/tools/retrieve_semantic_scholar_paper_id/*"
 
 ]
 
