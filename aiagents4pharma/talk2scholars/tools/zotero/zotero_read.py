@@ -114,10 +114,20 @@ def zotero_search_tool(
 
     logger.info("Filtered %d items", len(filtered_papers))
 
+    # Prepare content with top 3 paper titles and types
+    top_papers = list(filtered_papers.values())[:2]
+    top_papers_info = "\n".join(
+        [
+            f"{i+1}. {paper['Title']} ({paper['Type']})"
+            for i, paper in enumerate(top_papers)
+        ]
+    )
+
     content = "Retrieval was successful. Papers are attached as an artifact."
-    content += "And here is a summary of the retrieval results:"
+    content += " And here is a summary of the retrieval results:\n"
     content += f"Number of papers found: {len(filtered_papers)}\n"
     content += f"Query: {query}\n"
+    content += "Top papers:\n" + top_papers_info
 
     return Command(
         update={
