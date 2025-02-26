@@ -131,11 +131,26 @@ def get_single_paper_recommendations(
         if paper.get("title") and paper.get("authors")
     }
 
-    content = "Recommendations based on a single paper were successful."
-    content += " Here is a summary of the recommendations:"
+    # Prepare content with top 3 paper titles and years
+    top_papers = list(filtered_papers.values())[:3]
+    top_papers_info = "\n".join(
+        [
+            f"{i+1}. {paper['Title']} ({paper['Year']})"
+            for i, paper in enumerate(top_papers)
+        ]
+    )
+
+    logger.info("Filtered %d papers", len(filtered_papers))
+
+    content = (
+        "Recommendations based on single paper were successful. "
+        "Papers are attached as an artifact."
+    )
+    content += " Here is a summary of the recommendations:\n"
     content += f"Number of papers found: {len(filtered_papers)}\n"
     content += f"Query Paper ID: {paper_id}\n"
     content += f"Year: {year}\n" if year else ""
+    content += "Top papers:\n" + top_papers_info
 
     return Command(
         update={
