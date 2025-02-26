@@ -8,4 +8,4 @@ api_key: ${oc.env:ZOTERO_API_KEY} # Load from environment variable
 # Default search parameters
 search_params:
   limit: ${.default_limit}
-  item_type: "journalArticle" # Default to searching only journal articles
+  # item_type: "journalArticle" # Default to searching only journal articles
