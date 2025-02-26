@@ -16,6 +16,9 @@ from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_search_tool
 from ..tools.s2.display_results import display_results as s2_display
 from ..tools.s2.query_results import query_results as s2_query_results
+from ..tools.s2.retrieve_semantic_scholar_paper_id import (
+    retrieve_semantic_scholar_paper_id,
+)
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -82,7 +85,14 @@ def get_app(
         cfg = cfg.agents.talk2scholars.zotero_agent
 
     # Define the tools
-    tools = ToolNode([zotero_search_tool, s2_display, s2_query_results])
+    tools = ToolNode(
+        [
+            zotero_search_tool,
+            s2_display,
+            s2_query_results,
+            retrieve_semantic_scholar_paper_id,
+        ]
+    )
 
     # Define the model
     logger.log(logging.INFO, "Using model %s", llm_model)
