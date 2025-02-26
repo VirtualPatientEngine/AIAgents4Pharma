@@ -61,6 +61,20 @@ zotero_agent: >
     Returns:
         str: A message with the last displayed papers.
 
+  4. retrieve_semantic_scholar_paper_id - Get Semantic Scholar ID for a paper title
+    This tool can be used to search for a paper on Semantic Scholar
+    and retrieve the paper Semantic Scholar ID.
+
+    This is useful for when an article is retrieved from users Zotero library
+    and the Semantic Scholar ID is needed to retrieve more information about the paper.
+
+    Args:
+        tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
+        paper_title (str): The title of the paper to search for on Semantic Scholar.
+
+    Returns:
+        ToolMessage: A message containing the paper ID.
+
 
   You also have tools to gain more insights on the papers and
   display them.
