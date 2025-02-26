@@ -134,6 +134,7 @@ class SteadyStateTool(BaseTool):
         # Run the parameter scan
         df_steady_state = run_steady_state(model_object,
                                            dic_species_to_be_analyzed_before_experiment)
+        print (df_steady_state)
         # Prepare the dictionary of scanned data
         # that will be passed to the state of the graph
         dic_steady_state_data = {
@@ -160,7 +161,8 @@ class SteadyStateTool(BaseTool):
                         content=f"Steady state analysis of"
                                 f" {arg_data.experiment_name}"
                                 " was successful.",
-                        tool_call_id=tool_call_id
+                        tool_call_id=tool_call_id,
+                        artifact={'dic_data': df_steady_state.to_dict(orient='records')}
                         )
                     ],
                 }

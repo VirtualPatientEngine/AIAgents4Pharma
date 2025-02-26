@@ -26,8 +26,15 @@ def test_with_biomodel_id(model):
     assert df_parameters.loc['KmPFKF6P', 'initial_value'] == 1.5
     # check if the simulation results are a pandas DataFrame object
     assert isinstance(model.simulate(duration=2, interval=2), pd.DataFrame)
+    # Pass a None value to the update_parameters method
+    # and it should not raise an error
     model.update_parameters(parameters={None: None})
+    # check if the model description is updated
     assert model.description == basico.biomodels.get_model_info(model.biomodel_id)["description"]
+    # check if an error is raised if an invalid species/parameter (`Pyruv`)
+    # is passed and it should raise a ValueError
+    with pytest.raises(ValueError):
+        model.update_parameters(parameters={'Pyruv': 0.5})
 
 def test_with_sbml_file():
     """

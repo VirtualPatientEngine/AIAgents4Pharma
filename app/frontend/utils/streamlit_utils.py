@@ -40,7 +40,11 @@ def submit_feedback(user_response):
     )
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
-def render_table_plotly(uniq_msg_id, content, df_selected):
+def render_table_plotly(uniq_msg_id,
+                        content,
+                        df_selected,
+                        x_axis_label="Time",
+                        y_axis_label="Concentration"):
     """
     Function to render the table and plotly chart in the chat.
 
@@ -60,8 +64,8 @@ def render_table_plotly(uniq_msg_id, content, df_selected):
         df_selected,
         key="plotly_"+uniq_msg_id,
         title=content,
-        # tool_name=msg.name,
-        # tool_call_id=msg.tool_call_id,
+        y_axis_label=y_axis_label,
+        x_axis_label=x_axis_label,
         save_chart=True)
     # Display the toggle button to suppress the table
     render_toggle(
@@ -73,8 +77,6 @@ def render_table_plotly(uniq_msg_id, content, df_selected):
     render_table(
         df_selected,
         key="dataframe_"+uniq_msg_id,
-        # tool_name=msg.name,
-        # tool_call_id=msg.tool_call_id,
         save_table=True)
     st.empty()
 
@@ -110,6 +112,8 @@ def render_toggle(key: str,
 def render_plotly(df: pd.DataFrame,
                 key: str,
                 title: str,
+                y_axis_label: str,
+                x_axis_label: str,
                 save_chart: bool = False
                 ):
     """
@@ -136,6 +140,10 @@ def render_plotly(df: pd.DataFrame,
                         height=500,
                         width=600
                 )
+        # Set y axis label
+        fig.update_yaxes(title_text=f"Quantity ({y_axis_label})")
+        # Set x axis label
+        fig.update_xaxes(title_text=f"Time ({x_axis_label})")
         # Display the plotly chart
         st.plotly_chart(fig,
                         use_container_width=True,
@@ -147,6 +155,8 @@ def render_plotly(df: pd.DataFrame,
                 "content": df,
                 "key": key,
                 "title": title,
+                "y_axis_label": y_axis_label,
+                "x_axis_label": x_axis_label,
                 # "tool_name": tool_name
             })
 
@@ -186,7 +196,10 @@ def sample_questions():
         "Search for all the BioModels on Crohn's Disease",
         "Briefly describe biomodel 971 and simulate it for 50 days with an interval of 50.",
         "Bring BioModel 27 to a steady state, and then "
-        "determine the Mpp concentration at the steady state."
+        "determine the Mpp concentration at the steady state.",
+        "How will the concentration of Mpp change in model 27, "
+        "if the initial value of MAPKK were to be changed between 1 and 100 in steps of 10?",
+        "Show annotations of all interleukins in model 537"
     ]
     return questions
 
@@ -292,6 +305,7 @@ def get_response(app, st, prompt):
         # msg.tool_call_id is the unique id of the tool call
         # st.session_state.run_id is the unique id of the run
         uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
+        print (uniq_msg_id)
         if msg.name in ["simulate_model", "custom_plotter"]:
             if msg.name == "simulate_model":
                 print ('-', len(current_state.values["dic_simulated_data"]), 'simulate_model')
@@ -310,43 +324,77 @@ def get_response(app, st, prompt):
                 df_selected = df_simulated
             elif msg.name == "custom_plotter":
                 if msg.artifact:
-                    df_selected = pd.DataFrame.from_dict(msg.artifact)
+                    df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
                     # print (df_selected)
                 else:
                     continue
-            # Display the toggle button to suppress the table
-            render_toggle(
-                key="toggle_plotly_"+uniq_msg_id,
-                toggle_text="Show Plot",
-                toggle_state=True,
-                save_toggle=True)
-            # Display the plotly chart
-            render_plotly(
+            # Display the talbe and plotly chart
+            render_table_plotly(
+                uniq_msg_id,
+                msg.content,
                 df_selected,
-                key="plotly_"+uniq_msg_id,
-                title=msg.content,
-                # tool_name=msg.name,
-                # tool_call_id=msg.tool_call_id,
-                save_chart=True)
+                x_axis_label=msg.artifact['x_axis_label'],
+                y_axis_label=msg.artifact['y_axis_label'])
+        elif msg.name == "steady_state":
+            if not msg.artifact:
+                continue
+            # Create a pandas dataframe from the dictionary
+            df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
+            # Make column 'species_name' the index
+            df_selected.set_index('species_name', inplace=True)
             # Display the toggle button to suppress the table
             render_toggle(
                 key="toggle_table_"+uniq_msg_id,
                 toggle_text="Show Table",
-                toggle_state=False,
+                toggle_state=True,
                 save_toggle=True)
             # Display the table
             render_table(
                 df_selected,
                 key="dataframe_"+uniq_msg_id,
-                # tool_name=msg.name,
-                # tool_call_id=msg.tool_call_id,
                 save_table=True)
+        elif msg.name == "search_models":
+            if not msg.artifact:
+                continue
+            # Create a pandas dataframe from the dictionary
+            df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
+            # Pick selected columns
+            df_selected = df_selected[['url', 'name', 'format', 'submissionDate']]
+            # Display the toggle button to suppress the table
+            render_toggle(
+                key="toggle_table_"+uniq_msg_id,
+                toggle_text="Show Table",
+                toggle_state=True,
+                save_toggle=True)
+            # Display the table
+            st.dataframe(df_selected,
+                    use_container_width=True,
+                    key='dataframe_'+uniq_msg_id,
+                    hide_index=True,
+                    column_config={
+                        "url": st.column_config.LinkColumn(
+                            label="ID",
+                            help="Click to open the link associated with the Id",
+                            validate=r"^http://.*$",  # Ensure the link is valid
+                            display_text=r"^https://www.ebi.ac.uk/biomodels/(.*?)$"
+                        ),
+                        "name": st.column_config.TextColumn("Name"),
+                        "format": st.column_config.TextColumn("Format"),
+                        "submissionDate": st.column_config.TextColumn("Submission Date"),
+                    }
+            )
+            # Add data to the chat history
+            st.session_state.messages.append({
+                    "type": "dataframe",
+                    "content": df_selected,
+                    "key": "dataframe_"+uniq_msg_id,
+                    "tool_name": msg.name
+                })
+            
         elif msg.name == "parameter_scan":
             # Convert the scanned data to a single dictionary
-            print ('-', len(current_state.values["dic_scanned_data"]))
             dic_scanned_data = {}
             for data in current_state.values["dic_scanned_data"]:
-                print ('-', data['name'])
                 for key in data:
                     if key not in dic_scanned_data:
                         dic_scanned_data[key] = []
@@ -366,7 +414,9 @@ def get_response(app, st, prompt):
                 render_table_plotly(
                 uniq_msg_id+'_'+str(count),
                 df_scanned_current_tool_call['name'].iloc[count],
-                df_selected)
+                df_selected,
+                x_axis_label=msg.artifact['x_axis_label'],
+                y_axis_label=msg.artifact['y_axis_label'])
         elif msg.name in ["get_annotation"]:
             if not msg.artifact:
                 continue

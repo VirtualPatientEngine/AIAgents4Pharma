@@ -14,6 +14,7 @@ from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from .load_biomodel import ModelData, load_biomodel
 from .load_arguments import ArgumentData, add_rec_events
+from .utils import get_model_units
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -116,7 +117,8 @@ class SimulateModelTool(BaseTool):
                 "messages": [
                     ToolMessage(
                         content=f"Simulation results of {arg_data.experiment_name}",
-                        tool_call_id=tool_call_id
+                        tool_call_id=tool_call_id,
+                        artifact=get_model_units(model_object)
                         )
                     ],
                 }

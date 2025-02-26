@@ -21,7 +21,8 @@ class BasicoModel(SysBioModel):
     Model that loads and simulates SBML models using the basico package.
     Can load models from an SBML file or download them using a BioModels biomodel_id.
     """
-    biomodel_id: Optional[int] = Field(None, description="BioModels model ID to download and load")
+    biomodel_id: Optional[Union[int, str]] = Field(None,
+                                description="BioModels model ID to download and load")
     sbml_file_path: Optional[str] = Field(None, description="Path to an SBML file to load")
     simulation_results: Optional[str] = None
     name: Optional[str] = Field("", description="Name of the model")
@@ -57,19 +58,24 @@ class BasicoModel(SysBioModel):
             # check if the param_name is not None
             if param_name is None:
                 continue
-            # if param is a kinetic parameter
+            # Extract all parameters and species from the model
             df_all_params = basico.model_info.get_parameters(model=self.copasi_model)
+            df_all_species = basico.model_info.get_species(model=self.copasi_model)
+            # if param is a kinetic parameter
             if param_name in df_all_params.index.tolist():
                 basico.model_info.set_parameters(name=param_name,
                                             exact=True,
                                             initial_value=param_value,
                                             model=self.copasi_model)
             # if param is a species
-            else:
+            elif param_name in df_all_species.index.tolist():
                 basico.model_info.set_species(name=param_name,
                                             exact=True,
                                             initial_concentration=param_value,
                                             model=self.copasi_model)
+            else:
+                logger.error("Parameter/Species %s not found in the model.", param_name)
+                raise ValueError(f"Parameter/Species {param_name} not found in the model.")
 
     def simulate(self, duration: Union[int, float] = 10, interval: int = 10) -> pd.DataFrame:
         """

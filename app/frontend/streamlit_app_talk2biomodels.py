@@ -192,6 +192,8 @@ with main_col2:
                 streamlit_utils.render_plotly(message["content"],
                               key=message["key"],
                               title=message["title"],
+                              y_axis_label=message["y_axis_label"],
+                              x_axis_label=message["x_axis_label"],
                             #   tool_name=message["tool_name"],
                               save_chart=False)
                 st.empty()
@@ -221,6 +223,24 @@ with main_col2:
                                         "Database": st.column_config.TextColumn("Database"),
                                     }
                                 )
+                    elif message['tool_name'] == 'search_models':
+                        df_selected = message["content"]
+                        st.dataframe(df_selected,
+                            use_container_width=True,
+                            key=message["key"],
+                            hide_index=True,
+                            column_config={
+                                "url": st.column_config.LinkColumn(
+                                    label="ID",
+                                    help="Click to open the link associated with the Id",
+                                    validate=r"^http://.*$",  # Ensure the link is valid
+                                    display_text=r"^https://www.ebi.ac.uk/biomodels/(.*?)$"
+                                ),
+                                "name": st.column_config.TextColumn("Name"),
+                                "format": st.column_config.TextColumn("Format"),
+                                "submissionDate": st.column_config.TextColumn("Submission Date"),
+                                }
+                            )
                 else:
                     streamlit_utils.render_table(message["content"],
                                     key=message["key"],

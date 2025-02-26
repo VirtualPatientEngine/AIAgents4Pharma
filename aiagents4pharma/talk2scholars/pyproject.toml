@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "talk2scholars"
 
-description = "A submodule of AIAgents4Pharma for interacting with articles"
+description = "An agent of AIAgents4Pharma for searching/recommending articles"
 
 readme = "README.md"
 requires-python = ">=3.10"

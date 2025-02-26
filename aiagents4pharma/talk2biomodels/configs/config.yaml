@@ -3,3 +3,4 @@ defaults:
   - agents/t2b_agent: default
   - tools/ask_question: default
   - tools/get_annotation: default
+  - tools/custom_plotter: default
