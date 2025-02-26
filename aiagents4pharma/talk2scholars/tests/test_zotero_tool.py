@@ -165,7 +165,7 @@ class TestZoteroRead:
         assert isinstance(result, Command)
         assert "zotero_read" in result.update
 
-        # ✅ Expect only valid items to be processed
+        # Expect only valid items to be processed
         assert (
             len(result.update["zotero_read"]) == 1
         ), "Only valid dictionary items should be processed"
