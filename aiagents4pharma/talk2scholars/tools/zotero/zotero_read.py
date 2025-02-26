@@ -70,13 +70,11 @@ def zotero_search_tool(
     zot = zotero.Zotero(cfg.user_id, cfg.library_type, cfg.api_key)
 
     # Get items matching the query
-    items = zot.items(q=query, limit=min(limit, 100))
+    items = zot.items(q=query, limit=min(limit, cfg.zotero.max_limit))
     logger.info("Received %d items from Zotero", len(items))
 
     # Define filter criteria
-    filter_item_types = (
-        ["journalArticle", "conferencePaper", "preprint"] if only_articles else []
-    )
+    filter_item_types = cfg.zotero.filter_item_types if only_articles else []
 
     # Filter and format papers
     filtered_papers = {}
