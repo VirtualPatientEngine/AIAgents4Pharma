@@ -11,19 +11,6 @@ from ..agents.arxiv_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
 
-# def mock_hydra_fixture():
-#     """
-#     Mock Hydra configuration to prevent external dependencies.
-#     Adjusts the configuration for the arXiv agent.
-#     """
-#     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
-#         cfg_mock = mock.MagicMock()
-#         # Set a dummy configuration for the arXiv agent
-#         cfg_mock.agents.talk2scholars.arxiv_agent.arxiv_agent = "Test prompt"
-#         mock_compose.return_value = cfg_mock
-#         yield mock_compose
-
-
 def test_arxiv_agent_initialization():
     """
     Test that the arXiv agent initializes correctly with the mock configuration.
@@ -34,6 +21,7 @@ def test_arxiv_agent_initialization():
         app = get_app(thread_id)
         assert app is not None
         assert mock_create.called
+
 
 def test_arxiv_agent_invocation():
     """
@@ -65,6 +53,7 @@ def test_arxiv_agent_invocation():
         assert result["papers"]["pdf"] == "Mock PDF Result"
         assert mock_agent.invoke.called
 
+
 def test_arxiv_tool_assignment():
     """
     Ensure that the correct tool (fetch_arxiv_paper) is assigned to the arXiv agent.
@@ -82,6 +71,40 @@ def test_arxiv_tool_assignment():
         get_app(thread_id)
         assert mock_toolnode.called
         assert len(mock_tool_instance.tools) == 1
+
+
+def test_arxiv_query_results_tool():
+    """
+    Test that the query_results tool is correctly integrated and utilized by the arXiv agent.
+    This test validates that the agent's response contains the expected 'query_results' key,
+    thereby ensuring our tool orchestration layer is operating with precision.
+    """
+    thread_id = "test_thread"
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Query results for arXiv papers")])
+    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.create_react_agent") as mock_create:
+        mock_agent = mock.Mock()
+        mock_create.return_value = mock_agent
+        # Simulate an agent response that includes the query_results tool output
+        mock_agent.invoke.return_value = {
+            "messages": [HumanMessage(content="Query results for arXiv papers")],
+            "last_displayed_papers": {},
+            "papers": {"query_results": "Mock Query Result"},
+            "multi_papers": {},
+        }
+        app = get_app(thread_id)
+        result = app.invoke(
+            mock_state,
+            config={
+                "configurable": {
+                    "thread_id": thread_id,
+                    "checkpoint_ns": "test_ns",
+                    "checkpoint_id": "test_checkpoint",
+                }
+            },
+        )
+        assert "query_results" in result["papers"]
+        assert mock_agent.invoke.called
+
 
 def test_arxiv_agent_hydra_failure():
     """
