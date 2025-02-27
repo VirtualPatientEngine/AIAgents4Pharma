@@ -20,7 +20,7 @@ from langsmith import Client
 from utils import streamlit_utils
 
 sys.path.append("./")
-from AIAgents4Pharma.aiagents4pharma.talk2scholars.agents.paper_download_agent import get_app
+from AIAgents4Pharma.aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
