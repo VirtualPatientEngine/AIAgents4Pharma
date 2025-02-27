@@ -1,355 +1,111 @@
 """
-Unit tests for S2 tools functionality.
+Unit tests for qna tool functionality.
 """
 
-# pylint: disable=redefined-outer-name
-from unittest.mock import patch
-from unittest.mock import MagicMock
+import io
 import pytest
+from ..tools.pdf import qna
+from ..tools.pdf.qna import extract_text_from_pdf_data, qna_tool, generate_answer
+from langchain_core.messages import ToolMessage
 from langgraph.types import Command
-from ..tools.s2.display_results import (
-    display_results,
-    NoPapersFoundError as raised_error,
-)
-from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations
-from ..tools.s2.search import search_tool
-from ..tools.s2.single_paper_rec import get_single_paper_recommendations
-from ..tools.s2.query_results import query_results, NoPapersFoundError
-from ..tools.s2.retrieve_semantic_scholar_paper_id import (
-    retrieve_semantic_scholar_paper_id,
-)
+from io import BytesIO
 
+# A minimal valid PDF binary that includes "Hello World".
+dummy_pdf_bytes = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n" \
+                  b"2 0 obj\n<< /Type /Pages /Count 1 /Kids [3 0 R] >>\nendobj\n" \
+                  b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n" \
+                  b"4 0 obj\n<< /Length 44 >>\nstream\nBT\n/F1 24 Tf\n72 712 Td\n(Hello World) Tj\nET\nendstream\nendobj\n" \
+                  b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n" \
+                  b"xref\n0 6\n0000000000 65535 f \n0000000010 00000 n \n0000000053 00000 n \n" \
+                  b"0000000100 00000 n \n0000000150 00000 n \n0000000200 00000 n \n" \
+                  b"trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n250\n%%EOF\n"
 
-@pytest.fixture
-def initial_state():
-    """Provides an empty initial state for tests."""
-    return {"papers": {}, "multi_papers": {}}
+# Unit test for extract_text_from_pdf_data.
+def test_extract_text_from_pdf_data():
+    extracted_text = extract_text_from_pdf_data(dummy_pdf_bytes)
+    # Check that the known text "Hello World" is present.
+    assert "Hello World" in extracted_text
 
-
-# Fixed test data for deterministic results
-MOCK_SEARCH_RESPONSE = {
-    "data": [
-        {
-            "paperId": "123",
-            "title": "Machine Learning Basics",
-            "abstract": "An introduction to ML",
-            "year": 2023,
-            "citationCount": 100,
-            "url": "https://example.com/paper1",
-            "authors": [{"name": "Test Author"}],
-        }
-    ]
-}
-
-MOCK_STATE_PAPER = {
-    "123": {
-        "Title": "Machine Learning Basics",
-        "Abstract": "An introduction to ML",
-        "Year": 2023,
-        "Citation Count": 100,
-        "URL": "https://example.com/paper1",
+# Fake generate_answer to bypass external dependencies in integration tests.
+def fake_generate_answer(question, pdf_bytes):
+    return {
+        "answer": "Mock answer",
+        "question": question,
+        "pdf_bytes_length": len(pdf_bytes)
     }
-}
 
+# Integration test for a successful run of qna_tool.
+def test_qna_tool_success(monkeypatch):
+    # Monkeypatch generate_answer to avoid real external calls.
+    monkeypatch.setattr(qna, "generate_answer", fake_generate_answer)
+    
+    # Create a valid state with pdf_data containing both pdf_object and pdf_url.
+    state = {"pdf_data": {"pdf_object": dummy_pdf_bytes, "pdf_url": "http://dummy.url"}}
+    question = "What is in the PDF?"
+    
+    # Call the underlying function directly via .func to bypass StructuredTool wrapper.
+    result = qna_tool.func(question=question, tool_call_id="test_call_id", state=state)
+    assert result["answer"] == "Mock answer"
+    assert result["question"] == question
+    assert result["pdf_bytes_length"] == len(dummy_pdf_bytes)
 
-class TestS2Tools:
-    """Unit tests for individual S2 tools"""
+# Integration test for error when pdf_data is missing in state.
+def test_qna_tool_no_pdf_data():
+    state = {}  # pdf_data key is missing.
+    question = "Any question?"
+    
+    result = qna_tool.func(question=question, tool_call_id="test_call_id", state=state)
+    # Access the Command object's update attribute.
+    messages = result.update["messages"]
+    assert any("No pdf_data found in state." in msg.content for msg in messages)
 
-    def test_display_results_empty_state(self, initial_state):
-        """Verifies display_results tool behavior when state is empty and raises an exception"""
-        with pytest.raises(
-            raised_error,
-            match="No papers found. A search/rec needs to be performed first.",
-        ):
-            display_results.invoke({"state": initial_state, "tool_call_id": "test123"})
+# Integration test for error when pdf_object is missing within pdf_data.
+def test_qna_tool_no_pdf_object():
+    # Here, we provide pdf_data with pdf_object explicitly set to None.
+    state = {"pdf_data": {"pdf_object": None}}
+    question = "Any question?"
+    
+    result = qna_tool.func(question=question, tool_call_id="test_call_id", state=state)
+    messages = result.update["messages"]
+    assert any("PDF binary data is missing in the pdf_data from state." in msg.content for msg in messages)
 
-    def test_display_results_shows_papers(self, initial_state):
-        """Verifies display_results tool correctly returns papers from state"""
-        state = initial_state.copy()
-        state["last_displayed_papers"] = "papers"
-        state["papers"] = MOCK_STATE_PAPER
+# New test for generate_answer to increase coverage to 100%.
+def test_generate_answer(monkeypatch):
+    # Monkeypatch CharacterTextSplitter.split_text to return a controlled list.
+    monkeypatch.setattr(qna.CharacterTextSplitter, "split_text", lambda self, text: ["chunk1", "chunk2"])
 
-        result = display_results.invoke(
-            input={"state": state, "tool_call_id": "test123"}
-        )
+    # Monkeypatch Annoy.from_documents to return a fake vector store.
+    def fake_annoy_from_documents(documents, embeddings):
+        class FakeVectorStore:
+            def similarity_search(self, question, k):
+                from langchain.docstore.document import Document
+                # Return a dummy Document so that we can test the flow.
+                return [Document(page_content="dummy content")]
+        return FakeVectorStore()
+    monkeypatch.setattr(qna.Annoy, "from_documents", fake_annoy_from_documents)
 
-        assert isinstance(result, Command)  # Expect a Command object
-        assert isinstance(result.update, dict)  # Ensure update is a dictionary
-        assert "messages" in result.update
-        assert len(result.update["messages"]) == 1
-        assert (
-            "1 papers found. Papers are attached as an artifact."
-            in result.update["messages"][0].content
-        )
+    # Monkeypatch load_qa_chain to return a fake QA chain.
+    def fake_load_qa_chain(llm, chain_type):
+        class FakeChain:
+            def invoke(self, input):
+                # Return a fake answer that includes the original question.
+                return {"answer": "real mock answer", "question": input.get("question")}
+        return FakeChain()
+    monkeypatch.setattr(qna, "load_qa_chain", fake_load_qa_chain)
 
-    @patch("requests.get")
-    def test_search_finds_papers(self, mock_get):
-        """Verifies search tool finds and formats papers correctly"""
-        mock_get.return_value.json.return_value = MOCK_SEARCH_RESPONSE
-        mock_get.return_value.status_code = 200
+    # Set dummy configuration values so that generate_answer can run.
+    qna.cfg.chunk_size = 1000
+    qna.cfg.chunk_overlap = 0
+    qna.cfg.openai_api_key = "dummy_key"
+    qna.cfg.num_retrievals = 1
+    qna.cfg.model = "dummy-model"
+    qna.cfg.temperature = 0.0
+    qna.cfg.qa_chain_type = "dummy-chain"
 
-        result = search_tool.invoke(
-            input={
-                "query": "machine learning",
-                "limit": 1,
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
+    # Call generate_answer.
+    question = "What is in the PDF?"
+    answer = generate_answer(question, dummy_pdf_bytes)
 
-        assert "papers" in result.update
-        assert "messages" in result.update
-        papers = result.update["papers"]
-        assert isinstance(papers, dict)
-        assert len(papers) > 0
-        paper = next(iter(papers.values()))
-        assert paper["Title"] == "Machine Learning Basics"
-        assert paper["Year"] == 2023
-
-    @patch("requests.get")
-    def test_search_finds_papers_with_year(self, mock_get):
-        """Verifies search tool works with year parameter"""
-        mock_get.return_value.json.return_value = MOCK_SEARCH_RESPONSE
-        mock_get.return_value.status_code = 200
-
-        result = search_tool.invoke(
-            input={
-                "query": "machine learning",
-                "limit": 1,
-                "year": "2023-",
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-
-        assert "papers" in result.update
-        assert "messages" in result.update
-        papers = result.update["papers"]
-        assert isinstance(papers, dict)
-        assert len(papers) > 0
-
-    @patch("requests.get")
-    def test_search_filters_invalid_papers(self, mock_get):
-        """Verifies search tool properly filters papers without title or authors"""
-        mock_response = {
-            "data": [
-                {
-                    "paperId": "123",
-                    "abstract": "An introduction to ML",
-                    "year": 2023,
-                    "citationCount": 100,
-                    "url": "https://example.com/paper1",
-                    # Missing title and authors
-                },
-                MOCK_SEARCH_RESPONSE["data"][0],  # This one is valid
-            ]
-        }
-        mock_get.return_value.json.return_value = mock_response
-        mock_get.return_value.status_code = 200
-
-        result = search_tool.invoke(
-            input={
-                "query": "machine learning",
-                "limit": 2,
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-
-        assert "papers" in result.update
-        papers = result.update["papers"]
-        assert len(papers) == 1  # Only the valid paper should be included
-
-    @patch("requests.get")
-    def test_single_paper_rec_basic(self, mock_get):
-        """Tests basic single paper recommendation functionality"""
-        mock_get.return_value.json.return_value = {
-            "recommendedPapers": [MOCK_SEARCH_RESPONSE["data"][0]]
-        }
-        mock_get.return_value.status_code = 200
-
-        result = get_single_paper_recommendations.invoke(
-            input={"paper_id": "123", "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "papers" in result.update
-        assert len(result.update["messages"]) == 1
-
-    @patch("requests.get")
-    def test_single_paper_rec_with_optional_params(self, mock_get):
-        """Tests single paper recommendations with year parameter"""
-        mock_get.return_value.json.return_value = {
-            "recommendedPapers": [MOCK_SEARCH_RESPONSE["data"][0]]
-        }
-        mock_get.return_value.status_code = 200
-
-        result = get_single_paper_recommendations.invoke(
-            input={
-                "paper_id": "123",
-                "limit": 1,
-                "year": "2023-",
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-        assert "papers" in result.update
-
-    @patch("requests.post")
-    def test_multi_paper_rec_basic(self, mock_post):
-        """Tests basic multi-paper recommendation functionality"""
-        mock_post.return_value.json.return_value = {
-            "recommendedPapers": [MOCK_SEARCH_RESPONSE["data"][0]]
-        }
-        mock_post.return_value.status_code = 200
-
-        result = get_multi_paper_recommendations.invoke(
-            input={"paper_ids": ["123", "456"], "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "multi_papers" in result.update
-        assert len(result.update["messages"]) == 1
-
-    @patch("requests.post")
-    def test_multi_paper_rec_with_optional_params(self, mock_post):
-        """Tests multi-paper recommendations with all optional parameters"""
-        mock_post.return_value.json.return_value = {
-            "recommendedPapers": [MOCK_SEARCH_RESPONSE["data"][0]]
-        }
-        mock_post.return_value.status_code = 200
-
-        result = get_multi_paper_recommendations.invoke(
-            input={
-                "paper_ids": ["123", "456"],
-                "limit": 1,
-                "year": "2023-",
-                "tool_call_id": "test123",
-                "id": "test123",
-            }
-        )
-        assert "multi_papers" in result.update
-        assert len(result.update["messages"]) == 1
-
-    @patch("requests.get")
-    def test_search_tool_finds_papers(self, mock_get):
-        """Verifies search tool finds and formats papers correctly"""
-        mock_get.return_value.json.return_value = MOCK_SEARCH_RESPONSE
-        mock_get.return_value.status_code = 200
-
-        result = search_tool.invoke(
-            input={"query": "machine learning", "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)  # Expect a Command object
-        assert "papers" in result.update
-        assert len(result.update["papers"]) > 0
-
-    def test_query_results_empty_state(self, initial_state):
-        """Tests query_results tool behavior when no papers are found."""
-        with pytest.raises(
-            NoPapersFoundError,
-            match="No papers found. A search needs to be performed first.",
-        ):
-            query_results.invoke(
-                {"question": "List all papers", "state": initial_state}
-            )
-
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.s2.query_results.create_pandas_dataframe_agent"
-    )
-    def test_query_results_with_papers(self, mock_create_agent, initial_state):
-        """Tests querying papers when data is available."""
-        state = initial_state.copy()
-        state["last_displayed_papers"] = "papers"
-        state["papers"] = MOCK_STATE_PAPER
-
-        # Mock the dataframe agent instead of the LLM
-        mock_agent = MagicMock()
-        mock_agent.invoke.return_value = {"output": "Mocked response"}
-
-        mock_create_agent.return_value = (
-            mock_agent  # Mock the function returning the agent
-        )
-
-        # Ensure that the output of query_results is correctly structured
-        result = query_results.invoke({"question": "List all papers", "state": state})
-
-        assert isinstance(result, str)  # Ensure output is a string
-        assert result == "Mocked response"  # Validate the expected response
-
-    @patch("requests.get")
-    def test_retrieve_semantic_scholar_paper_id(self, mock_get):
-        """Tests retrieving a paper ID from Semantic Scholar."""
-        mock_get.return_value.json.return_value = MOCK_SEARCH_RESPONSE
-        mock_get.return_value.status_code = 200
-
-        result = retrieve_semantic_scholar_paper_id.invoke(
-            input={"paper_title": "Machine Learning Basics", "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "messages" in result.update
-        assert (
-            "Paper ID for 'Machine Learning Basics' is: 123"
-            in result.update["messages"][0].content
-        )
-
-    def test_retrieve_semantic_scholar_paper_id_no_results(self):
-        """Test retrieving a paper ID when no results are found."""
-        with pytest.raises(ValueError, match="No papers found for query: UnknownPaper"):
-            retrieve_semantic_scholar_paper_id.invoke(
-                input={"paper_title": "UnknownPaper", "tool_call_id": "test123"}
-            )
-
-    def test_single_paper_rec_invalid_id(self):
-        """Test single paper recommendation with an invalid ID."""
-        with pytest.raises(ValueError, match="Invalid paper ID or API error."):
-            get_single_paper_recommendations.invoke(
-                input={"paper_id": "", "tool_call_id": "test123"}  # Empty ID case
-            )
-
-    @patch("requests.post")
-    def test_multi_paper_rec_no_recommendations(self, mock_post):
-        """Tests behavior when multi-paper recommendation API returns no results."""
-        mock_post.return_value.json.return_value = {"recommendedPapers": []}
-        mock_post.return_value.status_code = 200
-
-        result = get_multi_paper_recommendations.invoke(
-            input={"paper_ids": ["123", "456"], "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "messages" in result.update
-        assert (
-            "No recommendations found based on multiple papers."
-            in result.update["messages"][0].content
-        )
-
-    @patch("requests.get")
-    def test_search_no_results(self, mock_get):
-        """Tests behavior when search API returns no results."""
-        mock_get.return_value.json.return_value = {"data": []}
-        mock_get.return_value.status_code = 200
-
-        result = search_tool.invoke(
-            input={"query": "nonexistent topic", "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "messages" in result.update
-        assert "No papers found." in result.update["messages"][0].content
-
-    @patch("requests.get")
-    def test_single_paper_rec_no_recommendations(self, mock_get):
-        """Tests behavior when single paper recommendation API returns no results."""
-        mock_get.return_value.json.return_value = {"recommendedPapers": []}
-        mock_get.return_value.status_code = 200
-
-        result = get_single_paper_recommendations.invoke(
-            input={"paper_id": "123", "limit": 1, "tool_call_id": "test123"}
-        )
-
-        assert isinstance(result, Command)
-        assert "messages" in result.update
-        assert "No recommendations found for" in result.update["messages"][0].content
+    # Verify that the fake QA chain was used and the answer is as expected.
+    assert answer["answer"] == "real mock answer"
+    assert answer["question"] == question

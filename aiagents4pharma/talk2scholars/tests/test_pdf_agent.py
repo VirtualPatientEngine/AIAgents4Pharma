@@ -61,7 +61,7 @@ def test_pdf_agent_invocation():
     with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
-        # Simulate a response from the agent using the expected key "pdf_data"
+        # Simulate a response from the agent using the expected keys.
         mock_agent.invoke.return_value = {
             "messages": [AIMessage(content="PDF info extracted")],
             "pdf_data": {"section1": "Content from PDF"}
@@ -113,3 +113,42 @@ def test_pdf_agent_hydra_failure():
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id)
         assert "Hydra error" in str(exc_info.value)
+
+
+def test_pdf_agent_with_none_llm_model():
+    """
+    Test that when llm_model is None, the config's openai_llms[0] is used.
+    """
+    thread_id = "test_pdf_none"
+    custom_cfg = OmegaConf.create({
+        "temperature": 0.5,
+        "pdf_agent": {"some_setting": "value"},
+        "openai_llms": ["custom-model"]
+    })
+    with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.hydra.compose", return_value=custom_cfg):
+        with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ChatOpenAI") as mock_chat:
+            with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
+                # Call get_app with llm_model set to None
+                app = get_app(thread_id, llm_model=None)
+                # Assert that ChatOpenAI was instantiated with the model from the configuration.
+                mock_chat.assert_called_with(model="custom-model", temperature=0.5)
+
+
+def test_pdf_agent_with_none_llm_model_empty():
+    """
+    Test that when llm_model is None and the openai_llms list is empty,
+    the default "gpt-4o-mini" is used.
+    """
+    thread_id = "test_pdf_none_empty"
+    custom_cfg = OmegaConf.create({
+        "temperature": 0.7,
+        "pdf_agent": {"some_setting": "value"},
+        "openai_llms": []
+    })
+    with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.hydra.compose", return_value=custom_cfg):
+        with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ChatOpenAI") as mock_chat:
+            with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
+                # Call get_app with llm_model set to None.
+                app = get_app(thread_id, llm_model=None)
+                # Assert that ChatOpenAI was instantiated with the default model "gpt-4o-mini".
+                mock_chat.assert_called_with(model="gpt-4o-mini", temperature=0.7)
