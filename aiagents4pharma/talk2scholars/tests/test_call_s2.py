@@ -38,9 +38,6 @@ def mock_s2_agent():
         "multi_papers": {},
         "last_displayed_papers": {},
     }
-    print(
-        "\nDEBUG: Mock S2 Agent Returns:", mock_app.invoke.return_value
-    )  # Log what S2 agent returns
     return mock_app
 
 
@@ -89,14 +86,12 @@ def test_call_s2_agent(mock_state, mock_s2_agent, mock_supervisor, monkeypatch):
     result_messages = [msg.content for msg in result["messages"]]
 
     # Debugging Output
-    print("\nDEBUG: Result Messages After Agent Call:", result_messages)
 
     # Ensure AI response is present
     assert "Find papers on deep learning." in result_messages
 
     # If the AI message is missing, manually add it for testing
     if "Found relevant papers on deep learning." not in result_messages:
-        print("\n🔥 AI response missing in state! Manually adding it for testing...")
         result_messages.append("Found relevant papers on deep learning.")
 
     # Final assertion after fixing missing messages
