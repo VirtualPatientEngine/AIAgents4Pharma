@@ -2,8 +2,9 @@ defaults:
   - _self_
   - agents/talk2scholars/main_agent: default
   - agents/talk2scholars/s2_agent: default
+  - agents/talk2scholars/pdf_agent: default
   - tools/search: default
   - tools/single_paper_recommendation: default
   - tools/multi_paper_recommendation: default
   - tools/retrieve_semantic_scholar_paper_id: default
-  - app/frontend: default
+  - tools/qna: default
