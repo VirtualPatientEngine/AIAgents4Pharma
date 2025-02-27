@@ -40,3 +40,8 @@ mkdocstrings-python==1.12.2
 mkdocs-include-markdown-plugin==7.1.2
 mkdocstrings==0.27.0
 streamlit-feedback
+langgraph-checkpoint==2.0.16
+langgraph-sdk==0.1.53
+omegaconf==2.3.0
+pydantic-settings==2.8.1
+pydantic_core==2.23.4
