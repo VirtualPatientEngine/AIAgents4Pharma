@@ -4,4 +4,4 @@
 Import statements
 '''
 
-from . import download_pdf_arxiv
+from . import download_arxiv_paper

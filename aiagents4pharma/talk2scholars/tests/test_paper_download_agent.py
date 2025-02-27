@@ -3,33 +3,39 @@
 Updated Unit Tests for the arXiv agent (Talk2Scholars arXiv sub-agent).
 """
 
-import logging
 from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
-from ..agents.arxiv_agent import get_app
+
+from ..agents.paper_download_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
 
-def test_arxiv_agent_initialization():
+def test_paper_download_agent_initialization():
     """
     Test that the arXiv agent initializes correctly with the mock configuration.
     """
     thread_id = "test_thread"
-    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.create_react_agent") as mock_create:
+    with mock.patch(
+        "aiagents4pharma.talk2scholars.agents.paper_download_agent.create_react_agent"
+    ) as mock_create:
         mock_create.return_value = mock.Mock()
         app = get_app(thread_id)
         assert app is not None
         assert mock_create.called
 
 
-def test_arxiv_agent_invocation():
+def test_paper_download_agent_invocation():
     """
     Test that the arXiv agent processes user input and returns a valid response.
     """
     thread_id = "test_thread"
-    mock_state = Talk2Scholars(messages=[HumanMessage(content="Fetch arXiv paper for AI research")])
-    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.create_react_agent") as mock_create:
+    mock_state = Talk2Scholars(
+        messages=[HumanMessage(content="Fetch arXiv paper for AI research")]
+    )
+    with mock.patch(
+        "aiagents4pharma.talk2scholars.agents.paper_download_agent.create_react_agent"
+    ) as mock_create:
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         # Simulate a response from the react agent
@@ -54,13 +60,17 @@ def test_arxiv_agent_invocation():
         assert mock_agent.invoke.called
 
 
-def test_arxiv_tool_assignment():
+def test_download_arxiv_paper_tool_assignment():
     """
-    Ensure that the correct tool (fetch_arxiv_paper) is assigned to the arXiv agent.
+    Ensure that the correct tool (download_arxiv_paper) is assigned to the 
+    arXiv agent.
     """
     thread_id = "test_thread"
-    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.create_react_agent") as mock_create, \
-         mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.ToolNode") as mock_toolnode:
+    with mock.patch(
+        "aiagents4pharma.talk2scholars.agents.paper_download_agent.create_react_agent"
+    ) as mock_create, mock.patch(
+        "aiagents4pharma.talk2scholars.agents.paper_download_agent.ToolNode"
+    ) as mock_toolnode:
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         # Simulate a ToolNode that is instantiated with a list of tools
@@ -73,15 +83,20 @@ def test_arxiv_tool_assignment():
         assert len(mock_tool_instance.tools) == 1
 
 
-def test_arxiv_query_results_tool():
+def test_query_results_tool():
     """
-    Test that the query_results tool is correctly integrated and utilized by the arXiv agent.
-    This test validates that the agent's response contains the expected 'query_results' key,
-    thereby ensuring our tool orchestration layer is operating with precision.
+    Test that the query_results tool is correctly integrated and utilized by the 
+    arXiv agent. This test validates that the agent's response contains the 
+    expected 'query_results' key, thereby ensuring our tool orchestration layer 
+    is operating with precision.
     """
     thread_id = "test_thread"
-    mock_state = Talk2Scholars(messages=[HumanMessage(content="Query results for arXiv papers")])
-    with mock.patch("aiagents4pharma.talk2scholars.agents.arxiv_agent.create_react_agent") as mock_create:
+    mock_state = Talk2Scholars(
+        messages=[HumanMessage(content="Query results for arXiv papers")]
+    )
+    with mock.patch(
+        "aiagents4pharma.talk2scholars.agents.paper_download_agent.create_react_agent"
+    ) as mock_create:
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         # Simulate an agent response that includes the query_results tool output
@@ -106,7 +121,7 @@ def test_arxiv_query_results_tool():
         assert mock_agent.invoke.called
 
 
-def test_arxiv_agent_hydra_failure():
+def test_paper_download_agent_hydra_failure():
     """
     Test exception handling when Hydra fails to load configuration.
     """
