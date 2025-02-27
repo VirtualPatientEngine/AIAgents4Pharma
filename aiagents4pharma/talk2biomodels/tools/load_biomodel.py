@@ -4,15 +4,25 @@
 Function for loading the BioModel.
 """
 
-from dataclasses import dataclass
+from typing import Annotated, Any, Union
+from pydantic import BaseModel, BeforeValidator
 from ..models.basico_model import BasicoModel
 
-@dataclass
-class ModelData:
+def ensure_biomodel_id(value: Any) -> Any:
     """
-    Dataclass for storing the model data.
+    Ensure that the biomodel_id is an integer or a string starting with 'BIOMD' or 'MODEL'.
     """
-    biomodel_id: int = None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and (value.startswith("BIOMD") or value.startswith("MODEL")):
+        return value
+    raise ValueError("biomodel_id must be an integer or a string starting with 'BIOMD' or 'MODEL'.")
+
+class ModelData(BaseModel):
+    """
+    Base model for the model data.
+    """
+    biomodel_id: Annotated[Union[int, str], BeforeValidator(ensure_biomodel_id)] = None
     # sbml_file_path: Optional[str] = None
     use_uploaded_sbml_file: bool = False
 

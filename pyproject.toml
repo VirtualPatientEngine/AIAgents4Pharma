@@ -75,6 +75,7 @@ aiagents4pharma = [
   "talk2biomodels/configs/agents/t2b_agent/*",
   "talk2biomodels/configs/tools/ask_question/*",
   "talk2biomodels/configs/tools/get_annotation/*",
+  "talk2biomodels/configs/tools/custom_plotter/*",
   "talk2knowledgegraphs/configs/*",
   "talk2knowledgegraphs/configs/agents/t2kg_agent/*",
   "talk2knowledgegraphs/configs/app/frontend/*",
@@ -88,6 +89,7 @@ aiagents4pharma = [
   "talk2scholars/configs/tools/multi_paper_recommendation/*",
   "talk2scholars/configs/tools/search/*",
   "talk2scholars/configs/tools/single_paper_recommendation/*",
+  "talk2scholars/configs/tools/retrieve_semantic_scholar_paper_id/*"
 
 ]
 
