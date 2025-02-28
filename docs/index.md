@@ -17,7 +17,7 @@ Our toolkit currently consists of the following agents:
 - **Talk2Scholars** _(v1 in progress)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 - **Talk2Cells** _(v1 in progress)_: Query and analyze sequencing data with ease.
 
-![AIAgents4Pharma](docs/assets/AIAgents4Pharma.png)
+![AIAgents4Pharma](assets/AIAgents4Pharma.png)
 
 ## Getting Started
 
@@ -44,7 +44,7 @@ We currently support **two modules** via Docker:
 
 _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-### **1. Running Talk2Biomodels**
+#### **1. Running Talk2Biomodels**
 
 1. **Pull the Docker image**
    ```bash
@@ -52,7 +52,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```
 2. **Run the container**
    ```bash
-   docker run --rm \
+   docker run -d \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e NVIDIA_API_KEY=<your_nvidia_api_key> \
      -p 8501:8501 \
@@ -66,7 +66,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    _You can create a free account at NVIDIA and apply for their
    free credits [here](https://build.nvidia.com/explore/discover)._
 
-### **2. Running Talk2Scholars**
+#### **2. Running Talk2Scholars**
 
 1. **Pull the Docker image**
    ```bash
@@ -74,7 +74,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```
 2. **Run the container**
    ```bash
-   docker run --rm \
+   docker run -d \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e ZOTERO_API_KEY=<your_zotero_api_key> \
      -e ZOTERO_USER_ID=<your_zotero_user_id> \
@@ -87,12 +87,12 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    http://localhost:8501
    ```
 
-### **🔹 Notes**
+#### **Notes**
 
 - Ensure you **replace `<your_openai_api_key>`, `<your_nvidia_api_key>`, `<your_zotero_api_key>`, and `<your_zotero_user_id>`** with your actual credentials.
 - Both applications use **port `8501`**, so run them on different ports if needed:
   ```bash
-  docker run --rm -e OPENAI_API_KEY=<your_openai_api_key> -p 8501:8501 virtualpatientengine/talk2scholars
+  docker run -d -e OPENAI_API_KEY=<your_openai_api_key> -p 8501:8501 virtualpatientengine/talk2scholars
   ```
   Then, access it via `http://localhost:8501`.
 
