@@ -35,16 +35,14 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 #### Option 2: Docker Hub
 
-##### Available Modules
+_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
 We currently support **two modules** via Docker:
 
 1. **Talk2Biomodels** – for querying and analyzing biological models.
 2. **Talk2Scholars** – for searching academic papers and managing citations.
 
-_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
-
-#### **1. Running Talk2Biomodels**
+#### **Running Talk2Biomodels**
 
 1. **Pull the Docker image**
    ```bash
@@ -66,7 +64,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    _You can create a free account at NVIDIA and apply for their
    free credits [here](https://build.nvidia.com/explore/discover)._
 
-#### **2. Running Talk2Scholars**
+#### **Running Talk2Scholars**
 
 1. **Pull the Docker image**
    ```bash
