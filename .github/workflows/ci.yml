@@ -1,22 +1,32 @@
-name: Docker hub deployment
-
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [talk2biomodels, talk2scholars]
+
     steps:
-      -
-        name: Login to Docker Hub
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
+
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          file: aiagents4pharma/talk2biomodels/Dockerfile
+          file: aiagents4pharma/${{ matrix.module }}/Dockerfile
           push: true
-          tags: virtualpatientengine/talk2biomodels:v1
+          tags: virtualpatientengine/${{ matrix.module }}:v1
