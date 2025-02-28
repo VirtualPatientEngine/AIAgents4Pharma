@@ -30,6 +30,11 @@ nav:
 
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
+      - Tutorials:
+          - Cell Annotation: ./notebooks/talk2cells/tutorial_cell_annotation.ipynb
+          - Cell Discovery: ./notebooks/talk2cells/tutorial_cell_discovery.ipynb
+          - UMAP Visualization: ./notebooks/talk2cells/tutorial_UMAP_visualization.ipynb
+          - Cell Type Proportion: ./notebooks/talk2cells/tutorial_cell_type_proportion.ipynb
       - Agents:
           - SCP Agent: talk2cells/agents/scp_agent.md
       - States:
