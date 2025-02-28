@@ -30,6 +30,11 @@ nav:
 
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
+      - Tutorials:
+          - Cell Annotation: ./notebooks/talk2cells/tutorial_cell_annotation.ipynb
+          - Cell Discovery: ./notebooks/talk2cells/tutorial_cell_discovery.ipynb
+          - UMAP Visualization: ./notebooks/talk2cells/tutorial_UMAP_visualization.ipynb
+          - Cell Type Proportion: ./notebooks/talk2cells/tutorial_cell_type_proportion.ipynb
       - Agents:
           - SCP Agent: talk2cells/agents/scp_agent.md
       - States:
@@ -58,16 +63,16 @@ nav:
           - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
           - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
-        - Embeddings:
-          - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
-          - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
-          - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
-          - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
-          - EmbeddingWithMOLMIM: talk2knowledgegraphs/utils/embeddings/nim_molmim.md
-        - Enrichments:
-          - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
-          - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
-          - EnrichmentWithPubChem: talk2knowledgegraphs/utils/enrichments/pubchem_strings.md
+          - Embeddings:
+              - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
+              - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
+              - EmbeddingWithHuggingFace: talk2knowledgegraphs/utils/embeddings/huggingface.md
+              - EmbeddingWithOllama: talk2knowledgegraphs/utils/embeddings/ollama.md
+              - EmbeddingWithMOLMIM: talk2knowledgegraphs/utils/embeddings/nim_molmim.md
+          - Enrichments:
+              - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
+              - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
+              - EnrichmentWithPubChem: talk2knowledgegraphs/utils/enrichments/pubchem_strings.md
       - Agents:
           - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
       - States:
@@ -85,6 +90,7 @@ nav:
           - Main Agent: talk2scholars/agents/main_agent.md
           - S2 Agent: talk2scholars/agents/s2_agent.md
           - Paper Download Agent: talk2scholars/agents/paper_download_agent.md
+          - Zotero Agent: talk2scholars/agents/zotero_agent.md
       - States:
           - Talk2Scholars state: talk2scholars/states/state_talk2scholars.md
       - Tools:
@@ -95,6 +101,7 @@ nav:
           - Query results: talk2scholars/tools/query_results.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Paper: talk2scholars/tools/download_arxiv_paper.md
+          - Zotero Read: talk2scholars/tools/zotero_read.md
 
   - Documentation:
       - Ops:

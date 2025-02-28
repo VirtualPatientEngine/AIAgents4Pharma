@@ -52,6 +52,7 @@ class Talk2Scholars(AgentState):
         last_displayed_papers (Dict[str, Any]): Stores the most recently displayed papers.
         papers (Dict[str, Any]): Stores the research papers retrieved from the agent's queries.
         multi_papers (Dict[str, Any]): Stores multiple recommended papers from various sources.
+        zotero_read (Dict[str, Any]): Stores the papers retrieved from Zotero.
         llm_model (BaseChatModel): The language model instance used for generating responses.
     """
 
@@ -59,5 +60,6 @@ class Talk2Scholars(AgentState):
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
+    zotero_read: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     pdf_data: Annotated[Dict[str, Any], replace_dict]
