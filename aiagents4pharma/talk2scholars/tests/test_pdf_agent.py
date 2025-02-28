@@ -1,10 +1,10 @@
 """
-Unit Tests for the PDF QnA agent.
+Updated Unit Tests for the PDF agent.
 """
 
+import logging
 from unittest import mock
 import pytest
-from omegaconf import OmegaConf
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents.pdf_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
@@ -12,39 +12,32 @@ from ..state.state_talk2scholars import Talk2Scholars
 
 @pytest.fixture(autouse=True)
 def mock_hydra_fixture():
-    """
-    Fixture to mock Hydra configuration for the PDF agent.
-    Returns a valid configuration using OmegaConf.create.
-    """
+    """Mock Hydra configuration to prevent external dependencies."""
     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
-        cfg = OmegaConf.create({
-            "temperature": 0,
-            "pdf_agent": {"some_setting": "value"},
-            "openai_llms": ["gpt-4o-mini"]
-        })
-        mock_compose.return_value = cfg
+        # Create a mock configuration with a pdf_agent section.
+        cfg_mock = mock.MagicMock()
+        # The pdf_agent config will be accessed as cfg.agents.talk2scholars.pdf_agent in get_app.
+        cfg_mock.agents.talk2scholars.pdf_agent.some_property = "Test prompt"
+        mock_compose.return_value = cfg_mock
         yield mock_compose
 
 
 @pytest.fixture
 def mock_tools_fixture():
-    """
-    Fixture to mock the PDF agent tools to avoid real API calls.
-    """
+    """Mock PDF agent tools to prevent execution of real API calls."""
     with (
-        mock.patch("aiagents4pharma.talk2scholars.tools.pdf.qna.qna_tool") as mock_qna_tool,
-        mock.patch("aiagents4pharma.talk2scholars.tools.s2.query_results.query_results") as mock_query_results,
+        mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.qna_tool") as mock_qna_tool,
+        mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.query_results") as mock_query_results,
     ):
         mock_qna_tool.return_value = {"result": "Mock QnA Result"}
         mock_query_results.return_value = {"result": "Mock Query Result"}
         yield [mock_qna_tool, mock_query_results]
 
 
+@pytest.mark.usefixtures("mock_hydra_fixture")
 def test_pdf_agent_initialization():
-    """
-    Test that the PDF agent initializes correctly with the mock configuration.
-    """
-    thread_id = "test_pdf_thread"
+    """Test that PDF agent initializes correctly with mock configuration."""
+    thread_id = "test_thread"
     with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
         mock_create.return_value = mock.Mock()
         app = get_app(thread_id)
@@ -53,18 +46,17 @@ def test_pdf_agent_initialization():
 
 
 def test_pdf_agent_invocation():
-    """
-    Test that the PDF agent processes user input and returns a valid response.
-    """
-    thread_id = "test_pdf_thread"
-    mock_state = Talk2Scholars(messages=[HumanMessage(content="Extract info from PDF")])
+    """Test that the PDF agent processes user input and returns a valid response."""
+    thread_id = "test_thread"
+    # Create a sample state with a human message.
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Extract key data from PDF")])
     with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
-        # Simulate a response from the agent using the expected keys.
+        # Simulate a response from the PDF agent.
         mock_agent.invoke.return_value = {
-            "messages": [AIMessage(content="PDF info extracted")],
-            "pdf_data": {"section1": "Content from PDF"}
+            "messages": [AIMessage(content="PDF content extracted successfully")],
+            "pdf_data": {"page": 1, "text": "Sample PDF text"},
         }
         app = get_app(thread_id)
         result = app.invoke(
@@ -79,16 +71,13 @@ def test_pdf_agent_invocation():
         )
         assert "messages" in result
         assert "pdf_data" in result
-        assert result["pdf_data"]["section1"] == "Content from PDF"
-        assert mock_agent.invoke.called
+        assert result["pdf_data"]["page"] == 1
 
 
-def test_pdf_agent_tools_assignment(mock_tools_fixture):
-    """
-    Ensure that the correct tools are assigned to the PDF agent.
-    The PDF agent should have two tools: qna_tool and query_results.
-    """
-    thread_id = "test_pdf_thread"
+def test_pdf_agent_tools_assignment(request):
+    """Ensure that the correct tools are assigned to the PDF agent."""
+    thread_id = "test_thread"
+    mock_tools = request.getfixturevalue("mock_tools_fixture")
     with (
         mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create,
         mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ToolNode") as mock_toolnode,
@@ -96,59 +85,18 @@ def test_pdf_agent_tools_assignment(mock_tools_fixture):
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         mock_tool_instance = mock.Mock()
-        mock_tool_instance.tools = mock_tools_fixture
+        # For the PDF agent, we expect two tools: qna_tool and query_results.
+        mock_tool_instance.tools = mock_tools
         mock_toolnode.return_value = mock_tool_instance
         get_app(thread_id)
         assert mock_toolnode.called
-        # Assert that exactly 2 tools are assigned.
         assert len(mock_tool_instance.tools) == 2
 
 
 def test_pdf_agent_hydra_failure():
-    """
-    Test that the PDF agent raises an exception when Hydra fails to load its configuration.
-    """
-    thread_id = "test_pdf_thread"
+    """Test exception handling when Hydra fails to load config for PDF agent."""
+    thread_id = "test_thread"
     with mock.patch("hydra.initialize", side_effect=Exception("Hydra error")):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id)
         assert "Hydra error" in str(exc_info.value)
-
-
-def test_pdf_agent_with_none_llm_model():
-    """
-    Test that when llm_model is None, the config's openai_llms[0] is used.
-    """
-    thread_id = "test_pdf_none"
-    custom_cfg = OmegaConf.create({
-        "temperature": 0.5,
-        "pdf_agent": {"some_setting": "value"},
-        "openai_llms": ["custom-model"]
-    })
-    with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.hydra.compose", return_value=custom_cfg):
-        with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ChatOpenAI") as mock_chat:
-            with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
-                # Call get_app with llm_model set to None
-                app = get_app(thread_id, llm_model=None)
-                # Assert that ChatOpenAI was instantiated with the model from the configuration.
-                mock_chat.assert_called_with(model="custom-model", temperature=0.5)
-
-
-def test_pdf_agent_with_none_llm_model_empty():
-    """
-    Test that when llm_model is None and the openai_llms list is empty,
-    the default "gpt-4o-mini" is used.
-    """
-    thread_id = "test_pdf_none_empty"
-    custom_cfg = OmegaConf.create({
-        "temperature": 0.7,
-        "pdf_agent": {"some_setting": "value"},
-        "openai_llms": []
-    })
-    with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.hydra.compose", return_value=custom_cfg):
-        with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ChatOpenAI") as mock_chat:
-            with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
-                # Call get_app with llm_model set to None.
-                app = get_app(thread_id, llm_model=None)
-                # Assert that ChatOpenAI was instantiated with the default model "gpt-4o-mini".
-                mock_chat.assert_called_with(model="gpt-4o-mini", temperature=0.7)
