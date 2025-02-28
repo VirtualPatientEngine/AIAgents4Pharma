@@ -17,6 +17,7 @@ from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from .load_biomodel import ModelData, load_biomodel
 from .load_arguments import TimeData, SpeciesInitialData
+from .utils import get_model_units
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -119,7 +120,11 @@ def run_parameter_scan(model_object,
     """
     # Extract all parameter names from the model
     df_all_parameters = basico.model_info.get_parameters(model=model_object.copasi_model)
-    all_parameters = df_all_parameters.index.tolist()
+    all_parameters = []
+    if df_all_parameters is not None:
+        # For example model 10 in the BioModels database
+        # has no parameters
+        all_parameters = df_all_parameters.index.tolist()
 
     # Extract all species name from the model
     df_all_species = basico.model_info.get_species(model=model_object.copasi_model)
@@ -280,7 +285,8 @@ class ParameterScanTool(BaseTool):
                 "messages": [
                     ToolMessage(
                         content=f"Parameter scan results of {arg_data.experiment_name}",
-                        tool_call_id=tool_call_id
+                        tool_call_id=tool_call_id,
+                        artifact=get_model_units(model_object)
                         )
                     ],
                 }

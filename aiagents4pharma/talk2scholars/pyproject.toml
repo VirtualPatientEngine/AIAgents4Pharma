@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "talk2scholars"
 
-description = "A submodule of AIAgents4Pharma for interacting with articles"
+description = "An agent of AIAgents4Pharma for searching/recommending articles"
 
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,6 +23,7 @@ dependencies = [
   "openai==1.59.6",
   "pandas==2.2.3",
   "pydantic==2.10.5",
+  "pyzotero==1.6.9",
   "requests==2.32.3",
   "streamlit==1.41.1",
   "tabulate==0.9.0",
@@ -37,4 +38,3 @@ packages = [
   "talk2scholars.tools",
   "talk2scholars.states",
 ]
-
