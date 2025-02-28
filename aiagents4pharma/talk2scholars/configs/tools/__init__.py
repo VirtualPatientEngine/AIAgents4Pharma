@@ -6,3 +6,4 @@ from . import search
 from . import single_paper_recommendation
 from . import multi_paper_recommendation
 from . import qna
+from . import zotero_read

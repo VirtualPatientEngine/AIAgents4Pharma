@@ -1,0 +1,15 @@
+# Default configuration for Zotero search tool
+library_type: "user" # Type of library ('user' or 'group')
+default_limit: 2
+request_timeout: 10
+user_id: ${oc.env:ZOTERO_USER_ID} # Load from environment variable
+api_key: ${oc.env:ZOTERO_API_KEY} # Load from environment variable
+
+# Default search parameters
+search_params:
+  limit: ${.default_limit}
+
+# Item Types and Limit
+zotero:
+  max_limit: 100
+  filter_item_types: ["journalArticle", "conferencePaper", "preprint"]

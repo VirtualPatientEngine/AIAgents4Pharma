@@ -109,11 +109,23 @@ def search_tool(
 
     logger.info("Filtered %d papers", len(filtered_papers))
 
-    content = "Search was successful."
-    content += " Here is a summary of the search results:"
+    # Prepare content with top 3 paper titles and years
+    top_papers = list(filtered_papers.values())[:3]
+    top_papers_info = "\n".join(
+        [
+            f"{i+1}. {paper['Title']} ({paper['Year']})"
+            for i, paper in enumerate(top_papers)
+        ]
+    )
+
+    content = (
+        "Search was successful. Papers are attached as an artifact. "
+        "Here is a summary of the search results:\n"
+    )
     content += f"Number of papers found: {len(filtered_papers)}\n"
     content += f"Query: {query}\n"
     content += f"Year: {year}\n" if year else ""
+    content += "Top papers:\n" + top_papers_info
 
     return Command(
         update={

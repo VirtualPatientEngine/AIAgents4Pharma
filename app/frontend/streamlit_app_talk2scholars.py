@@ -321,7 +321,28 @@ with main_col2:
                             # Drop index
                             df_papers.reset_index(drop=True, inplace=True)
                             # Drop colum abstract
-                            df_papers.drop(columns=["Abstract"], inplace=True)
+                            df_papers.drop(columns=["Abstract", "Key"], inplace=True)
+
+                            if "Year" in df_papers.columns:
+                                df_papers["Year"] = df_papers["Year"].apply(
+                                    lambda x: (
+                                        str(int(x))
+                                        if pd.notna(x) and str(x).isdigit()
+                                        else None
+                                    )
+                                )
+
+                            if "Date" in df_papers.columns:
+                                df_papers["Date"] = df_papers["Date"].apply(
+                                    lambda x: (
+                                        pd.to_datetime(x, errors="coerce").strftime(
+                                            "%Y-%m-%d"
+                                        )
+                                        if pd.notna(x)
+                                        else None
+                                    )
+                                )
+
                             st.dataframe(
                                 df_papers,
                                 hide_index=True,
