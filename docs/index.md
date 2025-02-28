@@ -6,7 +6,6 @@
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2biomodels?link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Fvirtualpatientengine%2Ftalk2biomodels%2Fgeneral)
 
-
 ## Introduction
 
 Welcome to **AIAgents4Pharma** – an open-source project by [Team VPE](https://github.com/VirtualPatientEngine) that brings together AI-driven tools to help researchers and pharma interact seamlessly with complex biological data.
@@ -18,7 +17,7 @@ Our toolkit currently consists of the following agents:
 - **Talk2Scholars** _(v1 in progress)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 - **Talk2Cells** _(v1 in progress)_: Query and analyze sequencing data with ease.
 
-![AIAgents4Pharma](assets/AIAgents4Pharma.png)
+![AIAgents4Pharma](docs/assets/AIAgents4Pharma.png)
 
 ## Getting Started
 
@@ -46,8 +45,8 @@ _Please note that this option is currently available only for Talk2Biomodels._
    ```
    docker run -e OPENAI_API_KEY=<openai_api_key> -e NVIDIA_API_KEY=<nvidia_api_key> -p 8501:8501 virtualpatientengine/talk2biomodels
    ```
-_You can create a free account at NVIDIA and apply for their
-free credits [here](https://build.nvidia.com/explore/discover)._
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
 
 #### Option 3: git
 
@@ -61,31 +60,43 @@ free credits [here](https://build.nvidia.com/explore/discover)._
    pip install -r requirements.txt
    ```
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
+
    ```bash
    export OPENAI_API_KEY=....
    ```
+
    ```bash
    export NVIDIA_API_KEY=....
    ```
-_You can create a free account at NVIDIA and apply for their
-free credits [here](https://build.nvidia.com/explore/discover)._
 
-4. **[Optional] Initialize LANGSMITH_API_KEY**
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
+
+4. **Initialize ZOTERO_API_KEY and ZOTERO_USER_ID**
+
+   ```bash
+   export ZOTERO_API_KEY=....
+   export ZOTERO_USER_ID=....
+   ```
+
+5. **[Optional] Initialize LANGSMITH_API_KEY**
+
    ```bash
    export LANGCHAIN_TRACING_V2=true
    export LANGCHAIN_API_KEY=<your-api-key>
    ```
-_Please note that this will create a new tracing project in your Langsmith
-account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-`KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-default to the name `default`. `xxxx` will be the 4-digit ID created for the
-session._
 
-5. **Launch the app:**
+   _Please note that this will create a new tracing project in your Langsmith
+   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
+   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
+   default to the name `default`. `xxxx` will be the 4-digit ID created for the
+   session._
+
+6. **Launch the app:**
    ```bash
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
-_Replace <agent> with the agent name you are interested to launch._
+   _Replace <agent> with the agent name you are interested to launch._
 
 For detailed instructions on each agent, please refer to their respective modules.
 
