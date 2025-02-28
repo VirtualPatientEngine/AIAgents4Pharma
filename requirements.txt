@@ -16,7 +16,7 @@ langchain_ollama==0.2.2
 langgraph==0.2.66
 matplotlib==3.9.2
 openai==1.59.4
-ollama==0.4.6
+ollama==0.4.7
 pandas==2.2.3
 pcst_fast==1.0.10
 plotly==5.24.1

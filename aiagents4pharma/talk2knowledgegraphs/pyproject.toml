@@ -25,7 +25,7 @@ dependencies = [
     "langchain-experimental==0.3.3",
     "langchain_ollama==0.2.2",
     "joblib==1.4.2",
-    "ollama==0.4.6",
+    "ollama==0.4.7",
     "pandas==2.2.3",
     "pcst_fast==1.0.10",
     "pubchempy==1.0.4",
