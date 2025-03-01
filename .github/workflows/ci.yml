@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure all tags are fetched
 
       - name: Detect Changes
         id: filter
@@ -34,16 +36,30 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure all tags are fetched
+
+      - name: Debug Git Tags
+        run: git tag # Check if tags are available
+
+      - name: Get Latest Tag Version
+        id: version
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          if [ -z "$TAG" ]; then
+            echo "Error: No tags found. Please create a tag and push it."
+            exit 1
+          fi
+          echo "VERSION=$TAG" >> $GITHUB_ENV
+
+      - name: Debug Version Tag
+        run: echo "Using VERSION=${{ env.VERSION }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Get Latest Tag Version
-        id: version
-        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Build and Push Talk2Biomodels
         uses: docker/build-push-action@v6
@@ -61,16 +77,30 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure all tags are fetched
+
+      - name: Debug Git Tags
+        run: git tag # Check if tags are available
+
+      - name: Get Latest Tag Version
+        id: version
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          if [ -z "$TAG" ]; then
+            echo "Error: No tags found. Please create a tag and push it."
+            exit 1
+          fi
+          echo "VERSION=$TAG" >> $GITHUB_ENV
+
+      - name: Debug Version Tag
+        run: echo "Using VERSION=${{ env.VERSION }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Get Latest Tag Version
-        id: version
-        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Build and Push Talk2Scholars
         uses: docker/build-push-action@v6
