@@ -1,3 +1,5 @@
+name: Docker Build and Push
+
 on:
   # Trigger after release workflow completes successfully
   workflow_run:
@@ -6,6 +8,9 @@ on:
       - completed
     branches:
       - main
+    # Only run if the RELEASE workflow was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
   # Keep existing triggers for flexibility
   push:
     branches:
@@ -24,14 +29,29 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Get the latest tag to use as the version
+      - name: Get latest version tag
+        id: get_version
+        run: |
+          # Get the latest tag from git
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+          echo "Using version: $LATEST_TAG"
+          echo "version=$LATEST_TAG" >> $GITHUB_OUTPUT
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           file: aiagents4pharma/${{ matrix.module }}/Dockerfile
           push: true
-          tags: virtualpatientengine/${{ matrix.module }}:v1
+          tags: |
+            virtualpatientengine/${{ matrix.module }}:${{ steps.get_version.outputs.version }}
+            virtualpatientengine/${{ matrix.module }}:latest
