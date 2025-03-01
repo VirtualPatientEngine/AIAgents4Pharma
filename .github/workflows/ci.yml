@@ -1,7 +1,7 @@
 name: Docker Build and Push
 
 on:
-  # Trigger after release workflow completes successfully
+  # Trigger after RELEASE workflow completes
   workflow_run:
     workflows: ["RELEASE"]
     types:
@@ -20,8 +20,6 @@ on:
 
 jobs:
   docker:
-    # Only run if the RELEASE workflow was successful (when triggered by workflow_run)
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
