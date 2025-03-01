@@ -1,63 +1,22 @@
-name: Docker Hub Deployment
-
 on:
-  workflow_run:
-    workflows: ["RELEASE"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  detect-changes:
+  docker:
     runs-on: ubuntu-latest
-    outputs:
-      build_t2b: ${{ steps.filter.outputs.talk2biomodels }}
-      build_t2s: ${{ steps.filter.outputs.talk2scholars }}
+    strategy:
+      matrix:
+        module: [talk2biomodels, talk2scholars]
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all tags
-
-      - name: Detect Changes
-        id: filter
-        uses: dorny/paths-filter@v2
-        with:
-          filters: |
-            talk2biomodels:
-              - 'aiagents4pharma/talk2biomodels/**'
-            talk2scholars:
-              - 'aiagents4pharma/talk2scholars/**'
-
-  docker-build-t2b:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.build_t2b == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get & Bump Talk2Biomodels Version
-        id: version
-        run: |
-          latest_tag=$(git tag --list 'talk2biomodels-*' | sort -V | tail -n 1 | sed 's/talk2biomodels-//')
-          if [ -z "$latest_tag" ]; then
-            new_version="1.0.0" # Default if no tag exists
-          else
-            IFS='.' read -r major minor patch <<< "$latest_tag"
-            new_version="$major.$minor.$((patch + 1))"  # Auto-increment patch version
-          fi
-          echo "T2B_VERSION=$new_version" >> $GITHUB_ENV
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
-          git tag -a "talk2biomodels-$new_version" -m "Auto version bump to $new_version"
-          git push origin "talk2biomodels-$new_version"
-
-      - name: Debug Version
-        run: |
-          echo "Talk2Biomodels New Version: ${{ env.T2B_VERSION }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -65,56 +24,9 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Talk2Biomodels
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          file: aiagents4pharma/talk2biomodels/Dockerfile
+          file: aiagents4pharma/${{ matrix.module }}/Dockerfile
           push: true
-          tags: |
-            virtualpatientengine/talk2biomodels:${{ env.T2B_VERSION }}
-            virtualpatientengine/talk2biomodels:latest
-
-  docker-build-t2s:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.build_t2s == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get & Bump Talk2Scholars Version
-        id: version
-        run: |
-          latest_tag=$(git tag --list 'talk2scholars-*' | sort -V | tail -n 1 | sed 's/talk2scholars-//')
-          if [ -z "$latest_tag" ]; then
-            new_version="1.0.0" # Default if no tag exists
-          else
-            IFS='.' read -r major minor patch <<< "$latest_tag"
-            new_version="$major.$minor.$((patch + 1))"  # Auto-increment patch version
-          fi
-          echo "T2S_VERSION=$new_version" >> $GITHUB_ENV
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
-          git tag -a "talk2scholars-$new_version" -m "Auto version bump to $new_version"
-          git push origin "talk2scholars-$new_version"
-
-      - name: Debug Version
-        run: |
-          echo "Talk2Scholars New Version: ${{ env.T2S_VERSION }}"
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Talk2Scholars
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2scholars/Dockerfile
-          push: true
-          tags: |
-            virtualpatientengine/talk2scholars:${{ env.T2S_VERSION }}
-            virtualpatientengine/talk2scholars:latest
+          tags: virtualpatientengine/${{ matrix.module }}:v1
