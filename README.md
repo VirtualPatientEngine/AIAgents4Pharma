@@ -109,9 +109,6 @@ We currently support **two modules** via Docker:
 
    ```bash
    export OPENAI_API_KEY=....
-   ```
-
-   ```bash
    export NVIDIA_API_KEY=....
    ```
 
