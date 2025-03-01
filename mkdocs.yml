@@ -96,7 +96,7 @@ nav:
           - Query results: talk2scholars/tools/query_results.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
-          - Question answering: talk2scholars/tools/qna.md
+          - Question and answer: talk2scholars/tools/question_and_answer.md
 
   - Documentation:
       - Ops:

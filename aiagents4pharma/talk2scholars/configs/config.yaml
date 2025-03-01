@@ -9,5 +9,5 @@ defaults:
   - tools/single_paper_recommendation: default
   - tools/multi_paper_recommendation: default
   - tools/retrieve_semantic_scholar_paper_id: default
-  - tools/qna: default
+  - tools/question_and_answer: default
   - tools/zotero_read: default

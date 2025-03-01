@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Agent for interacting with PDF documents via QnA.
+Agent for interacting with PDF documents via question and answer.
 
 This module initializes and compiles a LangGraph application that enables users to query PDF
-documents using a question-and-answer tool. It integrates a language model and follows
+documents using a question_and_answer tool. It integrates a language model and follows
 the ReAct pattern to process and answer queries related to PDF content.
 
 Usage:
@@ -19,7 +19,7 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.pdf.qna import qna_tool
+from ..tools.pdf.question_and_answer import question_and_answer_tool
 from ..tools.s2.query_results import query_results
 
 # Initialize logger
@@ -32,7 +32,7 @@ def get_app(
     llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 ):
     """
-    Initializes and returns the LangGraph application for the PDF QnA agent.
+    Initializes and returns the LangGraph application for the PDF agent.
 
     This function sets up the PDF agent by loading configuration settings via Hydra,
     initializing a model, and creating a workflow graph that incorporates
@@ -45,7 +45,7 @@ def get_app(
             Defaults to ChatOpenAI(model="gpt-4o-mini", temperature=0).
 
     Returns:
-        StateGraph: A compiled LangGraph application capable of handling PDF QnA interactions.
+        StateGraph: A compiled LangGraph application capable of handling PDF interactions.
 
     Example:
         >>> app = get_app("thread_123")
@@ -59,7 +59,7 @@ def get_app(
 
     def agent_pdf_node(state: Talk2Scholars):
         """
-        Processes the current state by invoking the language model for PDF QnA.
+        Processes the current state by invoking the language model for PDF question and answer.
 
         Args:
             state (Talk2Scholars): The current conversation state containing query details and context.
@@ -72,7 +72,7 @@ def get_app(
         return response
 
     # Define the tool node that includes the PDF QnA tool.
-    tools = ToolNode([qna_tool, query_results])
+    tools = ToolNode([question_and_answer_tool, query_results])
 
     logger.info("Using OpenAI model %s", llm_model)
 
@@ -95,6 +95,6 @@ def get_app(
 
     # Compile the graph into a runnable app.
     app = workflow.compile(checkpointer=checkpointer)
-    logger.info("Compiled the PDF QnA agent graph.")
+    logger.info("Compiled the PDF agent graph.")
 
     return app

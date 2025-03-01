@@ -9,7 +9,6 @@ from langchain_core.messages import HumanMessage, AIMessage
 from ..agents.pdf_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
-
 @pytest.fixture(autouse=True)
 def mock_hydra_fixture():
     """Mock Hydra configuration to prevent external dependencies."""
@@ -21,18 +20,16 @@ def mock_hydra_fixture():
         mock_compose.return_value = cfg_mock
         yield mock_compose
 
-
 @pytest.fixture
 def mock_tools_fixture():
     """Mock PDF agent tools to prevent execution of real API calls."""
     with (
-        mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.qna_tool") as mock_qna_tool,
+        mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.question_and_answer_tool") as mock_question_and_answer_tool,
         mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.query_results") as mock_query_results,
     ):
-        mock_qna_tool.return_value = {"result": "Mock QnA Result"}
+        mock_question_and_answer_tool.return_value = {"result": "Mock Question and Answer Result"}
         mock_query_results.return_value = {"result": "Mock Query Result"}
-        yield [mock_qna_tool, mock_query_results]
-
+        yield [mock_question_and_answer_tool, mock_query_results]
 
 @pytest.mark.usefixtures("mock_hydra_fixture")
 def test_pdf_agent_initialization():
@@ -43,7 +40,6 @@ def test_pdf_agent_initialization():
         app = get_app(thread_id)
         assert app is not None
         assert mock_create.called
-
 
 def test_pdf_agent_invocation():
     """Test that the PDF agent processes user input and returns a valid response."""
@@ -73,7 +69,6 @@ def test_pdf_agent_invocation():
         assert "pdf_data" in result
         assert result["pdf_data"]["page"] == 1
 
-
 def test_pdf_agent_tools_assignment(request):
     """Ensure that the correct tools are assigned to the PDF agent."""
     thread_id = "test_thread"
@@ -85,13 +80,12 @@ def test_pdf_agent_tools_assignment(request):
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         mock_tool_instance = mock.Mock()
-        # For the PDF agent, we expect two tools: qna_tool and query_results.
+        # For the PDF agent, we expect two tools: question_and_answer_tool and query_results.
         mock_tool_instance.tools = mock_tools
         mock_toolnode.return_value = mock_tool_instance
         get_app(thread_id)
         assert mock_toolnode.called
         assert len(mock_tool_instance.tools) == 2
-
 
 def test_pdf_agent_hydra_failure():
     """Test exception handling when Hydra fails to load config for PDF agent."""

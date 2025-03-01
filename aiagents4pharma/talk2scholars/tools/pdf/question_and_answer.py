@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-qna: Tool for performing Q&A on PDF documents using retrieval augmented generation.
+question_and_answer: Tool for performing Q&A on PDF documents using retrieval augmented generation.
 
 This module provides functionality to extract text from PDF binary data, split it into 
 chunks, retrieve relevant segments via a vector store, and generate an answer to a 
@@ -35,13 +35,13 @@ logger.setLevel(logging.INFO)
 
 # Load configuration using Hydra.
 with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/qna=default"])
-    cfg = cfg.tools.qna
-    logger.info("Loaded QnA tool configuration.")
+    cfg = hydra.compose(config_name="config", overrides=["tools/question_and_answer=default"])
+    cfg = cfg.tools.question_and_answer
+    logger.info("Loaded Question and Answer tool configuration.")
 
-class QnaInput(BaseModel):
+class QuestionAndAnswerInput(BaseModel):
     """
-    Input schema for the PDF QnA tool.
+    Input schema for the PDF Question and Answer tool.
 
     Attributes:
         question (str): The question to ask regarding the PDF content.
@@ -113,8 +113,8 @@ def generate_answer(question: str, pdf_bytes: bytes, llm_model: BaseChatModel) -
     )
     return answer
 
-@tool(args_schema=QnaInput)
-def qna_tool(
+@tool(args_schema=QuestionAndAnswerInput)
+def question_and_answer_tool(
     question: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
     state: Annotated[dict, InjectedState],
@@ -136,7 +136,7 @@ def qna_tool(
     Returns:
         Dict[str, Any]: A dictionary containing the generated answer or an error message.
     """
-    logger.info("Starting PDF QnA tool using PDF data from state.")
+    logger.info("Starting PDF Question and Answer tool using PDF data from state.")
     pdf_state = state.get("pdf_data")
     if not pdf_state:
         error_msg = "No pdf_data found in state."
