@@ -37,11 +37,6 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-We currently support **two modules** via Docker:
-
-1. **Talk2Biomodels** – for querying and analyzing biological models.
-2. **Talk2Scholars** – for searching academic papers and managing citations.
-
 #### **Running Talk2Biomodels**
 
 1. **Pull the Docker image**
