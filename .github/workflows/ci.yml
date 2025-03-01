@@ -1,64 +1,22 @@
-name: Docker Build and Push
-
 on:
-  # Trigger after RELEASE workflow completes successfully
-  workflow_run:
-    workflows: ["RELEASE"]
-    types:
-      - completed
-    branches:
-      - main
-  # Keep existing triggers for testing in feature branches
   push:
     branches:
       - main
-      - feature/**
   pull_request:
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-  # Detect which modules have changed
-  changes:
+  docker:
     runs-on: ubuntu-latest
-    outputs:
-      talk2biomodels: ${{ steps.filter.outputs.talk2biomodels }}
-      talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
+    strategy:
+      matrix:
+        module: [talk2biomodels, talk2scholars]
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check for changes
-        uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            talk2biomodels:
-              - 'aiagents4pharma/talk2biomodels/**'
-            talk2scholars:
-              - 'aiagents4pharma/talk2scholars/**'
-
-  # Build and push talk2biomodels
-  build-talk2biomodels:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.talk2biomodels == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set Fixed Version for Testing
-        run: |
-          echo "Using a fixed version for testing"
-          echo "VERSION=v0.1.0-test" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -69,56 +27,6 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: aiagents4pharma/talk2biomodels/Dockerfile
-          push: ${{ github.ref == 'refs/heads/main' }}
-          load: ${{ github.ref != 'refs/heads/main' }}
-          tags: virtualpatientengine/talk2biomodels:${{ env.VERSION }}
-
-      # For feature branches, just build but don't push
-      - name: Test Docker image locally
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: |
-          echo "Successfully built docker image virtualpatientengine/talk2biomodels:${{ env.VERSION }}"
-          docker image ls
-
-  # Build and push talk2scholars
-  build-talk2scholars:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.talk2scholars == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set Fixed Version for Testing
-        run: |
-          echo "Using a fixed version for testing"
-          echo "VERSION=v0.1.0-test" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: aiagents4pharma/talk2scholars/Dockerfile
-          push: ${{ github.ref == 'refs/heads/main' }}
-          load: ${{ github.ref != 'refs/heads/main' }}
-          tags: virtualpatientengine/talk2scholars:${{ env.VERSION }}
-
-      # For feature branches, just build but don't push
-      - name: Test Docker image locally
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: |
-          echo "Successfully built docker image virtualpatientengine/talk2scholars:${{ env.VERSION }}"
-          docker image ls
+          file: aiagents4pharma/${{ matrix.module }}/Dockerfile
+          push: true
+          tags: virtualpatientengine/${{ matrix.module }}:v1
