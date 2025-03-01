@@ -17,8 +17,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensure all tags are fetched
-          ref: main # Ensure we are on the correct branch
+          fetch-depth: 0 # Fetch all tags
 
       - name: Detect Changes
         id: filter
@@ -38,24 +37,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensure all tags are fetched
-          ref: main # Ensure we are on the correct branch
+          fetch-depth: 0
 
-      - name: Debug Git Tags
-        run: git tag # Check if tags are available
-
-      - name: Get Latest Tag Version
+      - name: Get & Bump Talk2Biomodels Version
         id: version
         run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$TAG" ]; then
-            echo "No Git tags found! Make sure tags are pushed before running this workflow."
-            exit 1
+          latest_tag=$(git tag --list 'talk2biomodels-*' | sort -V | tail -n 1 | sed 's/talk2biomodels-//')
+          if [ -z "$latest_tag" ]; then
+            new_version="1.0.0" # Default if no tag exists
+          else
+            IFS='.' read -r major minor patch <<< "$latest_tag"
+            new_version="$major.$minor.$((patch + 1))"  # Auto-increment patch version
           fi
-          echo "VERSION=$TAG" >> $GITHUB_ENV
+          echo "T2B_VERSION=$new_version" >> $GITHUB_ENV
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git tag -a "talk2biomodels-$new_version" -m "Auto version bump to $new_version"
+          git push origin "talk2biomodels-$new_version"
 
-      - name: Debug Version Tag
-        run: echo "Using VERSION=${{ env.VERSION }}"
+      - name: Debug Version
+        run: |
+          echo "Talk2Biomodels New Version: ${{ env.T2B_VERSION }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -69,7 +71,7 @@ jobs:
           file: aiagents4pharma/talk2biomodels/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2biomodels:${{ env.VERSION }}
+            virtualpatientengine/talk2biomodels:${{ env.T2B_VERSION }}
             virtualpatientengine/talk2biomodels:latest
 
   docker-build-t2s:
@@ -80,24 +82,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensure all tags are fetched
-          ref: main # Ensure we are on the correct branch
+          fetch-depth: 0
 
-      - name: Debug Git Tags
-        run: git tag # Check if tags are available
-
-      - name: Get Latest Tag Version
+      - name: Get & Bump Talk2Scholars Version
         id: version
         run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$TAG" ]; then
-            echo "No Git tags found! Make sure tags are pushed before running this workflow."
-            exit 1
+          latest_tag=$(git tag --list 'talk2scholars-*' | sort -V | tail -n 1 | sed 's/talk2scholars-//')
+          if [ -z "$latest_tag" ]; then
+            new_version="1.0.0" # Default if no tag exists
+          else
+            IFS='.' read -r major minor patch <<< "$latest_tag"
+            new_version="$major.$minor.$((patch + 1))"  # Auto-increment patch version
           fi
-          echo "VERSION=$TAG" >> $GITHUB_ENV
+          echo "T2S_VERSION=$new_version" >> $GITHUB_ENV
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git tag -a "talk2scholars-$new_version" -m "Auto version bump to $new_version"
+          git push origin "talk2scholars-$new_version"
 
-      - name: Debug Version Tag
-        run: echo "Using VERSION=${{ env.VERSION }}"
+      - name: Debug Version
+        run: |
+          echo "Talk2Scholars New Version: ${{ env.T2S_VERSION }}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -111,5 +116,5 @@ jobs:
           file: aiagents4pharma/talk2scholars/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2scholars:${{ env.VERSION }}
+            virtualpatientengine/talk2scholars:${{ env.T2S_VERSION }}
             virtualpatientengine/talk2scholars:latest
