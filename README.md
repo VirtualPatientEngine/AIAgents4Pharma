@@ -33,20 +33,61 @@ pip install aiagents4pharma
 
 Check out the tutorials on each agent for detailed instrcutions.
 
-#### Option 2: docker hub
+#### Option 2: Docker Hub
 
-_Please note that this option is currently available only for Talk2Biomodels._
+_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-1. **Pull the image**
-   ```
+#### **Running Talk2Biomodels**
+
+1. **Pull the Docker image**
+   ```bash
    docker pull virtualpatientengine/talk2biomodels
    ```
-2. **Run a container**
+2. **Run the container**
+   ```bash
+   docker run -d \
+     -e OPENAI_API_KEY=<your_openai_api_key> \
+     -e NVIDIA_API_KEY=<your_nvidia_api_key> \
+     -p 8501:8501 \
+     virtualpatientengine/talk2biomodels
    ```
-   docker run -e OPENAI_API_KEY=<openai_api_key> -e NVIDIA_API_KEY=<nvidia_api_key> -p 8501:8501 virtualpatientengine/talk2biomodels
+3. **Access the Web App**  
+    Open your browser and go to:
+   ```
+   http://localhost:8501
    ```
    _You can create a free account at NVIDIA and apply for their
    free credits [here](https://build.nvidia.com/explore/discover)._
+
+#### **Running Talk2Scholars**
+
+1. **Pull the Docker image**
+   ```bash
+   docker pull virtualpatientengine/talk2scholars
+   ```
+2. **Run the container**
+   ```bash
+   docker run -d \
+     -e OPENAI_API_KEY=<your_openai_api_key> \
+     -e ZOTERO_API_KEY=<your_zotero_api_key> \
+     -e ZOTERO_USER_ID=<your_zotero_user_id> \
+     -p 8501:8501 \
+     virtualpatientengine/talk2scholars
+   ```
+3. **Access the Web App**  
+   Open your browser and go to:
+   ```
+   http://localhost:8501
+   ```
+
+#### **Notes**
+
+- Ensure you **replace `<your_openai_api_key>`, `<your_nvidia_api_key>`, `<your_zotero_api_key>`, and `<your_zotero_user_id>`** with your actual credentials.
+- Both applications use **port `8501`**, so run them on different ports if needed:
+  ```bash
+  docker run -d -e OPENAI_API_KEY=<your_openai_api_key> -p 8501:8501 virtualpatientengine/talk2scholars
+  ```
+  Then, access it via `http://localhost:8501`.
 
 #### Option 3: git
 
@@ -63,9 +104,6 @@ _Please note that this option is currently available only for Talk2Biomodels._
 
    ```bash
    export OPENAI_API_KEY=....
-   ```
-
-   ```bash
    export NVIDIA_API_KEY=....
    ```
 

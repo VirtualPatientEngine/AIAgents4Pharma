@@ -338,7 +338,7 @@ with main_col2:
                                         pd.to_datetime(x, errors="coerce").strftime(
                                             "%Y-%m-%d"
                                         )
-                                        if pd.notna(x)
+                                        if pd.notna(pd.to_datetime(x, errors="coerce"))
                                         else None
                                     )
                                 )

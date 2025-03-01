@@ -1,22 +1,132 @@
-name: Docker hub deployment
-
+name: Docker Build and Push
 on:
+  # Trigger after RELEASE workflow completes
+  workflow_run:
+    workflows: ["RELEASE"]
+    types:
+      - completed
+    branches:
+      - main
+  # Keep existing triggers for flexibility
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  docker:
+  # Detect which modules have changed
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      talk2biomodels: ${{ steps.filter.outputs.talk2biomodels }}
+      talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            talk2biomodels:
+              - 'aiagents4pharma/talk2biomodels/**'
+            talk2scholars:
+              - 'aiagents4pharma/talk2scholars/**'
+
+  # Generate version for the build
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      short_sha: ${{ steps.get_short_sha.outputs.short_sha }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Get the latest version from git tags
+      - name: Get latest version tag
+        id: get_version
+        run: |
+          # Get the latest tag from git
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
+
+          # For workflow_run triggered from RELEASE workflow, use the tag as is
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            VERSION=$LATEST_TAG
+          else
+            # For other triggers (PR, push, etc.), create a development version
+            # Strip the 'v' prefix
+            VERSION=${LATEST_TAG#v}
+            # Get count of commits since latest tag
+            COMMIT_COUNT=$(git rev-list ${LATEST_TAG}..HEAD --count)
+            # Create dev version: latest tag + dev + commit count
+            VERSION="v${VERSION}-dev.${COMMIT_COUNT}"
+          fi
+
+          echo "Using version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Get short SHA for tagging
+      - name: Get short SHA
+        id: get_short_sha
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
+  # Separate job for talk2biomodels
+  build-talk2biomodels:
+    needs: [changes, version]
+    if: ${{ needs.changes.outputs.talk2biomodels == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Login to Docker Hub
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
+
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           file: aiagents4pharma/talk2biomodels/Dockerfile
           push: true
-          tags: virtualpatientengine/talk2biomodels:v1
+          tags: |
+            virtualpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
+            virtualpatientengine/talk2biomodels:${{ needs.version.outputs.short_sha }}
+            virtualpatientengine/talk2biomodels:latest
+
+  # Separate job for talk2scholars
+  build-talk2scholars:
+    needs: [changes, version]
+    if: ${{ needs.changes.outputs.talk2scholars == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          file: aiagents4pharma/talk2scholars/Dockerfile
+          push: true
+          tags: |
+            virtualpatientengine/talk2scholars:${{ needs.version.outputs.version }}
+            virtualpatientengine/talk2scholars:${{ needs.version.outputs.short_sha }}
+            virtualpatientengine/talk2scholars:latest
