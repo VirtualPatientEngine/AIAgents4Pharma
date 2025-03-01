@@ -52,28 +52,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Version
-        id: version
+      - name: Set Fixed Version for Testing
         run: |
-          # Try to get the latest tag
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
-          # If no tag found, use a dev version with commit hash
-          if [ -z "$LATEST_TAG" ]; then
-            SHORT_SHA=$(git rev-parse --short HEAD)
-            VERSION="dev-${SHORT_SHA}"
-          else
-            VERSION="${LATEST_TAG}"
-            
-            # For feature branches, append commit hash
-            if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
-              SHORT_SHA=$(git rev-parse --short HEAD)
-              VERSION="${VERSION}-dev.${SHORT_SHA}"
-            fi
-          fi
-
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Using version: $VERSION"
+          echo "Using a fixed version for testing"
+          echo "VERSION=v0.1.0-test" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,8 +73,7 @@ jobs:
           file: aiagents4pharma/talk2biomodels/Dockerfile
           push: ${{ github.ref == 'refs/heads/main' }}
           load: ${{ github.ref != 'refs/heads/main' }}
-          tags: |
-            virtualpatientengine/talk2biomodels:${{ env.VERSION }}
+          tags: virtualpatientengine/talk2biomodels:${{ env.VERSION }}
 
       # For feature branches, just build but don't push
       - name: Test Docker image locally
@@ -112,28 +93,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Version
-        id: version
+      - name: Set Fixed Version for Testing
         run: |
-          # Try to get the latest tag
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
-          # If no tag found, use a dev version with commit hash
-          if [ -z "$LATEST_TAG" ]; then
-            SHORT_SHA=$(git rev-parse --short HEAD)
-            VERSION="dev-${SHORT_SHA}"
-          else
-            VERSION="${LATEST_TAG}"
-            
-            # For feature branches, append commit hash
-            if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
-              SHORT_SHA=$(git rev-parse --short HEAD)
-              VERSION="${VERSION}-dev.${SHORT_SHA}"
-            fi
-          fi
-
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Using version: $VERSION"
+          echo "Using a fixed version for testing"
+          echo "VERSION=v0.1.0-test" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -151,8 +114,7 @@ jobs:
           file: aiagents4pharma/talk2scholars/Dockerfile
           push: ${{ github.ref == 'refs/heads/main' }}
           load: ${{ github.ref != 'refs/heads/main' }}
-          tags: |
-            virtualpatientengine/talk2scholars:${{ env.VERSION }}
+          tags: virtualpatientengine/talk2scholars:${{ env.VERSION }}
 
       # For feature branches, just build but don't push
       - name: Test Docker image locally
@@ -160,33 +122,3 @@ jobs:
         run: |
           echo "Successfully built docker image virtualpatientengine/talk2scholars:${{ env.VERSION }}"
           docker image ls
-
-  # Add latest tag after all builds succeed on main branch
-  add-latest-tags:
-    needs: [build-talk2biomodels, build-talk2scholars]
-    if: ${{ github.ref == 'refs/heads/main' && always() && contains(needs.*.result, 'success') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Tag talk2biomodels as latest
-        if: ${{ needs.build-talk2biomodels.result == 'success' }}
-        run: |
-          # Get the latest tag from previous job
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          docker pull virtualpatientengine/talk2biomodels:${LATEST_TAG}
-          docker tag virtualpatientengine/talk2biomodels:${LATEST_TAG} virtualpatientengine/talk2biomodels:latest
-          docker push virtualpatientengine/talk2biomodels:latest
-
-      - name: Tag talk2scholars as latest
-        if: ${{ needs.build-talk2scholars.result == 'success' }}
-        run: |
-          # Get the latest tag from previous job
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          docker pull virtualpatientengine/talk2scholars:${LATEST_TAG}
-          docker tag virtualpatientengine/talk2scholars:${LATEST_TAG} virtualpatientengine/talk2scholars:latest
-          docker push virtualpatientengine/talk2scholars:latest
