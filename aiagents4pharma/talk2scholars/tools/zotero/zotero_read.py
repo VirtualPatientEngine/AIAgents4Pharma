@@ -76,6 +76,26 @@ def zotero_search_tool(
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
 
+    # Fetch all collections
+    collections = zot.collections()
+    collection_map = {col["key"]: col["data"]["name"] for col in collections}
+
+    # Manually create an item-to-collection mapping
+    item_to_collections = {}
+
+    for collection in collections:
+        collection_key = collection["key"]
+        collection_items = zot.collection_items(
+            collection_key
+        )  # Fetch items in the collection
+
+        for item in collection_items:
+            item_key = item["data"]["key"]
+            if item_key in item_to_collections:
+                item_to_collections[item_key].append(collection_map[collection_key])
+            else:
+                item_to_collections[item_key] = [collection_map[collection_key]]
+
     # Filter and format papers
     filtered_papers = {}
 
@@ -99,12 +119,16 @@ def zotero_search_tool(
         if not key:
             continue
 
+        # Use the manually built mapping to get collection names
+        collection_names = item_to_collections.get(key, ["Unknown"])
+
         filtered_papers[key] = {
             "Title": data.get("title", "N/A"),
             "Abstract": data.get("abstractNote", "N/A"),
             "Date": data.get("date", "N/A"),
             "URL": data.get("url", "N/A"),
             "Type": item_type if isinstance(item_type, str) else "N/A",
+            "Collections": collection_names,
         }
 
     if not filtered_papers:
@@ -116,7 +140,7 @@ def zotero_search_tool(
     top_papers = list(filtered_papers.values())[:2]
     top_papers_info = "\n".join(
         [
-            f"{i+1}. {paper['Title']} ({paper['Type']})"
+            f"{i+1}. {paper['Title']} ({paper['Type']}) - Collections: {', '.join(paper['Collections'])}"
             for i, paper in enumerate(top_papers)
         ]
     )
