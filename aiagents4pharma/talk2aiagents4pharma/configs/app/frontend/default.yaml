@@ -1,0 +1,31 @@
+_target_: app.frontend.streamlit_app_talk2knowledgegraphs
+default_user: "talk2kg_user"
+data_package_allowed_file_types:
+  - "pdf"
+endotype_allowed_file_types:
+  - "pdf"
+upload_data_dir: "../files"
+kg_name: "PrimeKG"
+kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/primekg_ibd_pyg_graph.pkl"
+kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/primekg_ibd_text_graph.pkl"
+openai_api_key: ${oc.env:OPENAI_API_KEY}
+openai_llms:
+  - "gpt-4o-mini"
+  - "gpt-4-turbo"
+  - "gpt-3.5-turbo"
+openai_embeddings:
+  - "text-embedding-3-small"
+ollama_llms:
+  - "llama3.2:1b"
+  - "llama3.2"
+  - "llama3.1"
+ollama_embeddings:
+  - "nomic-embed-text"
+temperature: 0.1
+streaming: False
+reasoning_subgraph_topk_nodes: 10
+reasoning_subgraph_topk_nodes_min: 1
+reasoning_subgraph_topk_nodes_max: 100
+reasoning_subgraph_topk_edges: 10
+reasoning_subgraph_topk_edges_min: 1
+reasoning_subgraph_topk_edges_max: 100

@@ -87,7 +87,8 @@ def get_app(uniq_id,
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory
     # when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer)
+    app = workflow.compile(checkpointer=checkpointer,
+                           name="T2B_Agent")
     logger.log(logging.INFO,
                "Compiled the graph with thread_id %s and llm_model %s",
                uniq_id,

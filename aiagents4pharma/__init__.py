@@ -7,4 +7,5 @@ from . import (
     talk2cells,
     talk2scholars,
     talk2knowledgegraphs,
+    talk2aiagents4pharma
 )

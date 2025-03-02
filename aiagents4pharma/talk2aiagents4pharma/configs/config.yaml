@@ -1,0 +1,4 @@
+defaults:
+  - _self_
+  - app/frontend: default
+  - agents/main_agent: default
