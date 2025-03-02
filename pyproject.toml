@@ -28,7 +28,7 @@ dependencies = [
   "langchain-nvidia-ai-endpoints==0.3.9",
   "langchain-openai==0.2.5",
   "langchain_ollama==0.2.3",
-  "langgraph==0.2.66",
+  "langgraph_supervisor==0.0.4",
   "matplotlib==3.9.2",
   "openai==1.59.4",
   "ollama==0.4.7",
@@ -85,6 +85,9 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
+  "talk2aiagents4pharma/configs/*",
+  "talk2aiagents4pharma/configs/agents/main_agent/*",
+  "talk2aiagents4pharma/configs/app/frontend/*",
   "talk2biomodels/configs/*",
   "talk2biomodels/configs/agents/t2b_agent/*",
   "talk2biomodels/configs/tools/ask_question/*",
