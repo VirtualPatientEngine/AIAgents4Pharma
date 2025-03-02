@@ -46,6 +46,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 2. **Run the container**
    ```bash
    docker run -d \
+     --name talk2biomodels \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e NVIDIA_API_KEY=<your_nvidia_api_key> \
      -p 8501:8501 \
@@ -68,6 +69,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 2. **Run the container**
    ```bash
    docker run -d \
+     --name talk2scholars \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e ZOTERO_API_KEY=<your_zotero_api_key> \
      -e ZOTERO_USER_ID=<your_zotero_user_id> \
