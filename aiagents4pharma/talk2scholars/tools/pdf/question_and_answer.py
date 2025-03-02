@@ -162,7 +162,8 @@ def question_and_answer_tool(
     # Retrieve llm_model from state; use a default if not provided.
     llm_model = state.get("llm_model")
     if not llm_model:
-        llm_model = ChatOpenAI(model=cfg.model, temperature=cfg.temperature)
+        logger.error("Missing LLM model instance in state.")
+        return {"error": "No LLM model found in state."}
     answer = generate_answer(question, pdf_bytes, llm_model)
     logger.info("Generated answer: %s", answer)
     return answer
