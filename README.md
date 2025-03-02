@@ -87,10 +87,10 @@ _Please note that this option is currently available only for Talk2Biomodels._
    ```
 
    _Please note that this will create a new tracing project in your Langsmith
-   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-   default to the name `default`. `xxxx` will be the 4-digit ID created for the
-   session._
+   account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+   `B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+   If you skip the previous step, it will default to the name `default`.
+   `xxxx` will be the 4-digit ID created for the session._
 
 6. **Launch the app:**
    ```bash
