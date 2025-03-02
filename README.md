@@ -39,11 +39,18 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
 #### **Running Talk2Biomodels**
 
-1. **Pull the Docker image**
+1. **Pull the Docker images**
+
    ```bash
    docker pull virtualpatientengine/talk2biomodels
    ```
-2. **Run the container**
+
+   ```bash
+   docker pull virtualpatientengine/talk2scholars
+   ```
+
+2. **Run the containers**
+
    ```bash
    docker run -d \
      --name talk2biomodels \
@@ -52,21 +59,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
      -p 8501:8501 \
      virtualpatientengine/talk2biomodels
    ```
-3. **Access the Web App**  
-    Open your browser and go to:
-   ```
-   http://localhost:8501
-   ```
-   _You can create a free account at NVIDIA and apply for their
-   free credits [here](https://build.nvidia.com/explore/discover)._
 
-#### **Running Talk2Scholars**
-
-1. **Pull the Docker image**
-   ```bash
-   docker pull virtualpatientengine/talk2scholars
-   ```
-2. **Run the container**
    ```bash
    docker run -d \
      --name talk2scholars \
@@ -76,11 +69,16 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
      -p 8501:8501 \
      virtualpatientengine/talk2scholars
    ```
+
 3. **Access the Web App**  
-   Open your browser and go to:
+    Open your browser and go to:
+
    ```
    http://localhost:8501
    ```
+
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
 
 #### **Notes**
 
