@@ -10,7 +10,7 @@ class Talk2AIAgents4Pharma(Talk2Biomodels,
     """
     The state for the Talk2AIAgents4Pharma agent.
 
-    This class inherits from th classes:
+    This class inherits from the classes:
     1. Talk2Biomodels
     2. Talk2KnowledgeGraphs
     """

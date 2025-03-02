@@ -58,7 +58,7 @@ def test_main_agent_invokes_t2kg(input_dict):
     )
     prompt = "List drugs that target the gene Interleukin-6"
 
-    # Test the tool get_modelinfo
+    # Invoke the agent
     response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
 
     # Check assistant message
@@ -67,7 +67,6 @@ def test_main_agent_invokes_t2kg(input_dict):
 
     # Check extracted subgraph dictionary
     current_state = app.get_state(config)
-    print (current_state.values["messages"])
     dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["graph_source"] == "PrimeKG"

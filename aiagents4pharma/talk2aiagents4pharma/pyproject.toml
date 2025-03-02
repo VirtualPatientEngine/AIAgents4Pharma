@@ -78,11 +78,8 @@ dynamic = ["version"]
 # Package discovery for the submodule
 [tool.setuptools]
 packages = [
-    "talk2biomodels",
-    "talk2biomodels.configs",
-    "talk2biomodels.models",
-    "talk2biomodels.api",
-    "talk2biomodels.tools",
-    "talk2biomodels.agents",
-    "talk2biomodels.states"
+    "talk2aiagents4pharma",
+    "talk2aiagents4pharma.configs",
+    "talk2aiagents4pharma.agents",
+    "talk2aiagents4pharma.states"
 ]

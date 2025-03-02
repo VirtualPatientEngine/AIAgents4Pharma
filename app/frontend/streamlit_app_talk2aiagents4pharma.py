@@ -34,7 +34,6 @@ if "OPENAI_API_KEY" not in os.environ or "NVIDIA_API_KEY" not in os.environ:
 
 # Import the agent
 sys.path.append('./')
-# from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
 from aiagents4pharma.talk2aiagents4pharma.agents.main_agent import get_app
 
 # Initialize configuration
@@ -43,13 +42,13 @@ if "config" not in st.session_state:
     # Load Hydra configuration
     with hydra.initialize(
         version_base=None,
-        config_path="../../aiagents4pharma/talk2aiagents4pharma/configs",
+        config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
     ):
-        cfg = hydra.compose(config_name="config", overrides=["app/frontend=default"])
-        cfg = cfg.app.frontend
-        st.session_state.config = cfg
+        cfg_t2kg = hydra.compose(config_name="config", overrides=["app/frontend=default"])
+        cfg_t2kg = cfg_t2kg.app.frontend
+        st.session_state.config = cfg_t2kg
 else:
-    cfg = st.session_state.config
+    cfg_t2kg = st.session_state.config
 
 ########################################################################################
 # Streamlit app
@@ -87,7 +86,7 @@ if "uploaded_files" not in st.session_state:
     st.session_state.uploaded_files = []
 
     # Make directories if not exists
-    os.makedirs(cfg.upload_data_dir, exist_ok=True)
+    os.makedirs(cfg_t2kg.upload_data_dir, exist_ok=True)
 
 # Initialize project_name for Langsmith
 if "project_name" not in st.session_state:
@@ -112,8 +111,8 @@ if "app" not in st.session_state:
 
 if "topk_nodes" not in st.session_state:
     # Subgraph extraction settings
-    st.session_state.topk_nodes = cfg.reasoning_subgraph_topk_nodes
-    st.session_state.topk_edges = cfg.reasoning_subgraph_topk_edges
+    st.session_state.topk_nodes = cfg_t2kg.reasoning_subgraph_topk_nodes
+    st.session_state.topk_edges = cfg_t2kg.reasoning_subgraph_topk_edges
 
 # Get the app
 app = st.session_state.app
@@ -126,16 +125,16 @@ with st.sidebar:
     st.markdown("**⚙️ Subgraph Extraction Settings**")
     topk_nodes = st.slider(
         "Top-K (Nodes)",
-        cfg.reasoning_subgraph_topk_nodes_min,
-        cfg.reasoning_subgraph_topk_nodes_max,
+        cfg_t2kg.reasoning_subgraph_topk_nodes_min,
+        cfg_t2kg.reasoning_subgraph_topk_nodes_max,
         st.session_state.topk_nodes,
         key="st_slider_topk_nodes",
     )
     st.session_state.topk_nodes = topk_nodes
     topk_edges = st.slider(
         "Top-K (Edges)",
-        cfg.reasoning_subgraph_topk_nodes_min,
-        cfg.reasoning_subgraph_topk_nodes_max,
+        cfg_t2kg.reasoning_subgraph_topk_nodes_min,
+        cfg_t2kg.reasoning_subgraph_topk_nodes_max,
         st.session_state.topk_edges,
         key="st_slider_topk_edges",
     )
@@ -183,7 +182,7 @@ with main_col1:
         uploaded_sbml_file = streamlit_utils.get_t2b_uploaded_files(app)
 
         # T2KG Upload files
-        streamlit_utils.get_uploaded_files(cfg)
+        streamlit_utils.get_uploaded_files(cfg_t2kg)
 
         # Help text
         st.button("Know more ↗",

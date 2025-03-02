@@ -6,9 +6,9 @@ nav:
   - Talk2AIAgents4Pharma:
       - Introduction: talk2aiagents4pharma/intro.md
       - Agents:
-          - T2B agent: talk2aiagents4pharma/agents/main_agent.md
+          - T2AA4P agent: talk2aiagents4pharma/agents/main_agent.md
       - States:
-          - T2B state: talk2aiagents4pharma/states/state_talk2aiagents4pharma.md
+          - T2AA4P state: talk2aiagents4pharma/states/state_talk2aiagents4pharma.md
 
   - Talk2Biomodels:
       - Introduction: talk2biomodels/intro.md
