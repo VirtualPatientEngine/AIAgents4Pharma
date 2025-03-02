@@ -37,8 +37,6 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-#### **Running Talk2Biomodels**
-
 1. **Pull the Docker images**
 
    ```bash
