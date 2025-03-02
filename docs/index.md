@@ -38,48 +38,46 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-#### **Running Talk2Biomodels**
+1. **Pull the Docker images**
 
-1. **Pull the Docker image**
    ```bash
    docker pull virtualpatientengine/talk2biomodels
    ```
-2. **Run the container**
+
+   ```bash
+   docker pull virtualpatientengine/talk2scholars
+   ```
+
+2. **Run the containers**
+
    ```bash
    docker run -d \
+     --name talk2biomodels \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e NVIDIA_API_KEY=<your_nvidia_api_key> \
      -p 8501:8501 \
      virtualpatientengine/talk2biomodels
    ```
-3. **Access the Web App**  
-    Open your browser and go to:
-   ```
-   http://localhost:8501
-   ```
-   _You can create a free account at NVIDIA and apply for their
-   free credits [here](https://build.nvidia.com/explore/discover)._
 
-#### **Running Talk2Scholars**
-
-1. **Pull the Docker image**
-   ```bash
-   docker pull virtualpatientengine/talk2scholars
-   ```
-2. **Run the container**
    ```bash
    docker run -d \
+     --name talk2scholars \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e ZOTERO_API_KEY=<your_zotero_api_key> \
      -e ZOTERO_USER_ID=<your_zotero_user_id> \
      -p 8501:8501 \
      virtualpatientengine/talk2scholars
    ```
+
 3. **Access the Web App**  
-   Open your browser and go to:
+    Open your browser and go to:
+
    ```
    http://localhost:8501
    ```
+
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
 
 #### **Notes**
 
