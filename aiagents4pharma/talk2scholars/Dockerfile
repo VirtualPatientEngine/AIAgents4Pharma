@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy necessary files
-COPY aiagents4pharma/talk2biomodels /app/aiagents4pharma/talk2biomodels
+COPY aiagents4pharma/talk2scholars /app/aiagents4pharma/talk2scholars
 COPY docs /app/docs
 COPY app /app/app
 COPY requirements.txt /app
@@ -22,5 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8501
 
 # Run the Streamlit application
-CMD ["streamlit", "run", "app/frontend/streamlit_app_talk2biomodels.py", "--server.port=8501", "--server.address=0.0.0.0"]
-
+CMD ["streamlit", "run", "app/frontend/streamlit_app_talk2scholars.py", "--server.port=8501", "--server.address=0.0.0.0"]
