@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-arxiv_paper_fetch: Tool for Fetching arXiv Papers and Downloading PDFs
+download_arxiv_paper: Tool for Fetching arXiv Papers and Downloading PDFs
 
 This module connects to the arXiv API to retrieve metadata for a research paper and
 download its corresponding PDF. It constructs an API query using a provided arXiv ID,
 parses the XML response to locate the PDF link, and then downloads the PDF content.
 The tool returns the PDF data along with metadata confirming the download operation.
+
+By structuring this code with an abstract base class, it is future-proof for additional
+APIs like PubMed or others. Right now, it only handles arXiv.
 """
 
 import logging
-from typing import Annotated, Any
+from typing import Annotated, Any, Dict
 import xml.etree.ElementTree as ET
+from abc import ABC, abstractmethod
 import requests
 import hydra
+
+
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.tools import tool
@@ -24,6 +30,96 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# 1️⃣ Abstract base class for future-proof design
+class AbstractPaperDownloader(ABC):
+    """
+    Abstract base class for scholarly paper downloaders.
+    This can be extended for different sources (e.g., arXiv, PubMed, IEEE Xplore, etc.).
+    """
+
+    @abstractmethod
+    def fetch_metadata(self, paper_id: str) -> Dict[str, Any]:
+        """
+        Fetch metadata for a given paper ID.
+        Args:
+            paper_id (str): The unique identifier for the paper.
+        Returns:
+            Dict[str, Any]: The metadata dictionary (format depends on the data source).
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def download_pdf(self, paper_id: str) -> Dict[str, Any]:
+        """
+        Download the paper's PDF for a given paper ID.
+        Args:
+            paper_id (str): The unique identifier for the paper.
+        Returns:
+            Dict[str, Any]: Contains at least `pdf_object` and `pdf_url`.
+        """
+        raise NotImplementedError
+
+
+# 2️⃣ Implementation of the abstract class specifically for arXiv
+class ArxivPaperDownloader(AbstractPaperDownloader):
+    """
+    Downloader class for arXiv. It uses the arXiv API to retrieve metadata
+    and downloads the paper PDF from the returned link.
+    """
+
+    def __init__(self):
+        # Load Hydra configuration for the 'download_arxiv_paper' tool
+        with hydra.initialize(version_base=None, config_path="../../configs"):
+            cfg = hydra.compose(
+                config_name="config",
+                overrides=["tools/download_arxiv_paper=default"]
+            )
+            self.api_url = cfg.tools.download_arxiv_paper.api_url
+            self.request_timeout = cfg.tools.download_arxiv_paper.request_timeout
+
+    def fetch_metadata(self, paper_id: str) -> Dict[str, Any]:
+        logger.info("Fetching metadata from arXiv for paper ID: %s", paper_id)
+        api_url = f"{self.api_url}?search_query=id:{paper_id}&start=0&max_results=1"
+        response = requests.get(api_url, timeout=self.request_timeout)
+        response.raise_for_status()
+        return {"xml": response.text}
+
+    def download_pdf(self, paper_id: str) -> Dict[str, Any]:
+        metadata = self.fetch_metadata(paper_id)
+
+        # Parse the XML response to locate the PDF link.
+        root = ET.fromstring(metadata["xml"])
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        pdf_url = next(
+            (
+                link.attrib.get("href")
+                for entry in root.findall("atom:entry", ns)
+                for link in entry.findall("atom:link", ns)
+                if link.attrib.get("title") == "pdf"
+            ),
+            None,
+        )
+
+        if not pdf_url:
+            raise RuntimeError(f"Failed to download PDF for arXiv ID {paper_id}.")
+
+        logger.info("Downloading PDF from: %s", pdf_url)
+        pdf_response = requests.get(pdf_url, stream=True, timeout=self.request_timeout)
+        pdf_response.raise_for_status()
+
+        # Combine the PDF data from chunks.
+        pdf_object = b"".join(
+            chunk for chunk in pdf_response.iter_content(chunk_size=1024) if chunk
+            )
+
+        return {
+            "pdf_object": pdf_object,
+            "pdf_url": pdf_url,
+            "arxiv_id": paper_id,
+        }
+
+
+# 3️⃣ Input Schema remains the same (still specific to arXiv)
 class DownloadArxivPaperInput(BaseModel):
     """
     Input schema for the arXiv paper download tool.
@@ -37,18 +133,8 @@ class DownloadArxivPaperInput(BaseModel):
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
-    model_config = {"arbitrary_types_allowed": True}
 
-
-# Load Hydra configuration for the download_arxiv_paper tool using a relative path.
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config",
-        overrides=["tools/download_arxiv_paper=default"]
-    )
-    cfg = cfg.tools.download_arxiv_paper
-
-
+# 4️⃣ The actual tool function which leverages the ArxivPaperDownloader
 @tool(args_schema=DownloadArxivPaperInput, parse_docstring=True)
 def download_arxiv_paper(
     arxiv_id: str,
@@ -57,70 +143,24 @@ def download_arxiv_paper(
     """
     Download an arXiv paper's PDF using its unique arXiv ID.
 
-    This function performs the following operations:
-      1. Connects to the arXiv API to fetch paper metadata based on the provided arXiv ID.
-         It constructs an API URL, sends an HTTP GET request, and parses the XML response.
-      2. Searches the parsed XML for a link labeled "pdf" to obtain the URL for the PDF.
-      3. Downloads the PDF by streaming the content from the retrieved URL.
-      4. Returns a Command object containing the binary PDF data, the PDF URL, and the arXiv ID,
-         along with a confirmation message.
-
-    Args:
-        arxiv_id (str): The unique identifier for the paper on arXiv.
-        tool_call_id (Annotated[str, InjectedToolCallId]):
-        A unique tool call identifier for tracking purposes.
-
-    Returns:
-        Command[Any]: A command object with an update dictionary containing:
-            - "pdf_data": A dictionary with keys "pdf_object" (the binary PDF content),
-              "pdf_url" (the URL from which the PDF was downloaded),
-               and "arxiv_id" (the provided paper ID).
-            - "messages": A list containing a ToolMessage that confirms successful PDF download.
-
-    Raises:
-        RuntimeError: If the PDF link cannot be found in the fetched paper metadata.
+    This function:
+      1. Creates an ArxivPaperDownloader instance.
+      2. Fetches metadata from arXiv using the provided `arxiv_id`.
+      3. Downloads the PDF from the returned link.
+      4. Returns a Command object containing the PDF data and a success message.
     """
-    api = cfg.api_url
-    timeout = cfg.request_timeout
-    logger.info("Starting download from arXiv with paper ID: %s", arxiv_id)
 
-    # Construct the API URL using the paper ID and fetch metadata.
-    api_url = f"{api}?search_query=id:{arxiv_id}&start=0&max_results=1"
-    logger.info("Fetching metadata from: %s", api_url)
-    response = requests.get(api_url, timeout=timeout)
-    response.raise_for_status()
+    # Keep the same scoping approach for model_config
 
-    # Parse the XML response to locate the PDF link.
-    root = ET.fromstring(response.text)
-    ns = {"atom": "http://www.w3.org/2005/Atom"}
-    pdf_url = next(
-        (
-            link.attrib.get("href")
-            for entry in root.findall("atom:entry", ns)
-            for link in entry.findall("atom:link", ns)
-            if link.attrib.get("title") == "pdf"
-        ),
-        None,
-    )
 
-    if not pdf_url:
-        raise RuntimeError(f"Failed to download PDF for arXiv ID {arxiv_id}.")
+    downloader = ArxivPaperDownloader()
+    pdf_data = downloader.download_pdf(arxiv_id)
 
-    logger.info("Downloading PDF from: %s", pdf_url)
-    pdf_response = requests.get(pdf_url, stream=True, timeout=timeout)
-    pdf_response.raise_for_status()
+    content = f"Successfully downloaded PDF for arXiv ID {arxiv_id}"
 
-    # Read and assemble the PDF data from binary chunks.
-    pdf_object = b"".join(
-        chunk for chunk in pdf_response.iter_content(chunk_size=1024) if chunk
-    )
-
-    content = f"Successfully downloaded PDF for arXiv ID {arxiv_id} "
-
-    # Return the Command with the PDF data and confirmation message.
     return Command(
         update={
-            "pdf_data": {"pdf_object": pdf_object, "pdf_url": pdf_url, "arxiv_id": arxiv_id},
+            "pdf_data": pdf_data,
             "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
         }
     )

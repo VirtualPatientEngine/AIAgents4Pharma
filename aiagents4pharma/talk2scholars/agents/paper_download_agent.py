@@ -86,23 +86,23 @@ def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", 
         state_modifier=cfg.paper_download_agent,
         checkpointer=MemorySaver(),
     )
-#define new graph
+    #define new graph
     workflow = StateGraph(Talk2Scholars)
 
-#defining 2 cycle nodes
+    #defining 2 cycle nodes
     workflow.add_node("paper_download_agent", paper_download_agent_node)
-#place holder for pubmed tool
+    #place holder for pubmed tool
 
-#entering into the agent
+    #entering into the agent
     workflow.add_edge(START, "paper_download_agent")
-#place holder for pubmed tool
+    #place holder for pubmed tool
 
-#starting memory of states between graph runs
+    #starting memory of states between graph runs
     checkpointer = MemorySaver()
 
-#compiling the graph
+    #compiling the graph
     app = workflow.compile(checkpointer=checkpointer)
 
-#logging the information and returning the app
+    #logging the information and returning the app
     logger.log(logging.INFO, "Compiled the graph")
     return app
