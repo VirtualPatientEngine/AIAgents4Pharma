@@ -36,7 +36,19 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 #### Option 2: Docker Hub
 
-_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
+_We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
+
+- ##### Run Talk2AIAgents4Pharma
+
+- Since `Talk2AIAgents4Pharma` requires **Ollama** for embedding models, we use **Docker Compose** to run both containers in the same network.
+
+- **Run the containers using Docker Compose from the root**:
+
+  ```bash
+  docker-compose up -d
+  ```
+
+- ##### Run Talk2Biomodels and Talk2Scholars
 
 1. **Pull the Docker images**
 
@@ -70,7 +82,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```
 
 3. **Access the Web App**
-    Open your browser and go to:
+   Open your browser and go to:
 
    ```
    http://localhost:8501
@@ -96,9 +108,11 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    cd AIAgents4Pharma
    ```
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
+
    The current version of T2KG requires additional Ollama library to be installed.
 
    Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
@@ -106,26 +120,28 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    As an alternative, use the following commands to install the library using terminal and to pull necessary model:
 
    - Ubuntu:
-      ```
-      curl -fsSL https://ollama.com/install.sh | sh
-      ollama pull nomic-embed-text
-      ```
+     ```
+     curl -fsSL https://ollama.com/install.sh | sh
+     ollama pull nomic-embed-text
+     ```
    - Windows:
-      ```
-      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-      tar -xzf .\ollama-windows-amd64.zip
-      start ollama serve
-      ollama pull nomic-embed-text
-      ```
+     ```
+     curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+     tar -xzf .\ollama-windows-amd64.zip
+     start ollama serve
+     ollama pull nomic-embed-text
+     ```
    - macOS:
-      ```
-      brew install ollama
-      ollama pull nomic-embed-text
-      ```
-   A list of pulled Ollama models can be checked using the following command:
+     ```
+     brew install ollama
+     ollama pull nomic-embed-text
+     ```
+     A list of pulled Ollama models can be checked using the following command:
+
    ```
    ollama list
    ```
+
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
 
    ```bash
