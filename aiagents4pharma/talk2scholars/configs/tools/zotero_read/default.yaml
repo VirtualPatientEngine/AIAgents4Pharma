@@ -13,3 +13,4 @@ search_params:
 zotero:
   max_limit: 100
   filter_item_types: ["journalArticle", "conferencePaper", "preprint"]
+  filter_excluded_types: ["attachment", "note", "annotation"]
