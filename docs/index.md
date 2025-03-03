@@ -69,7 +69,7 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
      virtualpatientengine/talk2scholars
    ```
 
-3. **Access the Web App**  
+3. **Access the Web App**
     Open your browser and go to:
 
    ```
@@ -98,6 +98,33 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
+   ```
+   The current version of T2KG requires additional Ollama library to be installed.
+
+   Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
+
+   As an alternative, use the following commands to install the library using terminal and to pull necessary model:
+
+   - Ubuntu:
+      ```
+      curl -fsSL https://ollama.com/install.sh | sh
+      ollama pull nomic-embed-text
+      ```
+   - Windows:
+      ```
+      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+      tar -xzf .\ollama-windows-amd64.zip
+      start ollama serve
+      ollama pull nomic-embed-text
+      ```
+   - macOS:
+      ```
+      brew install ollama
+      ollama pull nomic-embed-text
+      ```
+   A list of pulled Ollama models can be checked using the following command:
+   ```
+   ollama list
    ```
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
 
