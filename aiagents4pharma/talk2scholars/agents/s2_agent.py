@@ -108,7 +108,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.s2_agent,
+        prompt=cfg.s2_agent,
         checkpointer=MemorySaver(),
     )
 

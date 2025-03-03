@@ -102,7 +102,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.zotero_agent,
+        prompt=cfg.zotero_agent,
         checkpointer=MemorySaver(),
     )
 
