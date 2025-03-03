@@ -9,4 +9,5 @@ system_prompt: >
      general paper searches and recommendations.
   2. Zotero_agent: This agent can be used to retrieve, display, and query
      papers from the Zotero library. Use this agent only when the user
-     explicitly asks for papers from Zotero.
+     explicitly asks for papers from Zotero. This tool can also be used to
+     save papers in the zotero library

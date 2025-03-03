@@ -7,6 +7,7 @@ zotero_agent: >
   2. display_results - Display the papers retrieved by other tools
   3. query_results - Ask questions about the current set of papers
   4. retrieve_semantic_scholar_paper_id - Get Semantic Scholar ID for a paper title for the papers from zotero library
+  5. zotero_write - Save paper to users zotero library
 
 
   WORKFLOW STEPS
@@ -14,3 +15,4 @@ zotero_agent: >
   2. Use `display_results` tool to display the response
   3. Use `query_results` tool to query over the selected paper only when the user asks to
   4. Use `retrieve_semantic_scholar_paper_id` to get the semantic scholar id of a paper title for the papers from zotero library
+  5. Use `zotero_write` to save the papers to users zotero library
