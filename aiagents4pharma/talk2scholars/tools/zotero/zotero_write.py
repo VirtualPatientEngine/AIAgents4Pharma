@@ -79,12 +79,21 @@ def zotero_save_tool(
             }
         )
 
-    # Fetch all collection paths from Zotero
-    item_to_collections = get_item_collections(zot)
+    # First, check if zotero_read exists in state
+    zotero_read = state.get("zotero_read", {})
+
+    # If zotero_read is empty, only then fetch collection paths dynamically
+    if not zotero_read:
+        logger.warning(
+            "No paths found in zotero_read state, fetching paths dynamically."
+        )
+        zotero_read = get_item_collections(
+            zot
+        )  # Fetch paths dynamically only if missing
 
     # Find the collection key matching the given path
     matched_collection_key = None
-    for col_key, col_path in item_to_collections.items():
+    for col_key, col_path in zotero_read.items():
         if col_path == collection_path:
             matched_collection_key = col_key
             break
@@ -114,7 +123,7 @@ def zotero_save_tool(
                 "title": paper.get("Title", "N/A"),
                 "abstractNote": paper.get("Abstract", "N/A"),
                 "date": paper.get("Date", "N/A"),
-                "url": paper.get("URL", "N/A"),
+                "url": paper.get("url", "N/A"),
                 "extra": f"Paper ID: {paper_id}\nCitations: {paper.get('Citations', 'N/A')}",
                 "collections": [
                     matched_collection_key
