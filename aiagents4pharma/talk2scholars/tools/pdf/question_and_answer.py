@@ -51,6 +51,7 @@ class QuestionAndAnswerInput(BaseModel):
         description="The question to ask regarding the PDF content."
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
+    state: Annotated[dict, InjectedState]
 
 def extract_text_from_pdf_data(pdf_bytes: bytes) -> str:
     """
