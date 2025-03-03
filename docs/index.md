@@ -84,17 +84,7 @@ docker-compose down
 
 ##### **Run Talk2Biomodels and Talk2Scholars**
 
-1. **Pull the Docker images**
-
-   ```bash
-   docker pull virtualpatientengine/talk2biomodels
-   ```
-
-   ```bash
-   docker pull virtualpatientengine/talk2scholars
-   ```
-
-2. **Run the containers**
+1. **Run the containers**
 
    ```bash
    docker run -d \
@@ -115,7 +105,7 @@ docker-compose down
      virtualpatientengine/talk2scholars
    ```
 
-3. **Access the Web App**
+2. **Access the Web App**
    Open your browser and go to:
 
    ```
