@@ -24,6 +24,8 @@ jobs:
       talk2biomodels: ${{ steps.filter.outputs.talk2biomodels }}
       talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
       talk2aiagents4pharma: ${{ steps.filter.outputs.talk2aiagents4pharma }}
+      tal2knowledgegraphs: ${{ steps.filter.outputs.tal2knowledgegraphs }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -41,6 +43,8 @@ jobs:
               - 'aiagents4pharma/talk2scholars/**'
             talk2aiagents4pharma:
               - 'aiagents4pharma/talk2aiagents4pharma/**'
+            tal2knowledgegraphs:
+              - 'aiagents4pharma/tal2knowledgegraphs/**'
 
   # Generate version for the build
   version:
@@ -158,3 +162,28 @@ jobs:
             virtualpatientengine/talk2scholars:${{ needs.version.outputs.version }}
             virtualpatientengine/talk2scholars:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2scholars:latest
+
+  # Separate job for tal2knowledgegraphs
+  build-talk2knowledgegraphs:
+    needs: [changes, version]
+    if: ${{ needs.changes.outputs.talk2knowledgegraphs == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
+          push: true
+          tags: |
+            virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
+            virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.short_sha }}
+            virtualpatientengine/talk2knowledgegraphs:latest
