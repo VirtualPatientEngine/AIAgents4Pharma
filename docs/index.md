@@ -38,17 +38,42 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
 
-##### Run Talk2AIAgents4Pharma
+##### **Run Talk2AIAgents4Pharma**
 
-- Since `Talk2AIAgents4Pharma` requires **Ollama** for embedding models, we use **Docker Compose** to run both containers in the same network.
+Talk2AIAgents4Pharma requires Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
 
-- **Run the containers using Docker Compose from the root**:
+###### **Setup Environment Variables**
 
-  ```bash
-  docker-compose up -d
-  ```
+1. Copy the `.env.example` file and rename it to `.env`:
+   ```sh
+   cp .env.example .env
+   ```
+2. Open the `.env` file and add your API keys:
+   ```plaintext
+   OPENAI_API_KEY=your_openai_api_key
+   NVIDIA_API_KEY=your_nvidia_api_key
+   ```
+3. Save the file.
 
-##### Run Talk2Biomodels and Talk2Scholars
+To start the containers, run the following command from the root directory:
+
+```sh
+docker-compose up -d
+```
+
+This will:
+
+- Pull the latest images if they are not already available.
+- Start both Talk2AIAgents4Pharma and Ollama containers in the same network.
+- Ensure Ollama is running first before launching Talk2AIAgents4Pharma.
+
+To stop the containers, run:
+
+```sh
+docker-compose down
+```
+
+##### **Run Talk2Biomodels and Talk2Scholars**
 
 1. **Pull the Docker images**
 
