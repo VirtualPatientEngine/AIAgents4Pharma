@@ -9,17 +9,20 @@ from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
 from ..tools.get_annotation import prepare_content_msg
 
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+
 @pytest.fixture(name="make_graph")
 def make_graph_fixture():
     '''
     Create an instance of the talk2biomodels agent.
     '''
     unique_id = random.randint(1000, 9999)
-    graph = get_app(unique_id)
+    graph = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
-    graph.update_state(config, {"llm_model": ChatOpenAI(model='gpt-4o-mini',
-                                    temperature=0)
-                                })
+    graph.update_state(
+            config,
+            {"llm_model": LLM_MODEL}
+        )
     return graph, config
 
 def test_no_model_provided(make_graph):

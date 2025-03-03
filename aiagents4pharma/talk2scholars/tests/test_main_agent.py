@@ -63,9 +63,10 @@ def test_get_hydra_config():
 def test_hydra_failure():
     """Test exception handling when Hydra fails to load config."""
     thread_id = "test_thread"
+    llm_mock = Mock()
     with patch("hydra.initialize", side_effect=Exception("Hydra error")):
         with pytest.raises(Exception) as exc_info:
-            get_app(thread_id)
+            get_app(thread_id, llm_model=llm_mock)
         assert "Hydra error" in str(exc_info.value)
 
 

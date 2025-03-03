@@ -9,6 +9,7 @@ from ..agents.main_agent import get_app
 
 # Define the data path for the test files of Talk2KnowledgeGraphs agent
 DATA_PATH = "aiagents4pharma/talk2knowledgegraphs/tests/files"
+LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
 
 @pytest.fixture(name="input_dict")
 def input_dict_fixture():
@@ -44,7 +45,7 @@ def test_main_agent_invokes_t2kg(input_dict):
         input_dict: Input dictionary
     """
     # Prepare LLM and embedding model
-    input_dict["llm_model"] = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+    input_dict["llm_model"] = LLM_MODEL
     input_dict["embedding_model"] = OpenAIEmbeddings(model="text-embedding-3-small")
 
     # Setup the app
@@ -88,7 +89,7 @@ def test_main_agent_invokes_t2b():
     Talk2BioModels agent.
     '''
     unique_id = 123
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     prompt = "Simulate model 64"
     # Invoke the agent
