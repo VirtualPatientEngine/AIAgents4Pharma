@@ -14,6 +14,8 @@ on:
 
 env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
+  ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 
 # This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
