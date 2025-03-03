@@ -13,6 +13,9 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
+    get_item_collections,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -69,32 +72,15 @@ def zotero_search_tool(
     # Initialize Zotero client
     zot = zotero.Zotero(cfg.user_id, cfg.library_type, cfg.api_key)
 
+    # Fetch collection mapping once
+    item_to_collections = get_item_collections(zot)
+
     # Get items matching the query
     items = zot.items(q=query, limit=min(limit, cfg.zotero.max_limit))
     logger.info("Received %d items from Zotero", len(items))
 
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
-
-    # Fetch all collections
-    collections = zot.collections()
-    collection_map = {col["key"]: col["data"]["name"] for col in collections}
-
-    # Manually create an item-to-collection mapping
-    item_to_collections = {}
-
-    for collection in collections:
-        collection_key = collection["key"]
-        collection_items = zot.collection_items(
-            collection_key
-        )  # Fetch items in the collection
-
-        for item in collection_items:
-            item_key = item["data"]["key"]
-            if item_key in item_to_collections:
-                item_to_collections[item_key].append(collection_map[collection_key])
-            else:
-                item_to_collections[item_key] = [collection_map[collection_key]]
 
     # Filter and format papers
     filtered_papers = {}
@@ -119,7 +105,7 @@ def zotero_search_tool(
         if not key:
             continue
 
-        # Use the manually built mapping to get collection names
+        # Use the imported utility function's mapping to get collection names
         collection_names = item_to_collections.get(key, ["Unknown"])
 
         filtered_papers[key] = {
@@ -140,7 +126,7 @@ def zotero_search_tool(
     top_papers = list(filtered_papers.values())[:2]
     top_papers_info = "\n".join(
         [
-            f"{i+1}. {paper['Title']} ({paper['Type']}) - Collections: {', '.join(paper['Collections'])}"
+            f"{i+1}. {paper['Title']} ({paper['Type']})"
             for i, paper in enumerate(top_papers)
         ]
     )
