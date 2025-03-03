@@ -85,6 +85,9 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
+  "talk2aiagents4pharma/configs/*",
+  "talk2aiagents4pharma/configs/agents/main_agent/*",
+  "talk2aiagents4pharma/configs/app/frontend/*",
   "talk2biomodels/configs/*",
   "talk2biomodels/configs/agents/t2b_agent/*",
   "talk2biomodels/configs/tools/ask_question/*",

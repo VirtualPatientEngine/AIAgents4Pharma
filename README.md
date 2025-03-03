@@ -16,6 +16,7 @@ Our toolkit currently consists of the following agents:
 - **Talk2KnowledgeGraphs** _(v1 in progress)_: Access and explore complex biological knowledge graphs for insightful data connections.
 - **Talk2Scholars** _(v1 in progress)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 - **Talk2Cells** _(v1 in progress)_: Query and analyze sequencing data with ease.
+- **Talk2AIAgents4Pharma** _(v1 in progress)_: Converse with all the agents above (currently supports T2B and T2KG)
 
 ![AIAgents4Pharma](docs/assets/AIAgents4Pharma.png)
 
@@ -123,10 +124,10 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```
 
    _Please note that this will create a new tracing project in your Langsmith
-   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-   default to the name `default`. `xxxx` will be the 4-digit ID created for the
-   session._
+   account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+   `B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+   If you skip the previous step, it will default to the name `default`.
+   `xxxx` will be the 4-digit ID created for the session._
 
 6. **Launch the app:**
    ```bash

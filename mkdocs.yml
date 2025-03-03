@@ -3,6 +3,13 @@ site_name: AIAgents4Pharma
 nav:
   - Home: index.md
 
+  - Talk2AIAgents4Pharma:
+      - Introduction: talk2aiagents4pharma/intro.md
+      - Agents:
+          - T2AA4P agent: talk2aiagents4pharma/agents/main_agent.md
+      - States:
+          - T2AA4P state: talk2aiagents4pharma/states/state_talk2aiagents4pharma.md
+
   - Talk2Biomodels:
       - Introduction: talk2biomodels/intro.md
       - FAQ: talk2biomodels/faq.md
