@@ -114,7 +114,12 @@ def get_app(
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer)
-    logger.log(logging.INFO, "Compiled the graph")
+    app = workflow.compile(checkpointer=checkpointer, name="agent_zotero")
+    logger.log(
+        logging.INFO,
+        "Compiled the graph with thread_id %s and llm_model %s",
+        uniq_id,
+        llm_model,
+    )
 
     return app
