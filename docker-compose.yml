@@ -1,6 +1,7 @@
 # Talk2AIAgents4pharma
 networks:
   talk2aiagents4pharma:
+    driver: bridge
 
 services:
   talk2aiagents4pharma-app:
@@ -25,7 +26,7 @@ services:
     command: >
       sh -c "ollama pull nomic-embed-text && ollama serve"
     healthcheck: # Ensures Ollama is running before other services depend on it
-      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:11434"]
       interval: 10s
       retries: 5
       start_period: 10s
