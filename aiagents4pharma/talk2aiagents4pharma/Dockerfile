@@ -24,5 +24,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8501
 
 # Run the Streamlit application
-CMD ["streamlit", "run", "app/frontend/streamlit_app_talk2aiagents4pharma", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app/frontend/streamlit_app_talk2aiagents4pharma.py", "--server.port=8501", "--server.address=0.0.0.0"]
 
