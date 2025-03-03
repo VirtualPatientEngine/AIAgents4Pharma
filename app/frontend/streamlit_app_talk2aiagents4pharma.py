@@ -15,7 +15,11 @@ from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from utils import streamlit_utils
 
-st.set_page_config(page_title="Talk2AIAgents4Pharma", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Talk2AIAgents4Pharma",
+                   page_icon="🤖",
+                   layout="wide",
+                   initial_sidebar_state="collapsed",)
+
 # Set the logo
 st.logo(
     image='docs/assets/VPE.png',
@@ -60,6 +64,10 @@ prompt = ChatPromptTemplate.from_messages([
         ("human", "{input}"),
         ("placeholder", "{agent_scratchpad}"),
 ])
+
+# Initialize current user
+if "current_user" not in st.session_state:
+    st.session_state.current_user = cfg_t2kg.default_user
 
 # Initialize chat history
 if "messages" not in st.session_state:
