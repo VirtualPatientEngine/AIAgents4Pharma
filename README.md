@@ -38,7 +38,7 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
 
-- ##### Run Talk2AIAgents4Pharma
+##### Run Talk2AIAgents4Pharma
 
 - Since `Talk2AIAgents4Pharma` requires **Ollama** for embedding models, we use **Docker Compose** to run both containers in the same network.
 
@@ -48,7 +48,7 @@ _We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` avail
   docker-compose up -d
   ```
 
-- ##### Run Talk2Biomodels and Talk2Scholars
+##### Run Talk2Biomodels and Talk2Scholars
 
 1. **Pull the Docker images**
 
