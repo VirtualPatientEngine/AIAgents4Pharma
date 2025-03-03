@@ -24,7 +24,7 @@ jobs:
       talk2biomodels: ${{ steps.filter.outputs.talk2biomodels }}
       talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
       talk2aiagents4pharma: ${{ steps.filter.outputs.talk2aiagents4pharma }}
-      tal2knowledgegraphs: ${{ steps.filter.outputs.tal2knowledgegraphs }}
+      talk2knowledgegraphs: ${{ steps.filter.outputs.talk2knowledgegraphs }}
 
     steps:
       - name: Checkout Repository
@@ -43,8 +43,8 @@ jobs:
               - 'aiagents4pharma/talk2scholars/**'
             talk2aiagents4pharma:
               - 'aiagents4pharma/talk2aiagents4pharma/**'
-            tal2knowledgegraphs:
-              - 'aiagents4pharma/tal2knowledgegraphs/**'
+            talk2knowledgegraphs:
+              - 'aiagents4pharma/talk2knowledgegraphs/**'
 
   # Generate version for the build
   version:
@@ -163,7 +163,7 @@ jobs:
             virtualpatientengine/talk2scholars:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2scholars:latest
 
-  # Separate job for tal2knowledgegraphs
+  # Separate job for talk2knowledgegraphs
   build-talk2knowledgegraphs:
     needs: [changes, version]
     if: ${{ needs.changes.outputs.talk2knowledgegraphs == 'true' }}
