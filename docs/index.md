@@ -38,22 +38,31 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
 
-##### **Run Talk2AIAgents4Pharma**
+##### **Run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
 
-Talk2AIAgents4Pharma requires Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
+Talk2AIAgents4Pharma and Talk2KnowledgeGraphs requires Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
 
 ###### **Setup Environment Variables**
 
-1. Copy the `.env.example` file and rename it to `.env`:
+1. Choose the app you want to use:
+
+```bash
+# cd talk2aiagents4harma or talk2knowledgegraphs
+cd aiagents4pharma/talk2aiagents4harma
+cd aiagents4pharma/talk2knowledgegraphs
+```
+
+2. Copy the `.env.example` file and rename it to `.env`:
    ```sh
    cp .env.example .env
    ```
-2. Open the `.env` file and add your API keys:
+3. Open the `.env` file and add your API keys:
    ```plaintext
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
+   # Note: You only need to add OPENAI_API_KEY_API_KEY for Talk2KnowledgeGraphs
    ```
-3. Save the file.
+4. Save the file.
 
 To start the containers, run the following command from the root directory:
 
@@ -64,8 +73,8 @@ docker-compose up -d
 This will:
 
 - Pull the latest images if they are not already available.
-- Start both Talk2AIAgents4Pharma and Ollama containers in the same network.
-- Ensure Ollama is running first before launching Talk2AIAgents4Pharma.
+- Start both Talk2AIAgents4Pharma or Talk2KnowledgeGraphs and Ollama containers in the same network.
+- Ensure Ollama is running first before launching Talk2AIAgents4Pharma or Talk2KnowledgeGraphs.
 
 To stop the containers, run:
 
