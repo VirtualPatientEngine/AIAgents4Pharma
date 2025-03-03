@@ -10,12 +10,12 @@ services:
       - ollama-data:/root/.ollama
     env_file:
       - .env
-    entrypoint:
-      [
-        "/bin/sh",
-        "-c",
-        "ollama serve & sleep 3 && ollama pull nomic-embed-text && wait",
-      ]
+    entrypoint: >
+      /bin/sh -c "
+      ollama serve & 
+      sleep 5 && 
+      ollama pull nomic-embed-text && 
+      wait"
 
   talk2aiagents4pharma:
     image: anshinfo/talk2aiagents4pharma
