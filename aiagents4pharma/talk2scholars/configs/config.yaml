@@ -9,3 +9,4 @@ defaults:
   - tools/multi_paper_recommendation: default
   - tools/retrieve_semantic_scholar_paper_id: default
   - tools/zotero_read: default
+  - tools/zotero_write: default

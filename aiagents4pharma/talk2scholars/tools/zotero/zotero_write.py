@@ -14,6 +14,9 @@ from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 from pydantic import BaseModel, Field
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
+    get_item_collections,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,30 +27,38 @@ class ZoteroSaveInput(BaseModel):
     """Input schema for the Zotero save tool."""
 
     tool_call_id: Annotated[str, InjectedToolCallId]
+    collection_path: str = Field(
+        default="/Unknown",
+        description="The path where the paper should be saved in the Zotero library. Example: '/machine/cern/mobile'.",
+    )
 
 
 # Load hydra configuration
 with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/zotero_save=default"])
-    cfg = cfg.tools.zotero_save
+    cfg = hydra.compose(config_name="config", overrides=["tools/zotero_write=default"])
+    cfg = cfg.tools.zotero_write
 
 
 @tool(args_schema=ZoteroSaveInput, parse_docstring=True)
 def zotero_save_tool(
     tool_call_id: Annotated[str, InjectedToolCallId],
+    collection_path: str,
     state: Annotated[dict, InjectedState],
 ) -> Command[Any]:
     """
-    Use this tool to save previously fetched papers from Semantic Scholar to Zotero.
+    Use this tool to save previously fetched papers from Semantic Scholar to a specified Zotero collection.
 
     Args:
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
+        collection_path (str): The Zotero collection path where papers should be saved.
         state (dict): The state containing previously fetched papers.
 
     Returns:
         Dict[str, Any]: The save results and related information.
     """
-    logger.info("Saving fetched papers to Zotero.")
+    logger.info(
+        f"Saving fetched papers to Zotero under collection path: {collection_path}"
+    )
 
     # Initialize Zotero client
     zot = zotero.Zotero(cfg.user_id, cfg.library_type, cfg.api_key)
@@ -68,14 +79,35 @@ def zotero_save_tool(
             }
         )
 
-    # Fetch collections from zotero_read state
-    zotero_read = state.get("zotero_read", {})
+    # Fetch all collection paths from Zotero
+    item_to_collections = get_item_collections(zot)
 
-    # Format papers for Zotero and assign to collections from zotero_read
+    # Find the collection key matching the given path
+    matched_collection_key = None
+    for col_key, col_path in item_to_collections.items():
+        if col_path == collection_path:
+            matched_collection_key = col_key
+            break
+
+    # Raise error if the collection path does not exist
+    if not matched_collection_key:
+        logger.error(
+            f"Invalid collection path: {collection_path}. No matching collection found in Zotero."
+        )
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content=f"Error: The collection path '{collection_path}' does not exist in Zotero.",
+                        tool_call_id=tool_call_id,
+                    )
+                ]
+            }
+        )
+
+    # Format papers for Zotero and assign to the specified collection
     zotero_items = []
     for paper_id, paper in fetched_papers.items():
-        collection_names = zotero_read.get(paper_id, {}).get("Collections", ["Unknown"])
-
         zotero_items.append(
             {
                 "itemType": "journalArticle",
@@ -83,8 +115,10 @@ def zotero_save_tool(
                 "abstractNote": paper.get("Abstract", "N/A"),
                 "date": paper.get("Date", "N/A"),
                 "url": paper.get("URL", "N/A"),
-                "extra": f"Citations: {paper.get('Citations', 'N/A')}",
-                "collections": collection_names,
+                "extra": f"Paper ID: {paper_id}\nCitations: {paper.get('Citations', 'N/A')}",
+                "collections": [
+                    matched_collection_key
+                ],  # Assign to the specified collection
             }
         )
 
@@ -96,7 +130,7 @@ def zotero_save_tool(
         update={
             "messages": [
                 ToolMessage(
-                    content="Successfully saved fetched papers to Zotero.",
+                    content=f"Successfully saved fetched papers to Zotero under '{collection_path}'.",
                     tool_call_id=tool_call_id,
                     artifact=response,
                 )
