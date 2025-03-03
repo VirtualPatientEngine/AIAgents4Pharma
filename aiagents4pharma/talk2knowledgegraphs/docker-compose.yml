@@ -1,35 +1,39 @@
-# Talk2Knowledgegraphs
-networks:
-  talk2knowledgegraphs:
-    driver: bridge
-
+#talk2knowledgegraphs
 services:
-  talk2knowledgegraphs-app:
-    image: virtualpatientengine/talk2knowledgegraphs:latest
-    container_name: Talk2knowledgegraphs
-    ports:
-      - "8501:8501"
-    networks:
-      - talk2knowledgegraphs
-    depends_on:
-      ollama:
-        condition: service_healthy
-    env_file:
-      - .env # Load variables from .env file
-
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     container_name: ollama
-    restart: always
-    networks:
-      - talk2knowledgegraphs
+    restart: unless-stopped
     ports:
       - "11434:11434"
-    command: >
-      sh -c "ollama pull nomic-embed-text && ollama serve"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:11434"]
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 5s
+    volumes:
+      - ollama-data:/root/.ollama
+    env_file:
+      - .env
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "ollama serve & sleep 3 && ollama pull nomic-embed-text && wait",
+      ]
+
+  talk2aiagents4pharma:
+    image: anshinfo/talk2knowledgegraphs
+    container_name: talk2knowledgegraphs
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+volumes:
+  ollama-data:
+
+networks:
+  app-network:
