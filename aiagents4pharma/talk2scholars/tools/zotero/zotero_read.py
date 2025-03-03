@@ -81,6 +81,9 @@ def zotero_search_tool(
 
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
+    filter_excluded_types = (
+        cfg.zotero.filter_excluded_types
+    )  # Exclude non-research items
 
     # Filter and format papers
     filtered_papers = {}
@@ -94,10 +97,15 @@ def zotero_search_tool(
             continue
 
         item_type = data.get("itemType")
-        if only_articles and (
+
+        # Exclude attachments, notes, and other unwanted types
+        if (
             not item_type
             or not isinstance(item_type, str)
-            or item_type not in filter_item_types
+            or item_type in filter_excluded_types  # Skip attachments & notes
+            or (
+                only_articles and item_type not in filter_item_types
+            )  # Skip non-research types
         ):
             continue
 
@@ -105,8 +113,8 @@ def zotero_search_tool(
         if not key:
             continue
 
-        # Use the imported utility function's mapping to get collection names
-        collection_names = item_to_collections.get(key, ["Unknown"])
+        # Use the imported utility function's mapping to get collection paths
+        collection_paths = item_to_collections.get(key, ["/Unknown"])
 
         filtered_papers[key] = {
             "Title": data.get("title", "N/A"),
@@ -114,7 +122,7 @@ def zotero_search_tool(
             "Date": data.get("date", "N/A"),
             "URL": data.get("url", "N/A"),
             "Type": item_type if isinstance(item_type, str) else "N/A",
-            "Collections": collection_names,
+            "Collections": collection_paths,  # Now displays full paths
         }
 
     if not filtered_papers:
