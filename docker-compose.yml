@@ -1,0 +1,32 @@
+# Talk2AIAgents4pharma
+networks:
+  talk2aiagents4pharma:
+
+services:
+  talk2aiagents4pharma-app:
+    image: virtualpatientengine/talk2aiagents4pharma:latest # Pull image from Docker Hub
+    container_name: talk2aiagents4pharma
+    ports:
+      - "8501:8501"
+    networks:
+      - talk2aiagents4pharma
+    depends_on:
+      ollama:
+        condition: service_healthy # Ensures Ollama is ready before starting
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: always
+    networks:
+      - talk2aiagents4pharma
+    ports:
+      - "11434:11434"
+    command: >
+      sh -c "ollama pull nomic-embed-text && ollama serve"
+    healthcheck: # Ensures Ollama is running before other services depend on it
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
