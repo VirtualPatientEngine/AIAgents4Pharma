@@ -48,9 +48,9 @@ Talk2AIAgents4Pharma and Talk2KnowledgeGraphs requires Ollama for embedding mode
 1. Choose the app you want to use:
 
 ```bash
-# cd talk2aiagents4harma or talk2knowledgegraphs
-cd aiagents4pharma/talk2aiagents4harma
-cd aiagents4pharma/talk2knowledgegraphs
+# cd talk2aiagents4pharma or talk2knowledgegraphs
+cd AIAgents4Pharma/aiagents4pharma/talk2aiagents4pharma
+cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
 ```
 
 2. Copy the `.env.example` file and rename it to `.env`:
@@ -59,11 +59,12 @@ cd aiagents4pharma/talk2knowledgegraphs
    ```
 3. Open the `.env` file and add your API keys:
    ```plaintext
+   # Note: You need both of these keys for Talk2AIAgents4Pharma
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
-   # Note: You only need to add OPENAI_API_KEY_API_KEY for Talk2KnowledgeGraphs
-   # The API end point for ollma is already added in the env.example
+   # Note: The API end point for ollama is already added in the env.example
    OLLAMA_HOST=http://ollama:11434
+   # Note: You only need to add OPENAI_API_KEY for Talk2KnowledgeGraphs if running it separately
    ```
 4. Save the file.
 
@@ -201,10 +202,10 @@ docker compose down
    ```
 
    _Please note that this will create a new tracing project in your Langsmith
-   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-   default to the name `default`. `xxxx` will be the 4-digit ID created for the
-   session._
+   account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+   `B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+   If you skip the previous step, it will default to the name `default`.
+   `xxxx` will be the 4-digit ID created for the session._
 
 6. **Launch the app:**
    ```bash
