@@ -153,7 +153,7 @@ docker compose down
    pip install -r requirements.txt
    ```
 
-   The current version of T2KG requires additional Ollama library to be installed.
+   ⚠️ The current version of T2KG requires additional Ollama library to be installed.
 
    Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
 
@@ -181,6 +181,9 @@ docker compose down
    ```
    ollama list
    ```
+
+   ⚠️ `pcst_fast 1.0.10` library requires `Microsoft Visual C++ 14.0` or greater to be installed.
+   You can download `Microsoft C++ Build Tools` from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
 
