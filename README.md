@@ -69,6 +69,7 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    # - The API endpoint for Ollama is already set in env.example.
    # - Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
    # - If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
+   # - Langsmith API for tracing is optional for both, set in env.example if required.
    ```
 
 4. Save the file.
