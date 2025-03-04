@@ -7,7 +7,7 @@ Agent for interacting with Zotero
 import logging
 from typing import Any, Dict
 import hydra
-from langchain_openai import ChatOpenAI
+
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_app(
-    uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    uniq_id, llm_model: BaseChatModel
 ):
     """
     Initializes and returns the LangGraph application for the Zotero agent.

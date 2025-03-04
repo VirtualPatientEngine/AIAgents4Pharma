@@ -4,7 +4,10 @@ Test cases for Talk2Biomodels parameter scan tool.
 
 import pandas as pd
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
+
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
 
 def test_param_scan_tool():
     '''
@@ -27,9 +30,8 @@ def test_param_scan_tool():
 
     '''
     unique_id = 1234
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
     prompt = """How will the value of Ab in serum in model 537 change
             if the param kIL6Rbind is varied from 1 to 100 in steps of 10?
             Set the initial `DoseQ2W` concentration to 300. Assume

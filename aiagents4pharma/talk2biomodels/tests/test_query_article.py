@@ -8,6 +8,8 @@ from langchain_openai import ChatOpenAI
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from ..agents.t2b_agent import get_app
 
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+
 class Article(BaseModel):
     '''
     Article schema.
@@ -19,7 +21,7 @@ def test_query_article_with_an_article():
     Test the query_article tool by providing an article.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     # Update state by providing the pdf file name
     # and the text embedding model
@@ -35,7 +37,7 @@ def test_query_article_with_an_article():
     # Get the response from the tool
     assistant_msg = response["messages"][-1].content
     # Prepare a LLM that can be used as a judge
-    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+    llm = LLM_MODEL
     # Make it return a structured output
     structured_llm = llm.with_structured_output(Article)
     # Prepare a prompt for the judge
@@ -55,7 +57,7 @@ def test_query_article_without_an_article():
     The status of the tool should be error.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     prompt = "What is the title of the uploaded article?"
     # Update state by providing the text embedding model
