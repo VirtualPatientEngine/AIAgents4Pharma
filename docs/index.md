@@ -47,8 +47,9 @@ Talk2AIAgents4Pharma and Talk2KnowledgeGraphs require Ollama for embedding model
 
 1. Choose the app you want to use:
 
-```bash
-# cd talk2aiagents4pharma or talk2knowledgegraphs
+```sh
+# Navigate to the correct directory before setting up environment variables.
+# Use one of the following commands based on the agent you want to use:
 cd AIAgents4Pharma/aiagents4pharma/talk2aiagents4pharma
 cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
 ```
@@ -58,14 +59,18 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    cp .env.example .env
    ```
 3. Open the `.env` file and add your API keys:
+
    ```plaintext
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
    OLLAMA_HOST=http://ollama:11434
-   # Note: The API endpoint for ollama is already added in the env.example
-   # Note: You need both of these keys for Talk2AIAgents4Pharma
-   # Note: You only need to add OPENAI_API_KEY for Talk2KnowledgeGraphs if running it separately
+
+   # Notes:
+   # - The API endpoint for Ollama is already set in env.example.
+   # - Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
+   # - If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
    ```
+
 4. Save the file.
 
 To start the containers, run the following command from the root directory:
