@@ -3,14 +3,17 @@ Test cases for Talk2Biomodels get_modelinfo tool.
 '''
 
 from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
+
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini',temperature=0)
 
 def test_get_modelinfo_tool():
     '''
     Test the get_modelinfo tool.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     # Update state
     app.update_state(config,
@@ -33,7 +36,7 @@ def test_model_with_no_species():
     This should raise a tool error.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     prompt = "Extract all species from model 20"
     # Test the tool get_modelinfo
@@ -64,7 +67,7 @@ def test_model_with_no_parameters():
     This should raise a tool error.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     prompt = "Extract all parameters from model 10"
     # Test the tool get_modelinfo

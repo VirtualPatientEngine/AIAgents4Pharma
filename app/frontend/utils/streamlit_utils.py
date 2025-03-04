@@ -7,6 +7,7 @@ Utils for Streamlit.
 import os
 import datetime
 import hydra
+import tempfile
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -203,6 +204,19 @@ def sample_questions():
     ]
     return questions
 
+def sample_questions_t2aa4p():
+    """
+    Function to get the sample questions for Talk2AIAgents4Pharma.
+    """
+    questions = [
+        "Search models on Crohn's Disease",
+        "Briefly describe biomodel 537 and simulate it for 2016 hours with an interval of 100.",
+        "What is the concentration of species IL6 in serum at the end of simulation?",
+        "List the drugs that target Interleukin-6",
+        "What genes are associated with Crohn's disease?"
+    ]
+    return questions
+
 def stream_response(response):
     """
     Function to stream the response from the agent.
@@ -217,21 +231,76 @@ def stream_response(response):
         # print (chunk)
         # Exclude the tool calls that are not part of the conversation
         if 'branch:agent:should_continue:tools' not in chunk[1]['langgraph_triggers']:
+            if chunk[0].content == '':
+                yield '\n'
             yield chunk[0].content
 
-def get_response(app, st, prompt):
+def update_state_t2b(st):
+    dic = {"sbml_file_path": [st.session_state.sbml_file_path],
+           "text_embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model)}
+    return dic
+
+def update_state_t2kg(st):
+    dic = {"embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model),
+        "uploaded_files": st.session_state.uploaded_files,
+        "topk_nodes": st.session_state.topk_nodes,
+        "topk_edges": st.session_state.topk_edges,
+        "dic_source_graph": [
+            {
+                "name": st.session_state.config["kg_name"],
+                "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+                "kg_text_path": st.session_state.config["kg_text_path"],
+            }
+        ]}
+    return dic
+
+def get_response(agent, graphs_visuals, app, st, prompt):
     # Create config for the agent
     config = {"configurable": {"thread_id": st.session_state.unique_id}}
     # Update the agent state with the selected LLM model
     current_state = app.get_state(config)
-    app.update_state(
-        config,
-        {"sbml_file_path": [st.session_state.sbml_file_path]}
-    )
+    # app.update_state(
+    #     config,
+    #     {"sbml_file_path": [st.session_state.sbml_file_path]}
+    # )
     app.update_state(
         config,
         {"llm_model": get_base_chat_model(st.session_state.llm_model)}
     )
+    # app.update_state(
+    #     config,
+    #     {"text_embedding_model": get_text_embedding_model(
+    #         st.session_state.text_embedding_model),
+    #     "embedding_model": get_text_embedding_model(
+    #         st.session_state.text_embedding_model),
+    #     "uploaded_files": st.session_state.uploaded_files,
+    #     "topk_nodes": st.session_state.topk_nodes,
+    #     "topk_edges": st.session_state.topk_edges,
+    #     "dic_source_graph": [
+    #         {
+    #             "name": st.session_state.config["kg_name"],
+    #             "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+    #             "kg_text_path": st.session_state.config["kg_text_path"],
+    #         }
+    #     ]}
+    # )
+    if agent == 'T2AA4P':
+        app.update_state(
+            config,
+            update_state_t2b(st)|update_state_t2kg(st)
+        )
+    elif agent == 'T2B':
+        app.update_state(
+            config,
+            update_state_t2b(st)
+        )
+    elif agent == 'T2KG':
+        app.update_state(
+            config,
+            update_state_t2kg(st)
+        )
 
     ERROR_FLAG = False
     with collect_runs() as cb:
@@ -258,10 +327,24 @@ def get_response(app, st, prompt):
     
     # Get the current state of the graph
     current_state = app.get_state(config)
+    # Get all the AI msgs in the
+    # last response from the state
+    assistant_content = []
+    for msg in current_state.values["messages"][::-1]:
+        if isinstance(msg, HumanMessage):
+            break
+        if isinstance(msg, AIMessage) and msg.content != '':
+            assistant_content.append(msg.content)
+            continue
+    # Reverse the order
+    assistant_content = assistant_content[::-1]
+    # Join the messages
+    assistant_content = '\n'.join(assistant_content)
     # Add response to chat history
     assistant_msg = ChatMessage(
                         # response["messages"][-1].content,
-                        current_state.values["messages"][-1].content,
+                        # current_state.values["messages"][-1].content,
+                        assistant_content,
                         role="assistant")
     st.session_state.messages.append({
                     "type": "message",
@@ -467,6 +550,23 @@ def get_response(app, st, prompt):
                     "key": "dataframe_"+uniq_msg_id,
                     "tool_name": msg.name
                 })
+        elif msg.name in ["subgraph_extraction"]:
+            print(
+                "-",
+                len(current_state.values["dic_extracted_graph"]),
+                "subgraph_extraction",
+            )
+            # Add the graph into the visuals list
+            latest_graph = current_state.values["dic_extracted_graph"][
+                -1
+            ]
+            if current_state.values["dic_extracted_graph"]:
+                graphs_visuals.append(
+                    {
+                        "content": latest_graph["graph_dict"],
+                        "key": "subgraph_" + uniq_msg_id,
+                    }
+                )
 
 def render_graph(graph_dict: dict,
                  key: str,
@@ -694,6 +794,42 @@ def get_file_type_icon(file_type: str) -> str:
         "endotype": "🧬",
         "sbml_file": "📜"
     }.get(file_type)
+
+@st.fragment
+def get_t2b_uploaded_files(app):
+    """
+    Upload files for T2B agent.
+    """
+    # Upload the XML/SBML file
+    uploaded_sbml_file = st.file_uploader(
+        "Upload an XML/SBML file",
+        accept_multiple_files=False,
+        type=["xml", "sbml"],
+        help='Upload a QSP as an XML/SBML file'
+        )
+
+    # Upload the article
+    article = st.file_uploader(
+        "Upload an article",
+        help="Upload a PDF article to ask questions.",
+        accept_multiple_files=False,
+        type=["pdf"],
+        key="article"
+    )
+    # Update the agent state with the uploaded article
+    if article:
+        # print (article.name)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            f.write(article.read())
+        # Create config for the agent
+        config = {"configurable": {"thread_id": st.session_state.unique_id}}
+        # Update the agent state with the selected LLM model
+        app.update_state(
+            config,
+            {"pdf_file_name": f.name}
+        )
+    # Return the uploaded file
+    return uploaded_sbml_file
 
 @st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:

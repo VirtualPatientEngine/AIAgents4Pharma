@@ -2,6 +2,7 @@
 [![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
 [![Talk2KnowledgeGraphs](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml)
 [![TESTS Talk2Scholars](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml)
+[![TESTS Talk2AIAgents4Pharma](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml)
 ![GitHub Release](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma)
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2biomodels?link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Fvirtualpatientengine%2Ftalk2biomodels%2Fgeneral)
@@ -16,6 +17,7 @@ Our toolkit currently consists of the following agents:
 - **Talk2KnowledgeGraphs** _(v1 in progress)_: Access and explore complex biological knowledge graphs for insightful data connections.
 - **Talk2Scholars** _(v1 in progress)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 - **Talk2Cells** _(v1 in progress)_: Query and analyze sequencing data with ease.
+- **Talk2AIAgents4Pharma** _(v1 in progress)_: Converse with all the agents above (currently supports T2B and T2KG)
 
 ![AIAgents4Pharma](docs/assets/AIAgents4Pharma.png)
 
@@ -37,48 +39,46 @@ Check out the tutorials on each agent for detailed instrcutions.
 
 _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-#### **Running Talk2Biomodels**
+1. **Pull the Docker images**
 
-1. **Pull the Docker image**
    ```bash
    docker pull virtualpatientengine/talk2biomodels
    ```
-2. **Run the container**
+
+   ```bash
+   docker pull virtualpatientengine/talk2scholars
+   ```
+
+2. **Run the containers**
+
    ```bash
    docker run -d \
+     --name talk2biomodels \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e NVIDIA_API_KEY=<your_nvidia_api_key> \
      -p 8501:8501 \
      virtualpatientengine/talk2biomodels
    ```
-3. **Access the Web App**  
-    Open your browser and go to:
-   ```
-   http://localhost:8501
-   ```
-   _You can create a free account at NVIDIA and apply for their
-   free credits [here](https://build.nvidia.com/explore/discover)._
 
-#### **Running Talk2Scholars**
-
-1. **Pull the Docker image**
-   ```bash
-   docker pull virtualpatientengine/talk2scholars
-   ```
-2. **Run the container**
    ```bash
    docker run -d \
+     --name talk2scholars \
      -e OPENAI_API_KEY=<your_openai_api_key> \
      -e ZOTERO_API_KEY=<your_zotero_api_key> \
      -e ZOTERO_USER_ID=<your_zotero_user_id> \
      -p 8501:8501 \
      virtualpatientengine/talk2scholars
    ```
-3. **Access the Web App**  
-   Open your browser and go to:
+
+3. **Access the Web App**
+    Open your browser and go to:
+
    ```
    http://localhost:8501
    ```
+
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
 
 #### **Notes**
 
@@ -100,6 +100,35 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```bash
    pip install -r requirements.txt
    ```
+   ⚠️ The current version of T2KG requires additional Ollama library to be installed.
+
+   Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
+
+   As an alternative, use the following commands to install the library using terminal and to pull necessary model:
+
+   - Ubuntu:
+      ```
+      curl -fsSL https://ollama.com/install.sh | sh
+      ollama pull nomic-embed-text
+      ```
+   - Windows:
+      ```
+      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+      tar -xzf .\ollama-windows-amd64.zip
+      start ollama serve
+      ollama pull nomic-embed-text
+      ```
+   - macOS:
+      ```
+      brew install ollama
+      ollama pull nomic-embed-text
+      ```
+   A list of pulled Ollama models can be checked using the following command:
+   ```
+   ollama list
+   ```
+   ⚠️ `pcst_fast 1.0.10` library requires `Microsoft Visual C++ 14.0` or greater to be installed.
+   You can download `Microsoft C++ Build Tools` from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
 
    ```bash
@@ -125,10 +154,10 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    ```
 
    _Please note that this will create a new tracing project in your Langsmith
-   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-   default to the name `default`. `xxxx` will be the 4-digit ID created for the
-   session._
+   account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+   `B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+   If you skip the previous step, it will default to the name `default`.
+   `xxxx` will be the 4-digit ID created for the session._
 
 6. **Launch the app:**
    ```bash

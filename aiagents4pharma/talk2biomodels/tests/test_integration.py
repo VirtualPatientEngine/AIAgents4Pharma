@@ -14,9 +14,8 @@ def test_integration():
     Test the integration of the tools.
     '''
     unique_id = 1234567
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
-    app.update_state(config, {"llm_model": LLM_MODEL})
     # ##########################################
     # ## Test simulate_model tool
     # ##########################################

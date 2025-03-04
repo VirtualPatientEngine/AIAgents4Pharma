@@ -1,0 +1,3 @@
+defaults:
+  - _self_
+  - agents/main_agent: default
