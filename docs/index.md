@@ -26,6 +26,7 @@ Our toolkit currently consists of the following agents:
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 ### Installation
+_Please use version 1.26.2 or later for better support with NVIDIA NIM models._
 
 #### Option 1: PyPI
 
