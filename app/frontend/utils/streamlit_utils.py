@@ -589,6 +589,60 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                         "key": "subgraph_" + uniq_msg_id,
                     }
                 )
+        elif msg.name in ["display_results"]:
+            # This is a tool of T2S agent's sub-agent S2
+            dic_papers = msg.artifact
+            if not dic_papers:
+                continue
+            df_papers = pd.DataFrame.from_dict(
+                dic_papers, orient="index"
+            )
+            # Add index as a column "key"
+            df_papers["Key"] = df_papers.index
+            # Drop index
+            df_papers.reset_index(drop=True, inplace=True)
+            # Drop colum abstract
+            df_papers.drop(columns=["Abstract", "Key"], inplace=True)
+
+            if "Year" in df_papers.columns:
+                df_papers["Year"] = df_papers["Year"].apply(
+                    lambda x: (
+                        str(int(x))
+                        if pd.notna(x) and str(x).isdigit()
+                        else None
+                    )
+                )
+
+            if "Date" in df_papers.columns:
+                df_papers["Date"] = df_papers["Date"].apply(
+                    lambda x: (
+                        pd.to_datetime(x, errors="coerce").strftime(
+                            "%Y-%m-%d"
+                        )
+                        if pd.notna(pd.to_datetime(x, errors="coerce"))
+                        else None
+                    )
+                )
+
+            st.dataframe(
+                df_papers,
+                hide_index=True,
+                column_config={
+                    "URL": st.column_config.LinkColumn(
+                        display_text="Open",
+                    ),
+                },
+            )
+            # Add data to the chat history
+            st.session_state.messages.append(
+                {
+                    "type": "dataframe",
+                    "content": df_papers,
+                    "key": "dataframe_" + uniq_msg_id,
+                    "tool_name": msg.name,
+                }
+            )
+            st.empty()
 
 def render_graph(graph_dict: dict,
                  key: str,
