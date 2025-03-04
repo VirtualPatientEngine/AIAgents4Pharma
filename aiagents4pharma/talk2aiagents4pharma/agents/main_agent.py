@@ -22,10 +22,11 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     '''
     This function returns the langraph app.
     '''
-    if llm_model.model_name == 'gpt-4o-mini':
-        llm_model = ChatOpenAI(model='gpt-4o-mini',
-                               temperature=0,
-                               model_kwargs={"parallel_tool_calls": False})
+    if hasattr(llm_model, 'model_name'):
+        if llm_model.model_name == 'gpt-4o-mini':
+            llm_model = ChatOpenAI(model='gpt-4o-mini',
+                                temperature=0,
+                                model_kwargs={"parallel_tool_calls": False})
     # Load hydra configuration
     logger.log(logging.INFO, "Launching AIAgents4Pharma_Agent with thread_id %s", uniq_id)
     with hydra.initialize(version_base=None, config_path="../configs"):
@@ -57,7 +58,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         # Full history is needed to extract
         # the tool artifacts
         output_mode="full_history",
-        add_handoff_back_messages=False,
+        add_handoff_back_messages=True,
         prompt=system_prompt
     )
 

@@ -166,7 +166,9 @@ with main_col1:
 
         # LLM model panel
         llms = ["OpenAI/gpt-4o-mini",
-                "NVIDIA/llama-3.3-70b-instruct"]
+                "NVIDIA/llama-3.3-70b-instruct",
+                "NVIDIA/llama-3.1-70b-instruct",
+                "NVIDIA/llama-3.1-405b-instruct"]
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
