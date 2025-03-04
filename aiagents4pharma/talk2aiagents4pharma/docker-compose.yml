@@ -8,19 +8,75 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
-    # Add healthcheck to ensure the service is running properly
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
       interval: 30s
       timeout: 10s
       retries: 3
-    # Start the Ollama server
     entrypoint: ["/bin/sh", "-c"]
     command: >
       "ollama serve &
       sleep 10 &&
       ollama pull nomic-embed-text &&
       tail -f /dev/null"
+    networks:
+      - app-network
+
+  # NVIDIA GPU variant – activate with: docker compose --profile nvidia up
+  ollama-nvidia:
+    image: ollama/ollama:latest
+    container_name: ollama-server-nvidia
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "ollama serve &
+      sleep 10 &&
+      ollama pull nomic-embed-text &&
+      tail -f /dev/null"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    profiles: ["nvidia"]
+    networks:
+      - app-network
+
+  # AMD GPU variant – activate with: docker compose --profile amd up
+  ollama-amd:
+    image: ollama/ollama:rocm
+    container_name: ollama-server-amd
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "ollama serve &
+      sleep 10 &&
+      ollama pull nomic-embed-text &&
+      tail -f /dev/null"
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    profiles: ["amd"]
     networks:
       - app-network
 
@@ -31,6 +87,8 @@ services:
       - "8501:8501"
     env_file:
       - .env
+    # Default dependency is on the CPU variant.
+    # If using a GPU-enabled variant, update this dependency accordingly.
     depends_on:
       - ollama
     restart: unless-stopped
