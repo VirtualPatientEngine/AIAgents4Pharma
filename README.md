@@ -76,7 +76,6 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
 To start the containers, run the following command from the root directory:
 
 ```sh
-
 docker compose --profile cpu up # for CPU mode
 docker compose --profile nvidia up # for GPU mode
 docker compose --profile amd up # for AMD mode
