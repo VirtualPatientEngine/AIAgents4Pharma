@@ -59,11 +59,11 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    ```
 3. Open the `.env` file and add your API keys:
    ```plaintext
-   # Note: You need both of these keys for Talk2AIAgents4Pharma
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
-   # Note: The API end point for ollama is already added in the env.example
    OLLAMA_HOST=http://ollama:11434
+   # Note: The API end point for ollama is already added in the env.example
+   # Note: You need both of these keys for Talk2AIAgents4Pharma
    # Note: You only need to add OPENAI_API_KEY for Talk2KnowledgeGraphs if running it separately
    ```
 4. Save the file.
