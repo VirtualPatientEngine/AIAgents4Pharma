@@ -11,6 +11,7 @@ import streamlit as st
 import hydra
 import pandas as pd
 from streamlit_feedback import streamlit_feedback
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -86,7 +87,10 @@ if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
 if "app" not in st.session_state:
     if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(st.session_state.unique_id)
+        st.session_state.app = get_app(
+            st.session_state.unique_id,
+            llm_model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
+        )
     else:
         print(st.session_state.llm_model)
         st.session_state.app = get_app(
@@ -253,13 +257,13 @@ with main_col2:
                         if cb.traced_runs:
                             st.session_state.run_id = cb.traced_runs[-1].id
 
-                    # Get the latest agent state after the response
-                    current_state = app.get_state(config)
-
-                    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config,
-                    )
+                    # # Get the latest agent state after the response
+                    # current_state = app.get_state(config)
+                    #
+                    # response = app.invoke(
+                    #     {"messages": [HumanMessage(content=prompt)]},
+                    #     config=config,
+                    # )
 
                     current_state = app.get_state(config)
 
