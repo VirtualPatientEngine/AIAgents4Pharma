@@ -89,7 +89,7 @@ http://localhost:8501
 To stop the containers, run:
 
 ```sh
-docker-compose down
+docker compose down
 ```
 
 ##### **Run Talk2Biomodels and Talk2Scholars**
