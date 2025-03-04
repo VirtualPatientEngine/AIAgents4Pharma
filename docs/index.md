@@ -61,6 +61,8 @@ cd aiagents4pharma/talk2knowledgegraphs
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
    # Note: You only need to add OPENAI_API_KEY_API_KEY for Talk2KnowledgeGraphs
+   # The API end point for ollma is already added in the env.example
+   OLLAMA_HOST=http://ollama:11434
    ```
 4. Save the file.
 
