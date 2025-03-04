@@ -19,7 +19,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import Annoy
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from langchain_core.messages import ToolMessage
