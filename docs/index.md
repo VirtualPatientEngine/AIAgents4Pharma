@@ -74,7 +74,7 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
 
 4. Save the file.
 
-To start the containers, run the following command from the root directory:
+To start the containers, run the following command:
 
 ```sh
 docker compose --profile cpu up # for CPU mode
