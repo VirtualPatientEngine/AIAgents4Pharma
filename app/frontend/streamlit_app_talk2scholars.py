@@ -227,6 +227,18 @@ with main_col2:
                         for m in history
                     ]
 
+                    # # Create config for the agent
+                    config = {"configurable": {"thread_id": st.session_state.unique_id}}
+                    # Update the LLM model
+                    app.update_state(
+                        config,
+                        {
+                            "llm_model": streamlit_utils.get_base_chat_model(
+                                st.session_state.llm_model
+                            )
+                        },
+                    )
+
                     streamlit_utils.get_response('T2S', None, app, st, prompt)
 
                     # # Create config for the agent
