@@ -13,6 +13,9 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
+    get_item_collections,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -69,12 +72,18 @@ def zotero_search_tool(
     # Initialize Zotero client
     zot = zotero.Zotero(cfg.user_id, cfg.library_type, cfg.api_key)
 
+    # Fetch collection mapping once
+    item_to_collections = get_item_collections(zot)
+
     # Get items matching the query
     items = zot.items(q=query, limit=min(limit, cfg.zotero.max_limit))
     logger.info("Received %d items from Zotero", len(items))
 
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
+    filter_excluded_types = (
+        cfg.zotero.filter_excluded_types
+    )  # Exclude non-research items
 
     # Filter and format papers
     filtered_papers = {}
@@ -88,10 +97,15 @@ def zotero_search_tool(
             continue
 
         item_type = data.get("itemType")
-        if only_articles and (
+
+        # Exclude attachments, notes, and other unwanted types
+        if (
             not item_type
             or not isinstance(item_type, str)
-            or item_type not in filter_item_types
+            or item_type in filter_excluded_types  # Skip attachments & notes
+            or (
+                only_articles and item_type not in filter_item_types
+            )  # Skip non-research types
         ):
             continue
 
@@ -99,12 +113,16 @@ def zotero_search_tool(
         if not key:
             continue
 
+        # Use the imported utility function's mapping to get collection paths
+        collection_paths = item_to_collections.get(key, ["/Unknown"])
+
         filtered_papers[key] = {
             "Title": data.get("title", "N/A"),
             "Abstract": data.get("abstractNote", "N/A"),
             "Date": data.get("date", "N/A"),
             "URL": data.get("url", "N/A"),
             "Type": item_type if isinstance(item_type, str) else "N/A",
+            "Collections": collection_paths,  # Now displays full paths
         }
 
     if not filtered_papers:

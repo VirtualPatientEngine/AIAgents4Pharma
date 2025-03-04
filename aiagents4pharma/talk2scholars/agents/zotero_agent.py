@@ -19,6 +19,7 @@ from ..tools.s2.query_results import query_results as s2_query_results
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
+from ..tools.zotero.zotero_write import zotero_save_tool
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -91,6 +92,7 @@ def get_app(
             s2_display,
             s2_query_results,
             retrieve_semantic_scholar_paper_id,
+            zotero_save_tool,
         ]
     )
 
@@ -102,7 +104,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.zotero_agent,
+        prompt=cfg.zotero_agent,
         checkpointer=MemorySaver(),
     )
 
@@ -114,7 +116,12 @@ def get_app(
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer)
-    logger.log(logging.INFO, "Compiled the graph")
+    app = workflow.compile(checkpointer=checkpointer, name="agent_zotero")
+    logger.log(
+        logging.INFO,
+        "Compiled the graph with thread_id %s and llm_model %s",
+        uniq_id,
+        llm_model,
+    )
 
     return app

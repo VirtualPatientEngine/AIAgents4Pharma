@@ -107,7 +107,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.s2_agent,
+        prompt=cfg.s2_agent,
         checkpointer=MemorySaver(),
     )
 
@@ -122,7 +122,12 @@ def get_app(
     # This compiles it into a LangChain Runnable,
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer)
-    logger.log(logging.INFO, "Compiled the graph")
+    app = workflow.compile(checkpointer=checkpointer, name="agent_s2")
+    logger.log(
+        logging.INFO,
+        "Compiled the graph with thread_id %s and llm_model %s",
+        uniq_id,
+        llm_model,
+    )
 
     return app
