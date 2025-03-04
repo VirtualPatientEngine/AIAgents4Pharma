@@ -12,6 +12,7 @@ from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai import ChatOpenAI
 from utils import streamlit_utils
 
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
@@ -68,11 +69,12 @@ if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
 if "app" not in st.session_state:
     if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(st.session_state.unique_id)
+        st.session_state.app = get_app(st.session_state.unique_id,
+                                llm_model=ChatOpenAI(model='gpt-4o-mini', temperature=0))
     else:
         print (st.session_state.llm_model)
         st.session_state.app = get_app(st.session_state.unique_id,
-                            llm_model=streamlit_utils.get_base_chat_model(
+                                llm_model=streamlit_utils.get_base_chat_model(
                                 st.session_state.llm_model))
 
 # Get the app
@@ -338,7 +340,7 @@ with main_col2:
                         for m in history
                     ]
 
-                    streamlit_utils.get_response(app, st, prompt)
+                    streamlit_utils.get_response('T2B', None, app, st, prompt)
 
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

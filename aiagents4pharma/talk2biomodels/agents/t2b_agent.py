@@ -7,7 +7,6 @@ This is the agent file for the Talk2BioModels agent.
 import logging
 from typing import Annotated
 import hydra
-from langchain_openai import ChatOpenAI
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
@@ -28,7 +27,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_app(uniq_id,
-            llm_model: BaseChatModel = ChatOpenAI(model='gpt-4o-mini', temperature=0)):
+            llm_model: BaseChatModel):
     '''
     This function returns the langraph app.
     '''
@@ -65,7 +64,8 @@ def get_app(uniq_id,
                 llm_model,
                 tools=tools,
                 state_schema=Talk2Biomodels,
-                state_modifier=cfg.state_modifier,
+                prompt=cfg.state_modifier,
+                version='v2',
                 checkpointer=MemorySaver()
             )
 
@@ -87,7 +87,8 @@ def get_app(uniq_id,
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory
     # when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer)
+    app = workflow.compile(checkpointer=checkpointer,
+                           name="T2B_Agent")
     logger.log(logging.INFO,
                "Compiled the graph with thread_id %s and llm_model %s",
                uniq_id,

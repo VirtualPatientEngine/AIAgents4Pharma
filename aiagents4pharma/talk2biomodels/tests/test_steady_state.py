@@ -13,9 +13,12 @@ def test_steady_state_tool():
     Test the steady_state tool.
     '''
     unique_id = 123
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
-    app.update_state(config, {"llm_model": LLM_MODEL})
+    app.update_state(
+            config,
+            {"llm_model": LLM_MODEL}
+        )
     #########################################################
     # In this case, we will test if the tool returns an error
     # when the model does not achieve a steady state. The tool

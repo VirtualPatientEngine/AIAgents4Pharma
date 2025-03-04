@@ -5,7 +5,6 @@ This is the agent file for the Talk2KnowledgeGraphs agent.
 import logging
 from typing import Annotated
 import hydra
-from langchain_ollama import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
@@ -19,7 +18,7 @@ from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_app(uniq_id, llm_model: BaseChatModel=ChatOllama(model='llama3.2:1b', temperature=0.0)):
+def get_app(uniq_id, llm_model: BaseChatModel):
     '''
     This function returns the langraph app.
     '''
@@ -54,7 +53,8 @@ def get_app(uniq_id, llm_model: BaseChatModel=ChatOllama(model='llama3.2:1b', te
                 llm_model,
                 tools=tools,
                 state_schema=Talk2KnowledgeGraphs,
-                state_modifier=cfg.state_modifier,
+                prompt=cfg.state_modifier,
+                version='v2',
                 checkpointer=MemorySaver()
             )
 
@@ -76,7 +76,8 @@ def get_app(uniq_id, llm_model: BaseChatModel=ChatOllama(model='llama3.2:1b', te
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory
     # when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer)
+    app = workflow.compile(checkpointer=checkpointer,
+                           name="T2KG_Agent")
     logger.log(logging.INFO,
                "Compiled the graph with thread_id %s and llm_model %s",
                uniq_id,

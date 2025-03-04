@@ -14,7 +14,6 @@ from pydantic import BaseModel
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
@@ -119,7 +118,7 @@ def make_supervisor_node(llm_model: BaseChatModel, thread_id: str) -> Callable:
 
 def get_app(
     thread_id: str,
-    llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0),
+    llm_model: BaseChatModel
 ):
     """
     Initializes and returns the LangGraph-based hierarchical agent system.

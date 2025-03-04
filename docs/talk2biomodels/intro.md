@@ -2,7 +2,7 @@
 
 **Talk2BioModels** is an AI-agent designed to interact with mathematical models in systems biology. You can choose to either interact with a model available in the BioModels database or upload your own model.
 
-
+![Talk2BioModels](../assets/t2b_diagram.png)
 
 ### How to access Talk2BioModels?
 

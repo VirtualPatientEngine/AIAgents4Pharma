@@ -2,10 +2,10 @@
 [![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
 [![Talk2KnowledgeGraphs](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml)
 [![TESTS Talk2Scholars](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml)
+[![TESTS Talk2AIAgents4Pharma](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml)
 ![GitHub Release](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma)
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2biomodels?link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Fvirtualpatientengine%2Ftalk2biomodels%2Fgeneral)
-
 
 ## Introduction
 
@@ -17,6 +17,7 @@ Our toolkit currently consists of the following agents:
 - **Talk2KnowledgeGraphs** _(v1 in progress)_: Access and explore complex biological knowledge graphs for insightful data connections.
 - **Talk2Scholars** _(v1 in progress)_: Get recommendations for articles related to your choice. Download, query, and write/retrieve them to your reference manager (currently supporting Zotero).
 - **Talk2Cells** _(v1 in progress)_: Query and analyze sequencing data with ease.
+- **Talk2AIAgents4Pharma** _(v1 in progress)_: Converse with all the agents above (currently supports T2B and T2KG)
 
 ![AIAgents4Pharma](assets/AIAgents4Pharma.png)
 
@@ -34,20 +35,59 @@ pip install aiagents4pharma
 
 Check out the tutorials on each agent for detailed instrcutions.
 
-#### Option 2: docker hub
+#### Option 2: Docker Hub
 
-_Please note that this option is currently available only for Talk2Biomodels._
+_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
 
-1. **Pull the image**
-   ```
+1. **Pull the Docker images**
+
+   ```bash
    docker pull virtualpatientengine/talk2biomodels
    ```
-2. **Run a container**
+
+   ```bash
+   docker pull virtualpatientengine/talk2scholars
    ```
-   docker run -e OPENAI_API_KEY=<openai_api_key> -e NVIDIA_API_KEY=<nvidia_api_key> -p 8501:8501 virtualpatientengine/talk2biomodels
+
+2. **Run the containers**
+
+   ```bash
+   docker run -d \
+     --name talk2biomodels \
+     -e OPENAI_API_KEY=<your_openai_api_key> \
+     -e NVIDIA_API_KEY=<your_nvidia_api_key> \
+     -p 8501:8501 \
+     virtualpatientengine/talk2biomodels
    ```
-_You can create a free account at NVIDIA and apply for their
-free credits [here](https://build.nvidia.com/explore/discover)._
+
+   ```bash
+   docker run -d \
+     --name talk2scholars \
+     -e OPENAI_API_KEY=<your_openai_api_key> \
+     -e ZOTERO_API_KEY=<your_zotero_api_key> \
+     -e ZOTERO_USER_ID=<your_zotero_user_id> \
+     -p 8501:8501 \
+     virtualpatientengine/talk2scholars
+   ```
+
+3. **Access the Web App**
+    Open your browser and go to:
+
+   ```
+   http://localhost:8501
+   ```
+
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
+
+#### **Notes**
+
+- Ensure you **replace `<your_openai_api_key>`, `<your_nvidia_api_key>`, `<your_zotero_api_key>`, and `<your_zotero_user_id>`** with your actual credentials.
+- Both applications use **port `8501`**, so run them on different ports if needed:
+  ```bash
+  docker run -d -e OPENAI_API_KEY=<your_openai_api_key> -p 8501:8501 virtualpatientengine/talk2scholars
+  ```
+  Then, access it via `http://localhost:8501`.
 
 #### Option 3: git
 
@@ -60,32 +100,68 @@ free credits [here](https://build.nvidia.com/explore/discover)._
    ```bash
    pip install -r requirements.txt
    ```
+   The current version of T2KG requires additional Ollama library to be installed.
+
+   Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
+
+   As an alternative, use the following commands to install the library using terminal and to pull necessary model:
+
+   - Ubuntu:
+      ```
+      curl -fsSL https://ollama.com/install.sh | sh
+      ollama pull nomic-embed-text
+      ```
+   - Windows:
+      ```
+      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+      tar -xzf .\ollama-windows-amd64.zip
+      start ollama serve
+      ollama pull nomic-embed-text
+      ```
+   - macOS:
+      ```
+      brew install ollama
+      ollama pull nomic-embed-text
+      ```
+   A list of pulled Ollama models can be checked using the following command:
+   ```
+   ollama list
+   ```
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
+
    ```bash
    export OPENAI_API_KEY=....
-   ```
-   ```bash
    export NVIDIA_API_KEY=....
    ```
-_You can create a free account at NVIDIA and apply for their
-free credits [here](https://build.nvidia.com/explore/discover)._
 
-4. **[Optional] Initialize LANGSMITH_API_KEY**
+   _You can create a free account at NVIDIA and apply for their
+   free credits [here](https://build.nvidia.com/explore/discover)._
+
+4. **Initialize ZOTERO_API_KEY and ZOTERO_USER_ID**
+
+   ```bash
+   export ZOTERO_API_KEY=....
+   export ZOTERO_USER_ID=....
+   ```
+
+5. **[Optional] Initialize LANGSMITH_API_KEY**
+
    ```bash
    export LANGCHAIN_TRACING_V2=true
    export LANGCHAIN_API_KEY=<your-api-key>
    ```
-_Please note that this will create a new tracing project in your Langsmith
-account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
-`KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
-default to the name `default`. `xxxx` will be the 4-digit ID created for the
-session._
 
-5. **Launch the app:**
+   _Please note that this will create a new tracing project in your Langsmith
+   account with the name `T2X-xxxx`, where `X` can be `B` (Biomodels), `S` (Scholars),
+   `KG` (KnowledgeGraphs), or `C` (Cells). If you skip the previous step, it will
+   default to the name `default`. `xxxx` will be the 4-digit ID created for the
+   session._
+
+6. **Launch the app:**
    ```bash
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
-_Replace <agent> with the agent name you are interested to launch._
+   _Replace <agent> with the agent name you are interested to launch._
 
 For detailed instructions on each agent, please refer to their respective modules.
 

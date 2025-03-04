@@ -7,11 +7,12 @@ import pytest
 from langgraph.types import Command
 from langgraph.graph import END
 from langchain_core.messages import HumanMessage, AIMessage
+from langchain_openai import ChatOpenAI
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 from aiagents4pharma.talk2scholars.state.state_talk2scholars import Talk2Scholars
 
 # pylint: disable=redefined-outer-name
-
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
 
 @pytest.fixture
 def test_state():
@@ -68,7 +69,7 @@ def test_zotero_integration(
     )
 
     # Initialize the LangGraph application
-    app = get_app(thread_id="test_thread")
+    app = get_app(thread_id="test_thread", llm_model=LLM_MODEL)
 
     # Run the full workflow (mocked Zotero agent is called)
     result = app.invoke(
