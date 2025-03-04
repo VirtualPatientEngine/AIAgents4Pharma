@@ -100,7 +100,9 @@ nav:
           - Display results: talk2scholars/tools/display_results.md
           - Query results: talk2scholars/tools/query_results.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
-          - Download Arxiv Paper: talk2scholars/tools/download_arxiv_paper.md
+          - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
+          - Arxiv Downloader: talk2scholars/tools/arxiv_downloader.md
+          - Abstract Downloader: talk2scholars/tools/abstract_downloader.md          
           - Zotero Read: talk2scholars/tools/zotero_read.md
 
   - Documentation:
