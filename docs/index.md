@@ -70,7 +70,8 @@ cd aiagents4pharma/talk2knowledgegraphs
 To start the containers, run the following command from the root directory:
 
 ```sh
-docker-compose up -d
+docker compose up # default mode with logs
+docker compose up -d # for detached mode
 ```
 
 This will:
