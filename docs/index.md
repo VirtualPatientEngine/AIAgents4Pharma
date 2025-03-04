@@ -33,7 +33,7 @@ Our toolkit currently consists of the following agents:
 pip install aiagents4pharma
 ```
 
-Check out the tutorials on each agent for detailed instrcutions.
+Check out the tutorials on each agent for detailed instructions.
 
 #### Option 2: Docker Hub
 
@@ -41,7 +41,7 @@ _We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` avail
 
 ##### **Run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
 
-Talk2AIAgents4Pharma and Talk2KnowledgeGraphs requires Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
+Talk2AIAgents4Pharma and Talk2KnowledgeGraphs require Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
 
 ###### **Setup Environment Variables**
 
@@ -62,7 +62,7 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
    OLLAMA_HOST=http://ollama:11434
-   # Note: The API end point for ollama is already added in the env.example
+   # Note: The API endpoint for ollama is already added in the env.example
    # Note: You need both of these keys for Talk2AIAgents4Pharma
    # Note: You only need to add OPENAI_API_KEY for Talk2KnowledgeGraphs if running it separately
    ```
@@ -81,7 +81,7 @@ This will:
 - Start both Talk2AIAgents4Pharma or Talk2KnowledgeGraphs and Ollama containers in the same network.
 - Ensure Ollama is running first before launching Talk2AIAgents4Pharma or Talk2KnowledgeGraphs.
 
-To Access the Web App open your browser and go to:
+To Access the web app, open your browser and go to:
 
 ```
 http://localhost:8501
@@ -246,4 +246,4 @@ Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ## Feedback
 
-Questions/Bug reports/Feature requests/Comments/Suggestions? We welcome all. Please use `Isssues` or `Discussions` 😀
+Questions/Bug reports/Feature requests/Comments/Suggestions? We welcome all. Please use `Issues` or `Discussions` 😀
