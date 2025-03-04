@@ -194,9 +194,9 @@ def sample_questions():
     Function to get the sample questions.
     """
     questions = [
-        "Search for all the BioModels on Crohn's Disease",
+        "Search for all biomodels on \"Crohns Disease\"",
         "Briefly describe biomodel 971 and simulate it for 50 days with an interval of 50.",
-        "Bring BioModel 27 to a steady state, and then "
+        "Bring biomodel 27 to a steady state, and then "
         "determine the Mpp concentration at the steady state.",
         "How will the concentration of Mpp change in model 27, "
         "if the initial value of MAPKK were to be changed between 1 and 100 in steps of 10?",
@@ -209,9 +209,8 @@ def sample_questions_t2aa4p():
     Function to get the sample questions for Talk2AIAgents4Pharma.
     """
     questions = [
-        "Search models on Crohn's Disease",
+        "Search for all the biomodels on \"Crohns Disease\"",
         "Briefly describe biomodel 537 and simulate it for 2016 hours with an interval of 100.",
-        "What is the concentration of species IL6 in serum at the end of simulation?",
         "List the drugs that target Interleukin-6",
         "What genes are associated with Crohn's disease?"
     ]
@@ -255,6 +254,22 @@ def update_state_t2kg(st):
             }
         ]}
     return dic
+
+def get_ai_messages(current_state):
+    # Get all the AI msgs in the
+    # last response from the state
+    assistant_content = []
+    for msg in current_state.values["messages"][::-1]:
+        if isinstance(msg, HumanMessage):
+            break
+        if isinstance(msg, AIMessage) and msg.content != '':
+            assistant_content.append(msg.content)
+            continue
+    # Reverse the order
+    assistant_content = assistant_content[::-1]
+    # Join the messages
+    assistant_content = '\n'.join(assistant_content)
+    return assistant_content
 
 def get_response(agent, graphs_visuals, app, st, prompt):
     # Create config for the agent
@@ -313,7 +328,12 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             config=config|{"callbacks": [tracer]},
             # stream_mode="messages"
             )
-            st.markdown(response["messages"][-1].content)
+            # Get the current state of the graph
+            current_state = app.get_state(config)
+            # Get last response's AI messages
+            assistant_content = get_ai_messages(current_state)
+            # st.markdown(response["messages"][-1].content)
+            st.write(assistant_content)
         else:    
             response = app.stream(
                 {"messages": [HumanMessage(content=prompt)]},
@@ -327,19 +347,21 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     
     # Get the current state of the graph
     current_state = app.get_state(config)
-    # Get all the AI msgs in the
-    # last response from the state
-    assistant_content = []
-    for msg in current_state.values["messages"][::-1]:
-        if isinstance(msg, HumanMessage):
-            break
-        if isinstance(msg, AIMessage) and msg.content != '':
-            assistant_content.append(msg.content)
-            continue
-    # Reverse the order
-    assistant_content = assistant_content[::-1]
-    # Join the messages
-    assistant_content = '\n'.join(assistant_content)
+    # Get last response's AI messages
+    assistant_content = get_ai_messages(current_state)
+    # # Get all the AI msgs in the
+    # # last response from the state
+    # assistant_content = []
+    # for msg in current_state.values["messages"][::-1]:
+    #     if isinstance(msg, HumanMessage):
+    #         break
+    #     if isinstance(msg, AIMessage) and msg.content != '':
+    #         assistant_content.append(msg.content)
+    #         continue
+    # # Reverse the order
+    # assistant_content = assistant_content[::-1]
+    # # Join the messages
+    # assistant_content = '\n'.join(assistant_content)
     # Add response to chat history
     assistant_msg = ChatMessage(
                         # response["messages"][-1].content,
@@ -643,6 +665,8 @@ def get_base_chat_model(model_name) -> BaseChatModel:
     '''
     dic_llm_models = {
         "NVIDIA/llama-3.3-70b-instruct": "meta/llama-3.3-70b-instruct",
+        "NVIDIA/llama-3.1-405b-instruct": "meta/llama-3.1-405b-instruct",
+        "NVIDIA/llama-3.1-70b-instruct": "meta/llama-3.1-70b-instruct",
         "OpenAI/gpt-4o-mini": "gpt-4o-mini"
     }
     if model_name.startswith("Llama"):

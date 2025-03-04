@@ -26,6 +26,7 @@ Our toolkit currently consists of the following agents:
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 ### Installation
+_Please use version 1.26.2 or later for better support with NVIDIA NIM models._
 
 #### Option 1: PyPI
 
@@ -33,23 +34,77 @@ Our toolkit currently consists of the following agents:
 pip install aiagents4pharma
 ```
 
-Check out the tutorials on each agent for detailed instrcutions.
+Check out the tutorials on each agent for detailed instructions.
 
 #### Option 2: Docker Hub
 
-_Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
+_We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
 
-1. **Pull the Docker images**
+##### **Run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
 
-   ```bash
-   docker pull virtualpatientengine/talk2biomodels
+Talk2AIAgents4Pharma and Talk2KnowledgeGraphs require Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
+
+###### **Setup Environment Variables**
+
+1. Choose the app you want to use:
+
+```sh
+# Navigate to the correct directory before setting up environment variables.
+# Use one of the following commands based on the agent you want to use:
+cd AIAgents4Pharma/aiagents4pharma/talk2aiagents4pharma
+cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
+```
+
+2. Copy the `.env.example` file and rename it to `.env`:
+   ```sh
+   cp .env.example .env
+   ```
+3. Open the `.env` file and add your API keys:
+
+   ```plaintext
+   OPENAI_API_KEY=your_openai_api_key
+   NVIDIA_API_KEY=your_nvidia_api_key
+   OLLAMA_HOST=http://ollama:11434
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_API_KEY=your_langchain_api_key_here
+   # Notes:
+   # - The API endpoint for Ollama is already set in env.example.
+   # - Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
+   # - If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
+   # - Langsmith API for tracing is optional for both, set it in env.example if required.
    ```
 
-   ```bash
-   docker pull virtualpatientengine/talk2scholars
-   ```
+4. Save the file.
 
-2. **Run the containers**
+To start the containers, run the following command:
+
+```sh
+docker compose --profile cpu up # for CPU mode
+docker compose --profile nvidia up # for GPU mode
+docker compose --profile amd up # for AMD mode
+```
+
+This will:
+
+- Pull the latest images if they are not already available.
+- Start both Talk2AIAgents4Pharma or Talk2KnowledgeGraphs and Ollama containers in the same network.
+- Ensure Ollama is running first before launching Talk2AIAgents4Pharma or Talk2KnowledgeGraphs.
+
+To Access the web app, open your browser and go to:
+
+```
+http://localhost:8501
+```
+
+To stop the containers, run:
+
+```sh
+docker compose down
+```
+
+##### **Run Talk2Biomodels and Talk2Scholars**
+
+1. **Run the containers**
 
    ```bash
    docker run -d \
@@ -70,8 +125,8 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
      virtualpatientengine/talk2scholars
    ```
 
-3. **Access the Web App**
-    Open your browser and go to:
+2. **Access the Web App**
+   Open your browser and go to:
 
    ```
    http://localhost:8501
@@ -97,9 +152,11 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    cd AIAgents4Pharma
    ```
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
+
    ⚠️ The current version of T2KG requires additional Ollama library to be installed.
 
    Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
@@ -107,28 +164,31 @@ _Both `Talk2Biomodels` and `Talk2Scholars` are now available on Docker Hub._
    As an alternative, use the following commands to install the library using terminal and to pull necessary model:
 
    - Ubuntu:
-      ```
-      curl -fsSL https://ollama.com/install.sh | sh
-      ollama pull nomic-embed-text
-      ```
+     ```
+     curl -fsSL https://ollama.com/install.sh | sh
+     ollama pull nomic-embed-text
+     ```
    - Windows:
-      ```
-      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-      tar -xzf .\ollama-windows-amd64.zip
-      start ollama serve
-      ollama pull nomic-embed-text
-      ```
+     ```
+     curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+     tar -xzf .\ollama-windows-amd64.zip
+     start ollama serve
+     ollama pull nomic-embed-text
+     ```
    - macOS:
-      ```
-      brew install ollama
-      ollama pull nomic-embed-text
-      ```
-   A list of pulled Ollama models can be checked using the following command:
+     ```
+     brew install ollama
+     ollama pull nomic-embed-text
+     ```
+     A list of pulled Ollama models can be checked using the following command:
+
    ```
    ollama list
    ```
+
    ⚠️ `pcst_fast 1.0.10` library requires `Microsoft Visual C++ 14.0` or greater to be installed.
    You can download `Microsoft C++ Build Tools` from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
 3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
 
    ```bash
@@ -198,4 +258,4 @@ Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ## Feedback
 
-Questions/Bug reports/Feature requests/Comments/Suggestions? We welcome all. Please use `Isssues` or `Discussions` 😀
+Questions/Bug reports/Feature requests/Comments/Suggestions? We welcome all. Please use `Issues` or `Discussions` 😀
