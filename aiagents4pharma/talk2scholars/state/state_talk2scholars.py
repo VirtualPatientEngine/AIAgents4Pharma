@@ -37,7 +37,7 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
         >>> print(updated_state)
         {"papers": {"id2": "Paper 2"}}
     """
-    logger.info("Updating existing state %s with the state dict: %s", existing, new)
+    # logger.info("Updating existing state %s with the state dict: %s", existing, new)
     return new
 
 
@@ -60,5 +60,6 @@ class Talk2Scholars(AgentState):
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
+    pdf_data: Annotated[Dict[str, Any], replace_dict]
     zotero_read: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
