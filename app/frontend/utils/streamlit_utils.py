@@ -204,6 +204,18 @@ def sample_questions():
     ]
     return questions
 
+def sample_questions_t2s():
+    """
+    Function to get the sample questions for Talk2Scholars.
+    """
+    questions = [
+        "Search articles on \"PrimeKG\"",
+        "Show the details of the first article in the last search results",
+        "Suggst more such articles",
+        "Read all articles from my Zotero library",
+    ]
+    return questions
+
 def sample_questions_t2aa4p():
     """
     Function to get the sample questions for Talk2AIAgents4Pharma.
