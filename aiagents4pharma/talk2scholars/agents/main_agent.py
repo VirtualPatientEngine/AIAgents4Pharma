@@ -11,6 +11,7 @@ for multi-agent systems and implements proper state management.
 import logging
 import hydra
 from langgraph_supervisor import create_supervisor
+from langchain_openai import ChatOpenAI
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from ..agents.s2_agent import get_app as get_app_s2
@@ -42,6 +43,12 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> app = get_app("thread_123")
         >>> result = app.invoke(initial_state)
     """
+    if llm_model.model_name == "gpt-4o-mini":
+        llm_model = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0,
+            model_kwargs={"parallel_tool_calls": False},
+        )
     # Load hydra configuration
     logger.log(logging.INFO, "Launching Talk2Scholars with thread_id %s", uniq_id)
     with hydra.initialize(version_base=None, config_path="../configs/"):
