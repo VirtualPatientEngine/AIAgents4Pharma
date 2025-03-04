@@ -79,6 +79,12 @@ This will:
 - Start both Talk2AIAgents4Pharma or Talk2KnowledgeGraphs and Ollama containers in the same network.
 - Ensure Ollama is running first before launching Talk2AIAgents4Pharma or Talk2KnowledgeGraphs.
 
+To Access the Web App open your browser and go to:
+
+```
+http://localhost:8501
+```
+
 To stop the containers, run:
 
 ```sh
