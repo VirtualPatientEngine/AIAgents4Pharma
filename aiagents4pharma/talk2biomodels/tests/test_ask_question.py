@@ -11,7 +11,7 @@ def test_ask_question_tool():
     Test the ask_question tool without the simulation results.
     '''
     unique_id = 12345
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=ChatOpenAI(model='gpt-4o-mini', temperature=0))
     config = {"configurable": {"thread_id": unique_id}}
 
     ##########################################
@@ -20,9 +20,6 @@ def test_ask_question_tool():
     # simulation has not been run. In this
     # case, the tool should return an error
     ##########################################
-    # Update state
-    app.update_state(config,
-            {"llm_model": ChatOpenAI(model='gpt-4o-mini', temperature=0)})
     # Define the prompt
     prompt = "Call the ask_question tool to answer the "
     prompt += "question: What is the concentration of CRP "

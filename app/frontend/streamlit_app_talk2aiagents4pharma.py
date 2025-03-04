@@ -10,6 +10,7 @@ import random
 import hydra
 import streamlit as st
 from streamlit_feedback import streamlit_feedback
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -110,7 +111,9 @@ if "unique_id" not in st.session_state:
     st.session_state.unique_id = random.randint(1, 1000)
 if "app" not in st.session_state:
     if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(st.session_state.unique_id)
+        st.session_state.app = get_app(st.session_state.unique_id,
+            llm_model=ChatOpenAI(model='gpt-4o-mini',
+                       temperature=0))
     else:
         print (st.session_state.llm_model)
         st.session_state.app = get_app(st.session_state.unique_id,
@@ -391,7 +394,8 @@ with main_col2:
                         for m in history
                     ]
 
-                    streamlit_utils.get_response(graphs_visuals,
+                    streamlit_utils.get_response('T2AA4P',
+                                                 graphs_visuals,
                                                  app,
                                                  st,
                                                  prompt)

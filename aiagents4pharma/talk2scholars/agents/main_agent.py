@@ -10,9 +10,6 @@ for multi-agent systems and implements proper state management.
 
 import logging
 import hydra
-from langgraph_supervisor import create_supervisor
-from langchain_openai import ChatOpenAI
-from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from ..agents.s2_agent import get_app as get_app_s2
 from ..agents.zotero_agent import get_app as get_app_zotero
@@ -24,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_app(
-    uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 ):
     """
     Initializes and returns the LangGraph-based hierarchical agent system.

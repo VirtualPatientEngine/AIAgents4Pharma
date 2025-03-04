@@ -3,7 +3,10 @@ Test cases for Talk2Biomodels.
 '''
 
 from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
 from ..agents.t2b_agent import get_app
+
+LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
 
 def test_simulate_model_tool():
     '''
@@ -11,9 +14,8 @@ def test_simulate_model_tool():
     multiple models.
     '''
     unique_id = 123
-    app = get_app(unique_id)
+    app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
-    app.update_state(config, {"llm_model": "gpt-4o-mini"})
     # Upload a model to the state
     app.update_state(config,
         {"sbml_file_path": ["aiagents4pharma/talk2biomodels/tests/BIOMD0000000449_url.xml"]})

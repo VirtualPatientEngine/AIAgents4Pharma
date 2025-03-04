@@ -235,24 +235,14 @@ def stream_response(response):
                 yield '\n'
             yield chunk[0].content
 
-def get_response(graphs_visuals, app, st, prompt):
-    # Create config for the agent
-    config = {"configurable": {"thread_id": st.session_state.unique_id}}
-    # Update the agent state with the selected LLM model
-    current_state = app.get_state(config)
-    app.update_state(
-        config,
-        {"sbml_file_path": [st.session_state.sbml_file_path]}
-    )
-    app.update_state(
-        config,
-        {"llm_model": get_base_chat_model(st.session_state.llm_model)}
-    )
-    app.update_state(
-        config,
-        {"text_embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model),
-        "embedding_model": get_text_embedding_model(
+def update_state_t2b(st):
+    dic = {"sbml_file_path": [st.session_state.sbml_file_path],
+           "text_embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model)}
+    return dic
+
+def update_state_t2kg(st):
+    dic = {"embedding_model": get_text_embedding_model(
             st.session_state.text_embedding_model),
         "uploaded_files": st.session_state.uploaded_files,
         "topk_nodes": st.session_state.topk_nodes,
@@ -264,7 +254,53 @@ def get_response(graphs_visuals, app, st, prompt):
                 "kg_text_path": st.session_state.config["kg_text_path"],
             }
         ]}
+    return dic
+
+def get_response(agent, graphs_visuals, app, st, prompt):
+    # Create config for the agent
+    config = {"configurable": {"thread_id": st.session_state.unique_id}}
+    # Update the agent state with the selected LLM model
+    current_state = app.get_state(config)
+    # app.update_state(
+    #     config,
+    #     {"sbml_file_path": [st.session_state.sbml_file_path]}
+    # )
+    app.update_state(
+        config,
+        {"llm_model": get_base_chat_model(st.session_state.llm_model)}
     )
+    # app.update_state(
+    #     config,
+    #     {"text_embedding_model": get_text_embedding_model(
+    #         st.session_state.text_embedding_model),
+    #     "embedding_model": get_text_embedding_model(
+    #         st.session_state.text_embedding_model),
+    #     "uploaded_files": st.session_state.uploaded_files,
+    #     "topk_nodes": st.session_state.topk_nodes,
+    #     "topk_edges": st.session_state.topk_edges,
+    #     "dic_source_graph": [
+    #         {
+    #             "name": st.session_state.config["kg_name"],
+    #             "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+    #             "kg_text_path": st.session_state.config["kg_text_path"],
+    #         }
+    #     ]}
+    # )
+    if agent == 'T2AA4P':
+        app.update_state(
+            config,
+            update_state_t2b(st)|update_state_t2kg(st)
+        )
+    elif agent == 'T2B':
+        app.update_state(
+            config,
+            update_state_t2b(st)
+        )
+    elif agent == 'T2KG':
+        app.update_state(
+            config,
+            update_state_t2kg(st)
+        )
 
     ERROR_FLAG = False
     with collect_runs() as cb:
