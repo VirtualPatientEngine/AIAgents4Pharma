@@ -64,7 +64,8 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
    OLLAMA_HOST=http://ollama:11434
-
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_API_KEY=your_langchain_api_key_here
    # Notes:
    # - The API endpoint for Ollama is already set in env.example.
    # - Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
