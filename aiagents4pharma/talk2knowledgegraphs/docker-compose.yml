@@ -1,5 +1,6 @@
 #talk2knowledgegraphs
 services:
+  # CPU variant – start with: docker compose --profile cpu up
   ollama:
     image: ollama/ollama:latest
     container_name: ollama-server
@@ -21,8 +22,9 @@ services:
       tail -f /dev/null"
     networks:
       - app-network
+    profiles: ["cpu"]
 
-  # NVIDIA GPU variant – activate with: docker compose --profile nvidia up
+  # NVIDIA GPU variant – start with: docker compose --profile nvidia up
   ollama-nvidia:
     image: ollama/ollama:latest
     container_name: ollama-server-nvidia
@@ -49,11 +51,11 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    profiles: ["nvidia"]
     networks:
       - app-network
+    profiles: ["nvidia"]
 
-  # AMD GPU variant – activate with: docker compose --profile amd up
+  # AMD GPU variant – start with: docker compose --profile amd up
   ollama-amd:
     image: ollama/ollama:rocm
     container_name: ollama-server-amd
@@ -76,9 +78,9 @@ services:
     devices:
       - /dev/kfd
       - /dev/dri
-    profiles: ["amd"]
     networks:
       - app-network
+    profiles: ["amd"]
 
   talk2aiagents4pharma:
     image: virtualpatientengine/talk2knowledgegraphs:latest
@@ -87,10 +89,6 @@ services:
       - "8501:8501"
     env_file:
       - .env
-    # Default dependency is on the CPU variant.
-    # If using a GPU-enabled variant, update this dependency accordingly.
-    depends_on:
-      - ollama
     restart: unless-stopped
     networks:
       - app-network
@@ -98,6 +96,8 @@ services:
 volumes:
   ollama_data:
     name: ollama_data
+    # Uncomment the line below if you want to use an existing volume:
+    # external: true
 
 networks:
   app-network:
