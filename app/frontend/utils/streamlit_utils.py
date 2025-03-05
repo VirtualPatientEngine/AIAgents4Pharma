@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Utils for Streamlit.
-'''
+"""
 
 import os
 import datetime
@@ -25,27 +25,27 @@ from langchain.callbacks.tracers import LangChainTracer
 import networkx as nx
 import gravis
 
+
 def submit_feedback(user_response):
-    '''
+    """
     Function to submit feedback to the developers.
 
     Args:
         user_response: dict: The user response
-    '''
+    """
     client = Client()
     client.create_feedback(
         st.session_state.run_id,
         key="feedback",
-        score=1 if user_response['score'] == "👍" else 0,
-        comment=user_response['text']
+        score=1 if user_response["score"] == "👍" else 0,
+        comment=user_response["text"],
     )
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
-def render_table_plotly(uniq_msg_id,
-                        content,
-                        df_selected,
-                        x_axis_label="Time",
-                        y_axis_label="Concentration"):
+
+def render_table_plotly(
+    uniq_msg_id, content, df_selected, x_axis_label="Time", y_axis_label="Concentration"
+):
     """
     Function to render the table and plotly chart in the chat.
 
@@ -56,35 +56,35 @@ def render_table_plotly(uniq_msg_id,
     """
     # Display the toggle button to suppress the table
     render_toggle(
-        key="toggle_plotly_"+uniq_msg_id,
+        key="toggle_plotly_" + uniq_msg_id,
         toggle_text="Show Plot",
         toggle_state=True,
-        save_toggle=True)
+        save_toggle=True,
+    )
     # Display the plotly chart
     render_plotly(
         df_selected,
-        key="plotly_"+uniq_msg_id,
+        key="plotly_" + uniq_msg_id,
         title=content,
         y_axis_label=y_axis_label,
         x_axis_label=x_axis_label,
-        save_chart=True)
+        save_chart=True,
+    )
     # Display the toggle button to suppress the table
     render_toggle(
-        key="toggle_table_"+uniq_msg_id,
+        key="toggle_table_" + uniq_msg_id,
         toggle_text="Show Table",
         toggle_state=False,
-        save_toggle=True)
+        save_toggle=True,
+    )
     # Display the table
-    render_table(
-        df_selected,
-        key="dataframe_"+uniq_msg_id,
-        save_table=True)
+    render_table(df_selected, key="dataframe_" + uniq_msg_id, save_table=True)
     st.empty()
 
-def render_toggle(key: str,
-                  toggle_text: str,
-                  toggle_state: bool,
-                  save_toggle: bool = False):
+
+def render_toggle(
+    key: str, toggle_text: str, toggle_state: bool, save_toggle: bool = False
+):
     """
     Function to render the toggle button to show/hide the table.
 
@@ -94,29 +94,28 @@ def render_toggle(key: str,
         toggle_state: bool: The state of the toggle button
         save_toggle: bool: Flag to save the toggle button to the chat history
     """
-    st.toggle(
-        toggle_text,
-        toggle_state,
-        help='''Toggle to show/hide data''',
-        key=key
-        )
+    st.toggle(toggle_text, toggle_state, help="""Toggle to show/hide data""", key=key)
     # print (key)
     if save_toggle:
         # Add data to the chat history
-        st.session_state.messages.append({
+        st.session_state.messages.append(
+            {
                 "type": "toggle",
                 "content": toggle_text,
                 "toggle_state": toggle_state,
-                "key": key
-            })
+                "key": key,
+            }
+        )
 
-def render_plotly(df: pd.DataFrame,
-                key: str,
-                title: str,
-                y_axis_label: str,
-                x_axis_label: str,
-                save_chart: bool = False
-                ):
+
+def render_plotly(
+    df: pd.DataFrame,
+    key: str,
+    title: str,
+    y_axis_label: str,
+    x_axis_label: str,
+    save_chart: bool = False,
+):
     """
     Function to visualize the dataframe using Plotly.
 
@@ -130,28 +129,27 @@ def render_plotly(df: pd.DataFrame,
     toggle_state = st.session_state[f'toggle_plotly_{key.split("plotly_")[1]}']
     if toggle_state:
         df_simulation_results = df.melt(
-                                    id_vars='Time',
-                                    var_name='Species',
-                                    value_name='Concentration')
-        fig = px.line(df_simulation_results,
-                        x='Time',
-                        y='Concentration',
-                        color='Species',
-                        title=title,
-                        height=500,
-                        width=600
-                )
+            id_vars="Time", var_name="Species", value_name="Concentration"
+        )
+        fig = px.line(
+            df_simulation_results,
+            x="Time",
+            y="Concentration",
+            color="Species",
+            title=title,
+            height=500,
+            width=600,
+        )
         # Set y axis label
         fig.update_yaxes(title_text=f"Quantity ({y_axis_label})")
         # Set x axis label
         fig.update_xaxes(title_text=f"Time ({x_axis_label})")
         # Display the plotly chart
-        st.plotly_chart(fig,
-                        use_container_width=True,
-                        key=key)
+        st.plotly_chart(fig, use_container_width=True, key=key)
     if save_chart:
         # Add data to the chat history
-        st.session_state.messages.append({
+        st.session_state.messages.append(
+            {
                 "type": "plotly",
                 "content": df,
                 "key": key,
@@ -159,12 +157,11 @@ def render_plotly(df: pd.DataFrame,
                 "y_axis_label": y_axis_label,
                 "x_axis_label": x_axis_label,
                 # "tool_name": tool_name
-            })
+            }
+        )
 
-def render_table(df: pd.DataFrame,
-                 key: str,
-                 save_table: bool = False
-                ):
+
+def render_table(df: pd.DataFrame, key: str, save_table: bool = False):
     """
     Function to render the table in the chat.
 
@@ -177,56 +174,60 @@ def render_table(df: pd.DataFrame,
     # toggle_state = st.session_state[f'toggle_table_{tool_name}_{key.split("_")[-1]}']
     toggle_state = st.session_state[f'toggle_table_{key.split("dataframe_")[1]}']
     if toggle_state:
-        st.dataframe(df,
-                    use_container_width=True,
-                    key=key)
+        st.dataframe(df, use_container_width=True, key=key)
     if save_table:
         # Add data to the chat history
-        st.session_state.messages.append({
+        st.session_state.messages.append(
+            {
                 "type": "dataframe",
                 "content": df,
                 "key": key,
                 # "tool_name": tool_name
-            })
+            }
+        )
+
 
 def sample_questions():
     """
     Function to get the sample questions.
     """
     questions = [
-        "Search for all biomodels on \"Crohns Disease\"",
+        'Search for all biomodels on "Crohns Disease"',
         "Briefly describe biomodel 971 and simulate it for 50 days with an interval of 50.",
         "Bring biomodel 27 to a steady state, and then "
         "determine the Mpp concentration at the steady state.",
         "How will the concentration of Mpp change in model 27, "
         "if the initial value of MAPKK were to be changed between 1 and 100 in steps of 10?",
-        "Show annotations of all interleukins in model 537"
+        "Show annotations of all interleukins in model 537",
     ]
     return questions
+
 
 def sample_questions_t2s():
     """
     Function to get the sample questions for Talk2Scholars.
     """
     questions = [
-        "Search articles on \"PrimeKG\"",
-        "Show the details of the first article in the last search results",
-        "Suggst more such articles",
-        "Read all articles from my Zotero library",
+        'Search articles on "PrimeKG"',
+        "Explain the details of the first article in the last search results",
+        "Recommend more such articles",
+        "Read all papers on bilogy from my Zotero library",
     ]
     return questions
+
 
 def sample_questions_t2aa4p():
     """
     Function to get the sample questions for Talk2AIAgents4Pharma.
     """
     questions = [
-        "Search for all the biomodels on \"Crohns Disease\"",
+        'Search for all the biomodels on "Crohns Disease"',
         "Briefly describe biomodel 537 and simulate it for 2016 hours with an interval of 100.",
         "List the drugs that target Interleukin-6",
-        "What genes are associated with Crohn's disease?"
+        "What genes are associated with Crohn's disease?",
     ]
     return questions
+
 
 def stream_response(response):
     """
@@ -241,20 +242,27 @@ def stream_response(response):
             continue
         # print (chunk)
         # Exclude the tool calls that are not part of the conversation
-        if 'branch:agent:should_continue:tools' not in chunk[1]['langgraph_triggers']:
-            if chunk[0].content == '':
-                yield '\n'
+        if "branch:agent:should_continue:tools" not in chunk[1]["langgraph_triggers"]:
+            if chunk[0].content == "":
+                yield "\n"
             yield chunk[0].content
 
+
 def update_state_t2b(st):
-    dic = {"sbml_file_path": [st.session_state.sbml_file_path],
-           "text_embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model)}
+    dic = {
+        "sbml_file_path": [st.session_state.sbml_file_path],
+        "text_embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model
+        ),
+    }
     return dic
 
+
 def update_state_t2kg(st):
-    dic = {"embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model),
+    dic = {
+        "embedding_model": get_text_embedding_model(
+            st.session_state.text_embedding_model
+        ),
         "uploaded_files": st.session_state.uploaded_files,
         "topk_nodes": st.session_state.topk_nodes,
         "topk_edges": st.session_state.topk_edges,
@@ -264,8 +272,10 @@ def update_state_t2kg(st):
                 "kg_pyg_path": st.session_state.config["kg_pyg_path"],
                 "kg_text_path": st.session_state.config["kg_text_path"],
             }
-        ]}
+        ],
+    }
     return dic
+
 
 def get_ai_messages(current_state):
     # Get all the AI msgs in the
@@ -274,14 +284,15 @@ def get_ai_messages(current_state):
     for msg in current_state.values["messages"][::-1]:
         if isinstance(msg, HumanMessage):
             break
-        if isinstance(msg, AIMessage) and msg.content != '':
+        if isinstance(msg, AIMessage) and msg.content != "":
             assistant_content.append(msg.content)
             continue
     # Reverse the order
     assistant_content = assistant_content[::-1]
     # Join the messages
-    assistant_content = '\n'.join(assistant_content)
+    assistant_content = "\n".join(assistant_content)
     return assistant_content
+
 
 def get_response(agent, graphs_visuals, app, st, prompt):
     # Create config for the agent
@@ -293,8 +304,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     #     {"sbml_file_path": [st.session_state.sbml_file_path]}
     # )
     app.update_state(
-        config,
-        {"llm_model": get_base_chat_model(st.session_state.llm_model)}
+        config, {"llm_model": get_base_chat_model(st.session_state.llm_model)}
     )
     # app.update_state(
     #     config,
@@ -313,32 +323,23 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     #         }
     #     ]}
     # )
-    if agent == 'T2AA4P':
-        app.update_state(
-            config,
-            update_state_t2b(st)|update_state_t2kg(st)
-        )
-    elif agent == 'T2B':
-        app.update_state(
-            config,
-            update_state_t2b(st)
-        )
-    elif agent == 'T2KG':
-        app.update_state(
-            config,
-            update_state_t2kg(st)
-        )
+    if agent == "T2AA4P":
+        app.update_state(config, update_state_t2b(st) | update_state_t2kg(st))
+    elif agent == "T2B":
+        app.update_state(config, update_state_t2b(st))
+    elif agent == "T2KG":
+        app.update_state(config, update_state_t2kg(st))
 
     ERROR_FLAG = False
     with collect_runs() as cb:
         # Add Langsmith tracer
         tracer = LangChainTracer(project_name=st.session_state.project_name)
         # Get response from the agent
-        if current_state.values['llm_model']._llm_type == 'chat-nvidia-ai-playground':
+        if current_state.values["llm_model"]._llm_type == "chat-nvidia-ai-playground":
             response = app.invoke(
-            {"messages": [HumanMessage(content=prompt)]},
-            config=config|{"callbacks": [tracer]},
-            # stream_mode="messages"
+                {"messages": [HumanMessage(content=prompt)]},
+                config=config | {"callbacks": [tracer]},
+                # stream_mode="messages"
             )
             # Get the current state of the graph
             current_state = app.get_state(config)
@@ -346,17 +347,17 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             assistant_content = get_ai_messages(current_state)
             # st.markdown(response["messages"][-1].content)
             st.write(assistant_content)
-        else:    
+        else:
             response = app.stream(
                 {"messages": [HumanMessage(content=prompt)]},
-                config=config|{"callbacks": [tracer]},
-                stream_mode="messages"
+                config=config | {"callbacks": [tracer]},
+                stream_mode="messages",
             )
             st.write_stream(stream_response(response))
         # print (cb.traced_runs)
         # Save the run id and use to save the feedback
         st.session_state.run_id = cb.traced_runs[-1].id
-    
+
     # Get the current state of the graph
     current_state = app.get_state(config)
     # Get last response's AI messages
@@ -376,14 +377,12 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     # assistant_content = '\n'.join(assistant_content)
     # Add response to chat history
     assistant_msg = ChatMessage(
-                        # response["messages"][-1].content,
-                        # current_state.values["messages"][-1].content,
-                        assistant_content,
-                        role="assistant")
-    st.session_state.messages.append({
-                    "type": "message",
-                    "content": assistant_msg
-                })
+        # response["messages"][-1].content,
+        # current_state.values["messages"][-1].content,
+        assistant_content,
+        role="assistant",
+    )
+    st.session_state.messages.append({"type": "message", "content": assistant_msg})
     # # Display the response in the chat
     # st.markdown(response["messages"][-1].content)
     st.empty()
@@ -392,8 +391,8 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     # Get the messages from the current state
     # and reverse the order
     reversed_messages = current_state.values["messages"][::-1]
-    # Loop through the reversed messages until a 
-    # HumanMessage is found i.e. the last message 
+    # Loop through the reversed messages until a
+    # HumanMessage is found i.e. the last message
     # from the user. This is to display the results
     # of the tool calls made by the agent since the
     # last message from the user.
@@ -421,11 +420,17 @@ def get_response(agent, graphs_visuals, app, st, prompt):
         # msg.name is the name of the tool
         # msg.tool_call_id is the unique id of the tool call
         # st.session_state.run_id is the unique id of the run
-        uniq_msg_id = msg.name+'_'+msg.tool_call_id+'_'+str(st.session_state.run_id)
-        print (uniq_msg_id)
+        uniq_msg_id = (
+            msg.name + "_" + msg.tool_call_id + "_" + str(st.session_state.run_id)
+        )
+        print(uniq_msg_id)
         if msg.name in ["simulate_model", "custom_plotter"]:
             if msg.name == "simulate_model":
-                print ('-', len(current_state.values["dic_simulated_data"]), 'simulate_model')
+                print(
+                    "-",
+                    len(current_state.values["dic_simulated_data"]),
+                    "simulate_model",
+                )
                 # Convert the simulated data to a single dictionary
                 dic_simulated_data = {}
                 for data in current_state.values["dic_simulated_data"]:
@@ -437,11 +442,14 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                 df_simulated_data = pd.DataFrame.from_dict(dic_simulated_data)
                 # Get the simulated data for the current tool call
                 df_simulated = pd.DataFrame(
-                    df_simulated_data[df_simulated_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
+                    df_simulated_data[
+                        df_simulated_data["tool_call_id"] == msg.tool_call_id
+                    ]["data"].iloc[0]
+                )
                 df_selected = df_simulated
             elif msg.name == "custom_plotter":
                 if msg.artifact:
-                    df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
+                    df_selected = pd.DataFrame.from_dict(msg.artifact["dic_data"])
                     # print (df_selected)
                 else:
                     continue
@@ -450,64 +458,67 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                 uniq_msg_id,
                 msg.content,
                 df_selected,
-                x_axis_label=msg.artifact['x_axis_label'],
-                y_axis_label=msg.artifact['y_axis_label'])
+                x_axis_label=msg.artifact["x_axis_label"],
+                y_axis_label=msg.artifact["y_axis_label"],
+            )
         elif msg.name == "steady_state":
             if not msg.artifact:
                 continue
             # Create a pandas dataframe from the dictionary
-            df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
+            df_selected = pd.DataFrame.from_dict(msg.artifact["dic_data"])
             # Make column 'species_name' the index
-            df_selected.set_index('species_name', inplace=True)
+            df_selected.set_index("species_name", inplace=True)
             # Display the toggle button to suppress the table
             render_toggle(
-                key="toggle_table_"+uniq_msg_id,
+                key="toggle_table_" + uniq_msg_id,
                 toggle_text="Show Table",
                 toggle_state=True,
-                save_toggle=True)
+                save_toggle=True,
+            )
             # Display the table
-            render_table(
-                df_selected,
-                key="dataframe_"+uniq_msg_id,
-                save_table=True)
+            render_table(df_selected, key="dataframe_" + uniq_msg_id, save_table=True)
         elif msg.name == "search_models":
             if not msg.artifact:
                 continue
             # Create a pandas dataframe from the dictionary
-            df_selected = pd.DataFrame.from_dict(msg.artifact['dic_data'])
+            df_selected = pd.DataFrame.from_dict(msg.artifact["dic_data"])
             # Pick selected columns
-            df_selected = df_selected[['url', 'name', 'format', 'submissionDate']]
+            df_selected = df_selected[["url", "name", "format", "submissionDate"]]
             # Display the toggle button to suppress the table
             render_toggle(
-                key="toggle_table_"+uniq_msg_id,
+                key="toggle_table_" + uniq_msg_id,
                 toggle_text="Show Table",
                 toggle_state=True,
-                save_toggle=True)
+                save_toggle=True,
+            )
             # Display the table
-            st.dataframe(df_selected,
-                    use_container_width=True,
-                    key='dataframe_'+uniq_msg_id,
-                    hide_index=True,
-                    column_config={
-                        "url": st.column_config.LinkColumn(
-                            label="ID",
-                            help="Click to open the link associated with the Id",
-                            validate=r"^http://.*$",  # Ensure the link is valid
-                            display_text=r"^https://www.ebi.ac.uk/biomodels/(.*?)$"
-                        ),
-                        "name": st.column_config.TextColumn("Name"),
-                        "format": st.column_config.TextColumn("Format"),
-                        "submissionDate": st.column_config.TextColumn("Submission Date"),
-                    }
+            st.dataframe(
+                df_selected,
+                use_container_width=True,
+                key="dataframe_" + uniq_msg_id,
+                hide_index=True,
+                column_config={
+                    "url": st.column_config.LinkColumn(
+                        label="ID",
+                        help="Click to open the link associated with the Id",
+                        validate=r"^http://.*$",  # Ensure the link is valid
+                        display_text=r"^https://www.ebi.ac.uk/biomodels/(.*?)$",
+                    ),
+                    "name": st.column_config.TextColumn("Name"),
+                    "format": st.column_config.TextColumn("Format"),
+                    "submissionDate": st.column_config.TextColumn("Submission Date"),
+                },
             )
             # Add data to the chat history
-            st.session_state.messages.append({
+            st.session_state.messages.append(
+                {
                     "type": "dataframe",
                     "content": df_selected,
-                    "key": "dataframe_"+uniq_msg_id,
-                    "tool_name": msg.name
-                })
-            
+                    "key": "dataframe_" + uniq_msg_id,
+                    "tool_name": msg.name,
+                }
+            )
+
         elif msg.name == "parameter_scan":
             # Convert the scanned data to a single dictionary
             dic_scanned_data = {}
@@ -520,20 +531,25 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             df_scanned_data = pd.DataFrame.from_dict(dic_scanned_data)
             # Get the scanned data for the current tool call
             df_scanned_current_tool_call = pd.DataFrame(
-                df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id])
+                df_scanned_data[df_scanned_data["tool_call_id"] == msg.tool_call_id]
+            )
             # df_scanned_current_tool_call.drop_duplicates()
             # print (df_scanned_current_tool_call)
             for count in range(0, len(df_scanned_current_tool_call.index)):
                 # Get the scanned data for the current tool call
                 df_selected = pd.DataFrame(
-                    df_scanned_data[df_scanned_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[count])
+                    df_scanned_data[
+                        df_scanned_data["tool_call_id"] == msg.tool_call_id
+                    ]["data"].iloc[count]
+                )
                 # Display the toggle button to suppress the table
                 render_table_plotly(
-                uniq_msg_id+'_'+str(count),
-                df_scanned_current_tool_call['name'].iloc[count],
-                df_selected,
-                x_axis_label=msg.artifact['x_axis_label'],
-                y_axis_label=msg.artifact['y_axis_label'])
+                    uniq_msg_id + "_" + str(count),
+                    df_scanned_current_tool_call["name"].iloc[count],
+                    df_selected,
+                    x_axis_label=msg.artifact["x_axis_label"],
+                    y_axis_label=msg.artifact["y_axis_label"],
+                )
         elif msg.name in ["get_annotation"]:
             if not msg.artifact:
                 continue
@@ -549,41 +565,48 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             df_annotations_data = pd.DataFrame.from_dict(dic_annotations_data)
             # Get the annotated data for the current tool call
             df_selected = pd.DataFrame(
-                    df_annotations_data[df_annotations_data['tool_call_id'] == msg.tool_call_id]['data'].iloc[0])
+                df_annotations_data[
+                    df_annotations_data["tool_call_id"] == msg.tool_call_id
+                ]["data"].iloc[0]
+            )
             # print (df_selected)
             df_selected["Id"] = df_selected.apply(
-                    lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
-                )
+                lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
+            )
             df_selected = df_selected.drop(columns=["Link"])
             # Directly use the "Link" column for the "Id" column
             render_toggle(
-                key="toggle_table_"+uniq_msg_id,
+                key="toggle_table_" + uniq_msg_id,
                 toggle_text="Show Table",
                 toggle_state=True,
-                save_toggle=True)
-            st.dataframe(df_selected,
-                    use_container_width=True,
-                    key='dataframe_'+uniq_msg_id,
-                    hide_index=True,
-                    column_config={
-                        "Id": st.column_config.LinkColumn(
-                            label="Id",
-                            help="Click to open the link associated with the Id",
-                            validate=r"^http://.*$",  # Ensure the link is valid
-                            display_text=r"^http://identifiers\.org/(.*?)$"
-                        ),
-                        "Species Name": st.column_config.TextColumn("Species Name"),
-                        "Description": st.column_config.TextColumn("Description"),
-                        "Database": st.column_config.TextColumn("Database"),
-                    }
+                save_toggle=True,
+            )
+            st.dataframe(
+                df_selected,
+                use_container_width=True,
+                key="dataframe_" + uniq_msg_id,
+                hide_index=True,
+                column_config={
+                    "Id": st.column_config.LinkColumn(
+                        label="Id",
+                        help="Click to open the link associated with the Id",
+                        validate=r"^http://.*$",  # Ensure the link is valid
+                        display_text=r"^http://identifiers\.org/(.*?)$",
+                    ),
+                    "Species Name": st.column_config.TextColumn("Species Name"),
+                    "Description": st.column_config.TextColumn("Description"),
+                    "Database": st.column_config.TextColumn("Database"),
+                },
             )
             # Add data to the chat history
-            st.session_state.messages.append({
+            st.session_state.messages.append(
+                {
                     "type": "dataframe",
                     "content": df_selected,
-                    "key": "dataframe_"+uniq_msg_id,
-                    "tool_name": msg.name
-                })
+                    "key": "dataframe_" + uniq_msg_id,
+                    "tool_name": msg.name,
+                }
+            )
         elif msg.name in ["subgraph_extraction"]:
             print(
                 "-",
@@ -591,9 +614,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                 "subgraph_extraction",
             )
             # Add the graph into the visuals list
-            latest_graph = current_state.values["dic_extracted_graph"][
-                -1
-            ]
+            latest_graph = current_state.values["dic_extracted_graph"][-1]
             if current_state.values["dic_extracted_graph"]:
                 graphs_visuals.append(
                     {
@@ -606,9 +627,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             dic_papers = msg.artifact
             if not dic_papers:
                 continue
-            df_papers = pd.DataFrame.from_dict(
-                dic_papers, orient="index"
-            )
+            df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
             # Add index as a column "key"
             df_papers["Key"] = df_papers.index
             # Drop index
@@ -619,18 +638,14 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             if "Year" in df_papers.columns:
                 df_papers["Year"] = df_papers["Year"].apply(
                     lambda x: (
-                        str(int(x))
-                        if pd.notna(x) and str(x).isdigit()
-                        else None
+                        str(int(x)) if pd.notna(x) and str(x).isdigit() else None
                     )
                 )
 
             if "Date" in df_papers.columns:
                 df_papers["Date"] = df_papers["Date"].apply(
                     lambda x: (
-                        pd.to_datetime(x, errors="coerce").strftime(
-                            "%Y-%m-%d"
-                        )
+                        pd.to_datetime(x, errors="coerce").strftime("%Y-%m-%d")
                         if pd.notna(pd.to_datetime(x, errors="coerce"))
                         else None
                     )
@@ -656,9 +671,8 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             )
             st.empty()
 
-def render_graph(graph_dict: dict,
-                 key: str,
-                 save_graph: bool = False):
+
+def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     """
     Function to render the graph in the chat.
 
@@ -680,29 +694,32 @@ def render_graph(graph_dict: dict,
 
     # Render the graph
     fig = gravis.d3(
-            graph,
-            node_size_factor=3.0,
-            show_edge_label=True,
-            edge_label_data_source="label",
-            edge_curvature=0.25,
-            zoom_factor=1.0,
-            many_body_force_strength=-500,
-            many_body_force_theta=0.3,
-            node_hover_neighborhood=True,
-            # layout_algorithm_active=True,
-        )
+        graph,
+        node_size_factor=3.0,
+        show_edge_label=True,
+        edge_label_data_source="label",
+        edge_curvature=0.25,
+        zoom_factor=1.0,
+        many_body_force_strength=-500,
+        many_body_force_theta=0.3,
+        node_hover_neighborhood=True,
+        # layout_algorithm_active=True,
+    )
     components.html(fig.to_html(), height=475)
 
     if save_graph:
         # Add data to the chat history
-        st.session_state.messages.append({
+        st.session_state.messages.append(
+            {
                 "type": "graph",
                 "content": graph_dict,
                 "key": key,
-            })
+            }
+        )
+
 
 def get_text_embedding_model(model_name) -> Embeddings:
-    '''
+    """
     Function to get the text embedding model.
 
     Args:
@@ -710,17 +727,18 @@ def get_text_embedding_model(model_name) -> Embeddings:
 
     Returns:
         Embeddings: The text embedding model
-    '''
+    """
     dic_text_embedding_models = {
         "NVIDIA/llama-3.2-nv-embedqa-1b-v2": "nvidia/llama-3.2-nv-embedqa-1b-v2",
-        "OpenAI/text-embedding-ada-002": "text-embedding-ada-002"
+        "OpenAI/text-embedding-ada-002": "text-embedding-ada-002",
     }
     if model_name.startswith("NVIDIA"):
         return NVIDIAEmbeddings(model=dic_text_embedding_models[model_name])
     return OpenAIEmbeddings(model=dic_text_embedding_models[model_name])
 
+
 def get_base_chat_model(model_name) -> BaseChatModel:
-    '''
+    """
     Function to get the base chat model.
 
     Args:
@@ -728,21 +746,19 @@ def get_base_chat_model(model_name) -> BaseChatModel:
 
     Returns:
         BaseChatModel: The base chat model
-    '''
+    """
     dic_llm_models = {
         "NVIDIA/llama-3.3-70b-instruct": "meta/llama-3.3-70b-instruct",
         "NVIDIA/llama-3.1-405b-instruct": "meta/llama-3.1-405b-instruct",
         "NVIDIA/llama-3.1-70b-instruct": "meta/llama-3.1-70b-instruct",
-        "OpenAI/gpt-4o-mini": "gpt-4o-mini"
+        "OpenAI/gpt-4o-mini": "gpt-4o-mini",
     }
     if model_name.startswith("Llama"):
-        return ChatOllama(model=dic_llm_models[model_name],
-                        temperature=0)
+        return ChatOllama(model=dic_llm_models[model_name], temperature=0)
     elif model_name.startswith("NVIDIA"):
-        return ChatNVIDIA(model=dic_llm_models[model_name],
-                        temperature=0)
-    return ChatOpenAI(model=dic_llm_models[model_name],
-                    temperature=0)
+        return ChatNVIDIA(model=dic_llm_models[model_name], temperature=0)
+    return ChatOpenAI(model=dic_llm_models[model_name], temperature=0)
+
 
 @st.dialog("Warning ⚠️")
 def update_llm_model():
@@ -750,12 +766,14 @@ def update_llm_model():
     Function to update the LLM model.
     """
     llm_model = st.session_state.llm_model
-    st.warning(f"Clicking 'Continue' will reset all agents, \
+    st.warning(
+        f"Clicking 'Continue' will reset all agents, \
             set the selected LLM to {llm_model}. \
             This action will reset the entire app, \
             and agents will lose access to the \
             conversation history. Are you sure \
-            you want to proceed?")
+            you want to proceed?"
+    )
     if st.button("Continue"):
         # st.session_state.vote = {"item": item, "reason": reason}
         # st.rerun()
@@ -765,6 +783,7 @@ def update_llm_model():
                 del st.session_state[key]
         st.rerun()
 
+
 def update_text_embedding_model(app):
     """
     Function to update the text embedding model.
@@ -772,21 +791,24 @@ def update_text_embedding_model(app):
     Args:
         app: The LangGraph app
     """
-    config = {"configurable":
-                {"thread_id": st.session_state.unique_id}
-                }
+    config = {"configurable": {"thread_id": st.session_state.unique_id}}
     app.update_state(
         config,
-        {"text_embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model)}
+        {
+            "text_embedding_model": get_text_embedding_model(
+                st.session_state.text_embedding_model
+            )
+        },
     )
+
 
 @st.dialog("Get started with Talk2Biomodels 🚀")
 def help_button():
     """
     Function to display the help dialog.
     """
-    st.markdown('''I am an AI agent designed to assist you with biological
+    st.markdown(
+        """I am an AI agent designed to assist you with biological
 modeling and simulations. I can assist with tasks such as:
 1. Search specific models in the BioModels database.
 
@@ -852,7 +874,9 @@ for common questions.
 
 9. Provide feedback to the developers by clicking on the feedback button.
                 
-''')
+"""
+    )
+
 
 def apply_css():
     """
@@ -866,8 +890,9 @@ def apply_css():
         .st-emotion-cache-wbtvu4 { display: none;}
         </style>
         """,
-        unsafe_allow_html=True
-        )
+        unsafe_allow_html=True,
+    )
+
 
 def get_file_type_icon(file_type: str) -> str:
     """
@@ -879,11 +904,8 @@ def get_file_type_icon(file_type: str) -> str:
     Returns:
         str: The icon for the file type.
     """
-    return {
-        "drug_data": "💊",
-        "endotype": "🧬",
-        "sbml_file": "📜"
-    }.get(file_type)
+    return {"drug_data": "💊", "endotype": "🧬", "sbml_file": "📜"}.get(file_type)
+
 
 @st.fragment
 def get_t2b_uploaded_files(app):
@@ -895,8 +917,8 @@ def get_t2b_uploaded_files(app):
         "Upload an XML/SBML file",
         accept_multiple_files=False,
         type=["xml", "sbml"],
-        help='Upload a QSP as an XML/SBML file'
-        )
+        help="Upload a QSP as an XML/SBML file",
+    )
 
     # Upload the article
     article = st.file_uploader(
@@ -904,7 +926,7 @@ def get_t2b_uploaded_files(app):
         help="Upload a PDF article to ask questions.",
         accept_multiple_files=False,
         type=["pdf"],
-        key="article"
+        key="article",
     )
     # Update the agent state with the uploaded article
     if article:
@@ -914,12 +936,10 @@ def get_t2b_uploaded_files(app):
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
         # Update the agent state with the selected LLM model
-        app.update_state(
-            config,
-            {"pdf_file_name": f.name}
-        )
+        app.update_state(config, {"pdf_file_name": f.name})
     # Return the uploaded file
     return uploaded_sbml_file
+
 
 @st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
@@ -940,14 +960,16 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
         help="Free-form text. Must contain atleast drug targets and kinetic parameters",
         accept_multiple_files=True,
         type=cfg.data_package_allowed_file_types,
-        key=f"uploader_{st.session_state.data_package_key}")
+        key=f"uploader_{st.session_state.data_package_key}",
+    )
 
     endotype_files = st.file_uploader(
         "🧬 Upload endotype data",
-        help= "Free-form text. List of differentially expressed genes",
+        help="Free-form text. List of differentially expressed genes",
         accept_multiple_files=True,
         type=cfg.endotype_allowed_file_types,
-        key=f"uploader_endotype_{st.session_state.endotype_key}")
+        key=f"uploader_endotype_{st.session_state.endotype_key}",
+    )
 
     # Merge the uploaded files
     uploaded_files = data_package_files.copy()
@@ -959,11 +981,16 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     with st.spinner("Storing uploaded file(s) ..."):
         # for uploaded_file in data_package_files:
         for uploaded_file in uploaded_files:
-            if uploaded_file.name not in [uf["file_name"]
-                                          for uf in st.session_state.uploaded_files]:
-                current_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            if uploaded_file.name not in [
+                uf["file_name"] for uf in st.session_state.uploaded_files
+            ]:
+                current_timestamp = datetime.datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 uploaded_file.file_name = uploaded_file.name
-                uploaded_file.file_path = f"{cfg.upload_data_dir}/{uploaded_file.file_name}"
+                uploaded_file.file_path = (
+                    f"{cfg.upload_data_dir}/{uploaded_file.file_name}"
+                )
                 uploaded_file.current_user = st.session_state.current_user
                 uploaded_file.timestamp = current_timestamp
                 if uploaded_file.name in [uf.name for uf in data_package_files]:
@@ -972,14 +999,18 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     uploaded_file.file_type = "endotype"
                 else:
                     uploaded_file.file_type = "sbml_file"
-                st.session_state.uploaded_files.append({
-                    "file_name": uploaded_file.file_name,
-                    "file_path": uploaded_file.file_path,
-                    "file_type": uploaded_file.file_type,
-                    "uploaded_by": uploaded_file.current_user,
-                    "uploaded_timestamp": uploaded_file.timestamp
-                })
-                with open(os.path.join(cfg.upload_data_dir, uploaded_file.file_name), "wb") as f:
+                st.session_state.uploaded_files.append(
+                    {
+                        "file_name": uploaded_file.file_name,
+                        "file_path": uploaded_file.file_path,
+                        "file_type": uploaded_file.file_type,
+                        "uploaded_by": uploaded_file.current_user,
+                        "uploaded_timestamp": uploaded_file.timestamp,
+                    }
+                )
+                with open(
+                    os.path.join(cfg.upload_data_dir, uploaded_file.file_name), "wb"
+                ) as f:
                     f.write(uploaded_file.getbuffer())
                 uploaded_file = None
 
@@ -987,11 +1018,16 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     for uploaded_file in st.session_state.uploaded_files:
         col1, col2 = st.columns([4, 1])
         with col1:
-            st.write(get_file_type_icon(uploaded_file["file_type"]) + uploaded_file["file_name"])
+            st.write(
+                get_file_type_icon(uploaded_file["file_type"])
+                + uploaded_file["file_name"]
+            )
         with col2:
             if st.button("🗑️", key=uploaded_file["file_name"]):
                 with st.spinner("Removing uploaded file ..."):
-                    if os.path.isfile(f"{cfg.upload_data_dir}/{uploaded_file['file_name']}"):
+                    if os.path.isfile(
+                        f"{cfg.upload_data_dir}/{uploaded_file['file_name']}"
+                    ):
                         os.remove(f"{cfg.upload_data_dir}/{uploaded_file['file_name']}")
                     st.session_state.uploaded_files.remove(uploaded_file)
                     st.cache_data.clear()

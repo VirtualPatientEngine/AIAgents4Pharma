@@ -168,8 +168,7 @@ with main_col2:
                     st.markdown(message["content"].content)
                     st.empty()
             elif message["type"] == "button":
-                if st.button(message["content"],
-                             key=message["key"]):
+                if st.button(message["content"], key=message["key"]):
                     # Trigger the question
                     prompt = message["question"]
                     st.empty()
@@ -201,15 +200,16 @@ with main_col2:
         if not st.session_state.messages:
             with st.chat_message("assistant", avatar="🤖"):
                 with st.spinner("Initializing the agent ..."):
-                    config = {"configurable":
-                                {"thread_id": st.session_state.unique_id}
-                                }
+                    config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
                     app.update_state(
                         config,
-                        {"llm_model": streamlit_utils.get_base_chat_model(
-                            st.session_state.llm_model)}
+                        {
+                            "llm_model": streamlit_utils.get_base_chat_model(
+                                st.session_state.llm_model
+                            )
+                        },
                     )
                     intro_prompt = "Tell your name and about yourself. Always start with a greeting."
                     intro_prompt += " and tell about the tools you can run to perform analysis with short description."
@@ -223,34 +223,36 @@ with main_col2:
                     # intro_prompt += "\n"
                     # intro_prompt += "Here is the link to the FAQs: [FAQs](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/faq/)"
                     response = app.stream(
-                                    {"messages": [HumanMessage(content=intro_prompt)]},
-                                    config=config,
-                                    stream_mode="messages"
-                                )
+                        {"messages": [HumanMessage(content=intro_prompt)]},
+                        config=config,
+                        stream_mode="messages",
+                    )
                     st.write_stream(streamlit_utils.stream_response(response))
                     current_state = app.get_state(config)
                     # Add response to chat history
                     assistant_msg = ChatMessage(
-                                        current_state.values["messages"][-1].content,
-                                        role="assistant")
-                    st.session_state.messages.append({
-                                    "type": "message",
-                                    "content": assistant_msg
-                                })
+                        current_state.values["messages"][-1].content, role="assistant"
+                    )
+                    st.session_state.messages.append(
+                        {"type": "message", "content": assistant_msg}
+                    )
                     st.empty()
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2s()):
-                if st.button(f'Q{count+1}. {question}',
-                             key=f'sample_question_{count+1}'):
+                if st.button(
+                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
+                ):
                     # Trigger the question
                     prompt = question
                 # Add button click to chat history
-                st.session_state.messages.append({
-                                "type": "button",
-                                "question": question,
-                                "content": f'Q{count+1}. {question}',
-                                "key": f'sample_question_{count+1}'
-                            })
+                st.session_state.messages.append(
+                    {
+                        "type": "button",
+                        "question": question,
+                        "content": f"Q{count+1}. {question}",
+                        "key": f"sample_question_{count+1}",
+                    }
+                )
 
         # When the user asks a question
         if prompt:
@@ -300,7 +302,7 @@ with main_col2:
                         },
                     )
 
-                    streamlit_utils.get_response('T2S', None, app, st, prompt)
+                    streamlit_utils.get_response("T2S", None, app, st, prompt)
 
                     # # Create config for the agent
                     # config = {"configurable": {"thread_id": st.session_state.unique_id}}
@@ -391,65 +393,65 @@ with main_col2:
                     #     uniq_msg_id = "_".join(
                     #         [msg.name, msg.tool_call_id, str(st.session_state.run_id)]
                     #     )
-                        # if msg.name in ['search_tool',
-                        #                 'get_single_paper_recommendations',
-                        #                 'get_multi_paper_recommendations']:
-                        # if msg.name in ["display_results"]:
-                        #     # Display the results of the tool call
-                        #     # for msg_artifact in msg.artifact:
-                        #     # dic_papers = msg.artifact[msg_artifact]
-                        #     dic_papers = msg.artifact
-                        #     if not dic_papers:
-                        #         continue
-                        #     df_papers = pd.DataFrame.from_dict(
-                        #         dic_papers, orient="index"
-                        #     )
-                        #     # Add index as a column "key"
-                        #     df_papers["Key"] = df_papers.index
-                        #     # Drop index
-                        #     df_papers.reset_index(drop=True, inplace=True)
-                        #     # Drop colum abstract
-                        #     df_papers.drop(columns=["Abstract", "Key"], inplace=True)
+                    # if msg.name in ['search_tool',
+                    #                 'get_single_paper_recommendations',
+                    #                 'get_multi_paper_recommendations']:
+                    # if msg.name in ["display_results"]:
+                    #     # Display the results of the tool call
+                    #     # for msg_artifact in msg.artifact:
+                    #     # dic_papers = msg.artifact[msg_artifact]
+                    #     dic_papers = msg.artifact
+                    #     if not dic_papers:
+                    #         continue
+                    #     df_papers = pd.DataFrame.from_dict(
+                    #         dic_papers, orient="index"
+                    #     )
+                    #     # Add index as a column "key"
+                    #     df_papers["Key"] = df_papers.index
+                    #     # Drop index
+                    #     df_papers.reset_index(drop=True, inplace=True)
+                    #     # Drop colum abstract
+                    #     df_papers.drop(columns=["Abstract", "Key"], inplace=True)
 
-                        #     if "Year" in df_papers.columns:
-                        #         df_papers["Year"] = df_papers["Year"].apply(
-                        #             lambda x: (
-                        #                 str(int(x))
-                        #                 if pd.notna(x) and str(x).isdigit()
-                        #                 else None
-                        #             )
-                        #         )
+                    #     if "Year" in df_papers.columns:
+                    #         df_papers["Year"] = df_papers["Year"].apply(
+                    #             lambda x: (
+                    #                 str(int(x))
+                    #                 if pd.notna(x) and str(x).isdigit()
+                    #                 else None
+                    #             )
+                    #         )
 
-                        #     if "Date" in df_papers.columns:
-                        #         df_papers["Date"] = df_papers["Date"].apply(
-                        #             lambda x: (
-                        #                 pd.to_datetime(x, errors="coerce").strftime(
-                        #                     "%Y-%m-%d"
-                        #                 )
-                        #                 if pd.notna(pd.to_datetime(x, errors="coerce"))
-                        #                 else None
-                        #             )
-                        #         )
+                    #     if "Date" in df_papers.columns:
+                    #         df_papers["Date"] = df_papers["Date"].apply(
+                    #             lambda x: (
+                    #                 pd.to_datetime(x, errors="coerce").strftime(
+                    #                     "%Y-%m-%d"
+                    #                 )
+                    #                 if pd.notna(pd.to_datetime(x, errors="coerce"))
+                    #                 else None
+                    #             )
+                    #         )
 
-                        #     st.dataframe(
-                        #         df_papers,
-                        #         hide_index=True,
-                        #         column_config={
-                        #             "URL": st.column_config.LinkColumn(
-                        #                 display_text="Open",
-                        #             ),
-                        #         },
-                        #     )
-                        #     # Add data to the chat history
-                        #     st.session_state.messages.append(
-                        #         {
-                        #             "type": "dataframe",
-                        #             "content": df_papers,
-                        #             "key": "dataframe_" + uniq_msg_id,
-                        #             "tool_name": msg.name,
-                        #         }
-                        #     )
-                        #     st.empty()
+                    #     st.dataframe(
+                    #         df_papers,
+                    #         hide_index=True,
+                    #         column_config={
+                    #             "URL": st.column_config.LinkColumn(
+                    #                 display_text="Open",
+                    #             ),
+                    #         },
+                    #     )
+                    #     # Add data to the chat history
+                    #     st.session_state.messages.append(
+                    #         {
+                    #             "type": "dataframe",
+                    #             "content": df_papers,
+                    #             "key": "dataframe_" + uniq_msg_id,
+                    #             "tool_name": msg.name,
+                    #         }
+                    #     )
+                    #     st.empty()
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(
