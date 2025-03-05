@@ -633,7 +633,9 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             # Drop index
             df_papers.reset_index(drop=True, inplace=True)
             # Drop colum abstract
-            df_papers.drop(columns=["Abstract", "Key"], inplace=True)
+            df_papers.drop(
+                columns=["Abstract", "Key", "arxiv_id", "paper_id"], inplace=True
+            )
 
             if "Year" in df_papers.columns:
                 df_papers["Year"] = df_papers["Year"].apply(
