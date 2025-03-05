@@ -26,7 +26,7 @@ class MultiPaperRecInput(BaseModel):
     """Input schema for multiple paper recommendations tool."""
 
     paper_ids: List[str] = Field(
-        description=("List of Semantic Scholar Paper IDs to get recommendations for")
+        description="List of Semantic Scholar Paper IDs to get recommendations for"
     )
     limit: int = Field(
         default=2,
@@ -72,7 +72,7 @@ def get_multi_paper_recommendations(
         )
         cfg = cfg.tools.multi_paper_recommendation
         logger.info("Loaded configuration for multi-paper recommendation tool")
-    logging.info(
+    logger.info(
         "Starting multi-paper recommendations search with paper IDs: %s", paper_ids
     )
 
@@ -88,37 +88,50 @@ def get_multi_paper_recommendations(
     if year:
         params["year"] = year
 
-    # Getting recommendations
-    response = requests.post(
-        endpoint,
-        headers=headers,
-        params=params,
-        data=json.dumps(payload),
-        timeout=cfg.request_timeout,
-    )
-    logging.info(
+    # Wrap API call in try/except to catch connectivity issues and validate response format
+    try:
+        response = requests.post(
+            endpoint,
+            headers=headers,
+            params=params,
+            data=json.dumps(payload),
+            timeout=cfg.request_timeout,
+        )
+        response.raise_for_status()  # Raises HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        logger.error(
+            "Failed to connect to Semantic Scholar API for multi-paper recommendations: %s",
+            e,
+        )
+        raise RuntimeError(
+            "Failed to connect to Semantic Scholar API. Please retry the same query."
+        ) from e
+
+    logger.info(
         "API Response Status for multi-paper recommendations: %s", response.status_code
     )
+    logger.info("Request params: %s", params)
 
     data = response.json()
-    recommendations = data.get("recommendedPapers", [])
 
+    if "recommendedPapers" not in data:
+        logger.error("Unexpected API response format: %s", data)
+        raise RuntimeError(
+            "Unexpected response from Semantic Scholar API. Please retry the same query."
+        )
+
+    recommendations = data.get("recommendedPapers", [])
     if not recommendations:
-        return Command(
-            update={  # Place 'messages' inside 'update'
-                "messages": [
-                    ToolMessage(
-                        content="No recommendations found based on multiple papers.",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+        logger.error(
+            "No recommendations returned from API for paper IDs: %s", paper_ids
+        )
+        raise RuntimeError(
+            "No recommendations returned from Semantic Scholar API. Please retry the same query."
         )
 
     # Create a dictionary to store the papers
     filtered_papers = {
         paper["paperId"]: {
-            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
@@ -155,7 +168,7 @@ def get_multi_paper_recommendations(
 
     return Command(
         update={
-            "multi_papers": filtered_papers,  # Now sending the dictionary directly
+            "multi_papers": filtered_papers,  # Sending the dictionary directly
             "last_displayed_papers": "multi_papers",
             "messages": [
                 ToolMessage(

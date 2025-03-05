@@ -50,7 +50,7 @@ def search_tool(
     Args:
         query (str): The search query string to find academic papers.
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
-        limit (int, optional): The maximum number of results to return. Defaults to 2.
+        limit (int, optional): The maximum number of results to return. Defaults to 5.
         year (str, optional): Year range for papers.
         Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
 
@@ -74,25 +74,37 @@ def search_tool(
     if year:
         params["year"] = year
 
-    response = requests.get(endpoint, params=params, timeout=10)
+    # Wrap API call in try/except to catch connectivity issues
+    try:
+        response = requests.get(endpoint, params=params, timeout=10)
+        response.raise_for_status()  # Raises HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        logger.error("Failed to connect to Semantic Scholar API: %s", e)
+        raise RuntimeError(
+            "Failed to connect to Semantic Scholar API. Please retry the same query."
+        ) from e
+
     data = response.json()
-    papers = data.get("data", [])
-    logger.info("Received %d papers", len(papers))
-    if not papers:
-        return Command(
-            update={  # Place 'messages' inside 'update'
-                "messages": [
-                    ToolMessage(
-                        content="No papers found. Please try a different search query.",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+
+    # Check for expected data format
+    if "data" not in data:
+        logger.error("Unexpected API response format: %s", data)
+        raise RuntimeError(
+            "Unexpected response from Semantic Scholar API. Please retry the same query."
         )
+
+    papers = data.get("data", [])
+    if not papers:
+        logger.error(
+            "No papers returned from Semantic Scholar API for query: %s", query
+        )
+        raise RuntimeError(
+            "No papers returned from Semantic Scholar API. Please retry the same query."
+        )
+
     # Create a dictionary to store the papers
     filtered_papers = {
         paper["paperId"]: {
-            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
@@ -128,7 +140,7 @@ def search_tool(
 
     return Command(
         update={
-            "papers": filtered_papers,  # Now sending the dictionary directly
+            "papers": filtered_papers,  # Sending the dictionary directly
             "last_displayed_papers": "papers",
             "messages": [
                 ToolMessage(
