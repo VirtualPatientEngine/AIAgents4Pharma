@@ -31,6 +31,7 @@ class ZoteroSaveInput(BaseModel):
         default="/Unknown",
         description="The path where the paper should be saved in the Zotero library. Example: '/machine/cern/mobile'.",
     )
+    state: Annotated[dict, InjectedState]
 
 
 @tool(args_schema=ZoteroSaveInput, parse_docstring=True)
