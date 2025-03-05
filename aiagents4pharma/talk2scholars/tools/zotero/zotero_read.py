@@ -30,7 +30,7 @@ class ZoteroSearchInput(BaseModel):
     )
     only_articles: bool = Field(
         default=True,
-        description="Whether to only search for journal articles/" "conference papers.",
+        description="Whether to only search for journal articles/conference papers.",
     )
     limit: int = Field(
         default=2, description="Maximum number of results to return", ge=1, le=100
@@ -76,9 +76,29 @@ def zotero_search_tool(
     # Fetch collection mapping once
     item_to_collections = get_item_collections(zot)
 
-    # Get items matching the query
-    items = zot.items(q=query, limit=min(limit, cfg.zotero.max_limit))
+    # If the query is empty, fetch all items (up to max_limit), otherwise use the query
+    try:
+        if query.strip() == "":
+            logger.info(
+                "Empty query provided, fetching all items up to max_limit: %d",
+                cfg.zotero.max_limit,
+            )
+            items = zot.items(limit=cfg.zotero.max_limit)
+        else:
+            items = zot.items(q=query, limit=min(limit, cfg.zotero.max_limit))
+    except Exception as e:
+        logger.error("Failed to fetch items from Zotero: %s", e)
+        raise RuntimeError(
+            "Failed to fetch items from Zotero. Please retry the same query."
+        ) from e
+
     logger.info("Received %d items from Zotero", len(items))
+
+    if not items:
+        logger.error("No items returned from Zotero for query: '%s'", query)
+        raise RuntimeError(
+            "No items returned from Zotero. Please retry the same query."
+        )
 
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
@@ -98,6 +118,7 @@ def zotero_search_tool(
             continue
 
         item_type = data.get("itemType")
+        logger.debug("Item type: %s", item_type)
 
         # Exclude attachments, notes, and other unwanted types
         if (
@@ -127,11 +148,14 @@ def zotero_search_tool(
         }
 
     if not filtered_papers:
-        logger.warning("No matching papers found for query: '%s'", query)
+        logger.error("No matching papers returned from Zotero for query: '%s'", query)
+        raise RuntimeError(
+            "No matching papers returned from Zotero. Please retry the same query."
+        )
 
     logger.info("Filtered %d items", len(filtered_papers))
 
-    # Prepare content with top 3 paper titles and types
+    # Prepare content with top 2 paper titles and types
     top_papers = list(filtered_papers.values())[:2]
     top_papers_info = "\n".join(
         [
