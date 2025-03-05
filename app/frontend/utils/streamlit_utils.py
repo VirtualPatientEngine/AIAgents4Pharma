@@ -211,7 +211,7 @@ def sample_questions_t2s():
         'Search articles on "PrimeKG"',
         "Explain the details of the first article in the last search results",
         "Recommend more such articles",
-        "Read all papers on bilogy from my Zotero library",
+        "Read all papers from my Zotero library",
     ]
     return questions
 
