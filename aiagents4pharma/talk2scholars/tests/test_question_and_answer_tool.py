@@ -4,7 +4,11 @@ Unit tests for question_and_answer tool functionality.
 
 import pytest
 from ..tools.pdf import question_and_answer
-from ..tools.pdf.question_and_answer import extract_text_from_pdf_data, question_and_answer_tool, generate_answer
+from ..tools.pdf.question_and_answer import (
+    extract_text_from_pdf_data,
+    question_and_answer_tool,
+    generate_answer,
+)
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 from langchain.docstore.document import Document
@@ -36,8 +40,11 @@ def test_question_and_answer_tool_success(monkeypatch):
     # Monkeypatch generate_answer to avoid real external calls.
     monkeypatch.setattr(question_and_answer, "generate_answer", fake_generate_answer)
     
-    # Create a valid state with pdf_data containing both pdf_object and pdf_url.
-    state = {"pdf_data": {"pdf_object": dummy_pdf_bytes, "pdf_url": "http://dummy.url"}}
+    # Create a valid state with pdf_data containing both pdf_object and pdf_url, and include a dummy llm_model.
+    state = {
+        "pdf_data": {"pdf_object": dummy_pdf_bytes, "pdf_url": "http://dummy.url"},
+        "llm_model": object()  # Provide a dummy LLM model instance
+    }
     question = "What is in the PDF?"
     
     # Call the underlying function directly via .func to bypass the StructuredTool wrapper.
@@ -65,6 +72,17 @@ def test_question_and_answer_tool_no_pdf_object():
     messages = result.update["messages"]
     assert any("PDF binary data is missing in the pdf_data from state." in msg.content for msg in messages)
 
+def test_question_and_answer_tool_no_llm_model():
+    # Test that an error is returned if the LLM model is missing in the state.
+    state = {
+        "pdf_data": {"pdf_object": dummy_pdf_bytes, "pdf_url": "http://dummy.url"}
+        # Note: llm_model is intentionally omitted.
+    }
+    question = "What is in the PDF?"
+    
+    result = question_and_answer_tool.func(question=question, tool_call_id="test_call_id", state=state)
+    assert result == {"error": "No LLM model found in state."}
+
 def test_generate_answer(monkeypatch):
     # Monkeypatch CharacterTextSplitter.split_text to return controlled chunks.
     monkeypatch.setattr(question_and_answer.CharacterTextSplitter, "split_text", lambda self, text: ["chunk1", "chunk2"])
@@ -90,8 +108,7 @@ def test_generate_answer(monkeypatch):
     question_and_answer.cfg.chunk_overlap = 0
     question_and_answer.cfg.openai_api_key = "dummy_key"
     question_and_answer.cfg.num_retrievals = 1
-    question_and_answer.cfg.model = "dummy-model"
-    question_and_answer.cfg.temperature = 0.0
+    # Removed assignments for keys not present in the updated configuration.
     question_and_answer.cfg.qa_chain_type = "dummy-chain"
     
     question = "What is in the PDF?"
