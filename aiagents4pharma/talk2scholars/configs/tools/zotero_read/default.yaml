@@ -12,5 +12,45 @@ search_params:
 # Item Types and Limit
 zotero:
   max_limit: 100
-  filter_item_types: ["journalArticle", "conferencePaper", "preprint"]
+  filter_item_types:
+    [
+      "Artwork",
+      "Audio Recording",
+      "Bill",
+      "Blog Post",
+      "Book",
+      "Book Section",
+      "Case",
+      "Conference Paper",
+      "Dataset",
+      "Dictionary Entry",
+      "Document",
+      "E-mail",
+      "Encyclopedia Article",
+      "Film",
+      "Forum Post",
+      "Hearing",
+      "Instant Message",
+      "Interview",
+      "Journal Article",
+      "Letter",
+      "Magazine Article",
+      "Manuscript",
+      "Map",
+      "Newspaper Article",
+      "Patent",
+      "Podcast",
+      "Preprint",
+      "Presentation",
+      "Radio Broadcast",
+      "Report",
+      "Software",
+      "Standard",
+      "Statute",
+      "Thesis",
+      "TV Broadcast",
+      "Video Recording",
+      "Web Page",
+    ]
+
   filter_excluded_types: ["attachment", "note", "annotation"]
