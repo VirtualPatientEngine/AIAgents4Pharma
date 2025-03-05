@@ -1,3 +1,7 @@
+"""
+Unit tests for Zotero search tool in zotero_read.py.
+"""
+
 import unittest
 from unittest.mock import patch, MagicMock
 from types import SimpleNamespace
@@ -24,6 +28,7 @@ dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_
 
 
 class TestZoteroSearchTool(unittest.TestCase):
+
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
     )
@@ -39,10 +44,9 @@ class TestZoteroSearchTool(unittest.TestCase):
     ):
         # Setup Hydra mocks
         mock_hydra_compose.return_value = dummy_cfg
-        # Simulate the context manager for hydra.initialize
         mock_hydra_init.return_value.__enter__.return_value = None
 
-        # Create a fake Zotero client and simulate a successful items call
+        # Create a fake Zotero client that returns two valid items
         fake_zot = MagicMock()
         fake_items = [
             {
@@ -69,7 +73,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         fake_zot.items.return_value = fake_items
         mock_zotero_class.return_value = fake_zot
 
-        # Patch the utility function to return a fake mapping for collection paths.
+        # Fake mapping for collection paths
         mock_get_item_collections.return_value = {
             "paper1": ["/Test Collection"],
             "paper2": ["/Test Collection"],
@@ -85,7 +89,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_search_tool.run(tool_input)
 
-        # Verify that the result is a Command with expected update values.
+        # Verify the Command update structure and contents
         self.assertIsInstance(result, Command)
         update = result.update
         self.assertIn("zotero_read", update)
@@ -95,7 +99,6 @@ class TestZoteroSearchTool(unittest.TestCase):
         filtered_papers = update["zotero_read"]
         self.assertIn("paper1", filtered_papers)
         self.assertIn("paper2", filtered_papers)
-        # Check that the summary contains the query and number of papers
         message_content = update["messages"][0].content
         self.assertIn("Query: test", message_content)
         self.assertIn("Number of papers found: 2", message_content)
@@ -113,11 +116,9 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        # Setup Hydra mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
-        # Fake Zotero client returns items when query is empty (fetching all items)
         fake_zot = MagicMock()
         fake_items = [
             {
@@ -131,9 +132,8 @@ class TestZoteroSearchTool(unittest.TestCase):
                 }
             },
         ]
-        fake_zot.items.return_value = fake_items  # Should be called with limit = dummy_cfg.tools.zotero_read.zotero.max_limit
+        fake_zot.items.return_value = fake_items
         mock_zotero_class.return_value = fake_zot
-
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
 
         tool_call_id = "test_id_2"
@@ -148,7 +148,6 @@ class TestZoteroSearchTool(unittest.TestCase):
         update = result.update
         filtered_papers = update["zotero_read"]
         self.assertIn("paper1", filtered_papers)
-        # Verify that Zotero.items was called with limit equal to max_limit (5 in dummy config)
         fake_zot.items.assert_called_with(
             limit=dummy_cfg.tools.zotero_read.zotero.max_limit
         )
@@ -166,14 +165,12 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        # Setup Hydra mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        fake_zot.items.return_value = []  # No items returned
+        fake_zot.items.return_value = []
         mock_zotero_class.return_value = fake_zot
-
         mock_get_item_collections.return_value = {}
 
         tool_call_id = "test_id_3"
@@ -200,15 +197,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """
-        Test that if all fetched items are filtered out (e.g., due to non-research item types),
-        the tool raises a RuntimeError.
-        """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        # Create items with types that are excluded (e.g., "attachment")
         fake_items = [
             {
                 "data": {
@@ -233,8 +225,6 @@ class TestZoteroSearchTool(unittest.TestCase):
         ]
         fake_zot.items.return_value = fake_items
         mock_zotero_class.return_value = fake_zot
-
-        # Even if collections mapping exists, none of the items pass filtering
         mock_get_item_collections.return_value = {
             "paper1": ["/Test Collection"],
             "paper2": ["/Test Collection"],
@@ -264,19 +254,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """
-        Test that if the Zotero API call raises an exception, the tool catches it
-        and raises a RuntimeError.
-        """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        # Simulate an exception when calling items()
         fake_zot.items.side_effect = Exception("API error")
         mock_zotero_class.return_value = fake_zot
 
-        # No need to set get_item_collections because the exception happens earlier.
         tool_call_id = "test_id_5"
         tool_input = {
             "query": "test",
@@ -288,6 +272,136 @@ class TestZoteroSearchTool(unittest.TestCase):
             zotero_search_tool.run(tool_input)
         self.assertIn("Failed to fetch items from Zotero", str(context.exception))
 
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    def test_missing_key_in_item(
+        self,
+        mock_hydra_init,
+        mock_hydra_compose,
+        mock_zotero_class,
+        mock_get_item_collections,
+    ):
+        """
+        Test that an item with a valid 'data' structure but missing the 'key' field is skipped.
+        """
+        mock_hydra_compose.return_value = dummy_cfg
+        mock_hydra_init.return_value.__enter__.return_value = None
 
-if __name__ == "__main__":
-    unittest.main()
+        fake_zot = MagicMock()
+        fake_items = [
+            {
+                "data": {
+                    "title": "No Key Paper",
+                    "abstractNote": "Abstract",
+                    "date": "2021",
+                    "url": "http://example.com",
+                    "itemType": "journalArticle",
+                }
+            },  # missing key triggers line 136
+            {
+                "data": {
+                    "key": "paper_valid",
+                    "title": "Valid Paper",
+                    "abstractNote": "Valid Abstract",
+                    "date": "2021",
+                    "url": "http://example.com",
+                    "itemType": "journalArticle",
+                }
+            },
+        ]
+        fake_zot.items.return_value = fake_items
+        mock_zotero_class.return_value = fake_zot
+        mock_get_item_collections.return_value = {"paper_valid": ["/Test Collection"]}
+
+        tool_call_id = "test_id_6"
+        tool_input = {
+            "query": "dummy",
+            "only_articles": True,
+            "tool_call_id": tool_call_id,
+            "limit": 2,
+        }
+        result = zotero_search_tool.run(tool_input)
+
+        update = result.update
+        filtered_papers = update["zotero_read"]
+        self.assertIn("paper_valid", filtered_papers)
+        self.assertEqual(len(filtered_papers), 1)
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    def test_item_not_dict(
+        self,
+        mock_hydra_init,
+        mock_hydra_compose,
+        mock_zotero_class,
+        mock_get_item_collections,
+    ):
+        """
+        Test that if the items list contains an element that is not a dict, it is skipped.
+        """
+        mock_hydra_compose.return_value = dummy_cfg
+        mock_hydra_init.return_value.__enter__.return_value = None
+
+        fake_zot = MagicMock()
+        # Supply one item that is not a dict.
+        fake_items = ["this is not a dict"]
+        fake_zot.items.return_value = fake_items
+        mock_zotero_class.return_value = fake_zot
+        # Mapping doesn't matter here.
+        mock_get_item_collections.return_value = {}
+
+        tool_call_id = "test_id_7"
+        tool_input = {
+            "query": "dummy",
+            "only_articles": True,
+            "tool_call_id": tool_call_id,
+            "limit": 2,
+        }
+        with self.assertRaises(RuntimeError) as context:
+            zotero_search_tool.run(tool_input)
+        self.assertIn("No matching papers returned from Zotero", str(context.exception))
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    def test_data_not_dict(
+        self,
+        mock_hydra_init,
+        mock_hydra_compose,
+        mock_zotero_class,
+        mock_get_item_collections,
+    ):
+        """
+        Test that if an item has a 'data' field that is not a dict, it is skipped.
+        """
+        mock_hydra_compose.return_value = dummy_cfg
+        mock_hydra_init.return_value.__enter__.return_value = None
+
+        fake_zot = MagicMock()
+        # Supply one item whose "data" field is not a dict.
+        fake_items = [{"data": "this is not a dict"}]
+        fake_zot.items.return_value = fake_items
+        mock_zotero_class.return_value = fake_zot
+        mock_get_item_collections.return_value = {}
+
+        tool_call_id = "test_id_8"
+        tool_input = {
+            "query": "dummy",
+            "only_articles": True,
+            "tool_call_id": tool_call_id,
+            "limit": 2,
+        }
+        with self.assertRaises(RuntimeError) as context:
+            zotero_search_tool.run(tool_input)
+        self.assertIn("No matching papers returned from Zotero", str(context.exception))
