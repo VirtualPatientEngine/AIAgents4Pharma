@@ -77,15 +77,8 @@ def zotero_save_tool(
 
     if not fetched_papers:
         logger.warning("No fetched papers found to save.")
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content="No fetched papers were found to save.",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+        raise RuntimeError(
+            "No fetched papers were found to save. Please retry the same query."
         )
 
     # First, check if zotero_read exists in state and has collection data
@@ -102,6 +95,9 @@ def zotero_save_tool(
             logger.info(f"Successfully generated {len(zotero_read_data)} path mappings")
         except Exception as e:
             logger.error(f"Error generating path mappings: {str(e)}")
+            raise RuntimeError(
+                "Failed to generate collection path mappings. Please retry the same query."
+            ) from e
 
     # Get all collections to find the correct one
     collections = zot.collections()
@@ -114,17 +110,14 @@ def zotero_save_tool(
     matched_collection_key = None
 
     # First, try to directly find the collection key in zotero_read data
-    # The format might be different based on how get_item_collections works
     for key, paths in zotero_read_data.items():
         if isinstance(paths, list):
-            # Handle case where values are lists of paths
             for path in paths:
                 if path.lower() == normalized_path:
                     matched_collection_key = key
                     logger.info(f"Found direct match in zotero_read: {path} -> {key}")
                     break
         elif isinstance(paths, str) and paths.lower() == normalized_path:
-            # Handle case where values are single paths
             matched_collection_key = key
             logger.info(f"Found direct match in zotero_read: {paths} -> {key}")
 
@@ -141,10 +134,7 @@ def zotero_save_tool(
 
     # If still not found, try part-matching
     if not matched_collection_key:
-        # Create mapping from collection names to keys
         name_to_key = {col["data"]["name"].lower(): col["key"] for col in collections}
-
-        # Check if it's a collection name (without the leading slash)
         collection_name = normalized_path.lstrip("/")
         if collection_name in name_to_key:
             matched_collection_key = name_to_key[collection_name]
@@ -152,7 +142,6 @@ def zotero_save_tool(
                 f"Found match by collection name: {collection_name} -> {matched_collection_key}"
             )
         else:
-            # Try to find a part of the path that matches a collection name
             path_parts = normalized_path.strip("/").split("/")
             for part in path_parts:
                 if part in name_to_key:
@@ -177,21 +166,14 @@ def zotero_save_tool(
         logger.error(
             f"Invalid collection path: {collection_path}. No matching collection found in Zotero."
         )
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content=f"Error: The collection path '{collection_path}' does not exist in Zotero. Available collections are: {', '.join(['/' + col['data']['name'] for col in collections])}",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+        raise RuntimeError(
+            f"Error: The collection path '{collection_path}' does not exist in Zotero. "
+            f"Available collections are: {', '.join(['/' + col['data']['name'] for col in collections])}"
         )
 
     # Format papers for Zotero and assign to the specified collection
     zotero_items = []
     for paper_id, paper in fetched_papers.items():
-        # Support both S2 and Zotero paper formats with fallbacks
         title = paper.get("Title", paper.get("title", "N/A"))
         abstract = paper.get("Abstract", paper.get("abstractNote", "N/A"))
         date = paper.get("Date", paper.get("date", "N/A"))
@@ -206,9 +188,7 @@ def zotero_save_tool(
                 "date": date,
                 "url": url,
                 "extra": f"Paper ID: {paper_id}\nCitations: {citations}",
-                "collections": [
-                    matched_collection_key
-                ],  # Assign to the specified collection
+                "collections": [matched_collection_key],
             }
         )
 
@@ -216,34 +196,38 @@ def zotero_save_tool(
     try:
         response = zot.create_items(zotero_items)
         logger.info(f"Papers successfully saved to Zotero: {response}")
-
-        # Get the collection name for better feedback
-        collection_name = ""
-        for col in collections:
-            if col["key"] == matched_collection_key:
-                collection_name = col["data"]["name"]
-                break
-
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content=f"Successfully saved {len(zotero_items)} papers to Zotero collection '{collection_name}'.",
-                        tool_call_id=tool_call_id,
-                        artifact=response,
-                    )
-                ]
-            }
-        )
     except Exception as e:
         logger.error(f"Error saving to Zotero: {str(e)}")
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content=f"Error saving papers to Zotero: {str(e)}",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
-        )
+        raise RuntimeError(f"Error saving papers to Zotero: {str(e)}") from e
+
+    # Get the collection name for better feedback
+    collection_name = ""
+    for col in collections:
+        if col["key"] == matched_collection_key:
+            collection_name = col["data"]["name"]
+            break
+
+    content = "Retrieval was successful. Papers are attached as an artifact."
+    content += " And here is a summary of the retrieval results:\n"
+    content += f"Number of papers found: {len(fetched_papers)}\n"
+    content += f"Query: {state.get('query', 'N/A')}\n"
+    top_papers = list(fetched_papers.values())[:2]
+    top_papers_info = "\n".join(
+        [
+            f"{i+1}. {paper.get('Title', 'N/A')} ({paper.get('Date', 'N/A')})"
+            for i, paper in enumerate(top_papers)
+        ]
+    )
+    content += "Top papers:\n" + top_papers_info
+
+    return Command(
+        update={
+            "messages": [
+                ToolMessage(
+                    content=content,
+                    tool_call_id=tool_call_id,
+                    artifact=response,
+                )
+            ]
+        }
+    )
