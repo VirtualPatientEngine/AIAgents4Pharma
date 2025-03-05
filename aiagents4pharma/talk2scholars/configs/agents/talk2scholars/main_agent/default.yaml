@@ -10,4 +10,4 @@ system_prompt: >
   2. Zotero_agent: This agent can be used to retrieve, display, and query
      papers from the Zotero library. Use this agent only when the user
      explicitly asks for papers from Zotero. This tool can also be used to
-     save papers in the zotero library
+     save papers in under collections in the zotero library
