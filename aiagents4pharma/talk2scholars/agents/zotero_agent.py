@@ -14,21 +14,19 @@ from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_search_tool
+from ..tools.zotero.zotero_write import zotero_save_tool
 from ..tools.s2.display_results import display_results as s2_display
 from ..tools.s2.query_results import query_results as s2_query_results
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
-from ..tools.zotero.zotero_write import zotero_save_tool
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_app(
-    uniq_id, llm_model: BaseChatModel
-):
+def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Zotero agent.
 
@@ -84,6 +82,7 @@ def get_app(
             overrides=["agents/talk2scholars/zotero_agent=default"],
         )
         cfg = cfg.agents.talk2scholars.zotero_agent
+        logger.log(logging.INFO, "Loaded configuration for Zotero agent")
 
     # Define the tools
     tools = ToolNode(

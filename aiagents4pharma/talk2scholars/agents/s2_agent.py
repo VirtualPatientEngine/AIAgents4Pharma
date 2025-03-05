@@ -28,9 +28,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_app(
-    uniq_id, llm_model: BaseChatModel
-):
+def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Semantic Scholar (S2) agent.
 
@@ -86,6 +84,7 @@ def get_app(
             config_name="config", overrides=["agents/talk2scholars/s2_agent=default"]
         )
         cfg = cfg.agents.talk2scholars.s2_agent
+        logger.log(logging.INFO, "Loaded configuration for S2 agent")
 
     # Define the tools
     tools = ToolNode(
