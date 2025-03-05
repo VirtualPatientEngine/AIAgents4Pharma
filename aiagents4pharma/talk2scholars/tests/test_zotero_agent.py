@@ -1,6 +1,6 @@
-# """
-# Updated Unit Tests for the Zotero agent (Zotero Library Managent sub-agent).
-# """
+"""
+Updated Unit Tests for the Zotero agent (Zotero Library Managent sub-agent).
+"""
 
 # pylint: disable=redefined-outer-name
 from unittest import mock
@@ -12,47 +12,47 @@ from ..state.state_talk2scholars import Talk2Scholars
 
 LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
 
-# @pytest.fixture(autouse=True)
-# def mock_hydra_fixture():
-#     """Mock Hydra configuration to prevent external dependencies."""
-#     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
-#         cfg_mock = mock.MagicMock()
-#         cfg_mock.agents.talk2scholars.zotero_agent.temperature = 0
-#         cfg_mock.agents.talk2scholars.zotero_agent.zotero_agent = "Test prompt"
-#         mock_compose.return_value = cfg_mock
-#         yield mock_compose
+@pytest.fixture(autouse=True)
+def mock_hydra_fixture():
+    """Mock Hydra configuration to prevent external dependencies."""
+    with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
+        cfg_mock = mock.MagicMock()
+        cfg_mock.agents.talk2scholars.zotero_agent.temperature = 0
+        cfg_mock.agents.talk2scholars.zotero_agent.zotero_agent = "Test prompt"
+        mock_compose.return_value = cfg_mock
+        yield mock_compose
 
 
-# @pytest.fixture
-# def mock_tools_fixture():
-#     """Mock tools to prevent execution of real API calls."""
-#     with (
-#         mock.patch(
-#             "aiagents4pharma.talk2scholars.tools.s2.display_results.display_results"
-#         ) as mock_s2_display,
-#         mock.patch(
-#             "aiagents4pharma.talk2scholars.tools.s2.query_results.query_results"
-#         ) as mock_s2_query_results,
-#         mock.patch(
-#             "aiagents4pharma.talk2scholars.tools.s2."
-#             "retrieve_semantic_scholar_paper_id."
-#             "retrieve_semantic_scholar_paper_id"
-#         ) as mock_s2_retrieve_id,
-#         mock.patch(
-#             "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search_tool"
-#         ) as mock_zotero_query_results,
-#     ):
-#         mock_s2_display.return_value = {"result": "Mock Display Result"}
-#         mock_s2_query_results.return_value = {"result": "Mock Query Result"}
-#         mock_s2_retrieve_id.return_value = {"paper_id": "MockPaper123"}
-#         mock_zotero_query_results.return_value = {"result": "Mock Search Result"}
+@pytest.fixture
+def mock_tools_fixture():
+    """Mock tools to prevent execution of real API calls."""
+    with (
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.s2.display_results.display_results"
+        ) as mock_s2_display,
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.s2.query_results.query_results"
+        ) as mock_s2_query_results,
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.s2."
+            "retrieve_semantic_scholar_paper_id."
+            "retrieve_semantic_scholar_paper_id"
+        ) as mock_s2_retrieve_id,
+        mock.patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search_tool"
+        ) as mock_zotero_query_results,
+    ):
+        mock_s2_display.return_value = {"result": "Mock Display Result"}
+        mock_s2_query_results.return_value = {"result": "Mock Query Result"}
+        mock_s2_retrieve_id.return_value = {"paper_id": "MockPaper123"}
+        mock_zotero_query_results.return_value = {"result": "Mock Search Result"}
 
-#         yield [
-#             mock_s2_display,
-#             mock_s2_query_results,
-#             mock_s2_retrieve_id,
-#             mock_zotero_query_results,
-#         ]
+        yield [
+            mock_s2_display,
+            mock_s2_query_results,
+            mock_s2_retrieve_id,
+            mock_zotero_query_results,
+        ]
 
 
 @pytest.mark.usefixtures("mock_hydra_fixture")
