@@ -38,12 +38,6 @@ class ZoteroSearchInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/zotero_read=default"])
-    cfg = cfg.tools.zotero_read
-
-
 @tool(args_schema=ZoteroSearchInput, parse_docstring=True)
 def zotero_search_tool(
     query: str,
@@ -62,12 +56,19 @@ def zotero_search_tool(
     Returns:
         Dict[str, Any]: The search results and related information.
     """
-    logger.info(
-        "Searching Zotero for query: '%s' (only_articles: %s, limit: %d)",
-        query,
-        only_articles,
-        limit,
-    )
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["tools/zotero_read=default"]
+        )
+        logger.info("Loaded configuration for Zotero search tool")
+        cfg = cfg.tools.zotero_read
+        logger.info(
+            "Searching Zotero for query: '%s' (only_articles: %s, limit: %d)",
+            query,
+            only_articles,
+            limit,
+        )
 
     # Initialize Zotero client
     zot = zotero.Zotero(cfg.user_id, cfg.library_type, cfg.api_key)

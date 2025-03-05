@@ -40,14 +40,6 @@ class SinglePaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config", overrides=["tools/single_paper_recommendation=default"]
-    )
-    cfg = cfg.tools.single_paper_recommendation
-
-
 @tool(args_schema=SinglePaperRecInput, parse_docstring=True)
 def get_single_paper_recommendations(
     paper_id: str,
@@ -69,6 +61,14 @@ def get_single_paper_recommendations(
     Returns:
         Dict[str, Any]: The recommendations and related information.
     """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/single_paper_recommendation=default"],
+        )
+        cfg = cfg.tools.single_paper_recommendation
+        logger.info("Loaded configuration for single paper recommendation tool")
     logger.info(
         "Starting single paper recommendations search with paper ID: %s", paper_id
     )

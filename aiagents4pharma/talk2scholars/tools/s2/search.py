@@ -37,12 +37,6 @@ class SearchInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/search=default"])
-    cfg = cfg.tools.search
-
-
 @tool("search_tool", args_schema=SearchInput, parse_docstring=True)
 def search_tool(
     query: str,
@@ -63,6 +57,11 @@ def search_tool(
     Returns:
         The number of papers found on Semantic Scholar.
     """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(config_name="config", overrides=["tools/search=default"])
+        cfg = cfg.tools.search
+        logger.info("Loaded configuration for search tool")
     logger.info("Searching for papers on %s", query)
     endpoint = cfg.api_endpoint
     params = {

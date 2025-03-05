@@ -44,14 +44,6 @@ class MultiPaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config", overrides=["tools/multi_paper_recommendation=default"]
-    )
-    cfg = cfg.tools.multi_paper_recommendation
-
-
 @tool(args_schema=MultiPaperRecInput, parse_docstring=True)
 def get_multi_paper_recommendations(
     paper_ids: List[str],
@@ -73,6 +65,13 @@ def get_multi_paper_recommendations(
     Returns:
         Dict[str, Any]: The recommendations and related information.
     """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["tools/multi_paper_recommendation=default"]
+        )
+        cfg = cfg.tools.multi_paper_recommendation
+        logger.info("Loaded configuration for multi-paper recommendation tool")
     logging.info(
         "Starting multi-paper recommendations search with paper IDs: %s", paper_ids
     )
