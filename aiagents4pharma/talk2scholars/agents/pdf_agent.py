@@ -88,7 +88,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.pdf_agent,
+        prompt=cfg.pdf_agent,
         checkpointer=MemorySaver(),
     )
 
