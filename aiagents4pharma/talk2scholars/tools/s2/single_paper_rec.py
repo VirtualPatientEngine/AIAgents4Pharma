@@ -121,14 +121,13 @@ def get_single_paper_recommendations(
     # Extract paper ID and title from recommendations
     filtered_papers = {
         paper["paperId"]: {
+            "paper_id": paper["paperId"],
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
-            # "arXiv_ID": paper.get("externalIds", {}).get(
-            #     "ArXiv", "N/A"
-            # ),  # Extract arXiv ID
+            "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
         }
         for paper in recommendations
         if paper.get("title") and paper.get("authors")
