@@ -1,3 +1,7 @@
+"""
+Unit tests for Zotero path utility in zotero_path.py.
+"""
+
 import unittest
 from unittest.mock import MagicMock
 from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
