@@ -14,6 +14,7 @@ from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_search_tool
+from ..tools.zotero.zotero_write import zotero_save_tool
 from ..tools.s2.display_results import display_results as s2_display
 from ..tools.s2.query_results import query_results as s2_query_results
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
@@ -25,9 +26,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_app(
-    uniq_id, llm_model: BaseChatModel
-):
+def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Zotero agent.
 
@@ -83,6 +82,7 @@ def get_app(
             overrides=["agents/talk2scholars/zotero_agent=default"],
         )
         cfg = cfg.agents.talk2scholars.zotero_agent
+        logger.log(logging.INFO, "Loaded configuration for Zotero agent")
 
     # Define the tools
     tools = ToolNode(
@@ -91,6 +91,7 @@ def get_app(
             s2_display,
             s2_query_results,
             retrieve_semantic_scholar_paper_id,
+            zotero_save_tool,
         ]
     )
 
@@ -102,7 +103,7 @@ def get_app(
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.zotero_agent,
+        prompt=cfg.zotero_agent,
         checkpointer=MemorySaver(),
     )
 
@@ -114,7 +115,12 @@ def get_app(
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer)
-    logger.log(logging.INFO, "Compiled the graph")
+    app = workflow.compile(checkpointer=checkpointer, name="agent_zotero")
+    logger.log(
+        logging.INFO,
+        "Compiled the graph with thread_id %s and llm_model %s",
+        uniq_id,
+        llm_model,
+    )
 
     return app
