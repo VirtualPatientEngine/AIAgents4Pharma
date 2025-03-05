@@ -30,6 +30,8 @@ _Please use version 1.26.2 or later for better support with NVIDIA NIM models._
 
 #### Option 1: PyPI
 
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
+
 ```bash
 pip install aiagents4pharma
 ```
@@ -145,6 +147,8 @@ docker compose down
   Then, access it via `http://localhost:8501`.
 
 #### Option 3: git
+
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 1. **Clone the repository:**
    ```bash
