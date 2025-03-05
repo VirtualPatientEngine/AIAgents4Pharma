@@ -633,9 +633,16 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             # Drop index
             df_papers.reset_index(drop=True, inplace=True)
             # Drop colum abstract
-            df_papers.drop(
-                columns=["Abstract", "Key", "arxiv_id", "paper_id"], inplace=True
-            )
+            # Define the columns to drop
+            columns_to_drop = ["Abstract", "Key", "arxiv_id", "paper_id"]
+
+            # Check if columns exist before dropping
+            existing_columns = [
+                col for col in columns_to_drop if col in df_papers.columns
+            ]
+
+            if existing_columns:
+                df_papers.drop(columns=existing_columns, inplace=True)
 
             if "Year" in df_papers.columns:
                 df_papers["Year"] = df_papers["Year"].apply(
