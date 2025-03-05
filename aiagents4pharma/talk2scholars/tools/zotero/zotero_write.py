@@ -152,24 +152,15 @@ def zotero_save_tool(
                     )
                     break
 
-    # If all else fails, use the first collection as a fallback
-    if not matched_collection_key and collections:
-        first_collection = collections[0]
-        matched_collection_key = first_collection["key"]
-        collection_name = first_collection["data"]["name"]
-        logger.warning(
-            f"Could not find collection '{collection_path}'. "
-            f"Falling back to first collection: '{collection_name}' (key: {matched_collection_key})"
-        )
-
-    # Return error if we still can't find a collection
+    # Do not fall back to a default collection: raise error if no match found
     if not matched_collection_key:
         logger.error(
             f"Invalid collection path: {collection_path}. No matching collection found in Zotero."
         )
+        available_paths = ", ".join(["/" + col["data"]["name"] for col in collections])
         raise RuntimeError(
             f"Error: The collection path '{collection_path}' does not exist in Zotero. "
-            f"Available collections are: {', '.join(['/' + col['data']['name'] for col in collections])}"
+            f"Available collections are: {available_paths}"
         )
 
     # Format papers for Zotero and assign to the specified collection
@@ -208,18 +199,21 @@ def zotero_save_tool(
             collection_name = col["data"]["name"]
             break
 
-    content = "Retrieval was successful. Papers are attached as an artifact."
-    content += " And here is a summary of the retrieval results:\n"
-    content += f"Number of papers found: {len(fetched_papers)}\n"
+    content = (
+        f"Save was successful. Papers have been saved to Zotero collection '{collection_name}' "
+        f"with the requested path '{collection_path}'.\n"
+    )
+    content += "Summary of saved papers:\n"
+    content += f"Number of articles saved: {len(fetched_papers)}\n"
     content += f"Query: {state.get('query', 'N/A')}\n"
     top_papers = list(fetched_papers.values())[:2]
     top_papers_info = "\n".join(
         [
-            f"{i+1}. {paper.get('Title', 'N/A')} ({paper.get('Date', 'N/A')})"
+            f"{i+1}. {paper.get('Title', 'N/A')} ({paper.get('URL', 'N/A')})"
             for i, paper in enumerate(top_papers)
         ]
     )
-    content += "Top papers:\n" + top_papers_info
+    content += "Here are the top articles:\n" + top_papers_info
 
     return Command(
         update={
@@ -227,8 +221,8 @@ def zotero_save_tool(
                 ToolMessage(
                     content=content,
                     tool_call_id=tool_call_id,
-                    artifact=response,
+                    artifact=fetched_papers,
                 )
-            ]
+            ],
         }
     )
