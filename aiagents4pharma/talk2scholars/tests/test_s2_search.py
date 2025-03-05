@@ -46,6 +46,21 @@ class DummyResponse:
         return None
 
 
+def test_dummy_response_no_error():
+    # Create a DummyResponse with a successful status code.
+    response = DummyResponse({"data": "success"}, status_code=200)
+    # Calling raise_for_status should not raise an exception and should return None.
+    assert response.raise_for_status() is None
+
+
+def test_dummy_response_raise_error():
+    # Create a DummyResponse with a failing status code.
+    response = DummyResponse({"error": "fail"}, status_code=400)
+    # Calling raise_for_status should raise an HTTPError.
+    with pytest.raises(requests.HTTPError):
+        response.raise_for_status()
+
+
 def dummy_requests_get_success(url, params, timeout):
     # Record call parameters for assertions
     dummy_requests_get_success.called_url = url
