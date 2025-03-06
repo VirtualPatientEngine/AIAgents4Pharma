@@ -1,5 +1,5 @@
 """
-Updated Unit Tests for the PDF agent.
+Unit Tests for the PDF agent.
 """
 
 import logging
@@ -31,17 +31,22 @@ def mock_tools_fixture():
         mock_query_results.return_value = {"result": "Mock Query Result"}
         yield [mock_question_and_answer_tool, mock_query_results]
 
+@pytest.fixture
+def dummy_llm():
+    """Provide a dummy language model to pass into get_app."""
+    return mock.Mock()
+
 @pytest.mark.usefixtures("mock_hydra_fixture")
-def test_pdf_agent_initialization():
+def test_pdf_agent_initialization(dummy_llm):
     """Test that PDF agent initializes correctly with mock configuration."""
     thread_id = "test_thread"
     with mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent") as mock_create:
         mock_create.return_value = mock.Mock()
-        app = get_app(thread_id)
+        app = get_app(thread_id, dummy_llm)
         assert app is not None
         assert mock_create.called
 
-def test_pdf_agent_invocation():
+def test_pdf_agent_invocation(dummy_llm):
     """Test that the PDF agent processes user input and returns a valid response."""
     thread_id = "test_thread"
     # Create a sample state with a human message.
@@ -54,7 +59,7 @@ def test_pdf_agent_invocation():
             "messages": [AIMessage(content="PDF content extracted successfully")],
             "pdf_data": {"page": 1, "text": "Sample PDF text"},
         }
-        app = get_app(thread_id)
+        app = get_app(thread_id, dummy_llm)
         result = app.invoke(
             mock_state,
             config={
@@ -69,7 +74,7 @@ def test_pdf_agent_invocation():
         assert "pdf_data" in result
         assert result["pdf_data"]["page"] == 1
 
-def test_pdf_agent_tools_assignment(request):
+def test_pdf_agent_tools_assignment(request, dummy_llm):
     """Ensure that the correct tools are assigned to the PDF agent."""
     thread_id = "test_thread"
     mock_tools = request.getfixturevalue("mock_tools_fixture")
@@ -83,14 +88,14 @@ def test_pdf_agent_tools_assignment(request):
         # For the PDF agent, we expect two tools: question_and_answer_tool and query_results.
         mock_tool_instance.tools = mock_tools
         mock_toolnode.return_value = mock_tool_instance
-        get_app(thread_id)
+        get_app(thread_id, dummy_llm)
         assert mock_toolnode.called
         assert len(mock_tool_instance.tools) == 2
 
-def test_pdf_agent_hydra_failure():
+def test_pdf_agent_hydra_failure(dummy_llm):
     """Test exception handling when Hydra fails to load config for PDF agent."""
     thread_id = "test_thread"
     with mock.patch("hydra.initialize", side_effect=Exception("Hydra error")):
         with pytest.raises(Exception) as exc_info:
-            get_app(thread_id)
+            get_app(thread_id, dummy_llm)
         assert "Hydra error" in str(exc_info.value)
