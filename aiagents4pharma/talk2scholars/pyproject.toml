@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "talk2scholars"
 
-description = "An agent of AIAgents4Pharma for searching/recommending articles"
+description = "An agent for searching/recommending articles"
 
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",

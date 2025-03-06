@@ -210,6 +210,8 @@ docker compose down
    export ZOTERO_USER_ID=....
    ```
 
+   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._
+
 5. **[Optional] Initialize LANGSMITH_API_KEY**
 
    ```bash
