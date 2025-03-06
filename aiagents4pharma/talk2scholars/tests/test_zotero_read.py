@@ -5,11 +5,8 @@ Unit tests for Zotero search tool in zotero_read.py.
 import unittest
 from unittest.mock import patch, MagicMock
 from types import SimpleNamespace
-
-# Import the tool function and related classes
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
     zotero_search_tool,
-    ZoteroSearchInput,
 )
 from langgraph.types import Command
 

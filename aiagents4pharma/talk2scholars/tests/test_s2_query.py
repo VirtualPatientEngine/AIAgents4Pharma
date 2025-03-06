@@ -6,18 +6,7 @@ Unit tests for S2 tools functionality.
 from unittest.mock import patch
 from unittest.mock import MagicMock
 import pytest
-from langgraph.types import Command
-from ..tools.s2.display_results import (
-    display_results,
-    NoPapersFoundError as raised_error,
-)
-from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations
-from ..tools.s2.search import search_tool
-from ..tools.s2.single_paper_rec import get_single_paper_recommendations
 from ..tools.s2.query_results import query_results, NoPapersFoundError
-from ..tools.s2.retrieve_semantic_scholar_paper_id import (
-    retrieve_semantic_scholar_paper_id,
-)
 
 
 @pytest.fixture

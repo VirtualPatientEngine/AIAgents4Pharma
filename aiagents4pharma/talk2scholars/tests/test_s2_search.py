@@ -1,8 +1,10 @@
+"""
+Unit tests for S2 tools functionality.
+"""
+
 import pytest
 import requests
 from types import SimpleNamespace
-
-# Import the search_tool from your module
 from aiagents4pharma.talk2scholars.tools.s2.search import search_tool
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage

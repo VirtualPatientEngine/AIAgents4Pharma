@@ -1,8 +1,10 @@
+"""
+Unit tests for S2 tools functionality.
+"""
+
 import pytest
 import requests
 from types import SimpleNamespace
-
-# Import the tool function from your module
 from aiagents4pharma.talk2scholars.tools.s2.single_paper_rec import (
     get_single_paper_recommendations,
 )
@@ -14,6 +16,10 @@ import hydra
 
 
 class DummyHydraContext:
+    """
+    A dummy context manager for mocking Hydra's initialize and compose functions.
+    """
+
     def __enter__(self):
         return None
 
@@ -37,6 +43,10 @@ dummy_config = SimpleNamespace(
 
 
 class DummyResponse:
+    """
+    A dummy response class for mocking HTTP responses.
+    """
+
     def __init__(self, json_data, status_code=200):
         self._json_data = json_data
         self.status_code = status_code

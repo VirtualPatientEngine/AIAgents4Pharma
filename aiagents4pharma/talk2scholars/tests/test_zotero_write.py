@@ -5,11 +5,8 @@ Unit tests for Zotero write tool in zotero_write.py.
 import unittest
 from unittest.mock import patch, MagicMock
 from types import SimpleNamespace
-
-# Import the tool function and related classes
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
     zotero_save_tool,
-    ZoteroSaveInput,
 )
 from langgraph.types import Command
 

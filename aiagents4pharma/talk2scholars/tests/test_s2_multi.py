@@ -1,9 +1,11 @@
+"""
+Unit tests for S2 tools functionality.
+"""
+
 import json
 import pytest
 import requests
 from types import SimpleNamespace
-
-# Import the multi-paper recommendation tool function.
 from aiagents4pharma.talk2scholars.tools.s2.multi_paper_rec import (
     get_multi_paper_recommendations,
 )

@@ -9,12 +9,8 @@ Tests the supervisor agent's routing logic and state management.
 
 import pytest
 import hydra
-import logging
 from types import SimpleNamespace
-
-# Import the function to test.
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
-from langchain_openai import ChatOpenAI
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import Field
 
