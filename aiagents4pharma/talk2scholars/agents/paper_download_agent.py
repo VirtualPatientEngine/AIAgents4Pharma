@@ -10,7 +10,8 @@ import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import ToolNode, create_react_agent
+from langgraph.prebuilt.chat_agent_executor import create_react_agent
+from langgraph.prebuilt.tool_node import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.paper_download import download_arxiv_paper
@@ -20,7 +21,7 @@ from ..tools.s2.query_results import query_results
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)):
+def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Talk2Scholars paper download agent.
 
@@ -54,7 +55,7 @@ def get_app(uniq_id, llm_model: BaseChatModel = ChatOpenAI(model="gpt-4o-mini", 
         llm_model,
         tools=tools,
         state_schema=Talk2Scholars,
-        state_modifier=cfg.paper_download_agent,
+        prompt=cfg.prompt,
         checkpointer=MemorySaver(),
     )
 
