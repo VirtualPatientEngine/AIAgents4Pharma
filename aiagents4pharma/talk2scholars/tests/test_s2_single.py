@@ -2,15 +2,15 @@
 Unit tests for S2 tools functionality.
 """
 
+from types import SimpleNamespace
 import pytest
 import requests
-from types import SimpleNamespace
+import hydra
+from langgraph.types import Command
+from langchain_core.messages import ToolMessage
 from aiagents4pharma.talk2scholars.tools.s2.single_paper_rec import (
     get_single_paper_recommendations,
 )
-from langgraph.types import Command
-from langchain_core.messages import ToolMessage
-import hydra
 
 # --- Dummy Hydra Config Setup ---
 
@@ -23,7 +23,7 @@ class DummyHydraContext:
     def __enter__(self):
         return None
 
-    def __exit__(self, exc_type, exc_val, traceback):
+    def __exit__(self, exc_val, exc_type, traceback):
         pass
 
 
@@ -52,23 +52,25 @@ class DummyResponse:
         self.status_code = status_code
 
     def json(self):
+        """Return the JSON data from the response."""
         return self._json_data
 
     def raise_for_status(self):
+        """Raise an HTTP error for status codes >= 400."""
         if self.status_code >= 400:
             raise requests.HTTPError("HTTP Error")
         return None
 
 
 def test_dummy_response_no_error():
-    # Create a DummyResponse with a successful status code.
+    """Test DummyResponse does not raise an error for 200 status code."""
     response = DummyResponse({"data": "success"}, status_code=200)
     # Calling raise_for_status should not raise an exception and should return None.
     assert response.raise_for_status() is None
 
 
 def test_dummy_response_raise_error():
-    # Create a DummyResponse with a failing status code.
+    """Test DummyResponse raises an HTTPError for status codes >= 400."""
     response = DummyResponse({"error": "fail"}, status_code=400)
     # Calling raise_for_status should raise an HTTPError.
     with pytest.raises(requests.HTTPError):
@@ -76,9 +78,12 @@ def test_dummy_response_raise_error():
 
 
 def dummy_requests_get_success(url, params, timeout):
-    # Record call parameters for assertions
+    """
+    Dummy function to simulate a successful API request returning recommended papers.
+    """
     dummy_requests_get_success.called_url = url
     dummy_requests_get_success.called_params = params
+    dummy_requests_get_success.called_timeout = timeout
 
     # Simulate a valid API response with three recommended papers;
     # one paper missing authors should be filtered out.
@@ -117,24 +122,39 @@ def dummy_requests_get_success(url, params, timeout):
 
 
 def dummy_requests_get_unexpected(url, params, timeout):
-    # Simulate a response with an unexpected format (missing "recommendedPapers" key)
+    """
+    Dummy function to simulate an API response with an unexpected format.
+    """
+    dummy_requests_get_success.called_url = url
+    dummy_requests_get_success.called_params = params
+    dummy_requests_get_success.called_timeout = timeout
     return DummyResponse({"error": "Invalid format"})
 
 
 def dummy_requests_get_no_recs(url, params, timeout):
-    # Simulate a response with an empty recommendations list.
+    """
+    Dummy function to simulate an API response returning no recommendations.
+    """
+    dummy_requests_get_success.called_url = url
+    dummy_requests_get_success.called_params = params
+    dummy_requests_get_success.called_timeout = timeout
     return DummyResponse({"recommendedPapers": []})
 
 
 def dummy_requests_get_exception(url, params, timeout):
-    # Simulate a network/connection exception.
+    """
+    Dummy function to simulate a request exception (e.g., network failure).
+    """
+    dummy_requests_get_success.called_url = url
+    dummy_requests_get_success.called_params = params
+    dummy_requests_get_success.called_timeout = timeout
     raise requests.exceptions.RequestException("Connection error")
 
 
 # --- Pytest Fixture to Patch Hydra ---
 @pytest.fixture(autouse=True)
 def patch_hydra(monkeypatch):
-    # Patch hydra.initialize to return our dummy context manager.
+    """Patch Hydra's initialize and compose functions with dummy implementations."""
     monkeypatch.setattr(
         hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
     )

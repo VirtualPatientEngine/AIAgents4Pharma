@@ -5,27 +5,29 @@ Tests the supervisor agent's routing logic and state management.
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=redefined-outer-name,too-few-public-methods
-
-
+from types import SimpleNamespace
 import pytest
 import hydra
-from types import SimpleNamespace
-from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import Field
+from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
 # --- Dummy LLM Implementation ---
 
 
 class DummyLLM(BaseChatModel):
+    """A dummy language model implementation for testing purposes."""
+
     model_name: str = Field(...)
 
     def _generate(self, prompt, stop=None):
+        """Generate a response given a prompt."""
         # Dummy implementation just returns a fixed string.
         return "dummy output"
 
     @property
     def _llm_type(self):
+        """Return the type of the language model."""
         return "dummy"
 
 
@@ -33,26 +35,33 @@ class DummyLLM(BaseChatModel):
 
 
 class DummyWorkflow:
+    """A dummy workflow class that records arguments for verification."""
+
     def __init__(self, supervisor_args=None):
+        """Initialize the workflow with the given supervisor arguments."""
         self.supervisor_args = supervisor_args or {}
 
     def compile(self, checkpointer, name):
+        """Compile the workflow with the given checkpointer and name."""
         self.checkpointer = checkpointer
         self.name = name
         return self
 
 
 def dummy_get_app_s2(uniq_id, llm_model):
+    """A dummy function that returns a DummyWorkflow for the S2 agent."""
     return DummyWorkflow(supervisor_args={"agent": "s2", "uniq_id": uniq_id})
 
 
 def dummy_get_app_zotero(uniq_id, llm_model):
+    """A dummy function that returns a DummyWorkflow for the Zotero agent."""
     return DummyWorkflow(supervisor_args={"agent": "zotero", "uniq_id": uniq_id})
 
 
 def dummy_create_supervisor(
     apps, model, state_schema, output_mode, add_handoff_back_messages, prompt
 ):
+    """a dummy function that returns a DummyWorkflow for the supervisor."""
     # Record arguments for later verification.
     supervisor_args = {
         "apps": apps,
@@ -69,14 +78,19 @@ def dummy_create_supervisor(
 
 
 class DummyHydraContext:
+    """A dummy context manager for mocking Hydra's initialize and compose functions."""
+
     def __enter__(self):
+        """Return None when entering the context."""
         return None
 
     def __exit__(self, exc_type, exc_val, traceback):
+        """a dummy exit function that does nothing."""
         pass
 
 
 def dict_to_namespace(d):
+    """Convert a dictionary to a SimpleNamespace object."""
     ns = SimpleNamespace(
         **{
             key: dict_to_namespace(val) if isinstance(val, dict) else val
@@ -94,10 +108,14 @@ dummy_config = {
 
 
 class DummyHydraCompose:
+    """a dummy class that returns a namespace from a dummy config dictionary."""
+
     def __init__(self, config):
+        """a dummy constructor that stores the dummy config."""
         self.config = config
 
     def __getattr__(self, item):
+        """Return a namespace from the dummy config."""
         return dict_to_namespace(self.config.get(item, {}))
 
 
@@ -106,7 +124,7 @@ class DummyHydraCompose:
 
 @pytest.fixture(autouse=True)
 def patch_hydra(monkeypatch):
-    # Patch hydra.initialize to return our dummy context.
+    """Patch the hydra.initialize and hydra.compose functions to return dummy objects."""
     monkeypatch.setattr(
         hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
     )
@@ -118,7 +136,7 @@ def patch_hydra(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def patch_sub_agents_and_supervisor(monkeypatch):
-    # Patch the sub-agent functions and supervisor creation in main_agent.
+    """a fixture that patches the sub-agents and supervisor creation functions."""
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_get_app_s2
     )
@@ -136,6 +154,7 @@ def patch_sub_agents_and_supervisor(monkeypatch):
 
 
 def test_dummy_llm_generate():
+    """a test that checks the dummy LLM's generate function."""
     dummy = DummyLLM(model_name="test-model")
     # Calling _generate should return "dummy output"
     output = dummy._generate("any prompt")
@@ -143,6 +162,7 @@ def test_dummy_llm_generate():
 
 
 def test_dummy_llm_llm_type():
+    """a test that checks the dummy LLM's _llm_type property."""
     dummy = DummyLLM(model_name="test-model")
     # The _llm_type property should return "dummy"
     assert dummy._llm_type == "dummy"
