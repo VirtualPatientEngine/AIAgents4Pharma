@@ -2,13 +2,14 @@
 Unit tests for Zotero search tool in zotero_read.py.
 """
 
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch, MagicMock
-from types import SimpleNamespace
+from langgraph.types import Command
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
     zotero_search_tool,
 )
-from langgraph.types import Command
+
 
 # Dummy Hydra configuration to be used in tests
 dummy_zotero_read_config = SimpleNamespace(
@@ -25,6 +26,7 @@ dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_
 
 
 class TestZoteroSearchTool(unittest.TestCase):
+    """test for Zotero search tool"""
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
@@ -39,6 +41,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """test valid query"""
         # Setup Hydra mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -113,6 +116,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """test empty query fetches all items"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -162,6 +166,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """test no items returned from Zotero"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -194,6 +199,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """test no matching papers returned from Zotero"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -251,8 +257,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """test items API exception"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
+        mock_get_item_collections.return_value = {}
 
         fake_zot = MagicMock()
         fake_zot.items.side_effect = Exception("API error")

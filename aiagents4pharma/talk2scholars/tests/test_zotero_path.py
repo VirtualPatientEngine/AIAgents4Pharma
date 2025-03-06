@@ -10,7 +10,10 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
 
 
 class TestGetItemCollections(unittest.TestCase):
+    """Unit tests for the get_item_collections function."""
+
     def test_basic_collections_mapping(self):
+        """test_basic_collections_mapping"""
         # Define fake collections with one parent-child relationship and one independent collection.
         fake_collections = [
             {"key": "A", "data": {"name": "Parent", "parentCollection": None}},

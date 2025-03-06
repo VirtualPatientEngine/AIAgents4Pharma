@@ -2,13 +2,13 @@
 Unit tests for Zotero write tool in zotero_write.py.
 """
 
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch, MagicMock
-from types import SimpleNamespace
+from langgraph.types import Command
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
     zotero_save_tool,
 )
-from langgraph.types import Command
 
 # Dummy Hydra configuration for the Zotero write tool
 dummy_zotero_write_config = SimpleNamespace(
@@ -22,6 +22,8 @@ dummy_cfg = SimpleNamespace(
 
 
 class TestZoteroSaveTool(unittest.TestCase):
+    """a test class for the Zotero save tool"""
+
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.compose")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.zotero.Zotero")
@@ -99,7 +101,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test successful saving when the state's last_displayed_papers is a key referencing the actual fetched papers.
+        Test successful saving when the state's last_displayed_papers is a key referencing
+        the actual fetched papers.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -158,6 +161,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         Test that a RuntimeError is raised when there are no fetched papers in the state.
         """
         mock_hydra_compose.return_value = dummy_cfg
+        mock_get_item_collections.return_value = {}
         mock_hydra_init.return_value.__enter__.return_value = None
 
         state = {
@@ -196,7 +200,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that if 'zotero_read' in the state is empty, the fallback using get_item_collections is used.
+        Test that if 'zotero_read' in the state is empty, the fallback
+        using get_item_collections is used.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -250,7 +255,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that a RuntimeError is raised when the provided collection path does not match any collection.
+        Test that a RuntimeError is raised when the provided collection
+        path does not match any collection.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -300,7 +306,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that if the Zotero client raises an exception during create_items, a RuntimeError is raised.
+        Test that if the Zotero client raises an exception during
+        create_items, a RuntimeError is raised.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -468,7 +475,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that if zotero_read does not yield a match, the tool finds a direct match by collection name
+        Test that if zotero_read does not yield a match, the tool finds
+        a direct match by collection name
         in the collections list (lines 125-133).
         """
         mock_hydra_compose.return_value = dummy_cfg
@@ -490,7 +498,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         }
 
         fake_zot = MagicMock()
-        # Collection with name "Test Collection" should match because f"/Test Collection".lower() equals normalized path.
+        # Collection with name "Test Collection" should match because
+        # f"/Test Collection".lower() equals normalized path.
         fake_zot.collections.return_value = [
             {"key": "col1", "data": {"name": "Test Collection"}}
         ]
@@ -523,7 +532,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that if no direct match is found, a match is found by comparing the stripped collection path.
+        Test that if no direct match is found, a match is found by comparing
+        the stripped collection path.
         This covers lines 137-142.
         """
         mock_hydra_compose.return_value = dummy_cfg
@@ -577,7 +587,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_hydra_init,
     ):
         """
-        Test that if no full-string match is found, the tool can match by one of the path components.
+        Test that if no full-string match is found, the tool can match
+        by one of the path components.
         This covers lines 144-151.
         """
         mock_hydra_compose.return_value = dummy_cfg
@@ -598,7 +609,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         }
 
         fake_zot = MagicMock()
-        # Collection name "bar" should be found via a path component when collection_path is "/foo/bar"
+        # Collection name "bar" should be found via a path component when
+        # collection_path is "/foo/bar"
         fake_zot.collections.return_value = [{"key": "colBar", "data": {"name": "bar"}}]
         fake_zot.create_items.return_value = {"success": True}
         mock_zotero_class.return_value = fake_zot
