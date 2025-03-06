@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "talk2biomodels"
 
-description = "A submodule of AIAgents4Pharma for interacting with systems biology models "
+description = "An agent to interact with systems biology models "
 
 readme = "README.md"
 requires-python = ">=3.12"

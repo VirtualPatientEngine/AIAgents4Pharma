@@ -18,7 +18,7 @@ nav:
           - Epidemiology: talk2biomodels/cases/Case_2.md
           - Emergent system properties: talk2biomodels/cases/Case_3.md
       - Tutorials:
-          - ./notebooks/talk2biomodels/tutorial.ipynb
+          - ./notebooks/talk2biomodels/tutorial_load_model.ipynb
           - ./notebooks/talk2biomodels/example_models.md
       - Agents:
           - T2B agent: talk2biomodels/agents/t2b_agent.md
@@ -64,6 +64,7 @@ nav:
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
           - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb
+          - PyG2DataFrame: ./notebooks/talk2knowledgegraphs/tutorial_pyg2dataframe.ipynb
       - Datasets:
           - Dataset: talk2knowledgegraphs/datasets/dataset.md
           - PrimeKG: talk2knowledgegraphs/datasets/primekg.md

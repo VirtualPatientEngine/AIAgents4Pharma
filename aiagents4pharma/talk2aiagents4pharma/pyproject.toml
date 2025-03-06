@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "AIAgents4Pharma"
 
-description = "The main agent of AIAgents4Pharma universe"
+description = "The main agent to interact with the other agents of AIAgents4Pharma"
 
 readme = "README.md"
 requires-python = ">=3.12"
