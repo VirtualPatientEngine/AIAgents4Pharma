@@ -26,6 +26,7 @@ Our toolkit currently consists of the following agents:
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 ### Installation
+
 _Please use version 1.26.2 or later for better support with NVIDIA NIM models._
 
 #### Option 1: PyPI
@@ -70,10 +71,10 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    LANGCHAIN_TRACING_V2=true
    LANGCHAIN_API_KEY=your_langchain_api_key_here
    # Notes:
-   # - The API endpoint for Ollama is already set in env.example.
-   # - Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
-   # - If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
-   # - Langsmith API for tracing is optional for both, set it in env.example if required.
+   # The API endpoint for Ollama is already set in env.example.
+   # Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
+   # If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
+   # Langsmith API for tracing is optional for both, set it in env.example if required.
    ```
 
 4. Save the file.
