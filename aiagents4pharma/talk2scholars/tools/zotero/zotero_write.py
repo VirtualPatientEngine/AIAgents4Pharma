@@ -30,7 +30,7 @@ class ZoteroSaveInput(BaseModel):
 
     tool_call_id: Annotated[str, InjectedToolCallId]
     collection_path: str = Field(
-        default="/Unknown",
+        default=None,
         description=(
             "The path where the paper should be saved in the Zotero library. "
             "Example: '/machine/cern/mobile'."
