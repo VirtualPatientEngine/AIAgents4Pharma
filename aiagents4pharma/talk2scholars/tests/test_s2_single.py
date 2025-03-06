@@ -48,6 +48,7 @@ class DummyResponse:
     """
 
     def __init__(self, json_data, status_code=200):
+        """Initialize a DummyResponse with the given JSON data and status code."""
         self._json_data = json_data
         self.status_code = status_code
 
@@ -59,7 +60,6 @@ class DummyResponse:
         """Raise an HTTP error for status codes >= 400."""
         if self.status_code >= 400:
             raise requests.HTTPError("HTTP Error")
-        return None
 
 
 def test_dummy_response_no_error():

@@ -2,23 +2,25 @@
 Unit tests for S2 tools functionality.
 """
 
-import pytest
-import requests
 from types import SimpleNamespace
-from aiagents4pharma.talk2scholars.tools.s2.search import search_tool
+import pytest
+import hydra
+import requests
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
-import hydra
+from aiagents4pharma.talk2scholars.tools.s2.search import search_tool
 
 # --- Dummy Hydra Config Setup ---
 
 
 class DummyHydraContext:
+    """hydra.initialize context manager that does nothing."""
+
     def __enter__(self):
         return None
 
     def __exit__(self, exc_type, exc_val, traceback):
-        pass
+        return None
 
 
 # Create a dummy configuration that mimics the expected hydra config
@@ -35,20 +37,25 @@ dummy_config = SimpleNamespace(
 
 
 class DummyResponse:
+    """A dummy response class for mocking HTTP responses."""
+
     def __init__(self, json_data, status_code=200):
+        """initialize a DummyResponse with the given JSON data and status code."""
         self._json_data = json_data
         self.status_code = status_code
 
     def json(self):
+        """access the JSON data from the response."""
         return self._json_data
 
     def raise_for_status(self):
+        """Raise an HTTP error for status codes >= 400."""
         if self.status_code >= 400:
             raise requests.HTTPError("HTTP Error")
-        return None
 
 
 def test_dummy_response_no_error():
+    """Test that raise_for_status does not raise an exception for a successful response."""
     # Create a DummyResponse with a successful status code.
     response = DummyResponse({"data": "success"}, status_code=200)
     # Calling raise_for_status should not raise an exception and should return None.
@@ -56,6 +63,7 @@ def test_dummy_response_no_error():
 
 
 def test_dummy_response_raise_error():
+    """Test that raise_for_status raises an exception for a failing response."""
     # Create a DummyResponse with a failing status code.
     response = DummyResponse({"error": "fail"}, status_code=400)
     # Calling raise_for_status should raise an HTTPError.
@@ -64,9 +72,11 @@ def test_dummy_response_raise_error():
 
 
 def dummy_requests_get_success(url, params, timeout):
+    """A dummy requests.get function that returns a successful response."""
     # Record call parameters for assertions
     dummy_requests_get_success.called_url = url
     dummy_requests_get_success.called_params = params
+    dummy_requests_get_success.called_timeout = timeout
 
     # Simulate a valid API response with three papers;
     # one paper missing authors should be filtered out.
@@ -105,16 +115,28 @@ def dummy_requests_get_success(url, params, timeout):
 
 
 def dummy_requests_get_no_data(url, params, timeout):
+    """A dummy requests.get function that returns a response without the expected 'data' key."""
+    dummy_requests_get_no_data.called_url = url
+    dummy_requests_get_no_data.called_params = params
+    dummy_requests_get_no_data.called_timeout = timeout
     # Simulate a response with an unexpected format (missing "data" key)
     return DummyResponse({"error": "Invalid format"})
 
 
 def dummy_requests_get_no_papers(url, params, timeout):
+    """A dummy requests.get function that returns a response with an empty papers list."""
+    dummy_requests_get_no_papers.called_url = url
+    dummy_requests_get_no_papers.called_params = params
+    dummy_requests_get_no_papers.called_timeout = timeout
     # Simulate a response with an empty papers list.
     return DummyResponse({"data": []})
 
 
 def dummy_requests_get_exception(url, params, timeout):
+    """A dummy requests.get function that raises an exception."""
+    dummy_requests_get_exception.called_url = url
+    dummy_requests_get_exception.called_params = params
+    dummy_requests_get_exception.called_timeout = timeout
     # Simulate a network/connection exception.
     raise requests.exceptions.RequestException("Connection error")
 
@@ -122,6 +144,7 @@ def dummy_requests_get_exception(url, params, timeout):
 # --- Pytest Fixture to Patch Hydra ---
 @pytest.fixture(autouse=True)
 def patch_hydra(monkeypatch):
+    """hydra patch to mock initialize and compose functions."""
     # Patch hydra.initialize to return our dummy context manager.
     monkeypatch.setattr(
         hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
