@@ -125,9 +125,9 @@ def dummy_requests_get_unexpected(url, params, timeout):
     """
     Dummy function to simulate an API response with an unexpected format.
     """
-    dummy_requests_get_success.called_url = url
-    dummy_requests_get_success.called_params = params
-    dummy_requests_get_success.called_timeout = timeout
+    dummy_requests_get_unexpected.called_url = url
+    dummy_requests_get_unexpected.called_params = params
+    dummy_requests_get_unexpected.called_timeout = timeout
     return DummyResponse({"error": "Invalid format"})
 
 
@@ -135,9 +135,9 @@ def dummy_requests_get_no_recs(url, params, timeout):
     """
     Dummy function to simulate an API response returning no recommendations.
     """
-    dummy_requests_get_success.called_url = url
-    dummy_requests_get_success.called_params = params
-    dummy_requests_get_success.called_timeout = timeout
+    dummy_requests_get_no_recs.called_url = url
+    dummy_requests_get_no_recs.called_params = params
+    dummy_requests_get_no_recs.called_timeout = timeout
     return DummyResponse({"recommendedPapers": []})
 
 
@@ -145,9 +145,9 @@ def dummy_requests_get_exception(url, params, timeout):
     """
     Dummy function to simulate a request exception (e.g., network failure).
     """
-    dummy_requests_get_success.called_url = url
-    dummy_requests_get_success.called_params = params
-    dummy_requests_get_success.called_timeout = timeout
+    dummy_requests_get_exception.called_url = url
+    dummy_requests_get_exception.called_params = params
+    dummy_requests_get_exception.called_timeout = timeout
     raise requests.exceptions.RequestException("Connection error")
 
 

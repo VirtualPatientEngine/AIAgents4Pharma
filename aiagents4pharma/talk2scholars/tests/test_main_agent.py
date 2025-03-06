@@ -3,12 +3,13 @@ Unit tests for main agent functionality.
 Tests the supervisor agent's routing logic and state management.
 """
 
-# pylint: disable=redefined-outer-name
 # pylint: disable=redefined-outer-name,too-few-public-methods
+
 from types import SimpleNamespace
 import pytest
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_openai import ChatOpenAI
 from pydantic import Field
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
@@ -22,7 +23,7 @@ class DummyLLM(BaseChatModel):
 
     def _generate(self, prompt, stop=None):
         """Generate a response given a prompt."""
-        # Dummy implementation just returns a fixed string.
+        DummyLLM.called_prompt = prompt
         return "dummy output"
 
     @property
@@ -40,6 +41,8 @@ class DummyWorkflow:
     def __init__(self, supervisor_args=None):
         """Initialize the workflow with the given supervisor arguments."""
         self.supervisor_args = supervisor_args or {}
+        self.checkpointer = None
+        self.name = None
 
     def compile(self, checkpointer, name):
         """Compile the workflow with the given checkpointer and name."""
@@ -49,29 +52,30 @@ class DummyWorkflow:
 
 
 def dummy_get_app_s2(uniq_id, llm_model):
-    """A dummy function that returns a DummyWorkflow for the S2 agent."""
+    """Return a DummyWorkflow for the S2 agent."""
+    dummy_get_app_s2.called_uniq_id = uniq_id
+    dummy_get_app_s2.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "s2", "uniq_id": uniq_id})
 
 
 def dummy_get_app_zotero(uniq_id, llm_model):
-    """A dummy function that returns a DummyWorkflow for the Zotero agent."""
+    """Return a DummyWorkflow for the Zotero agent."""
+    dummy_get_app_zotero.called_uniq_id = uniq_id
+    dummy_get_app_zotero.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "zotero", "uniq_id": uniq_id})
 
 
-def dummy_create_supervisor(
-    apps, model, state_schema, output_mode, add_handoff_back_messages, prompt
-):
-    """a dummy function that returns a DummyWorkflow for the supervisor."""
-    # Record arguments for later verification.
-    supervisor_args = {
-        "apps": apps,
-        "model": model,
-        "state_schema": state_schema,
-        "output_mode": output_mode,
-        "add_handoff_back_messages": add_handoff_back_messages,
-        "prompt": prompt,
-    }
-    return DummyWorkflow(supervisor_args=supervisor_args)
+def dummy_create_supervisor(apps, model, state_schema, **kwargs):
+    """Return a DummyWorkflow for the supervisor."""
+    dummy_create_supervisor.called_kwargs = kwargs
+    return DummyWorkflow(
+        supervisor_args={
+            "apps": apps,
+            "model": model,
+            "state_schema": state_schema,
+            **kwargs,
+        }
+    )
 
 
 # --- Dummy Hydra Configuration Setup ---
@@ -85,19 +89,18 @@ class DummyHydraContext:
         return None
 
     def __exit__(self, exc_type, exc_val, traceback):
-        """a dummy exit function that does nothing."""
-        pass
+        """Exit function that does nothing."""
+        return None
 
 
 def dict_to_namespace(d):
     """Convert a dictionary to a SimpleNamespace object."""
-    ns = SimpleNamespace(
+    return SimpleNamespace(
         **{
             key: dict_to_namespace(val) if isinstance(val, dict) else val
             for key, val in d.items()
         }
     )
-    return ns
 
 
 dummy_config = {
@@ -108,10 +111,10 @@ dummy_config = {
 
 
 class DummyHydraCompose:
-    """a dummy class that returns a namespace from a dummy config dictionary."""
+    """A dummy class that returns a namespace from a dummy config dictionary."""
 
     def __init__(self, config):
-        """a dummy constructor that stores the dummy config."""
+        """Constructor that stores the dummy config."""
         self.config = config
 
     def __getattr__(self, item):
@@ -128,7 +131,6 @@ def patch_hydra(monkeypatch):
     monkeypatch.setattr(
         hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
     )
-    # Patch hydra.compose to return our dummy config as a namespace.
     monkeypatch.setattr(
         hydra, "compose", lambda config_name, overrides: DummyHydraCompose(dummy_config)
     )
@@ -136,7 +138,7 @@ def patch_hydra(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def patch_sub_agents_and_supervisor(monkeypatch):
-    """a fixture that patches the sub-agents and supervisor creation functions."""
+    """Patch the sub-agents and supervisor creation functions."""
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_get_app_s2
     )
@@ -154,50 +156,41 @@ def patch_sub_agents_and_supervisor(monkeypatch):
 
 
 def test_dummy_llm_generate():
-    """a test that checks the dummy LLM's generate function."""
+    """Test the dummy LLM's generate function."""
     dummy = DummyLLM(model_name="test-model")
-    # Calling _generate should return "dummy output"
-    output = dummy._generate("any prompt")
+    output = getattr(dummy, "_generate")("any prompt")
     assert output == "dummy output"
 
 
 def test_dummy_llm_llm_type():
-    """a test that checks the dummy LLM's _llm_type property."""
+    """Test the dummy LLM's _llm_type property."""
     dummy = DummyLLM(model_name="test-model")
-    # The _llm_type property should return "dummy"
-    assert dummy._llm_type == "dummy"
+    assert getattr(dummy, "_llm_type") == "dummy"
 
 
-def test_get_app_with_gpt4o_mini(monkeypatch):
+def test_get_app_with_gpt4o_mini():
     """
-    Test that get_app replaces a 'gpt-4o-mini' LLM with a new ChatOpenAI instance,
-    loads the Hydra config, and creates a supervisor workflow with the expected prompt.
+    Test that get_app replaces a 'gpt-4o-mini' LLM with a new ChatOpenAI instance.
     """
     uniq_id = "test_thread"
-    # Create a dummy LLM with model_name "gpt-4o-mini" (using keyword argument)
     dummy_llm = DummyLLM(model_name="gpt-4o-mini")
     app = get_app(uniq_id, dummy_llm)
-    # The tool should have replaced the LLM with a ChatOpenAI instance.
-    supervisor_args = app.supervisor_args
-    from langchain_openai import ChatOpenAI
 
-    assert isinstance(supervisor_args["model"], ChatOpenAI)
-    # The prompt should be taken from our dummy Hydra config.
-    assert supervisor_args["prompt"] == "Dummy system prompt"
-    # The compiled app should have the expected name.
-    assert app.name == "Talk2Scholars_MainAgent"
+    supervisor_args = getattr(app, "supervisor_args", {})
+    assert isinstance(supervisor_args.get("model"), ChatOpenAI)
+    assert supervisor_args.get("prompt") == "Dummy system prompt"
+    assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"
 
 
-def test_get_app_with_other_model(monkeypatch):
+def test_get_app_with_other_model():
     """
-    Test that get_app does not replace the LLM if its model_name is not 'gpt-4o-mini'
-    and that the supervisor workflow receives the correct model.
+    Test that get_app does not replace the LLM if its model_name is not 'gpt-4o-mini'.
     """
     uniq_id = "test_thread_2"
     dummy_llm = DummyLLM(model_name="other-model")
     app = get_app(uniq_id, dummy_llm)
-    supervisor_args = app.supervisor_args
-    # In this case, the model should be the dummy_llm since it was not replaced.
-    assert supervisor_args["model"] is dummy_llm
-    assert supervisor_args["prompt"] == "Dummy system prompt"
-    assert app.name == "Talk2Scholars_MainAgent"
+
+    supervisor_args = getattr(app, "supervisor_args", {})
+    assert supervisor_args.get("model") is dummy_llm
+    assert supervisor_args.get("prompt") == "Dummy system prompt"
+    assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"
