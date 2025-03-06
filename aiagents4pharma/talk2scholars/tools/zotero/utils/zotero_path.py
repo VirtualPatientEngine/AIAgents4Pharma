@@ -5,7 +5,6 @@ Utility functions for Zotero tools.
 """
 
 import logging
-from pyzotero import zotero
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
