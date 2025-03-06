@@ -18,6 +18,8 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_item_collections,
 )
 
+# pylint: disable=R0914,R0912,R0915
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,7 +31,10 @@ class ZoteroSaveInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
     collection_path: str = Field(
         default="/Unknown",
-        description="The path where the paper should be saved in the Zotero library. Example: '/machine/cern/mobile'.",
+        description=(
+            "The path where the paper should be saved in the Zotero library. "
+            "Example: '/machine/cern/mobile'."
+        ),
     )
     state: Annotated[dict, InjectedState]
 
@@ -41,7 +46,8 @@ def zotero_save_tool(
     state: Annotated[dict, InjectedState],
 ) -> Command[Any]:
     """
-    Use this tool to save previously fetched papers from Semantic Scholar to a specified Zotero collection.
+    Use this tool to save previously fetched papers from Semantic Scholar
+    to a specified Zotero collection.
 
     Args:
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
@@ -59,7 +65,7 @@ def zotero_save_tool(
         cfg = cfg.tools.zotero_write
         logger.info("Loaded configuration for Zotero write tool")
     logger.info(
-        f"Saving fetched papers to Zotero under collection path: {collection_path}"
+        "Saving fetched papers to Zotero under collection path: %s", collection_path
     )
 
     # Initialize Zotero client
@@ -70,7 +76,7 @@ def zotero_save_tool(
     if isinstance(last_displayed_key, str):
         # If it's a string (key to another state object), get that object
         fetched_papers = state.get(last_displayed_key, {})
-        logger.info(f"Using papers from '{last_displayed_key}' state key")
+        logger.info("Using papers from '%s' state key", last_displayed_key)
     else:
         # If it's already the papers object
         fetched_papers = last_displayed_key
@@ -84,7 +90,7 @@ def zotero_save_tool(
 
     # First, check if zotero_read exists in state and has collection data
     zotero_read_data = state.get("zotero_read", {})
-    logger.info(f"Retrieved zotero_read from state: {len(zotero_read_data)} items")
+    logger.info("Retrieved zotero_read from state: %d items", len(zotero_read_data))
 
     # If zotero_read is empty, use get_item_collections as fallback
     if not zotero_read_data:
@@ -93,16 +99,18 @@ def zotero_save_tool(
         )
         try:
             zotero_read_data = get_item_collections(zot)
-            logger.info(f"Successfully generated {len(zotero_read_data)} path mappings")
+            logger.info(
+                "Successfully generated %d path mappings", len(zotero_read_data)
+            )
         except Exception as e:
-            logger.error(f"Error generating path mappings: {str(e)}")
+            logger.error("Error generating path mappings: %s", str(e))
             raise RuntimeError(
                 "Failed to generate collection path mappings. Please retry the same query."
             ) from e
 
     # Get all collections to find the correct one
     collections = zot.collections()
-    logger.info(f"Found {len(collections)} collections")
+    logger.info("Found %d collections", len(collections))
 
     # Normalize the requested collection path (remove trailing slash, lowercase for comparison)
     normalized_path = collection_path.rstrip("/").lower()
@@ -116,11 +124,13 @@ def zotero_save_tool(
             for path in paths:
                 if path.lower() == normalized_path:
                     matched_collection_key = key
-                    logger.info(f"Found direct match in zotero_read: {path} -> {key}")
+                    logger.info(
+                        "Found direct match in zotero_read: %s -> %s", path, key
+                    )
                     break
         elif isinstance(paths, str) and paths.lower() == normalized_path:
             matched_collection_key = key
-            logger.info(f"Found direct match in zotero_read: {paths} -> {key}")
+            logger.info("Found direct match in zotero_read: %s -> %s", paths, key)
 
     # If not found in zotero_read, try matching by collection name
     if not matched_collection_key:
@@ -129,7 +139,9 @@ def zotero_save_tool(
             if f"/{col_name}".lower() == normalized_path:
                 matched_collection_key = col["key"]
                 logger.info(
-                    f"Found direct match by collection name: {col_name} (key: {col['key']})"
+                    "Found direct match by collection name: %s (key: %s)",
+                    col_name,
+                    col["key"],
                 )
                 break
 
@@ -140,7 +152,9 @@ def zotero_save_tool(
         if collection_name in name_to_key:
             matched_collection_key = name_to_key[collection_name]
             logger.info(
-                f"Found match by collection name: {collection_name} -> {matched_collection_key}"
+                "Found match by collection name: %s -> %s",
+                collection_name,
+                matched_collection_key,
             )
         else:
             path_parts = normalized_path.strip("/").split("/")
@@ -148,15 +162,19 @@ def zotero_save_tool(
                 if part in name_to_key:
                     matched_collection_key = name_to_key[part]
                     logger.info(
-                        f"Found match by path component: {part} -> {matched_collection_key}"
+                        "Found match by path component: %s -> %s",
+                        part,
+                        matched_collection_key,
                     )
                     break
 
     # Do not fall back to a default collection: raise error if no match found
     if not matched_collection_key:
         logger.error(
-            f"Invalid collection path: {collection_path}. No matching collection found in Zotero."
+            "Invalid collection path: %s. No matching collection found in Zotero.",
+            collection_path,
         )
+
         available_paths = ", ".join(["/" + col["data"]["name"] for col in collections])
         raise RuntimeError(
             f"Error: The collection path '{collection_path}' does not exist in Zotero. "
@@ -187,9 +205,9 @@ def zotero_save_tool(
     # Save items to Zotero
     try:
         response = zot.create_items(zotero_items)
-        logger.info(f"Papers successfully saved to Zotero: {response}")
+        logger.info("Papers successfully saved to Zotero: %s", response)
     except Exception as e:
-        logger.error(f"Error saving to Zotero: {str(e)}")
+        logger.error("Error saving to Zotero: %s", str(e))
         raise RuntimeError(f"Error saving papers to Zotero: {str(e)}") from e
 
     # Get the collection name for better feedback

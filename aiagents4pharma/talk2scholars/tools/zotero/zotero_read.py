@@ -17,6 +17,8 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_item_collections,
 )
 
+# pylint: disable=R0914,R0912,R0915
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
