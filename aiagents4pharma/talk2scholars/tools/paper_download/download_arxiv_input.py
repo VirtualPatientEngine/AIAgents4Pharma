@@ -8,7 +8,7 @@ from typing import Annotated, Any
 from pydantic import BaseModel, Field
 from langchain_core.tools import tool
 from langchain_core.messages import ToolMessage
-from langgraph.prebuilt import InjectedToolCallId
+from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 
 # Local import from the same package:
