@@ -1,0 +1,2424 @@
+,node_index,node_name,node_source,node_id,node_type
+144,144,SMAD3,NCBI,4088,gene/protein
+179,179,IL10RB,NCBI,3588,gene/protein
+192,192,GNA12,NCBI,2768,gene/protein
+279,279,HNF4A,NCBI,3172,gene/protein
+417,417,VCAM1,NCBI,7412,gene/protein
+625,625,IL7R,NCBI,3575,gene/protein
+657,657,DEFA6,NCBI,1671,gene/protein
+729,729,STAT3,NCBI,6774,gene/protein
+772,772,RELA,NCBI,5970,gene/protein
+989,989,PPARG,NCBI,5468,gene/protein
+1004,1004,IL1B,NCBI,3553,gene/protein
+1122,1122,PPARA,NCBI,5465,gene/protein
+1299,1299,IL10RA,NCBI,3587,gene/protein
+1480,1480,ADIPOQ,NCBI,9370,gene/protein
+1567,1567,IL6,NCBI,3569,gene/protein
+1618,1618,JAK2,NCBI,3717,gene/protein
+1654,1654,IL1R2,NCBI,7850,gene/protein
+1777,1777,HERC2,NCBI,8924,gene/protein
+1990,1990,FCGR2A,NCBI,2212,gene/protein
+2012,2012,CXCR1,NCBI,3577,gene/protein
+2057,2057,FN1,NCBI,2335,gene/protein
+2078,2078,SLC26A3,NCBI,1811,gene/protein
+2111,2111,LRRK2,NCBI,120892,gene/protein
+2139,2139,ARPC2,NCBI,10109,gene/protein
+2329,2329,TNF,NCBI,7124,gene/protein
+2384,2384,CRP,NCBI,1401,gene/protein
+2543,2543,CDH1,NCBI,999,gene/protein
+2643,2643,LSP1,NCBI,4046,gene/protein
+2712,2712,CASP3,NCBI,836,gene/protein
+2749,2749,LAMB1,NCBI,3912,gene/protein
+2874,2874,PRDM1,NCBI,639,gene/protein
+2889,2889,TGFB1,NCBI,7040,gene/protein
+2978,2978,CXCL8,NCBI,3576,gene/protein
+2983,2983,IL10,NCBI,3586,gene/protein
+3064,3064,CXCR2,NCBI,3579,gene/protein
+3088,3088,DNMT3A,NCBI,1788,gene/protein
+3233,3233,LTF,NCBI,4057,gene/protein
+3259,3259,TLR4,NCBI,7099,gene/protein
+3333,3333,FPR2,NCBI,2358,gene/protein
+3414,3414,IKZF1,NCBI,10320,gene/protein
+3460,3460,CARD9,NCBI,64170,gene/protein
+3469,3469,VTN,NCBI,7448,gene/protein
+3474,3474,MMP9,NCBI,4318,gene/protein
+3484,3484,SLC22A5,NCBI,6584,gene/protein
+3495,3495,IFNG,NCBI,3458,gene/protein
+3578,3578,ECM1,NCBI,1893,gene/protein
+3646,3646,IRF5,NCBI,3663,gene/protein
+4152,4152,ABCB1,NCBI,5243,gene/protein
+4162,4162,PTPN2,NCBI,5771,gene/protein
+4731,4731,RIPK2,NCBI,8767,gene/protein
+4818,4818,MPO,NCBI,4353,gene/protein
+4968,4968,ICAM1,NCBI,3383,gene/protein
+4997,4997,MST1,NCBI,4485,gene/protein
+5022,5022,ITGAM,NCBI,3684,gene/protein
+5195,5195,TCF7,NCBI,6932,gene/protein
+5385,5385,SLC22A4,NCBI,6583,gene/protein
+5720,5720,IGF1,NCBI,3479,gene/protein
+5805,5805,DEFA5,NCBI,1670,gene/protein
+5915,5915,CCL2,NCBI,6347,gene/protein
+6168,6168,IL12B,NCBI,3593,gene/protein
+6175,6175,MTHFR,NCBI,4524,gene/protein
+6229,6229,NOD2,NCBI,64127,gene/protein
+6428,6428,TYK2,NCBI,7297,gene/protein
+6661,6661,ATG16L1,NCBI,55054,gene/protein
+7059,7059,IL2RA,NCBI,3559,gene/protein
+7083,7083,HLA-DRB1,NCBI,3123,gene/protein
+7359,7359,ADCY7,NCBI,113,gene/protein
+7384,7384,CCL20,NCBI,6364,gene/protein
+7899,7899,NCF4,NCBI,4689,gene/protein
+7958,7958,BACH2,NCBI,60468,gene/protein
+8030,8030,CDH3,NCBI,1001,gene/protein
+8564,8564,KIF21B,NCBI,23046,gene/protein
+9104,9104,INAVA,NCBI,55765,gene/protein
+9454,9454,ICOSLG,NCBI,23308,gene/protein
+9763,9763,ORMDL3,NCBI,94103,gene/protein
+10113,10113,TLR9,NCBI,54106,gene/protein
+10191,10191,FUT2,NCBI,2524,gene/protein
+10919,10919,PSMG1,NCBI,8624,gene/protein
+11103,11103,SPHK1,NCBI,8877,gene/protein
+11134,11134,NR1H4,NCBI,9971,gene/protein
+11199,11199,DAP,NCBI,1611,gene/protein
+11523,11523,LEP,NCBI,3952,gene/protein
+11588,11588,IL18RAP,NCBI,8807,gene/protein
+12305,12305,NLRP3,NCBI,114548,gene/protein
+12663,12663,SLC11A1,NCBI,6556,gene/protein
+12740,12740,CCR6,NCBI,1235,gene/protein
+12763,12763,ERAP2,NCBI,64167,gene/protein
+12816,12816,MUC2,NCBI,4583,gene/protein
+13014,13014,PHOX2B,NCBI,8929,gene/protein
+13365,13365,CCNY,NCBI,219771,gene/protein
+21972,21972,GHRL,NCBI,51738,gene/protein
+22105,22105,GPBAR1,NCBI,151306,gene/protein
+34623,34623,TNFSF15,NCBI,9966,gene/protein
+34776,34776,GPR65,NCBI,8477,gene/protein
+34777,34777,MASP2,NCBI,10747,gene/protein
+34778,34778,IL23R,NCBI,149233,gene/protein
+34779,34779,NKX2-3,NCBI,159296,gene/protein
+34780,34780,IRGM,NCBI,345611,gene/protein
+34781,34781,IL17REL,NCBI,400935,gene/protein
+34814,34814,TAGAP,NCBI,117289,gene/protein
+34887,34887,DENND1B,NCBI,163486,gene/protein
+34967,34967,IL21,NCBI,59067,gene/protein
+39914,39914,regulation of smooth muscle contraction,GO,6940,biological_process
+39917,39917,cell migration,GO,16477,biological_process
+39918,39918,chemotaxis,GO,6935,biological_process
+39920,39920,immune system process,GO,2376,biological_process
+39942,39942,lipid metabolic process,GO,6629,biological_process
+39945,39945,carbohydrate metabolic process,GO,5975,biological_process
+39946,39946,hormone metabolic process,GO,42445,biological_process
+39950,39950,import into nucleus,GO,51170,biological_process
+39954,39954,intracellular protein transport,GO,6886,biological_process
+39967,39967,negative regulation of lipid metabolic process,GO,45833,biological_process
+39968,39968,regulation of lipoprotein lipid oxidation,GO,60587,biological_process
+39969,39969,basement membrane assembly,GO,70831,biological_process
+39991,39991,aging,GO,7568,biological_process
+39993,39993,hair cycle process,GO,22405,biological_process
+39995,39995,immune response,GO,6955,biological_process
+39997,39997,defense response,GO,6952,biological_process
+39999,39999,inflammatory response,GO,6954,biological_process
+40004,40004,positive regulation of innate immune response,GO,45089,biological_process
+40005,40005,positive regulation of cytokine-mediated signaling pathway,GO,1961,biological_process
+40007,40007,negative regulation of cytokine-mediated signaling pathway,GO,1960,biological_process
+40015,40015,positive regulation of oxidoreductase activity,GO,51353,biological_process
+40047,40047,regulation of T-helper cell differentiation,GO,45622,biological_process
+40052,40052,regulation of complement activation,GO,30449,biological_process
+40058,40058,negative regulation of inflammatory response,GO,50728,biological_process
+40062,40062,negative regulation of phagocytosis,GO,50765,biological_process
+40074,40074,negative regulation of gene expression,GO,10629,biological_process
+40079,40079,anatomical structure development,GO,48856,biological_process
+40080,40080,post-embryonic development,GO,9791,biological_process
+40081,40081,extracellular matrix organization,GO,30198,biological_process
+40082,40082,neuron projection development,GO,31175,biological_process
+40085,40085,maternal process involved in female pregnancy,GO,60135,biological_process
+40092,40092,phosphate-containing compound metabolic process,GO,6796,biological_process
+40124,40124,fatty acid metabolic process,GO,6631,biological_process
+40136,40136,xenobiotic metabolic process,GO,6805,biological_process
+40200,40200,"positive regulation of CD4-positive, alpha-beta T cell activation",GO,2000516,biological_process
+40201,40201,positive regulation of alpha-beta T cell proliferation,GO,46641,biological_process
+40210,40210,positive regulation of ion transport,GO,43270,biological_process
+40214,40214,positive regulation of inflammatory response,GO,50729,biological_process
+40225,40225,positive regulation of cell population proliferation,GO,8284,biological_process
+40237,40237,positive regulation of cell differentiation,GO,45597,biological_process
+40247,40247,positive regulation of cell migration,GO,30335,biological_process
+40257,40257,positive regulation of protein-containing complex assembly,GO,31334,biological_process
+40264,40264,positive regulation of epidermal growth factor receptor signaling pathway,GO,45742,biological_process
+40269,40269,regulation of multicellular organism growth,GO,40014,biological_process
+40270,40270,positive regulation of developmental growth,GO,48639,biological_process
+40281,40281,positive regulation of protein secretion,GO,50714,biological_process
+40283,40283,regulation of branching morphogenesis of a nerve,GO,2000172,biological_process
+40301,40301,positive regulation of epithelial cell proliferation,GO,50679,biological_process
+40315,40315,positive regulation of immunoglobulin production,GO,2639,biological_process
+40316,40316,regulation of isotype switching,GO,45191,biological_process
+40318,40318,positive regulation of B cell activation,GO,50871,biological_process
+40343,40343,positive regulation of canonical Wnt signaling pathway,GO,90263,biological_process
+40359,40359,positive regulation of insulin receptor signaling pathway,GO,46628,biological_process
+40373,40373,positive regulation of neuron differentiation,GO,45666,biological_process
+40378,40378,regulation of cytokine production,GO,1817,biological_process
+40379,40379,positive regulation of gene expression,GO,10628,biological_process
+40387,40387,oxalate transport,GO,19532,biological_process
+40397,40397,regulation of leukocyte mediated cytotoxicity,GO,1910,biological_process
+40401,40401,positive regulation of cytokine production involved in immune response,GO,2720,biological_process
+40402,40402,regulation of dendritic cell cytokine production,GO,2730,biological_process
+40405,40405,cell differentiation,GO,30154,biological_process
+40411,40411,chromatin organization,GO,6325,biological_process
+40412,40412,Wnt signaling pathway,GO,16055,biological_process
+40415,40415,cell division,GO,51301,biological_process
+40418,40418,positive regulation of actin filament polymerization,GO,30838,biological_process
+40423,40423,cell maturation,GO,48469,biological_process
+40438,40438,cell-cell signaling,GO,7267,biological_process
+40439,40439,G protein-coupled receptor signaling pathway,GO,7186,biological_process
+40445,40445,DNA methylation,GO,6306,biological_process
+40451,40451,cell population proliferation,GO,8283,biological_process
+40454,40454,cell fate commitment,GO,45165,biological_process
+40462,40462,cell chemotaxis,GO,60326,biological_process
+40463,40463,positive chemotaxis,GO,50918,biological_process
+40469,40469,epithelial cell differentiation,GO,30855,biological_process
+40494,40494,amine metabolic process,GO,9308,biological_process
+40548,40548,tissue development,GO,9888,biological_process
+40549,40549,animal organ morphogenesis,GO,9887,biological_process
+40558,40558,extracellular matrix assembly,GO,85029,biological_process
+40561,40561,gland morphogenesis,GO,22612,biological_process
+40578,40578,developmental growth,GO,48589,biological_process
+40583,40583,blood vessel development,GO,1568,biological_process
+40588,40588,anatomical structure morphogenesis,GO,9653,biological_process
+40605,40605,hydrogen peroxide catabolic process,GO,42744,biological_process
+40608,40608,peptide catabolic process,GO,43171,biological_process
+40611,40611,regulation of epithelial cell proliferation,GO,50678,biological_process
+40612,40612,negative regulation of cell population proliferation,GO,8285,biological_process
+40621,40621,regulation of cellular ketone metabolic process,GO,10565,biological_process
+40628,40628,regulation of lipid metabolic process,GO,19216,biological_process
+40633,40633,regulation of steroid biosynthetic process,GO,50810,biological_process
+40658,40658,negative regulation of epithelial cell differentiation,GO,30857,biological_process
+40679,40679,cell morphogenesis,GO,902,biological_process
+40691,40691,innate immune response,GO,45087,biological_process
+40692,40692,complement activation,GO,6956,biological_process
+40694,40694,defense response to fungus,GO,50832,biological_process
+40696,40696,defense response to bacterium,GO,42742,biological_process
+40700,40700,humoral immune response,GO,6959,biological_process
+40703,40703,cellular response to stress,GO,33554,biological_process
+40706,40706,defense response to virus,GO,51607,biological_process
+40715,40715,positive regulation of cellular biosynthetic process,GO,31328,biological_process
+40716,40716,positive regulation of nitrogen compound metabolic process,GO,51173,biological_process
+40728,40728,positive regulation of lipid catabolic process,GO,50996,biological_process
+40731,40731,positive regulation of cellular respiration,GO,1901857,biological_process
+40736,40736,positive regulation of lipid biosynthetic process,GO,46889,biological_process
+40738,40738,positive regulation of fatty acid metabolic process,GO,45923,biological_process
+40751,40751,response to salt stress,GO,9651,biological_process
+40753,40753,hyperosmotic response,GO,6972,biological_process
+40767,40767,positive regulation of protein binding,GO,32092,biological_process
+40792,40792,cholesterol metabolic process,GO,8203,biological_process
+40807,40807,regulation of cell migration,GO,30334,biological_process
+40827,40827,salivary gland morphogenesis,GO,7435,biological_process
+40873,40873,response to progesterone,GO,32570,biological_process
+40877,40877,cellular response to organic cyclic compound,GO,71407,biological_process
+40878,40878,cellular response to organonitrogen compound,GO,71417,biological_process
+40892,40892,cellular response to organic substance,GO,71310,biological_process
+40916,40916,negative regulation of lipid catabolic process,GO,50995,biological_process
+40924,40924,response to glucocorticoid,GO,51384,biological_process
+40925,40925,response to organic cyclic compound,GO,14070,biological_process
+40930,40930,response to lipid,GO,33993,biological_process
+40937,40937,positive regulation of programmed cell death,GO,43068,biological_process
+40941,40941,negative regulation of hydrogen peroxide-induced cell death,GO,1903206,biological_process
+40962,40962,regulation of type 2 immune response,GO,2828,biological_process
+40967,40967,regulation of adaptive immune response,GO,2819,biological_process
+40975,40975,anion transport,GO,6820,biological_process
+40976,40976,regulation of membrane potential,GO,42391,biological_process
+40980,40980,negative regulation of platelet-derived growth factor receptor signaling pathway,GO,10642,biological_process
+40983,40983,cellular response to amino acid stimulus,GO,71230,biological_process
+40996,40996,negative regulation of cell differentiation,GO,45596,biological_process
+40998,40998,regulation of endocytosis,GO,30100,biological_process
+41003,41003,regulation of phagocytosis,GO,50764,biological_process
+41023,41023,S-adenosylmethionine metabolic process,GO,46500,biological_process
+41047,41047,protein transport,GO,15031,biological_process
+41059,41059,receptor-mediated endocytosis,GO,6898,biological_process
+41065,41065,transmembrane transport,GO,55085,biological_process
+41078,41078,negative regulation of ATPase activity,GO,32780,biological_process
+41084,41084,Golgi organization,GO,7030,biological_process
+41100,41100,membrane organization,GO,61024,biological_process
+41109,41109,cortical actin cytoskeleton organization,GO,30866,biological_process
+41129,41129,peptide cross-linking,GO,18149,biological_process
+41133,41133,protein phosphorylation,GO,6468,biological_process
+41157,41157,positive regulation of osteoclast differentiation,GO,45672,biological_process
+41163,41163,positive regulation of cardiac muscle cell differentiation,GO,2000727,biological_process
+41167,41167,positive regulation of chondrocyte differentiation,GO,32332,biological_process
+41181,41181,regulation of neurogenesis,GO,50767,biological_process
+41188,41188,hematopoietic progenitor cell differentiation,GO,2244,biological_process
+41259,41259,regulation of dendritic spine morphogenesis,GO,61001,biological_process
+41289,41289,regulation of DNA binding,GO,51101,biological_process
+41292,41292,negative regulation of T cell apoptotic process,GO,70233,biological_process
+41298,41298,regulation of immune response,GO,50776,biological_process
+41304,41304,negative regulation of cell migration,GO,30336,biological_process
+41315,41315,regulation of natural killer cell mediated cytotoxicity,GO,42269,biological_process
+41318,41318,negative regulation of T cell mediated immunity,GO,2710,biological_process
+41320,41320,cellular response to DNA damage stimulus,GO,6974,biological_process
+41325,41325,regulation of transcription by RNA polymerase II,GO,6357,biological_process
+41362,41362,double-strand break repair,GO,6302,biological_process
+41430,41430,regulation of transforming growth factor beta receptor signaling pathway,GO,17015,biological_process
+41433,41433,regulation of SMAD protein signal transduction,GO,60390,biological_process
+41434,41434,positive regulation of protein phosphorylation,GO,1934,biological_process
+41480,41480,regulation of cell shape,GO,8360,biological_process
+41481,41481,regulation of canonical Wnt signaling pathway,GO,60828,biological_process
+41524,41524,regulation of gene expression,GO,10468,biological_process
+41537,41537,positive regulation of protein-containing complex disassembly,GO,43243,biological_process
+41607,41607,positive regulation of protein transport,GO,51222,biological_process
+41621,41621,positive regulation of dopamine receptor signaling pathway,GO,60161,biological_process
+41628,41628,negative regulation of protein phosphorylation,GO,1933,biological_process
+41638,41638,cellular protein metabolic process,GO,44267,biological_process
+41670,41670,glucose metabolic process,GO,6006,biological_process
+41684,41684,lysosome organization,GO,7040,biological_process
+41707,41707,regulation of gastrulation,GO,10470,biological_process
+41716,41716,regulation of reactive oxygen species metabolic process,GO,2000377,biological_process
+41720,41720,regulation of fatty acid metabolic process,GO,19217,biological_process
+41751,41751,phosphorylation,GO,16310,biological_process
+41780,41780,negative regulation of neuron differentiation,GO,45665,biological_process
+41845,41845,regulation of nitric oxide biosynthetic process,GO,45428,biological_process
+41852,41852,regulation of gluconeogenesis,GO,6111,biological_process
+41857,41857,regulation of fatty acid biosynthetic process,GO,42304,biological_process
+41894,41894,positive regulation of reactive oxygen species biosynthetic process,GO,1903428,biological_process
+41907,41907,positive regulation of cellular protein metabolic process,GO,32270,biological_process
+41918,41918,regulation of bile acid biosynthetic process,GO,70857,biological_process
+41968,41968,immune response-regulating cell surface receptor signaling pathway,GO,2768,biological_process
+41981,41981,hormone-mediated signaling pathway,GO,9755,biological_process
+41990,41990,positive regulation of protein ubiquitination,GO,31398,biological_process
+41996,41996,glycolate metabolic process,GO,9441,biological_process
+42011,42011,negative regulation of protein secretion,GO,50709,biological_process
+42013,42013,regulation of transmission of nerve impulse,GO,51969,biological_process
+42025,42025,modulation of chemical synaptic transmission,GO,50804,biological_process
+42036,42036,cellular response to drug,GO,35690,biological_process
+42063,42063,cellular response to hormone stimulus,GO,32870,biological_process
+42073,42073,response to cobalamin,GO,33590,biological_process
+42088,42088,response to estradiol,GO,32355,biological_process
+42100,42100,cellular response to alkaloid,GO,71312,biological_process
+42104,42104,response to vitamin E,GO,33197,biological_process
+42113,42113,response to cAMP,GO,51591,biological_process
+42119,42119,response to folic acid,GO,51593,biological_process
+42120,42120,response to vitamin B2,GO,33274,biological_process
+42127,42127,cellular response to fatty acid,GO,71398,biological_process
+42134,42134,response to cocaine,GO,42220,biological_process
+42151,42151,xenobiotic transport,GO,42908,biological_process
+42157,42157,transepithelial transport,GO,70633,biological_process
+42161,42161,quaternary ammonium group transport,GO,15697,biological_process
+42162,42162,terpenoid transport,GO,46865,biological_process
+42164,42164,negative regulation of stem cell differentiation,GO,2000737,biological_process
+42173,42173,negative regulation of BMP signaling pathway,GO,30514,biological_process
+42179,42179,negative regulation of epithelial cell proliferation,GO,50680,biological_process
+42183,42183,negative regulation of cell-cell adhesion,GO,22408,biological_process
+42186,42186,negative regulation of hormone secretion,GO,46888,biological_process
+42188,42188,negative regulation of insulin receptor signaling pathway,GO,46627,biological_process
+42193,42193,negative regulation of G protein-coupled receptor signaling pathway,GO,45744,biological_process
+42210,42210,negative regulation of epidermal growth factor receptor signaling pathway,GO,42059,biological_process
+42222,42222,negative regulation of extrinsic apoptotic signaling pathway via death domain receptors,GO,1902042,biological_process
+42240,42240,regulation of macroautophagy,GO,16241,biological_process
+42241,42241,regulation of protein-containing complex assembly,GO,43254,biological_process
+42244,42244,regulation of postsynapse organization,GO,99175,biological_process
+42246,42246,methylation,GO,32259,biological_process
+42258,42258,negative regulation of extrinsic apoptotic signaling pathway,GO,2001237,biological_process
+42266,42266,negative regulation of apoptotic signaling pathway,GO,2001234,biological_process
+42276,42276,regulation of natural killer cell proliferation,GO,32817,biological_process
+42282,42282,response to antibiotic,GO,46677,biological_process
+42283,42283,response to amino acid,GO,43200,biological_process
+42287,42287,response to hormone,GO,9725,biological_process
+42295,42295,bile acid metabolic process,GO,8206,biological_process
+42296,42296,response to drug,GO,42493,biological_process
+42297,42297,response to organic substance,GO,10033,biological_process
+42321,42321,carboxylic acid transmembrane transport,GO,1905039,biological_process
+42328,42328,regulation of cell population proliferation,GO,42127,biological_process
+42335,42335,positive regulation of acute inflammatory response,GO,2675,biological_process
+42337,42337,negative regulation of acute inflammatory response,GO,2674,biological_process
+42340,42340,regulation of B cell differentiation,GO,45577,biological_process
+42351,42351,"positive regulation of transcription, DNA-templated",GO,45893,biological_process
+42370,42370,cellular protein localization,GO,34613,biological_process
+42378,42378,organic cation transport,GO,15695,biological_process
+42383,42383,signal transduction,GO,7165,biological_process
+42385,42385,response to endoplasmic reticulum stress,GO,34976,biological_process
+42386,42386,regulation of blood pressure,GO,8217,biological_process
+42408,42408,positive regulation of cytosolic calcium ion concentration,GO,7204,biological_process
+42417,42417,negative regulation of protein targeting to mitochondrion,GO,1903215,biological_process
+42420,42420,negative regulation of intracellular protein transport,GO,90317,biological_process
+42421,42421,regulation of protein import into nucleus,GO,42306,biological_process
+42425,42425,long-chain fatty acid transport,GO,15909,biological_process
+42428,42428,amino acid import across plasma membrane,GO,89718,biological_process
+42604,42604,B cell differentiation,GO,30183,biological_process
+42605,42605,morphogenesis of a branching structure,GO,1763,biological_process
+42627,42627,positive regulation of signal transduction,GO,9967,biological_process
+42630,42630,regulation of fatty acid transport,GO,2000191,biological_process
+42659,42659,response to vitamin A,GO,33189,biological_process
+42668,42668,response to lipopolysaccharide,GO,32496,biological_process
+42680,42680,protein processing,GO,16485,biological_process
+42713,42713,sphingolipid metabolic process,GO,6665,biological_process
+42745,42745,regulation of macrophage chemotaxis,GO,10758,biological_process
+42746,42746,positive regulation of leukocyte chemotaxis,GO,2690,biological_process
+42774,42774,negative regulation of neuron projection development,GO,10977,biological_process
+42776,42776,negative regulation of neurogenesis,GO,50768,biological_process
+42809,42809,GTP metabolic process,GO,46039,biological_process
+42844,42844,negative regulation of transcription by RNA polymerase II,GO,122,biological_process
+42846,42846,negative regulation of insulin secretion,GO,46676,biological_process
+42847,42847,regulation of insulin secretion involved in cellular response to glucose stimulus,GO,61178,biological_process
+42876,42876,regulation of response to wounding,GO,1903034,biological_process
+42880,42880,cellular homeostasis,GO,19725,biological_process
+42887,42887,receptor internalization,GO,31623,biological_process
+42928,42928,regulation of binding,GO,51098,biological_process
+42937,42937,viral entry into host cell,GO,46718,biological_process
+42939,42939,endocytosis,GO,6897,biological_process
+42955,42955,negative regulation of mitotic cell cycle,GO,45930,biological_process
+42957,42957,positive regulation of mitotic cell cycle,GO,45931,biological_process
+42999,42999,regulation of glucose metabolic process,GO,10906,biological_process
+43037,43037,negative regulation of T cell receptor signaling pathway,GO,50860,biological_process
+43040,43040,response to toxic substance,GO,9636,biological_process
+43054,43054,response to nicotine,GO,35094,biological_process
+43056,43056,cellular response to nutrient levels,GO,31669,biological_process
+43057,43057,response to nutrient,GO,7584,biological_process
+43061,43061,response to food,GO,32094,biological_process
+43079,43079,cell activation,GO,1775,biological_process
+43083,43083,activation of innate immune response,GO,2218,biological_process
+43084,43084,leukocyte migration,GO,50900,biological_process
+43085,43085,activation of immune response,GO,2253,biological_process
+43086,43086,respiratory burst,GO,45730,biological_process
+43091,43091,protein acetylation,GO,6473,biological_process
+43117,43117,lipoprotein metabolic process,GO,42157,biological_process
+43120,43120,autophagy,GO,6914,biological_process
+43148,43148,negative regulation of cytokine production,GO,1818,biological_process
+43149,43149,positive regulation of cytokine production,GO,1819,biological_process
+43151,43151,"negative regulation of transcription, DNA-templated",GO,45892,biological_process
+43153,43153,"negative regulation of gene expression, epigenetic",GO,45814,biological_process
+43163,43163,regulation of apoptotic process,GO,42981,biological_process
+43173,43173,ion transport,GO,6811,biological_process
+43196,43196,regulation of cholesterol metabolic process,GO,90181,biological_process
+43228,43228,reactive oxygen species biosynthetic process,GO,1903409,biological_process
+43258,43258,sulfate transmembrane transport,GO,1902358,biological_process
+43260,43260,iron ion transmembrane transport,GO,34755,biological_process
+43286,43286,manganese ion transmembrane transport,GO,71421,biological_process
+43299,43299,response to hydroperoxide,GO,33194,biological_process
+43307,43307,positive regulation of protein catabolic process,GO,45732,biological_process
+43313,43313,positive regulation of miRNA metabolic process,GO,2000630,biological_process
+43330,43330,regulation of autophagy,GO,10506,biological_process
+43337,43337,positive regulation of fatty acid oxidation,GO,46321,biological_process
+43347,43347,regulation of mitochondrial fission,GO,90140,biological_process
+43385,43385,positive regulation of extracellular matrix assembly,GO,1901203,biological_process
+43403,43403,positive regulation of apoptotic process,GO,43065,biological_process
+43410,43410,regulation of mitochondrial membrane permeability,GO,46902,biological_process
+43446,43446,regulation of synaptic vesicle transport,GO,1902803,biological_process
+43456,43456,platelet-derived growth factor receptor signaling pathway,GO,48008,biological_process
+43474,43474,negative regulation of chemotaxis,GO,50922,biological_process
+43485,43485,negative regulation of cytokine activity,GO,60302,biological_process
+43505,43505,cell surface receptor signaling pathway involved in cell-cell signaling,GO,1905114,biological_process
+43532,43532,positive regulation of T cell mediated immune response to tumor cell,GO,2842,biological_process
+43538,43538,positive regulation of autophagy,GO,10508,biological_process
+43539,43539,positive regulation by symbiont of host autophagy,GO,75044,biological_process
+43540,43540,negative regulation of autophagy,GO,10507,biological_process
+43542,43542,metal ion export,GO,70839,biological_process
+43545,43545,export across plasma membrane,GO,140115,biological_process
+43561,43561,regulation of fat cell differentiation,GO,45598,biological_process
+43587,43587,"regulation of transcription, DNA-templated",GO,6355,biological_process
+43596,43596,leukocyte apoptotic process,GO,71887,biological_process
+43610,43610,response to cholesterol,GO,70723,biological_process
+43614,43614,response to ethanol,GO,45471,biological_process
+43622,43622,positive regulation of neurogenesis,GO,50769,biological_process
+43629,43629,neuron differentiation,GO,30182,biological_process
+43630,43630,glial cell differentiation,GO,10001,biological_process
+43633,43633,striated muscle cell differentiation,GO,51146,biological_process
+43638,43638,siderophore-dependent iron import into cell,GO,33214,biological_process
+43655,43655,positive regulation of cell growth,GO,30307,biological_process
+43656,43656,negative regulation of cell growth,GO,30308,biological_process
+43674,43674,positive regulation of translation,GO,45727,biological_process
+43739,43739,methionine metabolic process,GO,6555,biological_process
+43744,43744,ornithine metabolic process,GO,6591,biological_process
+43746,43746,homocysteine metabolic process,GO,50667,biological_process
+43771,43771,response to peptidoglycan,GO,32494,biological_process
+43791,43791,calcium-mediated signaling,GO,19722,biological_process
+43804,43804,negative regulation of cell cycle,GO,45786,biological_process
+43805,43805,positive regulation of cell cycle,GO,45787,biological_process
+43811,43811,regulation of DNA recombination,GO,18,biological_process
+43816,43816,embryonic pattern specification,GO,9880,biological_process
+43826,43826,negative regulation of protein binding,GO,32091,biological_process
+43835,43835,positive regulation of MAPK cascade,GO,43410,biological_process
+43870,43870,positive regulation of epithelial cell migration,GO,10634,biological_process
+43884,43884,regulation of chloride transport,GO,2001225,biological_process
+43899,43899,positive regulation of cell division,GO,51781,biological_process
+43916,43916,circadian rhythm,GO,7623,biological_process
+43923,43923,glycolipid metabolic process,GO,6664,biological_process
+43977,43977,positive regulation of protein dephosphorylation,GO,35307,biological_process
+43996,43996,negative regulation of apoptotic process,GO,43066,biological_process
+44025,44025,neuron projection morphogenesis,GO,48812,biological_process
+44030,44030,negative regulation of signaling receptor activity,GO,2000272,biological_process
+44033,44033,negative regulation of protein tyrosine kinase activity,GO,61099,biological_process
+44074,44074,positive regulation of mononuclear cell migration,GO,71677,biological_process
+44094,44094,actin polymerization or depolymerization,GO,8154,biological_process
+44106,44106,regulation of feeding behavior,GO,60259,biological_process
+44107,44107,mitochondrion organization,GO,7005,biological_process
+44157,44157,response to bacterium,GO,9617,biological_process
+44171,44171,response to peptide hormone,GO,43434,biological_process
+44172,44172,response to gonadotropin,GO,34698,biological_process
+44176,44176,positive regulation of receptor binding,GO,1900122,biological_process
+44179,44179,positive regulation of signaling receptor activity,GO,2000273,biological_process
+44192,44192,iron ion homeostasis,GO,55072,biological_process
+44200,44200,protein localization to mitochondrion,GO,70585,biological_process
+44207,44207,radial glial cell differentiation,GO,60019,biological_process
+44217,44217,cellular response to oxidative stress,GO,34599,biological_process
+44256,44256,iron ion transport,GO,6826,biological_process
+44257,44257,cellular iron ion homeostasis,GO,6879,biological_process
+44266,44266,neuron cellular homeostasis,GO,70050,biological_process
+44270,44270,insulin secretion,GO,30073,biological_process
+44284,44284,regulation of bone remodeling,GO,46850,biological_process
+44298,44298,odontogenesis of dentin-containing tooth,GO,42475,biological_process
+44303,44303,epithelial to mesenchymal transition,GO,1837,biological_process
+44330,44330,negative regulation of endopeptidase activity,GO,10951,biological_process
+44347,44347,negative regulation of protein sumoylation,GO,33234,biological_process
+44348,44348,negative regulation of glycolytic process,GO,45820,biological_process
+44366,44366,negative regulation of DNA biosynthetic process,GO,2000279,biological_process
+44372,44372,regulation of T cell tolerance induction,GO,2664,biological_process
+44405,44405,mesoderm development,GO,7498,biological_process
+44417,44417,carnitine transport,GO,15879,biological_process
+44426,44426,positive regulation of reactive oxygen species metabolic process,GO,2000379,biological_process
+44433,44433,temperature homeostasis,GO,1659,biological_process
+44441,44441,glycerol biosynthetic process,GO,6114,biological_process
+44447,44447,purinergic nucleotide receptor signaling pathway,GO,35590,biological_process
+44455,44455,complement receptor mediated signaling pathway,GO,2430,biological_process
+44461,44461,activation of protein kinase activity,GO,32147,biological_process
+44462,44462,intestinal absorption,GO,50892,biological_process
+44486,44486,positive regulation of chemokine production,GO,32722,biological_process
+44487,44487,negative regulation of chemokine production,GO,32682,biological_process
+44495,44495,cellular response to growth factor stimulus,GO,71363,biological_process
+44501,44501,negative regulation of toll-like receptor signaling pathway,GO,34122,biological_process
+44502,44502,positive regulation of toll-like receptor signaling pathway,GO,34123,biological_process
+44520,44520,response to oxidative stress,GO,6979,biological_process
+44522,44522,response to molecule of bacterial origin,GO,2237,biological_process
+44538,44538,regulation of immunoglobulin production,GO,2637,biological_process
+44539,44539,positive regulation of prostaglandin secretion,GO,32308,biological_process
+44545,44545,macrophage differentiation,GO,30225,biological_process
+44559,44559,regulation of protein phosphorylation,GO,1932,biological_process
+44569,44569,regulation of NIK/NF-kappaB signaling,GO,1901222,biological_process
+44599,44599,positive regulation of proteasomal ubiquitin-dependent protein catabolic process,GO,32436,biological_process
+44634,44634,protein glycosylation,GO,6486,biological_process
+44646,44646,neutrophil mediated immunity,GO,2446,biological_process
+44651,44651,inflammatory response to antigenic stimulus,GO,2437,biological_process
+44652,44652,acute inflammatory response,GO,2526,biological_process
+44653,44653,chronic inflammatory response,GO,2544,biological_process
+44674,44674,gene expression,GO,10467,biological_process
+44685,44685,regulation of interleukin-2 production,GO,32663,biological_process
+44686,44686,regulation of interleukin-8 production,GO,32677,biological_process
+44690,44690,regulation of vascular endothelial growth factor production,GO,10574,biological_process
+44701,44701,regulation of interleukin-10 production,GO,32653,biological_process
+44709,44709,regulation of cytokine production involved in inflammatory response,GO,1900015,biological_process
+44730,44730,regulation of interleukin-4 production,GO,32673,biological_process
+44733,44733,regulation of intestinal cholesterol absorption,GO,30300,biological_process
+44755,44755,negative regulation of receptor binding,GO,1900121,biological_process
+44797,44797,regulation of hepatocyte growth factor receptor signaling pathway,GO,1902202,biological_process
+44802,44802,regulation of dopamine receptor signaling pathway,GO,60159,biological_process
+44807,44807,negative regulation of synaptic transmission,GO,50805,biological_process
+44832,44832,positive regulation of synaptic transmission,GO,50806,biological_process
+44837,44837,regulation of transcription initiation from RNA polymerase II promoter,GO,60260,biological_process
+44847,44847,negative regulation of dopamine metabolic process,GO,45963,biological_process
+44855,44855,negative regulation of reactive oxygen species biosynthetic process,GO,1903427,biological_process
+44887,44887,negative regulation of protein-containing complex disassembly,GO,43242,biological_process
+44917,44917,positive regulation of RNA biosynthetic process,GO,1902680,biological_process
+44955,44955,MAPK cascade,GO,165,biological_process
+44959,44959,protein dephosphorylation,GO,6470,biological_process
+44971,44971,regulation of growth,GO,40008,biological_process
+44973,44973,regulation of angiogenesis,GO,45765,biological_process
+44979,44979,response to wounding,GO,9611,biological_process
+44980,44980,cognition,GO,50890,biological_process
+44982,44982,rhythmic process,GO,48511,biological_process
+44997,44997,negative regulation of blood coagulation,GO,30195,biological_process
+45000,45000,regulation of circadian rhythm,GO,42752,biological_process
+45004,45004,regulation of locomotion,GO,40012,biological_process
+45017,45017,positive regulation of epithelial to mesenchymal transition,GO,10718,biological_process
+45053,45053,response to sulfur dioxide,GO,10477,biological_process
+45063,45063,response to carbon monoxide,GO,34465,biological_process
+45089,45089,positive regulation of protein serine/threonine kinase activity,GO,71902,biological_process
+45097,45097,negative regulation of type I interferon-mediated signaling pathway,GO,60339,biological_process
+45099,45099,peptidyl-tyrosine dephosphorylation,GO,35335,biological_process
+45103,45103,regulation of catalytic activity,GO,50790,biological_process
+45118,45118,positive regulation of angiogenesis,GO,45766,biological_process
+45124,45124,elastin metabolic process,GO,51541,biological_process
+45129,45129,body fluid secretion,GO,7589,biological_process
+45162,45162,excretion,GO,7588,biological_process
+45163,45163,sodium ion transport,GO,6814,biological_process
+45167,45167,cellular response to starvation,GO,9267,biological_process
+45169,45169,dendrite development,GO,16358,biological_process
+45173,45173,toll-like receptor 4 signaling pathway,GO,34142,biological_process
+45175,45175,positive regulation of protein kinase activity,GO,45860,biological_process
+45177,45177,positive regulation of peptidyl-tyrosine phosphorylation,GO,50731,biological_process
+45193,45193,positive regulation of transcription by RNA polymerase II,GO,45944,biological_process
+45199,45199,positive regulation of receptor-mediated endocytosis,GO,48260,biological_process
+45200,45200,positive regulation of protein export from nucleus,GO,46827,biological_process
+45230,45230,regulation of blood vessel remodeling,GO,60312,biological_process
+45252,45252,oligosaccharide biosynthetic process,GO,9312,biological_process
+45253,45253,negative regulation of viral process,GO,48525,biological_process
+45261,45261,negative regulation by host of viral process,GO,44793,biological_process
+45262,45262,retina homeostasis,GO,1895,biological_process
+45270,45270,negative regulation of epithelial cell differentiation involved in kidney development,GO,2000697,biological_process
+45278,45278,negative regulation of glutamine transport,GO,2000486,biological_process
+45284,45284,negative regulation of calcium ion transport,GO,51926,biological_process
+45312,45312,vasoconstriction,GO,42310,biological_process
+45337,45337,positive regulation of vascular permeability,GO,43117,biological_process
+45370,45370,negative regulation of cation channel activity,GO,2001258,biological_process
+45381,45381,regulation of cell cycle,GO,51726,biological_process
+45399,45399,negative regulation of cartilage development,GO,61037,biological_process
+45408,45408,regulation of entry of bacterium into host cell,GO,2000535,biological_process
+45410,45410,positive regulation of DNA binding,GO,43388,biological_process
+45463,45463,neuron migration,GO,1764,biological_process
+45481,45481,microtubule-based movement,GO,7018,biological_process
+45502,45502,intracellular receptor signaling pathway,GO,30522,biological_process
+45503,45503,steroid hormone mediated signaling pathway,GO,43401,biological_process
+45504,45504,bile acid signaling pathway,GO,38183,biological_process
+45505,45505,pattern recognition receptor signaling pathway,GO,2221,biological_process
+45506,45506,intracellular signal transduction,GO,35556,biological_process
+45513,45513,regulation of nitric-oxide synthase activity,GO,50999,biological_process
+45521,45521,multicellular organism development,GO,7275,biological_process
+45525,45525,natural killer cell activation,GO,30101,biological_process
+45526,45526,T cell activation,GO,42110,biological_process
+45527,45527,B cell activation,GO,42113,biological_process
+45562,45562,immunoglobulin mediated immune response,GO,16064,biological_process
+45565,45565,negative regulation of blood pressure,GO,45776,biological_process
+45576,45576,actin filament polymerization,GO,30041,biological_process
+45583,45583,positive regulation of T cell activation,GO,50870,biological_process
+45624,45624,regulation of gamma-delta T cell differentiation,GO,45586,biological_process
+45630,45630,regulation of extrathymic T cell differentiation,GO,33082,biological_process
+45631,45631,regulation of regulatory T cell differentiation,GO,45589,biological_process
+45644,45644,activation of MAPKK activity,GO,186,biological_process
+45645,45645,positive regulation of JUN kinase activity,GO,43507,biological_process
+45652,45652,antibacterial humoral response,GO,19731,biological_process
+45675,45675,response to electrical stimulus,GO,51602,biological_process
+45678,45678,positive regulation of cell activation,GO,50867,biological_process
+45681,45681,response to glucose,GO,9749,biological_process
+45692,45692,receptor catabolic process,GO,32801,biological_process
+45694,45694,negative regulation of G1/S transition of mitotic cell cycle,GO,2000134,biological_process
+45702,45702,reactive oxygen species metabolic process,GO,72593,biological_process
+45712,45712,endoplasmic reticulum organization,GO,7029,biological_process
+45745,45745,regulation of insulin secretion,GO,50796,biological_process
+45793,45793,artery morphogenesis,GO,48844,biological_process
+45796,45796,negative regulation of peptidase activity,GO,10466,biological_process
+45799,45799,positive regulation of peptidase activity,GO,10952,biological_process
+45814,45814,regulation of mitochondrial depolarization,GO,51900,biological_process
+45815,45815,negative regulation of DNA binding,GO,43392,biological_process
+45843,45843,positive regulation of chemotaxis,GO,50921,biological_process
+45845,45845,positive regulation of axon extension,GO,45773,biological_process
+45848,45848,positive regulation of smooth muscle cell migration,GO,14911,biological_process
+45850,45850,extracellular matrix disassembly,GO,22617,biological_process
+45856,45856,positive regulation of protein tyrosine kinase activity,GO,61098,biological_process
+45860,45860,positive regulation of DNA-binding transcription factor activity,GO,51091,biological_process
+45870,45870,negative regulation of cytolysis,GO,45918,biological_process
+45889,45889,negative regulation of leukocyte cell-cell adhesion,GO,1903038,biological_process
+45890,45890,positive regulation of natural killer cell activation,GO,32816,biological_process
+45891,45891,positive regulation of lymphocyte proliferation,GO,50671,biological_process
+45892,45892,regulation of natural killer cell differentiation,GO,32823,biological_process
+45894,45894,positive regulation of natural killer cell mediated cytotoxicity,GO,45954,biological_process
+45902,45902,positive regulation of cell adhesion,GO,45785,biological_process
+45903,45903,regulation of synapse organization,GO,50807,biological_process
+45919,45919,amyloid-beta clearance,GO,97242,biological_process
+45927,45927,negative regulation of protein localization to plasma membrane,GO,1903077,biological_process
+45968,45968,negative regulation of macroautophagy,GO,16242,biological_process
+45981,45981,extrinsic apoptotic signaling pathway,GO,97191,biological_process
+45994,45994,dendritic cell chemotaxis,GO,2407,biological_process
+46014,46014,response to lead ion,GO,10288,biological_process
+46017,46017,response to copper ion,GO,46688,biological_process
+46018,46018,response to cobalt ion,GO,32025,biological_process
+46025,46025,response to zinc ion,GO,10043,biological_process
+46041,46041,response to insulin,GO,32868,biological_process
+46049,46049,positive regulation of kinase activity,GO,33674,biological_process
+46064,46064,negative regulation of wound healing,GO,61045,biological_process
+46080,46080,negative regulation of branching involved in lung morphogenesis,GO,61048,biological_process
+46082,46082,negative regulation of granulocyte differentiation,GO,30853,biological_process
+46087,46087,positive regulation of transcription from RNA polymerase II promoter involved in cellular response to chemical stimulus,GO,1901522,biological_process
+46088,46088,cellular response to amino acid starvation,GO,34198,biological_process
+46101,46101,regulation of inflammatory response,GO,50727,biological_process
+46113,46113,positive regulation of neuron death,GO,1901216,biological_process
+46145,46145,response to UV,GO,9411,biological_process
+46152,46152,regulation of synaptic vesicle exocytosis,GO,2000300,biological_process
+46168,46168,cell surface receptor signaling pathway,GO,7166,biological_process
+46169,46169,apoptotic signaling pathway,GO,97190,biological_process
+46198,46198,regulation of cell adhesion,GO,30155,biological_process
+46215,46215,intracellular pH elevation,GO,51454,biological_process
+46268,46268,positive regulation of complement activation,GO,45917,biological_process
+46294,46294,positive regulation of gamma-delta T cell activation,GO,46645,biological_process
+46295,46295,positive regulation of T cell proliferation,GO,42102,biological_process
+46296,46296,negative regulation of T cell proliferation,GO,42130,biological_process
+46332,46332,positive regulation of phosphoprotein phosphatase activity,GO,32516,biological_process
+46338,46338,protein localization to plasma membrane,GO,72659,biological_process
+46345,46345,negative regulation of ceramide biosynthetic process,GO,1900060,biological_process
+46346,46346,positive regulation of ceramide biosynthetic process,GO,2000304,biological_process
+46356,46356,negative regulation of heart contraction,GO,45822,biological_process
+46361,46361,regulation of signal transduction by p53 class mediator,GO,1901796,biological_process
+46368,46368,negative regulation of gene silencing by miRNA,GO,60965,biological_process
+46375,46375,cell-cell adhesion,GO,98609,biological_process
+46378,46378,lymphocyte differentiation,GO,30098,biological_process
+46379,46379,gastric acid secretion,GO,1696,biological_process
+46387,46387,folic acid metabolic process,GO,46655,biological_process
+46397,46397,regulation of I-kappaB kinase/NF-kappaB signaling,GO,43122,biological_process
+46403,46403,regulation of small GTPase mediated signal transduction,GO,51056,biological_process
+46406,46406,regulation of TOR signaling,GO,32006,biological_process
+46414,46414,regulation of glucagon secretion,GO,70092,biological_process
+46471,46471,homeostasis of number of cells,GO,48872,biological_process
+46483,46483,regulation of natural killer cell activation,GO,32814,biological_process
+46503,46503,positive regulation of viral entry into host cell,GO,46598,biological_process
+46529,46529,BMP signaling pathway,GO,30509,biological_process
+46531,46531,Notch signaling pathway,GO,7219,biological_process
+46533,46533,activin receptor signaling pathway,GO,32924,biological_process
+46534,46534,transforming growth factor beta receptor signaling pathway,GO,7179,biological_process
+46537,46537,triglyceride homeostasis,GO,70328,biological_process
+46539,46539,glucose homeostasis,GO,42593,biological_process
+46540,46540,lipid homeostasis,GO,55088,biological_process
+46570,46570,"transcription, DNA-templated",GO,6351,biological_process
+46576,46576,postsynaptic modulation of chemical synaptic transmission,GO,99170,biological_process
+46622,46622,antigen processing and presentation of peptide antigen,GO,48002,biological_process
+46625,46625,positive regulation of killing of cells of other organism,GO,51712,biological_process
+46630,46630,regulation of cholesterol transporter activity,GO,60694,biological_process
+46638,46638,regulation of histone methylation,GO,31060,biological_process
+46647,46647,inner ear development,GO,48839,biological_process
+46648,46648,epidermis development,GO,8544,biological_process
+46674,46674,cellular response to reactive oxygen species,GO,34614,biological_process
+46693,46693,myelination,GO,42552,biological_process
+46706,46706,canonical Wnt signaling pathway,GO,60070,biological_process
+46724,46724,negative regulation of osteoclast differentiation,GO,45671,biological_process
+46725,46725,positive regulation of protein localization to nucleus,GO,1900182,biological_process
+46730,46730,positive regulation of cyclin-dependent protein serine/threonine kinase activity,GO,45737,biological_process
+46734,46734,cell adhesion mediated by integrin,GO,33627,biological_process
+46767,46767,cellular response to cytokine stimulus,GO,71345,biological_process
+46768,46768,positive regulation of lipid transporter activity,GO,110113,biological_process
+46772,46772,transport across blood-brain barrier,GO,150104,biological_process
+46796,46796,negative regulation of endothelial cell proliferation,GO,1937,biological_process
+46806,46806,T cell costimulation,GO,31295,biological_process
+46811,46811,negative regulation of cytokine production involved in immune response,GO,2719,biological_process
+46816,46816,positive regulation of tissue remodeling,GO,34105,biological_process
+46817,46817,positive regulation of cellular extravasation,GO,2693,biological_process
+46818,46818,positive regulation of T cell migration,GO,2000406,biological_process
+46870,46870,proteoglycan biosynthetic process,GO,30166,biological_process
+46874,46874,response to estrogen,GO,43627,biological_process
+46877,46877,response to leptin,GO,44321,biological_process
+46889,46889,killing by host of symbiont cells,GO,51873,biological_process
+46893,46893,primary miRNA processing,GO,31053,biological_process
+46910,46910,adenylate cyclase-inhibiting G protein-coupled receptor signaling pathway,GO,7193,biological_process
+46911,46911,phospholipase C-activating G protein-coupled receptor signaling pathway,GO,7200,biological_process
+46923,46923,regulation of tyrosine phosphorylation of STAT protein,GO,42509,biological_process
+46938,46938,manganese ion transport,GO,6828,biological_process
+46949,46949,energy reserve metabolic process,GO,6112,biological_process
+46956,46956,adherens junction organization,GO,34332,biological_process
+46960,46960,response to mechanical stimulus,GO,9612,biological_process
+46963,46963,negative regulation of intrinsic apoptotic signaling pathway,GO,2001243,biological_process
+46999,46999,biological process involved in interaction with symbiont,GO,51702,biological_process
+47011,47011,positive regulation of cell death,GO,10942,biological_process
+47024,47024,regulation of protein kinase A signaling,GO,10738,biological_process
+47029,47029,myoblast differentiation,GO,45445,biological_process
+47064,47064,protein deubiquitination,GO,16579,biological_process
+47066,47066,protein ubiquitination,GO,16567,biological_process
+47093,47093,negative regulation of production of miRNAs involved in gene silencing by miRNA,GO,1903799,biological_process
+47119,47119,regulation of cell size,GO,8361,biological_process
+47126,47126,establishment of endothelial barrier,GO,61028,biological_process
+47128,47128,"CD4-positive, alpha-beta T cell differentiation",GO,43367,biological_process
+47164,47164,regulation of toll-like receptor 9 signaling pathway,GO,34163,biological_process
+47231,47231,positive regulation of interleukin-1 production,GO,32732,biological_process
+47232,47232,regulation of interleukin-1 beta production,GO,32651,biological_process
+47239,47239,carnitine metabolic process,GO,9437,biological_process
+47242,47242,cytokine-mediated signaling pathway,GO,19221,biological_process
+47283,47283,bile acid and bile salt transport,GO,15721,biological_process
+47300,47300,negative regulation of protein catabolic process,GO,42177,biological_process
+47308,47308,negative regulation of locomotion,GO,40013,biological_process
+47353,47353,regulation of endothelial cell apoptotic process,GO,2000351,biological_process
+47355,47355,positive regulation of epithelial cell apoptotic process,GO,1904037,biological_process
+47378,47378,epidermal growth factor receptor signaling pathway,GO,7173,biological_process
+47382,47382,positive regulation of smooth muscle contraction,GO,45987,biological_process
+47462,47462,negative regulation of neuron death,GO,1901215,biological_process
+47543,47543,regulation of protein ADP-ribosylation,GO,10835,biological_process
+47547,47547,positive regulation of transforming growth factor beta3 production,GO,32916,biological_process
+47559,47559,positive regulation of cysteine-type endopeptidase activity involved in apoptotic process,GO,43280,biological_process
+47564,47564,prostaglandin secretion,GO,32310,biological_process
+47585,47585,intrinsic apoptotic signaling pathway in response to DNA damage,GO,8630,biological_process
+47602,47602,regulation of neuron death,GO,1901214,biological_process
+47622,47622,positive regulation of fatty acid beta-oxidation,GO,32000,biological_process
+47633,47633,detection of biotic stimulus,GO,9595,biological_process
+47671,47671,negative regulation of B cell apoptotic process,GO,2903,biological_process
+47672,47672,positive regulation of B cell apoptotic process,GO,2904,biological_process
+47676,47676,antigen processing and presentation of peptide antigen via MHC class I,GO,2474,biological_process
+47682,47682,positive regulation of wound healing,GO,90303,biological_process
+47683,47683,positive regulation of cell-substrate adhesion,GO,10811,biological_process
+47685,47685,regulation of fibroblast migration,GO,10762,biological_process
+47704,47704,regulation of T cell migration,GO,2000404,biological_process
+47716,47716,extrinsic apoptotic signaling pathway via death domain receptors,GO,8625,biological_process
+47733,47733,response to cytokine,GO,34097,biological_process
+47737,47737,regulation of NK T cell differentiation,GO,51136,biological_process
+47754,47754,positive regulation of myeloid cell apoptotic process,GO,33034,biological_process
+47767,47767,cell differentiation in hindbrain,GO,21533,biological_process
+47778,47778,cell-cell junction organization,GO,45216,biological_process
+47784,47784,cell cycle,GO,7049,biological_process
+47807,47807,cell adhesion,GO,7155,biological_process
+47818,47818,positive regulation of hair follicle development,GO,51798,biological_process
+47821,47821,response to linoleic acid,GO,70543,biological_process
+47828,47828,muscle hypertrophy,GO,14896,biological_process
+47829,47829,cellular response to virus,GO,98586,biological_process
+47831,47831,respiratory burst involved in defense response,GO,2679,biological_process
+47844,47844,sphingolipid biosynthetic process,GO,30148,biological_process
+47884,47884,regulation of astrocyte activation,GO,61888,biological_process
+47885,47885,positive regulation of neuroinflammatory response,GO,150078,biological_process
+47893,47893,regulation of low-density lipoprotein particle clearance,GO,10988,biological_process
+47900,47900,protein autophosphorylation,GO,46777,biological_process
+47901,47901,peptidyl-serine phosphorylation,GO,18105,biological_process
+47902,47902,peptidyl-threonine phosphorylation,GO,18107,biological_process
+47903,47903,peptidyl-tyrosine phosphorylation,GO,18108,biological_process
+47937,47937,response to heat,GO,9408,biological_process
+47945,47945,positive regulation of protein localization to plasma membrane,GO,1903078,biological_process
+48023,48023,regulation of response to osmotic stress,GO,47484,biological_process
+48044,48044,ossification,GO,1503,biological_process
+48057,48057,positive regulation of TOR signaling,GO,32008,biological_process
+48071,48071,positive regulation of membrane permeability,GO,1905710,biological_process
+48083,48083,positive regulation of gene silencing by miRNA,GO,2000637,biological_process
+48102,48102,negative regulation of neuron apoptotic process,GO,43524,biological_process
+48112,48112,positive regulation of dendritic cell cytokine production,GO,2732,biological_process
+48116,48116,mitotic cell cycle,GO,278,biological_process
+48135,48135,positive regulation of cardiac muscle hypertrophy,GO,10613,biological_process
+48144,48144,regulation of endothelial cell proliferation,GO,1936,biological_process
+48164,48164,response to virus,GO,9615,biological_process
+48170,48170,synapse assembly,GO,7416,biological_process
+48171,48171,neuromuscular junction development,GO,7528,biological_process
+48175,48175,negative regulation of myoblast differentiation,GO,45662,biological_process
+48182,48182,liver development,GO,1889,biological_process
+48186,48186,astrocyte cell migration,GO,43615,biological_process
+48206,48206,T-helper cell differentiation,GO,42093,biological_process
+48207,48207,positive regulation of calcium ion import,GO,90280,biological_process
+48208,48208,regulation of ER to Golgi vesicle-mediated transport,GO,60628,biological_process
+48244,48244,cell-cell adhesion via plasma-membrane adhesion molecules,GO,98742,biological_process
+48245,48245,dopaminergic neuron differentiation,GO,71542,biological_process
+48248,48248,generation of precursor metabolites and energy,GO,6091,biological_process
+48252,48252,negative regulation of protein processing,GO,10955,biological_process
+48263,48263,nodal signaling pathway,GO,38092,biological_process
+48270,48270,sphingosine metabolic process,GO,6670,biological_process
+48284,48284,regulation of branching involved in salivary gland morphogenesis,GO,60693,biological_process
+48285,48285,positive regulation of extrinsic apoptotic signaling pathway,GO,2001238,biological_process
+48293,48293,neuron apoptotic process,GO,51402,biological_process
+48326,48326,heterotypic cell-cell adhesion,GO,34113,biological_process
+48352,48352,regulation of cAMP-dependent protein kinase activity,GO,2000479,biological_process
+48381,48381,"regulation of synaptic transmission, glutamatergic",GO,51966,biological_process
+48396,48396,regulation of bicellular tight junction assembly,GO,2000810,biological_process
+48409,48409,negative regulation of transforming growth factor beta receptor signaling pathway,GO,30512,biological_process
+48424,48424,astrocyte activation,GO,48143,biological_process
+48436,48436,regulation of endosomal vesicle fusion,GO,1905364,biological_process
+48456,48456,positive regulation of T cell mediated cytotoxicity,GO,1916,biological_process
+48457,48457,negative regulation of T cell mediated cytotoxicity,GO,1915,biological_process
+48494,48494,viral genome replication,GO,19079,biological_process
+48497,48497,acute inflammatory response to antigenic stimulus,GO,2438,biological_process
+48526,48526,leukocyte homeostasis,GO,1776,biological_process
+48532,48532,positive regulation of T cell differentiation,GO,45582,biological_process
+48540,48540,membrane disruption in other organism,GO,51673,biological_process
+48582,48582,negative regulation of neuroinflammatory response,GO,150079,biological_process
+48583,48583,regulation of microglial cell activation,GO,1903978,biological_process
+48596,48596,positive regulation of T cell mediated immunity,GO,2711,biological_process
+48602,48602,ATP biosynthetic process,GO,6754,biological_process
+48604,48604,positive regulation of phagocytosis,GO,50766,biological_process
+48617,48617,positive regulation of oxidative stress-induced neuron death,GO,1903223,biological_process
+48618,48618,positive regulation of neuron apoptotic process,GO,43525,biological_process
+48630,48630,neutrophil activation,GO,42119,biological_process
+48632,48632,macrophage activation,GO,42116,biological_process
+48638,48638,helper T cell extravasation,GO,35684,biological_process
+48639,48639,mitochondrion localization,GO,51646,biological_process
+48656,48656,positive regulation of T-helper 1 type immune response,GO,2827,biological_process
+48675,48675,proteolysis,GO,6508,biological_process
+48680,48680,cellular response to manganese ion,GO,71287,biological_process
+48685,48685,negative regulation of inflammatory response to antigenic stimulus,GO,2862,biological_process
+48696,48696,positive regulation of fat cell differentiation,GO,45600,biological_process
+48697,48697,regulation of brown fat cell differentiation,GO,90335,biological_process
+48745,48745,acetaldehyde metabolic process,GO,6117,biological_process
+48765,48765,positive regulation of protein deacetylation,GO,90312,biological_process
+48787,48787,positive regulation of MAP kinase activity,GO,43406,biological_process
+48798,48798,negative regulation of skeletal muscle tissue development,GO,48642,biological_process
+48799,48799,negative regulation of angiogenesis,GO,16525,biological_process
+48814,48814,regulation of urea metabolic process,GO,34255,biological_process
+48826,48826,regulation of ERK1 and ERK2 cascade,GO,70372,biological_process
+48838,48838,TRIF-dependent toll-like receptor signaling pathway,GO,35666,biological_process
+48849,48849,response to hypoxia,GO,1666,biological_process
+48852,48852,cell aging,GO,7569,biological_process
+48883,48883,MyD88-independent toll-like receptor signaling pathway,GO,2756,biological_process
+48887,48887,T cell extravasation,GO,72683,biological_process
+48888,48888,regulation of interferon-gamma-mediated signaling pathway,GO,60334,biological_process
+48914,48914,T cell migration,GO,72678,biological_process
+48928,48928,regulation of lysosomal lumen pH,GO,35751,biological_process
+48944,48944,cytoskeleton organization,GO,7010,biological_process
+48958,48958,antimicrobial humoral response,GO,19730,biological_process
+49005,49005,protein folding,GO,6457,biological_process
+49031,49031,positive regulation of vasoconstriction,GO,45907,biological_process
+49032,49032,negative regulation of vasoconstriction,GO,45906,biological_process
+49048,49048,leptin-mediated signaling pathway,GO,33210,biological_process
+49049,49049,negative regulation of appetite,GO,32099,biological_process
+49083,49083,positive regulation of Ras protein signal transduction,GO,46579,biological_process
+49087,49087,ceramide metabolic process,GO,6672,biological_process
+49099,49099,intrinsic apoptotic signaling pathway in response to oxidative stress,GO,8631,biological_process
+49144,49144,negative regulation of smooth muscle cell proliferation,GO,48662,biological_process
+49151,49151,response to inactivity,GO,14854,biological_process
+49152,49152,response to activity,GO,14823,biological_process
+49163,49163,positive regulation of protein K63-linked ubiquitination,GO,1902523,biological_process
+49178,49178,positive regulation of glycoprotein biosynthetic process,GO,10560,biological_process
+49180,49180,negative regulation of I-kappaB kinase/NF-kappaB signaling,GO,43124,biological_process
+49182,49182,positive regulation of leukocyte adhesion to vascular endothelial cell,GO,1904996,biological_process
+49195,49195,negative regulation of macrophage differentiation,GO,45650,biological_process
+49206,49206,negative regulation of hydrogen peroxide-induced neuron death,GO,1903208,biological_process
+49218,49218,killing of cells of other organism,GO,31640,biological_process
+49243,49243,regulation of neuroinflammatory response,GO,150077,biological_process
+49258,49258,detection of fungus,GO,16046,biological_process
+49303,49303,positive regulation of smooth muscle cell proliferation,GO,48661,biological_process
+49308,49308,positive regulation of histone acetylation,GO,35066,biological_process
+49314,49314,antigen processing and presentation of endogenous peptide antigen via MHC class I,GO,19885,biological_process
+49317,49317,positive regulation of glutamate metabolic process,GO,2000213,biological_process
+49330,49330,muscle organ development,GO,7517,biological_process
+49411,49411,tangential migration from the subventricular zone to the olfactory bulb,GO,22028,biological_process
+49418,49418,negative regulation of lipid storage,GO,10888,biological_process
+49440,49440,response to amyloid-beta,GO,1904645,biological_process
+49441,49441,response to muramyl dipeptide,GO,32495,biological_process
+49465,49465,regulation of protein stability,GO,31647,biological_process
+49481,49481,motor behavior,GO,61744,biological_process
+49485,49485,nucleotide-binding oligomerization domain containing signaling pathway,GO,70423,biological_process
+49504,49504,positive regulation of type 2 immune response,GO,2830,biological_process
+49506,49506,positive regulation of T-helper 17 type immune response,GO,2000318,biological_process
+49509,49509,"positive regulation of CD4-positive, CD25-positive, alpha-beta regulatory T cell differentiation",GO,32831,biological_process
+49516,49516,superoxide metabolic process,GO,6801,biological_process
+49524,49524,metanephric tubule morphogenesis,GO,72173,biological_process
+49540,49540,cell-matrix adhesion,GO,7160,biological_process
+49551,49551,positive regulation of synapse assembly,GO,51965,biological_process
+49558,49558,T cell differentiation,GO,30217,biological_process
+49568,49568,positive regulation of humoral immune response mediated by circulating immunoglobulin,GO,2925,biological_process
+49591,49591,vascular endothelial growth factor receptor signaling pathway,GO,48010,biological_process
+49621,49621,negative regulation of cysteine-type endopeptidase activity,GO,2000117,biological_process
+49625,49625,adenylate cyclase-activating G protein-coupled receptor signaling pathway,GO,7189,biological_process
+49636,49636,negative regulation of protein autophosphorylation,GO,31953,biological_process
+49658,49658,sexual reproduction,GO,19953,biological_process
+49682,49682,response to tumor necrosis factor,GO,34612,biological_process
+49683,49683,response to interferon-gamma,GO,34341,biological_process
+49684,49684,response to interleukin-1,GO,70555,biological_process
+49687,49687,response to interleukin-18,GO,70673,biological_process
+49698,49698,response to interleukin-12,GO,70671,biological_process
+49712,49712,phospholipid translocation,GO,45332,biological_process
+49718,49718,chemokine-mediated signaling pathway,GO,70098,biological_process
+49758,49758,positive regulation of positive chemotaxis,GO,50927,biological_process
+49763,49763,regulation of neuroblast proliferation,GO,1902692,biological_process
+49771,49771,positive regulation of natural killer cell proliferation,GO,32819,biological_process
+49783,49783,regulation of DNA-templated transcription in response to stress,GO,43620,biological_process
+49788,49788,toll-like receptor signaling pathway,GO,2224,biological_process
+49789,49789,regulation of proteasomal ubiquitin-dependent protein catabolic process,GO,32434,biological_process
+49829,49829,positive regulation of smooth muscle cell apoptotic process,GO,34393,biological_process
+49839,49839,negative regulation of transforming growth factor beta production,GO,71635,biological_process
+49840,49840,regulation of transforming growth factor beta2 production,GO,32909,biological_process
+49845,49845,positive regulation of endothelial cell proliferation,GO,1938,biological_process
+49849,49849,T cell proliferation,GO,42098,biological_process
+49862,49862,negative regulation of transforming growth factor beta2 production,GO,32912,biological_process
+49878,49878,axon regeneration,GO,31103,biological_process
+49887,49887,Ras protein signal transduction,GO,7265,biological_process
+49908,49908,eye photoreceptor cell differentiation,GO,1754,biological_process
+49927,49927,positive regulation of anion channel activity,GO,1901529,biological_process
+49956,49956,positive regulation of stress-activated MAPK cascade,GO,32874,biological_process
+49960,49960,adhesion of symbiont to host,GO,44406,biological_process
+49971,49971,B cell proliferation,GO,42100,biological_process
+50037,50037,biomineral tissue development,GO,31214,biological_process
+50041,50041,enzyme linked receptor protein signaling pathway,GO,7167,biological_process
+50049,50049,skeletal muscle cell differentiation,GO,35914,biological_process
+50051,50051,positive regulation of interleukin-17 production,GO,32740,biological_process
+50068,50068,intrinsic apoptotic signaling pathway in response to osmotic stress,GO,8627,biological_process
+50073,50073,neural crest cell migration involved in autonomic nervous system development,GO,1901166,biological_process
+50107,50107,response to exogenous dsRNA,GO,43330,biological_process
+50140,50140,negative regulation of interleukin-1 production,GO,32692,biological_process
+50158,50158,cartilage development,GO,51216,biological_process
+50170,50170,leukocyte chemotaxis,GO,30595,biological_process
+50203,50203,vasculogenesis,GO,1570,biological_process
+50227,50227,positive regulation of metalloendopeptidase activity,GO,1904685,biological_process
+50229,50229,negative regulation of cysteine-type endopeptidase activity involved in apoptotic process,GO,43154,biological_process
+50232,50232,central nervous system neuron development,GO,21954,biological_process
+50237,50237,response to acidic pH,GO,10447,biological_process
+50242,50242,fatty acid beta-oxidation,GO,6635,biological_process
+50255,50255,leukocyte migration involved in inflammatory response,GO,2523,biological_process
+50258,50258,lymphocyte migration,GO,72676,biological_process
+50292,50292,insulin receptor signaling pathway,GO,8286,biological_process
+50305,50305,odontogenesis,GO,42476,biological_process
+50306,50306,positive regulation of GTPase activity,GO,43547,biological_process
+50318,50318,regulation of neuron maturation,GO,14041,biological_process
+50328,50328,positive regulation of macrophage activation,GO,43032,biological_process
+50335,50335,wound healing,GO,42060,biological_process
+50341,50341,fucosylation,GO,36065,biological_process
+50349,50349,response to yeast,GO,1878,biological_process
+50365,50365,negative regulation of mononuclear cell proliferation,GO,32945,biological_process
+50366,50366,positive regulation of mononuclear cell proliferation,GO,32946,biological_process
+50371,50371,regulation of establishment of endothelial barrier,GO,1903140,biological_process
+50381,50381,response to UV-B,GO,10224,biological_process
+50420,50420,regulation of bone mineralization,GO,30500,biological_process
+50449,50449,L-arginine transport,GO,1902023,biological_process
+50454,50454,positive regulation of immature T cell proliferation,GO,33091,biological_process
+50476,50476,T cell proliferation involved in immune response,GO,2309,biological_process
+50484,50484,positive regulation of protein targeting to membrane,GO,90314,biological_process
+50496,50496,heart development,GO,7507,biological_process
+50498,50498,hemopoiesis,GO,30097,biological_process
+50499,50499,endocytic recycling,GO,32456,biological_process
+50506,50506,negative regulation of endoplasmic reticulum stress-induced intrinsic apoptotic signaling pathway,GO,1902236,biological_process
+50512,50512,negative regulation of lipopolysaccharide-mediated signaling pathway,GO,31665,biological_process
+50522,50522,exploration behavior,GO,35640,biological_process
+50542,50542,regulation of gene expression by genetic imprinting,GO,6349,biological_process
+50547,50547,regulation of receptor signaling pathway via JAK-STAT,GO,46425,biological_process
+50549,50549,double-strand break repair via nonhomologous end joining,GO,6303,biological_process
+50576,50576,tumor necrosis factor-mediated signaling pathway,GO,33209,biological_process
+50606,50606,positive regulation of mitotic nuclear division,GO,45840,biological_process
+50615,50615,negative regulation of glucose transmembrane transport,GO,10829,biological_process
+50624,50624,fatty acid oxidation,GO,19395,biological_process
+50625,50625,heart valve morphogenesis,GO,3179,biological_process
+50659,50659,vacuolar acidification,GO,7035,biological_process
+50711,50711,O-glycan processing,GO,16266,biological_process
+50734,50734,actin polymerization-dependent cell motility,GO,70358,biological_process
+50739,50739,activation of MAPK activity,GO,187,biological_process
+50757,50757,regulation of response to food,GO,32095,biological_process
+50774,50774,positive regulation of glial cell proliferation,GO,60252,biological_process
+50798,50798,efferent axon development in a lateral line nerve,GO,48894,biological_process
+50817,50817,toll-like receptor 2 signaling pathway,GO,34134,biological_process
+50818,50818,MyD88-dependent toll-like receptor signaling pathway,GO,2755,biological_process
+50846,50846,smooth muscle adaptation,GO,14805,biological_process
+50870,50870,negative regulation of NF-kappaB transcription factor activity,GO,32088,biological_process
+50904,50904,positive regulation of bone mineralization,GO,30501,biological_process
+50920,50920,protein homooligomerization,GO,51260,biological_process
+50958,50958,regulation of CAMKK-AMPK signaling cascade,GO,1905289,biological_process
+50960,50960,skeletal system development,GO,1501,biological_process
+50963,50963,sphingoid catabolic process,GO,46521,biological_process
+50965,50965,positive regulation of type I interferon production,GO,32481,biological_process
+50972,50972,sex differentiation,GO,7548,biological_process
+51009,51009,positive regulation of phosphatidylinositol 3-kinase activity,GO,43552,biological_process
+51025,51025,positive regulation of NK T cell activation,GO,51135,biological_process
+51049,51049,negative regulation of excitatory postsynaptic potential,GO,90394,biological_process
+51071,51071,regulation of ruffle assembly,GO,1900027,biological_process
+51085,51085,excitatory postsynaptic potential,GO,60079,biological_process
+51091,51091,Fc-epsilon receptor signaling pathway,GO,38095,biological_process
+51115,51115,keratinocyte differentiation,GO,30216,biological_process
+51131,51131,regulation of neutrophil chemotaxis,GO,90022,biological_process
+51143,51143,regulation of tumor necrosis factor-mediated signaling pathway,GO,10803,biological_process
+51155,51155,lymphocyte chemotaxis,GO,48247,biological_process
+51160,51160,neuron projection arborization,GO,140058,biological_process
+51164,51164,regulation of T cell homeostatic proliferation,GO,46013,biological_process
+51209,51209,angiogenesis,GO,1525,biological_process
+51245,51245,negative regulation of bone mineralization,GO,30502,biological_process
+51279,51279,adaptive immune response,GO,2250,biological_process
+51314,51314,lipid localization,GO,10876,biological_process
+51327,51327,positive regulation of blood microparticle formation,GO,2000334,biological_process
+51338,51338,positive regulation of insulin secretion,GO,32024,biological_process
+51359,51359,response to hydrogen peroxide,GO,42542,biological_process
+51361,51361,apoptotic process,GO,6915,biological_process
+51362,51362,neuron death,GO,70997,biological_process
+51387,51387,"positive regulation of synaptic transmission, glutamatergic",GO,51968,biological_process
+51389,51389,positive regulation of receptor signaling pathway via STAT,GO,1904894,biological_process
+51401,51401,negative regulation of biomineral tissue development,GO,70168,biological_process
+51415,51415,protein tetramerization,GO,51262,biological_process
+51419,51419,regulation of striated muscle tissue development,GO,16202,biological_process
+51424,51424,cell-substrate junction assembly,GO,7044,biological_process
+51429,51429,axonal fasciculation,GO,7413,biological_process
+51433,51433,ventricular cardiac muscle tissue morphogenesis,GO,55010,biological_process
+51449,51449,germ cell development,GO,7281,biological_process
+51457,51457,protein export from nucleus,GO,6611,biological_process
+51463,51463,response to ionizing radiation,GO,10212,biological_process
+51487,51487,negative regulation of cyclin-dependent protein serine/threonine kinase activity,GO,45736,biological_process
+51516,51516,thymocyte migration,GO,72679,biological_process
+51522,51522,triglyceride metabolic process,GO,6641,biological_process
+51532,51532,gamma-delta T cell differentiation,GO,42492,biological_process
+51533,51533,receptor-mediated virion attachment to host cell,GO,46813,biological_process
+51555,51555,positive regulation of production of miRNAs involved in gene silencing by miRNA,GO,1903800,biological_process
+51565,51565,membrane protein intracellular domain proteolysis,GO,31293,biological_process
+51566,51566,response to muscle stretch,GO,35994,biological_process
+51573,51573,aorta development,GO,35904,biological_process
+51598,51598,positive regulation of fibroblast proliferation,GO,48146,biological_process
+51599,51599,negative regulation of peroxidase activity,GO,2000469,biological_process
+51603,51603,response to morphine,GO,43278,biological_process
+51675,51675,regulation of gastric motility,GO,1905333,biological_process
+51679,51679,post-translational protein modification,GO,43687,biological_process
+51701,51701,response to sucrose,GO,9744,biological_process
+51735,51735,protein import into nucleus,GO,6606,biological_process
+51770,51770,positive regulation of transcription regulatory region DNA binding,GO,2000679,biological_process
+51788,51788,positive regulation of dendritic cell antigen processing and presentation,GO,2606,biological_process
+51796,51796,positive regulation of I-kappaB kinase/NF-kappaB signaling,GO,43123,biological_process
+51806,51806,hindbrain tangential cell migration,GO,21934,biological_process
+51820,51820,glial cell apoptotic process,GO,34349,biological_process
+51895,51895,negative regulation of blood vessel endothelial cell migration,GO,43537,biological_process
+51896,51896,positive regulation of blood vessel endothelial cell migration,GO,43536,biological_process
+51935,51935,negative regulation of glial cell apoptotic process,GO,34351,biological_process
+51937,51937,positive regulation of glycolytic process,GO,45821,biological_process
+51972,51972,positive regulation of eating behavior,GO,1904000,biological_process
+52019,52019,"regulation of retrograde transport, endosome to Golgi",GO,1905279,biological_process
+52065,52065,negative regulation of neuron migration,GO,2001223,biological_process
+52068,52068,cardiac muscle hypertrophy,GO,3300,biological_process
+52094,52094,kidney development,GO,1822,biological_process
+52115,52115,osteoclast differentiation,GO,30316,biological_process
+52135,52135,detection of bacterium,GO,16045,biological_process
+52136,52136,response to symbiotic bacterium,GO,9609,biological_process
+52150,52150,bone morphogenesis,GO,60349,biological_process
+52155,52155,bone growth,GO,98868,biological_process
+52168,52168,regulation of tumor necrosis factor production,GO,32680,biological_process
+52182,52182,noradrenergic neuron differentiation,GO,3357,biological_process
+52206,52206,positive regulation of fever generation,GO,31622,biological_process
+52209,52209,leukocyte cell-cell adhesion,GO,7159,biological_process
+52234,52234,carnitine transmembrane transport,GO,1902603,biological_process
+52237,52237,maintenance of gastrointestinal epithelium,GO,30277,biological_process
+52240,52240,somatic stem cell population maintenance,GO,35019,biological_process
+52241,52241,skeletal muscle satellite cell maintenance involved in skeletal muscle regeneration,GO,14834,biological_process
+52263,52263,positive regulation of fibroblast migration,GO,10763,biological_process
+52268,52268,white fat cell differentiation,GO,50872,biological_process
+52304,52304,positive regulation of ERK1 and ERK2 cascade,GO,70374,biological_process
+52337,52337,eye photoreceptor cell development,GO,42462,biological_process
+52340,52340,positive regulation of viral genome replication,GO,45070,biological_process
+52341,52341,regulation of single stranded viral RNA replication via double stranded DNA intermediate,GO,45091,biological_process
+52349,52349,natural killer cell activation involved in immune response,GO,2323,biological_process
+52353,52353,heart valve development,GO,3170,biological_process
+52358,52358,regulation of kidney size,GO,35564,biological_process
+52427,52427,myotube cell development,GO,14904,biological_process
+52438,52438,DNA biosynthetic process,GO,71897,biological_process
+52532,52532,retinoic acid receptor signaling pathway,GO,48384,biological_process
+52555,52555,adipose tissue development,GO,60612,biological_process
+52564,52564,"G protein-coupled receptor signaling pathway, coupled to cyclic nucleotide second messenger",GO,7187,biological_process
+52574,52574,learning or memory,GO,7611,biological_process
+52646,52646,astrocyte development,GO,14002,biological_process
+52649,52649,positive regulation of prostaglandin biosynthetic process,GO,31394,biological_process
+52659,52659,positive regulation of peptidyl-serine phosphorylation,GO,33138,biological_process
+52695,52695,autonomic nervous system development,GO,48483,biological_process
+52699,52699,visual perception,GO,7601,biological_process
+52705,52705,death-inducing signaling complex assembly,GO,71550,biological_process
+52712,52712,chondrocyte differentiation,GO,2062,biological_process
+52735,52735,response to amphetamine,GO,1975,biological_process
+52739,52739,positive regulation of Notch signaling pathway,GO,45747,biological_process
+52751,52751,transforming growth factor beta receptor signaling pathway involved in heart development,GO,1905313,biological_process
+52771,52771,astrocyte differentiation,GO,48708,biological_process
+52812,52812,negative regulation of MAP kinase activity,GO,43407,biological_process
+52839,52839,B cell homeostasis,GO,1782,biological_process
+52843,52843,mesoderm formation,GO,1707,biological_process
+52854,52854,respiratory system development,GO,60541,biological_process
+52893,52893,positive regulation of apoptotic cell clearance,GO,2000427,biological_process
+52926,52926,negative regulation of cytosolic calcium ion concentration,GO,51481,biological_process
+52932,52932,ventricular septum development,GO,3281,biological_process
+52947,52947,embryonic digestive tract development,GO,48566,biological_process
+52948,52948,stem cell proliferation,GO,72089,biological_process
+53042,53042,positive regulation of T cell differentiation in thymus,GO,33089,biological_process
+53047,53047,negative regulation of interleukin-17 production,GO,32700,biological_process
+53053,53053,response to X-ray,GO,10165,biological_process
+53071,53071,adenylate cyclase-modulating G protein-coupled receptor signaling pathway,GO,7188,biological_process
+53078,53078,erythrocyte differentiation,GO,30218,biological_process
+53092,53092,adherens junction maintenance,GO,34334,biological_process
+53130,53130,neuroinflammatory response,GO,150076,biological_process
+53169,53169,activation of MAPKKK activity,GO,185,biological_process
+53185,53185,methionine biosynthetic process,GO,9086,biological_process
+53213,53213,sensory perception of pain,GO,19233,biological_process
+53221,53221,positive regulation of dendritic cell chemotaxis,GO,2000510,biological_process
+53249,53249,"phagocytosis, engulfment",GO,6911,biological_process
+53264,53264,DNA methylation involved in embryo development,GO,43045,biological_process
+53268,53268,negative regulation of smooth muscle cell apoptotic process,GO,34392,biological_process
+53284,53284,microglial cell activation,GO,1774,biological_process
+53285,53285,macrophage activation involved in immune response,GO,2281,biological_process
+53286,53286,negative regulation of fat cell differentiation,GO,45599,biological_process
+53288,53288,acute-phase response,GO,6953,biological_process
+53314,53314,chondrocyte development,GO,2063,biological_process
+53320,53320,myoblast proliferation,GO,51450,biological_process
+53379,53379,negative regulation of viral genome replication,GO,45071,biological_process
+53389,53389,eating behavior,GO,42755,biological_process
+53394,53394,phosphatidylinositol-mediated signaling,GO,48015,biological_process
+53396,53396,Rho protein signal transduction,GO,7266,biological_process
+53407,53407,mRNA stabilization,GO,48255,biological_process
+53419,53419,activation of cysteine-type endopeptidase activity involved in apoptotic process,GO,6919,biological_process
+53458,53458,growth hormone receptor signaling pathway,GO,60396,biological_process
+53470,53470,positive regulation of G2/M transition of mitotic cell cycle,GO,10971,biological_process
+53473,53473,macroautophagy,GO,16236,biological_process
+53507,53507,phagocytosis,GO,6909,biological_process
+53517,53517,methyltransferase activity,GO,8168,molecular_function
+53528,53528,protein serine/threonine kinase activity,GO,4674,molecular_function
+53551,53551,carboxylic acid transmembrane transporter activity,GO,46943,molecular_function
+53562,53562,anion:anion antiporter activity,GO,15301,molecular_function
+53616,53616,efflux transmembrane transporter activity,GO,15562,molecular_function
+53620,53620,metal ion binding,GO,46872,molecular_function
+53627,53627,acetyltransferase activity,GO,16407,molecular_function
+53635,53635,ATPase-coupled transmembrane transporter activity,GO,42626,molecular_function
+53637,53637,bicarbonate transmembrane transporter activity,GO,15106,molecular_function
+53638,53638,symporter activity,GO,15293,molecular_function
+53643,53643,sulfate transmembrane transporter activity,GO,15116,molecular_function
+53651,53651,quaternary ammonium group transmembrane transporter activity,GO,15651,molecular_function
+53662,53662,ABC-type xenobiotic transporter activity,GO,8559,molecular_function
+53699,53699,protein binding,GO,5515,molecular_function
+53700,53700,protein domain specific binding,GO,19904,molecular_function
+53703,53703,proteoglycan binding,GO,43394,molecular_function
+53704,53704,G protein-coupled receptor activity,GO,4930,molecular_function
+53714,53714,bile acid receptor activity,GO,38181,molecular_function
+53722,53722,amino acid transmembrane transporter activity,GO,15171,molecular_function
+53726,53726,xenobiotic transmembrane transporter activity,GO,42910,molecular_function
+53730,53730,prostaglandin receptor activity,GO,4955,molecular_function
+53734,53734,cytokine binding,GO,19955,molecular_function
+53756,53756,NADP binding,GO,50661,molecular_function
+53767,53767,phosphatidylinositol phosphate binding,GO,1901981,molecular_function
+53768,53768,nucleotide binding,GO,166,molecular_function
+53775,53775,modified amino acid binding,GO,72341,molecular_function
+53818,53818,bile acid binding,GO,32052,molecular_function
+53827,53827,cytokine receptor binding,GO,5126,molecular_function
+53847,53847,G protein-coupled receptor binding,GO,1664,molecular_function
+53848,53848,peptide hormone receptor binding,GO,51428,molecular_function
+53856,53856,kinase activity,GO,16301,molecular_function
+53861,53861,lipid kinase activity,GO,1727,molecular_function
+53866,53866,cation:cation antiporter activity,GO,15491,molecular_function
+53876,53876,protein-containing complex binding,GO,44877,molecular_function
+53878,53878,actin binding,GO,3779,molecular_function
+53881,53881,signaling receptor binding,GO,5102,molecular_function
+53882,53882,cell adhesion molecule binding,GO,50839,molecular_function
+53883,53883,chromatin binding,GO,3682,molecular_function
+53889,53889,protein tyrosine phosphatase activity,GO,4725,molecular_function
+53890,53890,protein serine/threonine phosphatase activity,GO,4722,molecular_function
+53920,53920,transmembrane signaling receptor activity,GO,4888,molecular_function
+53934,53934,carnitine transmembrane transporter activity,GO,15226,molecular_function
+53938,53938,protein kinase activity,GO,4672,molecular_function
+53957,53957,drug binding,GO,8144,molecular_function
+53958,53958,lipid binding,GO,8289,molecular_function
+53960,53960,fatty acid binding,GO,5504,molecular_function
+53992,53992,ATPase,GO,16887,molecular_function
+53993,53993,fucosyltransferase activity,GO,8417,molecular_function
+54005,54005,protein kinase binding,GO,19901,molecular_function
+54006,54006,protein kinase A binding,GO,51018,molecular_function
+54015,54015,RNA polymerase II-specific DNA-binding transcription factor binding,GO,61629,molecular_function
+54024,54024,antigen binding,GO,3823,molecular_function
+54035,54035,interleukin-1 binding,GO,19966,molecular_function
+54040,54040,peptidase activity,GO,8233,molecular_function
+54044,54044,cytokine activity,GO,5125,molecular_function
+54048,54048,cadherin binding,GO,45296,molecular_function
+54093,54093,cadmium ion transmembrane transporter activity,GO,15086,molecular_function
+54096,54096,manganese ion transmembrane transporter activity,GO,5384,molecular_function
+54097,54097,transition metal ion transmembrane transporter activity,GO,46915,molecular_function
+54112,54112,cargo receptor activity,GO,38024,molecular_function
+54148,54148,CCR chemokine receptor binding,GO,48020,molecular_function
+54149,54149,polysaccharide binding,GO,30247,molecular_function
+54175,54175,sequence-specific double-stranded DNA binding,GO,1990837,molecular_function
+54186,54186,phosphatidylinositol 3-kinase binding,GO,43548,molecular_function
+54190,54190,"alpha-(1,2)-fucosyltransferase activity",GO,31127,molecular_function
+54222,54222,metallopeptidase activity,GO,8237,molecular_function
+54223,54223,endopeptidase activity,GO,4175,molecular_function
+54234,54234,peptide binding,GO,42277,molecular_function
+54276,54276,zinc ion binding,GO,8270,molecular_function
+54279,54279,calcium ion binding,GO,5509,molecular_function
+54288,54288,transcription cis-regulatory region binding,GO,976,molecular_function
+54290,54290,enzyme binding,GO,19899,molecular_function
+54299,54299,structural molecule activity,GO,5198,molecular_function
+54307,54307,collagen binding,GO,5518,molecular_function
+54308,54308,laminin binding,GO,43236,molecular_function
+54309,54309,integrin binding,GO,5178,molecular_function
+54315,54315,secondary active sulfate transmembrane transporter activity,GO,8271,molecular_function
+54332,54332,DNA-binding transcription factor activity,GO,3700,molecular_function
+54339,54339,transmembrane receptor protein tyrosine kinase activity,GO,4714,molecular_function
+54343,54343,interleukin-1 receptor activity,GO,4908,molecular_function
+54344,54344,transmembrane transporter activity,GO,22857,molecular_function
+54365,54365,molecular adaptor activity,GO,60090,molecular_function
+54367,54367,double-stranded DNA binding,GO,3690,molecular_function
+54385,54385,"DNA-binding transcription factor activity, RNA polymerase II-specific",GO,981,molecular_function
+54387,54387,signaling receptor activity,GO,38023,molecular_function
+54389,54389,DNA-binding transcription repressor activity,GO,1217,molecular_function
+54392,54392,CXCR chemokine receptor binding,GO,45236,molecular_function
+54396,54396,general transcription initiation factor binding,GO,140296,molecular_function
+54420,54420,hormone activity,GO,5179,molecular_function
+54435,54435,complement receptor activity,GO,4875,molecular_function
+54440,54440,C-X-C chemokine receptor activity,GO,16494,molecular_function
+54484,54484,DNA binding,GO,3677,molecular_function
+54495,54495,peroxidase activity,GO,4601,molecular_function
+54502,54502,extracellular matrix structural constituent,GO,5201,molecular_function
+54507,54507,transcription factor binding,GO,8134,molecular_function
+54535,54535,histone binding,GO,42393,molecular_function
+54536,54536,chromatin DNA binding,GO,31490,molecular_function
+54576,54576,death domain binding,GO,70513,molecular_function
+54578,54578,transcription corepressor activity,GO,3714,molecular_function
+54581,54581,GTPase activity,GO,3924,molecular_function
+54588,54588,RNA polymerase II cis-regulatory region sequence-specific DNA binding,GO,978,molecular_function
+54591,54591,microtubule motor activity,GO,3777,molecular_function
+54593,54593,cysteine-type endopeptidase activity,GO,4197,molecular_function
+54599,54599,sequence-specific DNA binding,GO,43565,molecular_function
+54621,54621,cytokine receptor activity,GO,4896,molecular_function
+54629,54629,nuclear receptor binding,GO,16922,molecular_function
+54663,54663,RNA polymerase II transcription regulatory region sequence-specific DNA binding,GO,977,molecular_function
+54669,54669,metal ion:proton antiporter activity,GO,51139,molecular_function
+54671,54671,protease binding,GO,2020,molecular_function
+54686,54686,structural constituent of cytoskeleton,GO,5200,molecular_function
+54692,54692,superoxide-generating NAD(P)H oxidase activity,GO,16175,molecular_function
+54700,54700,heat shock protein binding,GO,31072,molecular_function
+54726,54726,MAP kinase kinase activity,GO,4708,molecular_function
+54735,54735,aminopeptidase activity,GO,4177,molecular_function
+54743,54743,ubiquitin binding,GO,43130,molecular_function
+54758,54758,C-C chemokine binding,GO,19957,molecular_function
+54761,54761,protein tyrosine kinase activity,GO,4713,molecular_function
+54762,54762,adenylate cyclase activity,GO,4016,molecular_function
+54763,54763,protein phosphatase binding,GO,19903,molecular_function
+54781,54781,protein tyrosine kinase activator activity,GO,30296,molecular_function
+54798,54798,methylenetetrahydrofolate reductase (NAD(P)H) activity,GO,4489,molecular_function
+54821,54821,flavin adenine dinucleotide binding,GO,50660,molecular_function
+54829,54829,pattern recognition receptor activity,GO,38187,molecular_function
+54835,54835,microtubule binding,GO,8017,molecular_function
+54866,54866,floppase activity,GO,140328,molecular_function
+54886,54886,aspartic-type endopeptidase activity,GO,4190,molecular_function
+54899,54899,glucocorticoid receptor binding,GO,35259,molecular_function
+54902,54902,clathrin binding,GO,30276,molecular_function
+54909,54909,cyclin-dependent protein serine/threonine kinase regulator activity,GO,16538,molecular_function
+54940,54940,signaling receptor complex adaptor activity,GO,30159,molecular_function
+54941,54941,receptor tyrosine kinase binding,GO,30971,molecular_function
+54949,54949,peptidase activator activity,GO,16504,molecular_function
+54959,54959,cis-regulatory region sequence-specific DNA binding,GO,987,molecular_function
+54962,54962,death receptor binding,GO,5123,molecular_function
+54973,54973,(R)-carnitine transmembrane transporter activity,GO,1901235,molecular_function
+54979,54979,iron ion binding,GO,5506,molecular_function
+55000,55000,GTPase activator activity,GO,5096,molecular_function
+55006,55006,protein serine/threonine kinase activator activity,GO,43539,molecular_function
+55029,55029,interleukin-8 receptor binding,GO,5153,molecular_function
+55032,55032,actinin binding,GO,42805,molecular_function
+55049,55049,syntaxin binding,GO,19905,molecular_function
+55055,55055,transforming growth factor beta receptor binding,GO,5160,molecular_function
+55065,55065,steroid hormone receptor activity,GO,3707,molecular_function
+55081,55081,C-C chemokine receptor activity,GO,16493,molecular_function
+55082,55082,transporter activity,GO,5215,molecular_function
+55093,55093,cysteine-type endopeptidase activity involved in apoptotic process,GO,97153,molecular_function
+55100,55100,interleukin-17 receptor activity,GO,30368,molecular_function
+55136,55136,iron ion transmembrane transporter activity,GO,5381,molecular_function
+55157,55157,DNA (cytosine-5-)-methyltransferase activity,GO,3886,molecular_function
+55163,55163,ATP-dependent microtubule motor activity,GO,1990939,molecular_function
+55196,55196,chemokine receptor activity,GO,4950,molecular_function
+55237,55237,phosphatase binding,GO,19902,molecular_function
+55266,55266,protein self-association,GO,43621,molecular_function
+55268,55268,interleukin-1 receptor binding,GO,5149,molecular_function
+55276,55276,cysteine-type endopeptidase inhibitor activity,GO,4869,molecular_function
+55307,55307,alpha-actinin binding,GO,51393,molecular_function
+55312,55312,non-membrane spanning protein tyrosine kinase activity,GO,4715,molecular_function
+55320,55320,SUMO binding,GO,32183,molecular_function
+55325,55325,metalloendopeptidase activity,GO,4222,molecular_function
+55347,55347,DNA-binding transcription factor binding,GO,140297,molecular_function
+55373,55373,tubulin binding,GO,15631,molecular_function
+55389,55389,calcium-dependent protein binding,GO,48306,molecular_function
+55436,55436,identical protein binding,GO,42802,molecular_function
+55437,55437,protein dimerization activity,GO,46983,molecular_function
+55482,55482,ubiquitin protein ligase activity,GO,61630,molecular_function
+55497,55497,bHLH transcription factor binding,GO,43425,molecular_function
+55500,55500,GTPase binding,GO,51020,molecular_function
+55504,55504,actin filament binding,GO,51015,molecular_function
+55512,55512,SNARE binding,GO,149,molecular_function
+55514,55514,protein N-terminus binding,GO,47485,molecular_function
+55517,55517,transport vesicle,GO,30133,cellular_component
+55522,55522,integral component of membrane,GO,16021,cellular_component
+55534,55534,cytoplasmic vesicle,GO,31410,cellular_component
+55537,55537,inclusion body,GO,16234,cellular_component
+55538,55538,intracellular membrane-bounded organelle,GO,43231,cellular_component
+55573,55573,receptor complex,GO,43235,cellular_component
+55581,55581,collagen trimer,GO,5581,cellular_component
+55599,55599,RNA polymerase II transcription regulator complex,GO,90575,cellular_component
+55601,55601,SMAD protein complex,GO,71141,cellular_component
+55634,55634,vesicle,GO,31982,cellular_component
+55635,55635,protein-containing complex,GO,32991,cellular_component
+55647,55647,early endosome membrane,GO,31901,cellular_component
+55649,55649,cell projection,GO,42995,cellular_component
+55651,55651,endosome lumen,GO,31904,cellular_component
+55657,55657,late endosome membrane,GO,31902,cellular_component
+55662,55662,microvillus,GO,5902,cellular_component
+55663,55663,ribonucleoprotein complex,GO,1990904,cellular_component
+55675,55675,transcription regulator complex,GO,5667,cellular_component
+55725,55725,membrane,GO,16020,cellular_component
+55726,55726,intrinsic component of plasma membrane,GO,31226,cellular_component
+55734,55734,kinesin complex,GO,5871,cellular_component
+55741,55741,laminin complex,GO,43256,cellular_component
+55754,55754,synapse,GO,45202,cellular_component
+55757,55757,glutamatergic synapse,GO,98978,cellular_component
+55760,55760,anchored component of plasma membrane,GO,46658,cellular_component
+55767,55767,endoplasmic reticulum membrane,GO,5789,cellular_component
+55770,55770,terminal bouton,GO,43195,cellular_component
+55773,55773,endosome,GO,5768,cellular_component
+55774,55774,lysosome,GO,5764,cellular_component
+55775,55775,chaperone complex,GO,101031,cellular_component
+55782,55782,Golgi-associated vesicle,GO,5798,cellular_component
+55783,55783,clathrin-coated vesicle,GO,30136,cellular_component
+55791,55791,phagocytic vesicle lumen,GO,97013,cellular_component
+55806,55806,autophagosome,GO,5776,cellular_component
+55807,55807,phagocytic vesicle,GO,45335,cellular_component
+55831,55831,axon,GO,30424,cellular_component
+55840,55840,microtubule,GO,5874,cellular_component
+55842,55842,integral component of plasma membrane,GO,5887,cellular_component
+55850,55850,cytoplasmic ribonucleoprotein granule,GO,36464,cellular_component
+55851,55851,membrane raft,GO,45121,cellular_component
+55888,55888,mitochondrial membrane,GO,31966,cellular_component
+55898,55898,neuron projection,GO,43005,cellular_component
+55901,55901,lamellipodium,GO,30027,cellular_component
+55902,55902,filopodium,GO,30175,cellular_component
+55905,55905,presynapse,GO,98793,cellular_component
+55925,55925,dendrite,GO,30425,cellular_component
+55943,55943,heterochromatin,GO,792,cellular_component
+55951,55951,secretory granule membrane,GO,30667,cellular_component
+55952,55952,lysosomal membrane,GO,5765,cellular_component
+55959,55959,actin cytoskeleton,GO,15629,cellular_component
+55971,55971,endosome membrane,GO,10008,cellular_component
+55974,55974,integrin complex,GO,8305,cellular_component
+55980,55980,secretory granule lumen,GO,34774,cellular_component
+55981,55981,secretory granule,GO,30141,cellular_component
+55983,55983,exocytic vesicle,GO,70382,cellular_component
+55992,55992,extracellular matrix,GO,31012,cellular_component
+56014,56014,insulin-like growth factor binding protein complex,GO,16942,cellular_component
+56028,56028,adherens junction,GO,5912,cellular_component
+56032,56032,endoplasmic reticulum,GO,5783,cellular_component
+56034,56034,late endosome,GO,5770,cellular_component
+56048,56048,autophagosome membrane,GO,421,cellular_component
+56049,56049,phagocytic vesicle membrane,GO,30670,cellular_component
+56052,56052,transport vesicle membrane,GO,30658,cellular_component
+56063,56063,intermediate filament,GO,5882,cellular_component
+56073,56073,nucleus,GO,5634,cellular_component
+56075,56075,Golgi lumen,GO,5796,cellular_component
+56085,56085,growth cone,GO,30426,cellular_component
+56095,56095,death-inducing signaling complex,GO,31264,cellular_component
+56099,56099,collagen-containing extracellular matrix,GO,62023,cellular_component
+56101,56101,recycling endosome,GO,55037,cellular_component
+56107,56107,nuclear speck,GO,16607,cellular_component
+56112,56112,endocytic vesicle,GO,30139,cellular_component
+56113,56113,clathrin-coated endocytic vesicle membrane,GO,30669,cellular_component
+56117,56117,endoplasmic reticulum lumen,GO,5788,cellular_component
+56150,56150,blood microparticle,GO,72562,cellular_component
+56152,56152,cell junction,GO,30054,cellular_component
+56156,56156,postsynapse,GO,98794,cellular_component
+56160,56160,cytoskeleton,GO,5856,cellular_component
+56173,56173,chromatin,GO,785,cellular_component
+56174,56174,extracellular region,GO,5576,cellular_component
+56175,56175,Golgi apparatus,GO,5794,cellular_component
+56207,56207,nuclear body,GO,16604,cellular_component
+56214,56214,cytoplasmic side of plasma membrane,GO,9898,cellular_component
+56223,56223,perinuclear region of cytoplasm,GO,48471,cellular_component
+56226,56226,endocytic vesicle membrane,GO,30666,cellular_component
+56241,56241,cytoplasm,GO,5737,cellular_component
+56263,56263,plasma membrane,GO,5886,cellular_component
+56272,56272,late endosome lumen,GO,31906,cellular_component
+56275,56275,Golgi cisterna membrane,GO,32580,cellular_component
+56278,56278,pericentric heterochromatin,GO,5721,cellular_component
+56282,56282,beta-catenin-TCF complex,GO,1990907,cellular_component
+56319,56319,early endosome,GO,5769,cellular_component
+56322,56322,external side of plasma membrane,GO,9897,cellular_component
+56413,56413,dendrite cytoplasm,GO,32839,cellular_component
+56424,56424,plasma membrane raft,GO,44853,cellular_component
+56432,56432,Golgi membrane,GO,139,cellular_component
+56436,56436,cytosol,GO,5829,cellular_component
+56449,56449,postsynaptic density,GO,14069,cellular_component
+56459,56459,phagolysosome,GO,32010,cellular_component
+56460,56460,cortical actin cytoskeleton,GO,30864,cellular_component
+56475,56475,"chromosome, centromeric region",GO,775,cellular_component
+63112,63112,uterine cervix,UBERON,2,anatomy
+63116,63116,islet of Langerhans,UBERON,6,anatomy
+63117,63117,pituitary gland,UBERON,7,anatomy
+63123,63123,zone of skin,UBERON,14,anatomy
+63136,63136,lymph node,UBERON,29,anatomy
+63148,63148,tendon,UBERON,43,anatomy
+63149,63149,dorsal root ganglion,UBERON,44,anatomy
+63164,63164,large intestine,UBERON,59,anatomy
+63173,63173,renal glomerulus,UBERON,74,anatomy
+63180,63180,metanephros,UBERON,81,anatomy
+63181,63181,adult mammalian kidney,UBERON,82,anatomy
+63223,63223,intestine,UBERON,160,anatomy
+63235,63235,amniotic fluid,UBERON,173,anatomy
+63240,63240,blood,UBERON,178,anatomy
+63273,63273,colonic mucosa,UBERON,317,anatomy
+63359,63359,prefrontal cortex,UBERON,451,anatomy
+63370,63370,material anatomical entity,UBERON,465,anatomy
+63372,63372,anatomical system,UBERON,467,anatomy
+63376,63376,testis,UBERON,473,anatomy
+63377,63377,female reproductive system,UBERON,474,anatomy
+63407,63407,embryo,UBERON,922,anatomy
+63423,63423,stomach,UBERON,945,anatomy
+63425,63425,aorta,UBERON,947,anatomy
+63426,63426,heart,UBERON,948,anatomy
+63430,63430,brain,UBERON,955,anatomy
+63431,63431,cerebral cortex,UBERON,956,anatomy
+63441,63441,eye,UBERON,970,anatomy
+63464,63464,uterus,UBERON,995,anatomy
+63465,63465,vagina,UBERON,996,anatomy
+63466,63466,mammalian vulva,UBERON,997,anatomy
+63481,63481,adipose tissue,UBERON,1013,anatomy
+63484,63484,central nervous system,UBERON,1017,anatomy
+63488,63488,nerve,UBERON,1021,anatomy
+63500,63500,esophagus,UBERON,1043,anatomy
+63501,63501,saliva-secreting gland,UBERON,1044,anatomy
+63584,63584,skeletal muscle tissue,UBERON,1134,anatomy
+63585,63585,smooth muscle tissue,UBERON,1135,anatomy
+63602,63602,caecum,UBERON,1153,anatomy
+63603,63603,vermiform appendix,UBERON,1154,anatomy
+63604,63604,colon,UBERON,1155,anatomy
+63608,63608,sigmoid colon,UBERON,1159,anatomy
+63609,63609,fundus of stomach,UBERON,1160,anatomy
+63674,63674,cortex of kidney,UBERON,1225,anatomy
+63680,63680,nephron tubule,UBERON,1231,anatomy
+63684,63684,adrenal cortex,UBERON,1235,anatomy
+63704,63704,urinary bladder,UBERON,1255,anatomy
+63713,63713,pancreas,UBERON,1264,anatomy
+63744,63744,endometrium,UBERON,1295,anatomy
+63745,63745,myometrium,UBERON,1296,anatomy
+63772,63772,tibial nerve,UBERON,1323,anatomy
+63824,63824,quadriceps femoris,UBERON,1377,anatomy
+63826,63826,vastus lateralis,UBERON,1379,anatomy
+63830,63830,muscle of leg,UBERON,1383,anatomy
+63920,63920,bone element,UBERON,1474,anatomy
+63921,63921,deltoid,UBERON,1476,anatomy
+63952,63952,biceps brachii,UBERON,1507,anatomy
+64065,64065,coronary artery,UBERON,1621,anatomy
+64074,64074,muscle organ,UBERON,1630,anatomy
+64081,64081,artery,UBERON,1637,anatomy
+64165,64165,tongue,UBERON,1723,anatomy
+64170,64170,nasopharynx,UBERON,1728,anatomy
+64253,64253,palpebral conjunctiva,UBERON,1812,anatomy
+64258,64258,lacrimal gland,UBERON,1817,anatomy
+64267,64267,nasal cavity mucosa,UBERON,1826,anatomy
+64269,64269,gingiva,UBERON,1828,anatomy
+64311,64311,frontal cortex,UBERON,1870,anatomy
+64312,64312,temporal lobe,UBERON,1871,anatomy
+64313,64313,parietal lobe,UBERON,1872,anatomy
+64314,64314,caudate nucleus,UBERON,1873,anatomy
+64315,64315,putamen,UBERON,1874,anatomy
+64316,64316,globus pallidus,UBERON,1875,anatomy
+64317,64317,amygdala,UBERON,1876,anatomy
+64323,64323,nucleus accumbens,UBERON,1882,anatomy
+64331,64331,forebrain,UBERON,1890,anatomy
+64332,64332,midbrain,UBERON,1891,anatomy
+64334,64334,telencephalon,UBERON,1893,anatomy
+64337,64337,medulla oblongata,UBERON,1896,anatomy
+64338,64338,dorsal plus ventral thalamus,UBERON,1897,anatomy
+64339,64339,hypothalamus,UBERON,1898,anatomy
+64352,64352,mammary gland,UBERON,1911,anatomy
+64391,64391,neocortex,UBERON,1950,anatomy
+64395,64395,Ammon's horn,UBERON,1954,anatomy
+64416,64416,epithelium of esophagus,UBERON,1976,anatomy
+64427,64427,placenta,UBERON,1987,anatomy
+64460,64460,occipital lobe,UBERON,2021,anatomy
+64470,64470,epithelium of bronchus,UBERON,2031,anatomy
+64476,64476,cerebellum,UBERON,2037,anatomy
+64477,64477,substantia nigra,UBERON,2038,anatomy
+64485,64485,thyroid gland,UBERON,2046,anatomy
+64487,64487,lung,UBERON,2048,anatomy
+64512,64512,hair follicle,UBERON,2073,anatomy
+64520,64520,cardiac atrium,UBERON,2081,anatomy
+64521,64521,cardiac ventricle,UBERON,2082,anatomy
+64523,64523,heart left ventricle,UBERON,2084,anatomy
+64544,64544,spleen,UBERON,2106,anatomy
+64545,64545,liver,UBERON,2107,anatomy
+64546,64546,small intestine,UBERON,2108,anatomy
+64548,64548,gall bladder,UBERON,2110,anatomy
+64551,64551,kidney,UBERON,2113,anatomy
+64552,64552,duodenum,UBERON,2114,anatomy
+64553,64553,jejunum,UBERON,2115,anatomy
+64565,64565,cerebellar cortex,UBERON,2129,anatomy
+64621,64621,bronchus,UBERON,2185,anatomy
+64626,64626,subcutaneous adipose tissue,UBERON,2190,anatomy
+64653,64653,synovial joint,UBERON,2217,anatomy
+64675,64675,spinal cord,UBERON,2240,anatomy
+64680,64680,cerebellar hemisphere,UBERON,2245,anatomy
+64766,64766,corpus callosum,UBERON,2336,anatomy
+64778,64778,myocardium,UBERON,2349,anatomy
+64787,64787,peritoneum,UBERON,2358,anatomy
+64796,64796,prostate gland,UBERON,2367,anatomy
+64798,64798,adrenal gland,UBERON,2369,anatomy
+64799,64799,thymus,UBERON,2370,anatomy
+64800,64800,bone marrow,UBERON,2371,anatomy
+64801,64801,tonsil,UBERON,2372,anatomy
+64813,64813,connective tissue,UBERON,2384,anatomy
+64814,64814,muscle tissue,UBERON,2385,anatomy
+64846,64846,cartilage tissue,UBERON,2418,anatomy
+64863,64863,primary visual cortex,UBERON,2436,anatomy
+64876,64876,decidua,UBERON,2450,anatomy
+64894,64894,esophagus mucosa,UBERON,2469,anatomy
+64902,64902,medial globus pallidus,UBERON,2477,anatomy
+65076,65076,superior frontal gyrus,UBERON,2661,anatomy
+65138,65138,entorhinal cortex,UBERON,2728,anatomy
+65415,65415,cingulate cortex,UBERON,3027,anatomy
+65509,65509,trachea,UBERON,3126,anatomy
+65557,65557,epithelium of mammary gland,UBERON,3244,anatomy
+65990,65990,mouth mucosa,UBERON,3729,anatomy
+66050,66050,fallopian tube,UBERON,3889,anatomy
+66747,66747,cerebellar vermis,UBERON,4720,anatomy
+66760,66760,metanephric glomerulus,UBERON,4736,anatomy
+66823,66823,cervix epithelium,UBERON,4801,anatomy
+66826,66826,oviduct epithelium,UBERON,4804,anatomy
+66841,66841,kidney epithelium,UBERON,4819,anatomy
+67143,67143,thoracic mammary gland,UBERON,5200,anatomy
+67302,67302,nasal cavity epithelium,UBERON,5384,anatomy
+68030,68030,Brodmann (1909) area 46,UBERON,6483,anatomy
+68316,68316,squamous epithelium,UBERON,6914,anatomy
+68618,68618,layer of synovial tissue,UBERON,7616,anatomy
+68729,68729,adipose tissue of abdominal region,UBERON,7808,anatomy
+69442,69442,dorsolateral prefrontal cortex,UBERON,9834,anatomy
+69443,69443,anterior cingulate cortex,UBERON,9835,anatomy
+69864,69864,omental fat pad,UBERON,10414,anatomy
+71196,71196,Brodmann (1909) area 9,UBERON,13540,anatomy
+71729,71729,skeletal muscle organ,UBERON,14892,anatomy
+72147,72147,frontal lobe,UBERON,16525,anatomy
+100074,100074,type 2 immune response,GO,42092,biological_process
+100078,100078,platelet aggregation,GO,70527,biological_process
+100117,100117,forebrain development,GO,30900,biological_process
+100118,100118,hair follicle development,GO,1942,biological_process
+100120,100120,midbrain development,GO,30901,biological_process
+100189,100189,brainstem development,GO,3360,biological_process
+100201,100201,maternal placenta development,GO,1893,biological_process
+100209,100209,endocrine pancreas development,GO,31018,biological_process
+100232,100232,olfactory bulb development,GO,21772,biological_process
+100233,100233,hippocampus development,GO,21766,biological_process
+100236,100236,medullary reticular formation development,GO,21723,biological_process
+100246,100246,striatum development,GO,21756,biological_process
+100266,100266,growth hormone secretion,GO,30252,biological_process
+100267,100267,glucagon secretion,GO,70091,biological_process
+100308,100308,positive regulation of corticotropin secretion,GO,51461,biological_process
+100321,100321,positive regulation of cold-induced thermogenesis,GO,120162,biological_process
+100325,100325,positive regulation of multicellular organism growth,GO,40018,biological_process
+100339,100339,positive regulation of adipose tissue development,GO,1904179,biological_process
+100346,100346,positive regulation of mammary gland epithelial cell proliferation,GO,33601,biological_process
+100359,100359,positive regulation of renal albumin absorption,GO,2000534,biological_process
+100368,100368,positive regulation of bone development,GO,1903012,biological_process
+100400,100400,sperm capacitation,GO,48240,biological_process
+100416,100416,DNA methylation involved in gamete generation,GO,43046,biological_process
+100481,100481,decidualization,GO,46697,biological_process
+100514,100514,branching involved in labyrinthine layer morphogenesis,GO,60670,biological_process
+100528,100528,spermatogenesis,GO,7283,biological_process
+100616,100616,innate immune response in mucosa,GO,2227,biological_process
+100617,100617,antifungal innate immune response,GO,61760,biological_process
+100623,100623,"complement activation, lectin pathway",GO,1867,biological_process
+100699,100699,post-embryonic digestive tract morphogenesis,GO,48621,biological_process
+100733,100733,negative regulation of hyaluronan biosynthetic process,GO,1900126,biological_process
+100759,100759,cellular response to dexamethasone stimulus,GO,71549,biological_process
+100791,100791,negative regulation of platelet-derived growth factor receptor-beta signaling pathway,GO,2000587,biological_process
+100924,100924,positive regulation of metanephric glomerular visceral epithelial cell development,GO,2000478,biological_process
+100945,100945,negative regulation of osteoblast proliferation,GO,33689,biological_process
+100999,100999,I-kappaB phosphorylation,GO,7252,biological_process
+101002,101002,common-partner SMAD protein phosphorylation,GO,7182,biological_process
+101003,101003,pathway-restricted SMAD protein phosphorylation,GO,60389,biological_process
+101019,101019,sebum secreting cell proliferation,GO,1990654,biological_process
+101088,101088,positive regulation of SMAD protein signal transduction,GO,60391,biological_process
+101089,101089,positive regulation of pathway-restricted SMAD protein phosphorylation,GO,10862,biological_process
+101090,101090,positive regulation of podosome assembly,GO,71803,biological_process
+101114,101114,positive regulation of NLRP3 inflammasome complex assembly,GO,1900227,biological_process
+101135,101135,positive regulation of osteoblast proliferation,GO,33690,biological_process
+101140,101140,positive regulation of chondrocyte proliferation,GO,1902732,biological_process
+101142,101142,positive regulation of synoviocyte proliferation,GO,1901647,biological_process
+101143,101143,positive regulation of trophectodermal cell proliferation,GO,1904075,biological_process
+101155,101155,positive regulation of autophagosome maturation,GO,1901098,biological_process
+101156,101156,positive regulation of xenophagy,GO,1904417,biological_process
+101311,101311,osteoblast development,GO,2076,biological_process
+101323,101323,positive regulation of melanin biosynthetic process,GO,48023,biological_process
+101327,101327,positive regulation of vitamin D biosynthetic process,GO,60557,biological_process
+101330,101330,positive regulation of glycogen biosynthetic process,GO,45725,biological_process
+101346,101346,positive regulation of nitric oxide biosynthetic process,GO,45429,biological_process
+101352,101352,positive regulation of gluconeogenesis,GO,45722,biological_process
+101434,101434,luteolysis,GO,1554,biological_process
+101439,101439,ovulation from ovarian follicle,GO,1542,biological_process
+101515,101515,cellular response to estradiol stimulus,GO,71392,biological_process
+101535,101535,cellular response to cAMP,GO,71320,biological_process
+101536,101536,cellular response to staurosporine,GO,72734,biological_process
+101539,101539,cellular response to indole-3-methanol,GO,71681,biological_process
+101550,101550,cellular response to bile acid,GO,1903413,biological_process
+101610,101610,negative regulation of adiponectin secretion,GO,70164,biological_process
+101628,101628,negative regulation of amyloid-beta clearance,GO,1900222,biological_process
+101649,101649,negative regulation of cold-induced thermogenesis,GO,120163,biological_process
+101655,101655,negative regulation of very-low-density lipoprotein particle remodeling,GO,10903,biological_process
+101706,101706,negative regulation of B cell proliferation,GO,30889,biological_process
+101786,101786,signal transduction involved in regulation of gene expression,GO,23019,biological_process
+101790,101790,necroptotic signaling pathway,GO,97527,biological_process
+101792,101792,SMAD protein signal transduction,GO,60395,biological_process
+101905,101905,membrane hyperpolarization,GO,60081,biological_process
+101974,101974,cellular response to retinoic acid,GO,71300,biological_process
+101981,101981,cellular response to lipopolysaccharide,GO,71222,biological_process
+102172,102172,negative regulation of heterotypic cell-cell adhesion,GO,34115,biological_process
+102190,102190,negative regulation of MHC class II biosynthetic process,GO,45347,biological_process
+102260,102260,cellular response to nicotine,GO,71316,biological_process
+102269,102269,opsonization,GO,8228,biological_process
+102345,102345,chloride transmembrane transport,GO,1902476,biological_process
+102483,102483,positive regulation of membrane protein ectodomain proteolysis,GO,51044,biological_process
+102550,102550,positive regulation of melanosome transport,GO,1902910,biological_process
+102607,102607,regulation of respiratory gaseous exchange by nervous system process,GO,2087,biological_process
+102651,102651,positive regulation of osteoblast differentiation,GO,45669,biological_process
+102660,102660,DNA methylation-dependent heterochromatin assembly,GO,6346,biological_process
+102663,102663,neutrophil apoptotic process,GO,1781,biological_process
+102684,102684,cellular response to ethanol,GO,71361,biological_process
+102690,102690,placenta development,GO,1890,biological_process
+102695,102695,brain development,GO,7420,biological_process
+102706,102706,amyloid fibril formation,GO,1990000,biological_process
+102711,102711,cardiac neuron differentiation,GO,60945,biological_process
+102718,102718,nitrite transport,GO,15707,biological_process
+102737,102737,positive regulation of chronic inflammatory response to antigenic stimulus,GO,2876,biological_process
+102816,102816,cellular response to peptidoglycan,GO,71224,biological_process
+102854,102854,vertebrate eye-specific patterning,GO,150064,biological_process
+102910,102910,trophoblast giant cell differentiation,GO,60707,biological_process
+102956,102956,"positive regulation of fructose 1,6-bisphosphate 1-phosphatase activity",GO,60550,biological_process
+102957,102957,positive regulation of alkaline phosphatase activity,GO,10694,biological_process
+102970,102970,positive regulation of protein localization to cell surface,GO,2000010,biological_process
+103002,103002,transdifferentiation,GO,60290,biological_process
+103013,103013,ectodermal cell differentiation,GO,10668,biological_process
+103020,103020,endodermal cell differentiation,GO,35987,biological_process
+103057,103057,positive regulation of monocyte chemotaxis,GO,90026,biological_process
+103164,103164,cellular cadmium ion homeostasis,GO,6876,biological_process
+103169,103169,ubiquitin-dependent endocytosis,GO,70086,biological_process
+103224,103224,platelet degranulation,GO,2576,biological_process
+103240,103240,regulation of protein complex stability,GO,61635,biological_process
+103259,103259,somitogenesis,GO,1756,biological_process
+103307,103307,platelet formation,GO,30220,biological_process
+103352,103352,negative regulation of serine C-palmitoyltransferase activity,GO,1904221,biological_process
+103391,103391,ovarian follicle development,GO,1541,biological_process
+103433,103433,sphingosine-1-phosphate receptor signaling pathway,GO,3376,biological_process
+103444,103444,chaperone-mediated protein complex assembly,GO,51131,biological_process
+103465,103465,SMAD protein complex assembly,GO,7183,biological_process
+103491,103491,positive regulation of iron ion import across plasma membrane,GO,1904440,biological_process
+103506,103506,cellular response to hepatocyte growth factor stimulus,GO,35729,biological_process
+103513,103513,negative regulation of MyD88-independent toll-like receptor signaling pathway,GO,34128,biological_process
+103643,103643,pituitary gland development,GO,21983,biological_process
+103646,103646,adrenal gland development,GO,30325,biological_process
+103655,103655,thyroid gland development,GO,30878,biological_process
+103678,103678,chronic inflammatory response to antigenic stimulus,GO,2439,biological_process
+103686,103686,determination of adult lifespan,GO,8340,biological_process
+103688,103688,keratinization,GO,31424,biological_process
+103692,103692,response to dietary excess,GO,2021,biological_process
+103696,103696,innervation,GO,60384,biological_process
+103707,103707,circadian regulation of gene expression,GO,32922,biological_process
+103716,103716,positive regulation of interleukin-2 production,GO,32743,biological_process
+103717,103717,positive regulation of interleukin-8 production,GO,32757,biological_process
+103719,103719,positive regulation of vascular endothelial growth factor production,GO,10575,biological_process
+103727,103727,positive regulation of interleukin-18 production,GO,32741,biological_process
+103729,103729,positive regulation of interleukin-10 production,GO,32733,biological_process
+103730,103730,positive regulation of interleukin-6 production,GO,32755,biological_process
+103734,103734,positive regulation of granulocyte macrophage colony-stimulating factor production,GO,32725,biological_process
+103737,103737,positive regulation of cytokine production involved in inflammatory response,GO,1900017,biological_process
+103741,103741,positive regulation of interleukin-33 production,GO,150129,biological_process
+103742,103742,positive regulation of interleukin-23 production,GO,32747,biological_process
+103746,103746,positive regulation of interleukin-21 production,GO,32745,biological_process
+103747,103747,positive regulation of interleukin-12 production,GO,32735,biological_process
+103750,103750,positive regulation of interferon-gamma production,GO,32729,biological_process
+103754,103754,positive regulation of interleukin-4 production,GO,32753,biological_process
+103773,103773,negative regulation of vascular endothelial growth factor signaling pathway,GO,1900747,biological_process
+103809,103809,negative regulation of nitric oxide biosynthetic process,GO,45019,biological_process
+103845,103845,negative regulation of hydrogen peroxide biosynthetic process,GO,10730,biological_process
+103856,103856,negative regulation of gluconeogenesis,GO,45721,biological_process
+103878,103878,cAMP biosynthetic process,GO,6171,biological_process
+103923,103923,positive regulation of NAD+ ADP-ribosyltransferase activity,GO,1901666,biological_process
+103924,103924,positive regulation of glycogen (starch) synthase activity,GO,2000467,biological_process
+103971,103971,ERK1 and ERK2 cascade,GO,70371,biological_process
+104021,104021,sodium-dependent organic cation transport,GO,70715,biological_process
+104050,104050,bicarbonate transport,GO,15701,biological_process
+104082,104082,cellular response to lipoteichoic acid,GO,71223,biological_process
+104124,104124,Wnt signalosome assembly,GO,1904887,biological_process
+104127,104127,integrin activation,GO,33622,biological_process
+104150,104150,beta-catenin-TCF complex assembly,GO,1904837,biological_process
+104156,104156,positive regulation of low-density lipoprotein receptor activity,GO,1905599,biological_process
+104166,104166,female pregnancy,GO,7565,biological_process
+104220,104220,renal water homeostasis,GO,3091,biological_process
+104232,104232,positive regulation of activation of Janus kinase activity,GO,10536,biological_process
+104355,104355,cell redox homeostasis,GO,45454,biological_process
+104454,104454,negative regulation of osteoblast differentiation,GO,45668,biological_process
+104460,104460,negative regulation of macrophage derived foam cell differentiation,GO,10745,biological_process
+104471,104471,xenobiotic detoxification by transmembrane export across the plasma membrane,GO,1990961,biological_process
+104480,104480,negative regulation of GTPase activity,GO,34260,biological_process
+104604,104604,intracellular bile acid receptor signaling pathway,GO,38185,biological_process
+104608,104608,peroxisome proliferator activated receptor signaling pathway,GO,35357,biological_process
+104611,104611,positive regulation of monophenol monooxygenase activity,GO,32773,biological_process
+104613,104613,positive regulation of calcidiol 1-monooxygenase activity,GO,60559,biological_process
+104615,104615,positive regulation of nitric-oxide synthase activity,GO,51000,biological_process
+104646,104646,C-5 methylation of cytosine,GO,90116,biological_process
+104704,104704,positive regulation of translational initiation by iron,GO,45994,biological_process
+104741,104741,activation of JNKK activity,GO,7256,biological_process
+104760,104760,immune system development,GO,2520,biological_process
+104764,104764,enteric nervous system development,GO,48484,biological_process
+104767,104767,parasympathetic nervous system development,GO,48486,biological_process
+104771,104771,sympathetic nervous system development,GO,48485,biological_process
+104775,104775,nervous system development,GO,7399,biological_process
+104777,104777,positive regulation of platelet activation,GO,10572,biological_process
+104781,104781,cellular response to glucose stimulus,GO,71333,biological_process
+104846,104846,positive regulation of peroxisome proliferator activated receptor signaling pathway,GO,35360,biological_process
+104849,104849,positive regulation of insulin-like growth factor receptor signaling pathway,GO,43568,biological_process
+104873,104873,positive regulation of vascular endothelial growth factor receptor signaling pathway,GO,30949,biological_process
+104878,104878,positive regulation of growth hormone receptor signaling pathway,GO,60399,biological_process
+104896,104896,negative regulation of low-density lipoprotein receptor activity,GO,1905598,biological_process
+104980,104980,positive regulation of NMDA glutamate receptor activity,GO,1904783,biological_process
+105078,105078,negative regulation of autophagosome assembly,GO,1902902,biological_process
+105130,105130,cellular response to cadmium ion,GO,71276,biological_process
+105138,105138,cellular response to lithium ion,GO,71285,biological_process
+105148,105148,cellular response to glucagon stimulus,GO,71377,biological_process
+105152,105152,cellular response to angiotensin,GO,1904385,biological_process
+105155,105155,cellular response to insulin stimulus,GO,32869,biological_process
+105209,105209,positive regulation of fat cell apoptotic process,GO,1904651,biological_process
+105242,105242,cellular response to transforming growth factor beta stimulus,GO,71560,biological_process
+105245,105245,cellular response to vascular endothelial growth factor stimulus,GO,35924,biological_process
+105246,105246,cellular response to fibroblast growth factor stimulus,GO,44344,biological_process
+105247,105247,cellular response to BMP stimulus,GO,71773,biological_process
+105254,105254,cell surface bile acid receptor signaling pathway,GO,38184,biological_process
+105255,105255,integrin-mediated signaling pathway,GO,7229,biological_process
+105260,105260,lipopolysaccharide-mediated signaling pathway,GO,31663,biological_process
+105262,105262,negative regulation of amyloid-beta formation,GO,1902430,biological_process
+105279,105279,negative regulation of cell adhesion molecule production,GO,60354,biological_process
+105291,105291,collagen catabolic process,GO,30574,biological_process
+105410,105410,embryonic foregut morphogenesis,GO,48617,biological_process
+105439,105439,lens fiber cell differentiation,GO,70306,biological_process
+105443,105443,hepatocyte differentiation,GO,70365,biological_process
+105525,105525,negative regulation of NIK/NF-kappaB signaling,GO,1901223,biological_process
+105527,105527,negative regulation of protein kinase B signaling,GO,51898,biological_process
+105531,105531,positive regulation of growth hormone secretion,GO,60124,biological_process
+105677,105677,negative regulation of release of cytochrome c from mitochondria,GO,90201,biological_process
+105699,105699,cellular triglyceride homeostasis,GO,35356,biological_process
+105701,105701,cellular sphingolipid homeostasis,GO,90156,biological_process
+105720,105720,negative regulation of oocyte development,GO,60283,biological_process
+105730,105730,T-helper 17 type immune response,GO,72538,biological_process
+105731,105731,T-helper 1 type immune response,GO,42088,biological_process
+105732,105732,primary adaptive immune response involving T cells and B cells,GO,90721,biological_process
+105742,105742,"regulation of protein catabolic process at postsynapse, modulating synaptic transmission",GO,99576,biological_process
+105784,105784,monocyte differentiation,GO,30224,biological_process
+105794,105794,neural tube development,GO,21915,biological_process
+105795,105795,pericardium development,GO,60039,biological_process
+105802,105802,mammary gland epithelium development,GO,61180,biological_process
+105808,105808,negative regulation of ATPase-coupled calcium transmembrane transporter activity,GO,1901895,biological_process
+105886,105886,positive regulation of exosomal secretion,GO,1903543,biological_process
+105889,105889,positive regulation of small intestinal transit,GO,120058,biological_process
+105906,105906,execution phase of apoptosis,GO,97194,biological_process
+105917,105917,negative regulation of osteoclast development,GO,2001205,biological_process
+105918,105918,positive regulation of protein import into nucleus,GO,42307,biological_process
+105930,105930,neuronal-glial interaction involved in cerebral cortex radial glia guided migration,GO,21812,biological_process
+105932,105932,cell-cell adhesion in response to extracellular stimulus,GO,140039,biological_process
+105973,105973,positive regulation of cellular response to macrophage colony-stimulating factor stimulus,GO,1903974,biological_process
+105978,105978,positive regulation of cell adhesion molecule production,GO,60355,biological_process
+105980,105980,cellular response to interferon-beta,GO,35458,biological_process
+106007,106007,negative regulation of blood vessel endothelial cell proliferation involved in sprouting angiogenesis,GO,1903588,biological_process
+106008,106008,negative regulation of vascular endothelial cell proliferation,GO,1905563,biological_process
+106055,106055,histone H2A-S139 phosphorylation,GO,35978,biological_process
+106057,106057,cholesterol homeostasis,GO,42632,biological_process
+106079,106079,T cell antigen processing and presentation,GO,2457,biological_process
+106089,106089,cellular response to leptin stimulus,GO,44320,biological_process
+106126,106126,negative regulation of interferon-gamma production,GO,32689,biological_process
+106128,106128,negative regulation of interleukin-6 production,GO,32715,biological_process
+106130,106130,negative regulation of interleukin-10 production,GO,32693,biological_process
+106135,106135,negative regulation of interleukin-23 production,GO,32707,biological_process
+106138,106138,negative regulation of cytokine production involved in inflammatory response,GO,1900016,biological_process
+106145,106145,negative regulation of interleukin-8 production,GO,32717,biological_process
+106148,106148,negative regulation of interleukin-2 production,GO,32703,biological_process
+106160,106160,negative regulation of interleukin-12 production,GO,32695,biological_process
+106161,106161,negative regulation of interleukin-18 production,GO,32701,biological_process
+106165,106165,positive regulation of tyrosine phosphorylation of STAT protein,GO,42531,biological_process
+106167,106167,eosinophil chemotaxis,GO,48245,biological_process
+106173,106173,cadmium ion transmembrane transport,GO,70574,biological_process
+106194,106194,cellular response to mechanical stimulus,GO,71260,biological_process
+106197,106197,positive regulation of ATP biosynthetic process,GO,2001171,biological_process
+106253,106253,positive regulation of protein kinase A signaling,GO,10739,biological_process
+106254,106254,positive regulation of NIK/NF-kappaB signaling,GO,1901224,biological_process
+106257,106257,positive regulation of phosphatidylinositol 3-kinase signaling,GO,14068,biological_process
+106260,106260,positive regulation of protein kinase B signaling,GO,51897,biological_process
+106283,106283,negative regulation of sensory perception of pain,GO,1904057,biological_process
+106319,106319,calcium-mediated signaling using intracellular calcium source,GO,35584,biological_process
+106320,106320,CAMKK-AMPK signaling cascade,GO,61762,biological_process
+106327,106327,positive regulation of matrix metallopeptidase secretion,GO,1904466,biological_process
+106339,106339,negative regulation of primary miRNA processing,GO,2000635,biological_process
+106389,106389,positive regulation of amyloid-beta formation,GO,1902004,biological_process
+106403,106403,negative regulation of toll-like receptor 2 signaling pathway,GO,34136,biological_process
+106434,106434,cortisol secretion,GO,43400,biological_process
+106451,106451,negative regulation of extrinsic apoptotic signaling pathway in absence of ligand,GO,2001240,biological_process
+106452,106452,positive regulation of interleukin-1 beta production,GO,32731,biological_process
+106460,106460,neurotrophin TRK receptor signaling pathway,GO,48011,biological_process
+106466,106466,hepatocyte growth factor receptor signaling pathway,GO,48012,biological_process
+106467,106467,ephrin receptor signaling pathway,GO,48013,biological_process
+106468,106468,insulin-like growth factor receptor signaling pathway,GO,48009,biological_process
+106547,106547,negative regulation of membrane protein ectodomain proteolysis,GO,51045,biological_process
+106573,106573,cellular response to L-ascorbic acid,GO,71298,biological_process
+106585,106585,positive regulation of stress fiber assembly,GO,51496,biological_process
+106601,106601,negative regulation of endothelial cell apoptotic process,GO,2000352,biological_process
+106602,106602,positive regulation of endothelial cell apoptotic process,GO,2000353,biological_process
+106622,106622,proteasome core complex assembly,GO,80129,biological_process
+106624,106624,cellular response to oxidised low-density lipoprotein particle stimulus,GO,140052,biological_process
+106625,106625,cellular response to low-density lipoprotein particle stimulus,GO,71404,biological_process
+106653,106653,MHC class II biosynthetic process,GO,45342,biological_process
+106670,106670,hyaluronan biosynthetic process,GO,30213,biological_process
+106682,106682,cellular response to interleukin-4,GO,71353,biological_process
+106708,106708,heterochromatin maintenance,GO,70829,biological_process
+106711,106711,cellular defense response,GO,6968,biological_process
+106724,106724,positive regulation of focal adhesion assembly,GO,51894,biological_process
+106727,106727,autophagosome assembly,GO,45,biological_process
+106762,106762,vascular endothelial growth factor production,GO,10573,biological_process
+106818,106818,positive regulation of B cell proliferation,GO,30890,biological_process
+106841,106841,substrate adhesion-dependent cell spreading,GO,34446,biological_process
+106858,106858,positive regulation of gastric mucosal blood circulation,GO,1904346,biological_process
+106871,106871,hyaluronan catabolic process,GO,30214,biological_process
+106930,106930,positive regulation of endoplasmic reticulum stress-induced intrinsic apoptotic signaling pathway,GO,1902237,biological_process
+106936,106936,negative regulation of macrophage apoptotic process,GO,2000110,biological_process
+106938,106938,negative regulation of neutrophil apoptotic process,GO,33030,biological_process
+106945,106945,detection of lipopolysaccharide,GO,32497,biological_process
+106981,106981,mRNA transcription by RNA polymerase II,GO,42789,biological_process
+107020,107020,"positive regulation of substrate-dependent cell migration, cell attachment to substrate",GO,1904237,biological_process
+107077,107077,positive regulation of cortisol secretion,GO,51464,biological_process
+107095,107095,positive regulation of toll-like receptor 4 signaling pathway,GO,34145,biological_process
+107121,107121,negative regulation of myosin-light-chain-phosphatase activity,GO,35509,biological_process
+107142,107142,embryo implantation,GO,7566,biological_process
+107146,107146,positive regulation of flagellated sperm motility involved in capacitation,GO,60474,biological_process
+107207,107207,nitric oxide production involved in inflammatory response,GO,2537,biological_process
+107216,107216,positive regulation of microglia differentiation,GO,14008,biological_process
+107227,107227,sphingomyelin biosynthetic process,GO,6686,biological_process
+107252,107252,endoderm development,GO,7492,biological_process
+107277,107277,positive regulation of hepatic stellate cell activation,GO,2000491,biological_process
+107454,107454,positive regulation of collagen biosynthetic process,GO,32967,biological_process
+107470,107470,ossification involved in bone remodeling,GO,43932,biological_process
+107494,107494,protein kinase B signaling,GO,43491,biological_process
+107499,107499,NIK/NF-kappaB signaling,GO,38061,biological_process
+107500,107500,I-kappaB kinase/NF-kappaB signaling,GO,7249,biological_process
+107503,107503,hippo signaling,GO,35329,biological_process
+107519,107519,positive regulation of miRNA mediated inhibition of translation,GO,1905618,biological_process
+107538,107538,negative regulation of pri-miRNA transcription by RNA polymerase II,GO,1902894,biological_process
+107563,107563,negative regulation of chemokine (C-C motif) ligand 5 production,GO,71650,biological_process
+107572,107572,positive regulation of cell growth involved in cardiac muscle cell development,GO,61051,biological_process
+107573,107573,negative regulation of cell growth involved in cardiac muscle cell development,GO,61052,biological_process
+107585,107585,enamel mineralization,GO,70166,biological_process
+107629,107629,positive regulation of intestinal epithelial structure maintenance,GO,60731,biological_process
+107630,107630,liver regeneration,GO,97421,biological_process
+107644,107644,positive regulation of nucleotide-binding oligomerization domain containing 2 signaling pathway,GO,70434,biological_process
+107652,107652,T follicular helper cell differentiation,GO,61470,biological_process
+107672,107672,positive regulation of T cell receptor signaling pathway,GO,50862,biological_process
+107674,107674,"complement activation, classical pathway",GO,6958,biological_process
+107688,107688,retrotrapezoid nucleus neuron differentiation,GO,61452,biological_process
+107691,107691,sympathetic ganglion development,GO,61549,biological_process
+107721,107721,sphingosine biosynthetic process,GO,46512,biological_process
+107726,107726,positive regulation of release of cytochrome c from mitochondria,GO,90200,biological_process
+107748,107748,negative regulation of myeloid dendritic cell activation,GO,30886,biological_process
+107799,107799,negative regulation of tau-protein kinase activity,GO,1902948,biological_process
+107811,107811,positive regulation of cAMP-dependent protein kinase activity,GO,2000481,biological_process
+107899,107899,lymph node development,GO,48535,biological_process
+107901,107901,spleen development,GO,48536,biological_process
+107945,107945,negative regulation of metanephric mesenchymal cell migration,GO,2000590,biological_process
+107986,107986,positive regulation of pri-miRNA transcription by RNA polymerase II,GO,1902895,biological_process
+108080,108080,"positive regulation of fructose 1,6-bisphosphate metabolic process",GO,60552,biological_process
+108106,108106,positive regulation of PERK-mediated unfolded protein response,GO,1903899,biological_process
+108134,108134,positive regulation of follicle-stimulating hormone secretion,GO,46881,biological_process
+108150,108150,positive regulation of T-helper 1 cell cytokine production,GO,2000556,biological_process
+108171,108171,platelet activation,GO,30168,biological_process
+108180,108180,negative regulation of chronic inflammatory response to antigenic stimulus,GO,2875,biological_process
+108186,108186,regulation of hair cycle by canonical Wnt signaling pathway,GO,60901,biological_process
+108217,108217,negative regulation of platelet-derived growth factor receptor-alpha signaling pathway,GO,2000584,biological_process
+108222,108222,T cell receptor V(D)J recombination,GO,33153,biological_process
+108244,108244,monocyte aggregation,GO,70487,biological_process
+108267,108267,positive regulation of nucleotide-binding oligomerization domain containing 1 signaling pathway,GO,70430,biological_process
+108281,108281,positive regulation of MHC class II biosynthetic process,GO,45348,biological_process
+108283,108283,positive regulation of nitric-oxide synthase biosynthetic process,GO,51770,biological_process
+108291,108291,activation of protein kinase A activity,GO,34199,biological_process
+108292,108292,activation of protein kinase B activity,GO,32148,biological_process
+108293,108293,activation of protein kinase C activity,GO,1990051,biological_process
+108294,108294,activation of Janus kinase activity,GO,42976,biological_process
+108295,108295,activation of NF-kappaB-inducing kinase activity,GO,7250,biological_process
+108310,108310,negative regulation of vascular wound healing,GO,61044,biological_process
+108348,108348,negative regulation of ERK1 and ERK2 cascade,GO,70373,biological_process
+108366,108366,defense response to protozoan,GO,42832,biological_process
+108388,108388,cellular response to hypoxia,GO,71456,biological_process
+108433,108433,negative regulation of interferon-gamma-mediated signaling pathway,GO,60336,biological_process
+108434,108434,positive regulation of interferon-gamma-mediated signaling pathway,GO,60335,biological_process
+108458,108458,intestinal epithelial cell development,GO,60576,biological_process
+108511,108511,defense response to Gram-negative bacterium,GO,50829,biological_process
+108512,108512,defense response to Gram-positive bacterium,GO,50830,biological_process
+108535,108535,antigen processing and presentation of exogenous peptide antigen via MHC class II,GO,19886,biological_process
+108539,108539,coronary vasculature development,GO,60976,biological_process
+108658,108658,negative regulation of appetite by leptin-mediated signaling pathway,GO,38108,biological_process
+108732,108732,xenobiotic transport across blood-brain barrier,GO,1990962,biological_process
+108736,108736,activation of adenylate cyclase activity,GO,7190,biological_process
+108767,108767,negative regulation of vascular associated smooth muscle cell proliferation,GO,1904706,biological_process
+108803,108803,positive regulation of histone phosphorylation,GO,33129,biological_process
+108804,108804,positive regulation of peptidyl-threonine phosphorylation,GO,10800,biological_process
+108806,108806,positive regulation of I-kappaB phosphorylation,GO,1903721,biological_process
+108817,108817,negative regulation of collagen biosynthetic process,GO,32966,biological_process
+108823,108823,positive regulation of leukocyte adhesion to arterial endothelial cell,GO,1904999,biological_process
+108867,108867,actin cytoskeleton reorganization,GO,31532,biological_process
+108897,108897,positive regulation of NF-kappaB transcription factor activity,GO,51092,biological_process
+108928,108928,protein localization to phagophore assembly site,GO,34497,biological_process
+108951,108951,interleukin-7-mediated signaling pathway,GO,38111,biological_process
+108952,108952,interleukin-21-mediated signaling pathway,GO,38114,biological_process
+108953,108953,interleukin-18-mediated signaling pathway,GO,35655,biological_process
+108954,108954,interleukin-12-mediated signaling pathway,GO,35722,biological_process
+108959,108959,interleukin-23-mediated signaling pathway,GO,38155,biological_process
+108960,108960,interleukin-6-mediated signaling pathway,GO,70102,biological_process
+108962,108962,interleukin-9-mediated signaling pathway,GO,38113,biological_process
+108964,108964,interleukin-1-mediated signaling pathway,GO,70498,biological_process
+108967,108967,interleukin-27-mediated signaling pathway,GO,70106,biological_process
+108970,108970,type I interferon signaling pathway,GO,60337,biological_process
+108973,108973,interleukin-8-mediated signaling pathway,GO,38112,biological_process
+108979,108979,interleukin-2-mediated signaling pathway,GO,38110,biological_process
+108980,108980,interferon-gamma-mediated signaling pathway,GO,60333,biological_process
+108982,108982,interleukin-15-mediated signaling pathway,GO,35723,biological_process
+108984,108984,interleukin-35-mediated signaling pathway,GO,70757,biological_process
+109038,109038,T cell homeostasis,GO,43029,biological_process
+109055,109055,positive regulation of memory T cell differentiation,GO,43382,biological_process
+109062,109062,neutrophil chemotaxis,GO,30593,biological_process
+109079,109079,positive regulation of vascular associated smooth muscle cell proliferation,GO,1904707,biological_process
+109242,109242,negative regulation of sequestering of triglyceride,GO,10891,biological_process
+109243,109243,negative regulation of cholesterol storage,GO,10887,biological_process
+109263,109263,cellular response to amyloid-beta,GO,1904646,biological_process
+109264,109264,cellular response to muramyl dipeptide,GO,71225,biological_process
+109283,109283,epithelial cell proliferation involved in salivary gland morphogenesis,GO,60664,biological_process
+109299,109299,positive regulation of tumor necrosis factor (ligand) superfamily member 11 production,GO,2000309,biological_process
+109300,109300,negative regulation of tumor necrosis factor (ligand) superfamily member 11 production,GO,2000308,biological_process
+109305,109305,protein destabilization,GO,31648,biological_process
+109306,109306,protein stabilization,GO,50821,biological_process
+109332,109332,nucleotide-binding oligomerization domain containing 2 signaling pathway,GO,70431,biological_process
+109333,109333,nucleotide-binding oligomerization domain containing 1 signaling pathway,GO,70427,biological_process
+109343,109343,negative regulation of thioredoxin peroxidase activity by peptidyl-threonine phosphorylation,GO,1903125,biological_process
+109344,109344,positive regulation of T-helper 1 cell differentiation,GO,45627,biological_process
+109345,109345,positive regulation of T-helper 2 cell differentiation,GO,45630,biological_process
+109349,109349,positive regulation of plasma cell differentiation,GO,1900100,biological_process
+109350,109350,positive regulation of neutrophil degranulation,GO,43315,biological_process
+109351,109351,"positive regulation of CD4-positive, CD25-positive, alpha-beta regulatory T cell differentiation involved in immune response",GO,32834,biological_process
+109359,109359,removal of superoxide radicals,GO,19430,biological_process
+109393,109393,calcium-independent cell-matrix adhesion,GO,7161,biological_process
+109397,109397,smooth muscle cell-matrix adhesion,GO,61302,biological_process
+109398,109398,negative regulation of gap junction assembly,GO,1903597,biological_process
+109399,109399,negative regulation of bicellular tight junction assembly,GO,1903347,biological_process
+109427,109427,tetrahydrofolate interconversion,GO,35999,biological_process
+109430,109430,positive regulation of hippocampal neuron apoptotic process,GO,110090,biological_process
+109433,109433,histone H3-R17 methylation,GO,34971,biological_process
+109498,109498,negative regulation of tyrosine phosphorylation of STAT protein,GO,42532,biological_process
+109506,109506,embryonic cranial skeleton morphogenesis,GO,48701,biological_process
+109515,109515,positive regulation of natural killer cell mediated cytotoxicity directed against tumor cell target,GO,2860,biological_process
+109532,109532,noradrenergic neuron development,GO,3358,biological_process
+109537,109537,positive regulation of growth rate,GO,40010,biological_process
+109544,109544,cellular response to tumor necrosis factor,GO,71356,biological_process
+109545,109545,cellular response to interferon-gamma,GO,71346,biological_process
+109546,109546,cellular response to interleukin-1,GO,71347,biological_process
+109554,109554,cellular response to interleukin-6,GO,71354,biological_process
+109555,109555,cellular response to leukemia inhibitory factor,GO,1990830,biological_process
+109565,109565,cellular response to interleukin-7,GO,98761,biological_process
+109596,109596,activation-induced cell death of T cells,GO,6924,biological_process
+109601,109601,necroptotic process,GO,70266,biological_process
+109647,109647,paraxial mesoderm morphogenesis,GO,48340,biological_process
+109652,109652,induction of positive chemotaxis,GO,50930,biological_process
+109653,109653,positive regulation of Rho protein signal transduction,GO,35025,biological_process
+109687,109687,positive regulation of protein autoubiquitination,GO,1902499,biological_process
+109705,109705,toll-like receptor 9 signaling pathway,GO,34162,biological_process
+109754,109754,negative regulation of timing of catagen,GO,51796,biological_process
+109773,109773,positive regulation of vascular associated smooth muscle cell apoptotic process,GO,1905461,biological_process
+109784,109784,lipid phosphorylation,GO,46834,biological_process
+109792,109792,T cell activation via T cell receptor contact with antigen bound to MHC molecule on antigen presenting cell,GO,2291,biological_process
+109810,109810,Fc-gamma receptor signaling pathway involved in phagocytosis,GO,38096,biological_process
+109821,109821,plasma cell differentiation,GO,2317,biological_process
+109823,109823,germinal center B cell differentiation,GO,2314,biological_process
+109857,109857,anterior neural tube closure,GO,61713,biological_process
+109859,109859,neural tube closure,GO,1843,biological_process
+109885,109885,positive regulation of keratinocyte proliferation,GO,10838,biological_process
+109887,109887,positive regulation of cholangiocyte proliferation,GO,1904056,biological_process
+109922,109922,positive regulation of JNK cascade,GO,46330,biological_process
+109944,109944,B cell proliferation involved in immune response,GO,2322,biological_process
+109977,109977,positive regulation of chemokine (C-X-C motif) ligand 2 production,GO,2000343,biological_process
+110010,110010,complement-mediated synapse pruning,GO,150062,biological_process
+110055,110055,behavioral response to nicotine,GO,35095,biological_process
+110057,110057,adult feeding behavior,GO,8343,biological_process
+110061,110061,extrinsic apoptotic signaling pathway in absence of ligand,GO,97192,biological_process
+110070,110070,positive regulation of monocyte chemotactic protein-1 production,GO,71639,biological_process
+110071,110071,positive regulation of fractalkine production,GO,32724,biological_process
+110078,110078,hepatocyte apoptotic process,GO,97284,biological_process
+110081,110081,endothelial cell apoptotic process,GO,72577,biological_process
+110133,110133,positive regulation of superoxide anion generation,GO,32930,biological_process
+110136,110136,positive regulation of microglial cell mediated cytotoxicity,GO,1904151,biological_process
+110157,110157,postsynapse to nucleus signaling pathway,GO,99527,biological_process
+110187,110187,negative regulation of interleukin-1 alpha production,GO,32690,biological_process
+110275,110275,brown fat cell differentiation,GO,50873,biological_process
+110313,110313,positive regulation of heterotypic cell-cell adhesion,GO,34116,biological_process
+110357,110357,stimulatory C-type lectin receptor signaling pathway,GO,2223,biological_process
+110372,110372,macrophage chemotaxis,GO,48246,biological_process
+110374,110374,monocyte chemotaxis,GO,2548,biological_process
+110381,110381,negative stranded viral RNA replication,GO,39689,biological_process
+110397,110397,JNK cascade,GO,7254,biological_process
+110411,110411,lipoprotein transport,GO,42953,biological_process
+110425,110425,positive regulation of cytosolic calcium ion concentration involved in phospholipase C-activating G protein-coupled signaling pathway,GO,51482,biological_process
+110462,110462,negative regulation of extracellular matrix disassembly,GO,10716,biological_process
+110492,110492,negative regulation of cysteine-type endopeptidase activity involved in apoptotic signaling pathway,GO,2001268,biological_process
+110502,110502,positive regulation of microglial cell activation,GO,1903980,biological_process
+110548,110548,connective tissue replacement involved in inflammatory response wound healing,GO,2248,biological_process
+110576,110576,cellular response to UV-A,GO,71492,biological_process
+110581,110581,hypochlorous acid biosynthetic process,GO,2149,biological_process
+110607,110607,positive regulation of erythrocyte differentiation,GO,45648,biological_process
+110627,110627,positive regulation of prostaglandin-E synthase activity,GO,2000363,biological_process
+110639,110639,maintenance of blood-brain barrier,GO,35633,biological_process
+110652,110652,positive regulation of myosin light chain kinase activity,GO,35505,biological_process
+110657,110657,positive regulation of isotype switching to IgA isotypes,GO,48298,biological_process
+110675,110675,detection of oxidative stress,GO,70994,biological_process
+110695,110695,myeloid dendritic cell antigen processing and presentation,GO,2469,biological_process
+110697,110697,positive regulation of immature T cell proliferation in thymus,GO,33092,biological_process
+110781,110781,locomotory exploration behavior,GO,35641,biological_process
+110793,110793,positive regulation of prostaglandin-endoperoxide synthase activity,GO,60585,biological_process
+110795,110795,positive regulation of superoxide dismutase activity,GO,1901671,biological_process
+110812,110812,leukocyte tethering or rolling,GO,50901,biological_process
+110898,110898,negative regulation of natural killer cell chemotaxis,GO,2000502,biological_process
+110935,110935,negative regulation of glucose import,GO,46325,biological_process
+110950,110950,host-mediated regulation of intestinal microbiota composition,GO,48874,biological_process
+110958,110958,aortic valve morphogenesis,GO,3180,biological_process
+110960,110960,positive regulation of cardiac muscle cell apoptotic process,GO,10666,biological_process
+110961,110961,negative regulation of cardiac muscle cell apoptotic process,GO,10667,biological_process
+111076,111076,type B pancreatic cell development,GO,3323,biological_process
+111083,111083,negative regulation of hepatocyte apoptotic process,GO,1903944,biological_process
+111116,111116,phospholipid homeostasis,GO,55091,biological_process
+111148,111148,transcription initiation from RNA polymerase II promoter,GO,6367,biological_process
+111174,111174,sensory perception of sound,GO,7605,biological_process
+111177,111177,activation of JUN kinase activity,GO,7257,biological_process
+111210,111210,positive regulation of type B pancreatic cell apoptotic process,GO,2000676,biological_process
+111223,111223,negative regulation of interleukin-6-mediated signaling pathway,GO,70104,biological_process
+111232,111232,"negative regulation of circadian sleep/wake cycle, REM sleep",GO,42322,biological_process
+111256,111256,sequestering of triglyceride,GO,30730,biological_process
+111309,111309,superoxide anion generation,GO,42554,biological_process
+111360,111360,negative regulation of single-species biofilm formation in or on host organism,GO,1900229,biological_process
+111364,111364,negative regulation of late endosome to lysosome transport,GO,1902823,biological_process
+111366,111366,cytoplasmic sequestering of NF-kappaB,GO,7253,biological_process
+111372,111372,positive regulation of synaptic vesicle endocytosis,GO,1900244,biological_process
+111399,111399,antigen processing and presentation of endogenous peptide antigen via MHC class II,GO,2491,biological_process
+111404,111404,homophilic cell adhesion via plasma membrane adhesion molecules,GO,7156,biological_process
+111410,111410,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules,GO,7157,biological_process
+111413,111413,positive regulation of bone mineralization involved in bone maturation,GO,1900159,biological_process
+111445,111445,"positive regulation of circadian sleep/wake cycle, non-REM sleep",GO,46010,biological_process
+111455,111455,negative regulation of vascular associated smooth muscle cell migration,GO,1904753,biological_process
+111491,111491,positive regulation of interferon-beta production,GO,32728,biological_process
+111551,111551,positive regulation of Schwann cell differentiation,GO,14040,biological_process
+111558,111558,positive regulation of 1-phosphatidylinositol-3-kinase activity,GO,61903,biological_process
+111574,111574,positive regulation of substrate adhesion-dependent cell spreading,GO,1900026,biological_process
+111577,111577,positive regulation of NK T cell proliferation,GO,51142,biological_process
+111631,111631,cerebellar granule cell precursor proliferation,GO,21930,biological_process
+111637,111637,positive regulation of lamellipodium assembly,GO,10592,biological_process
+111657,111657,positive regulation of appetite,GO,32100,biological_process
+111706,111706,positive regulation of neutrophil chemotaxis,GO,90023,biological_process
+111726,111726,negative regulation of interleukin-1-mediated signaling pathway,GO,2000660,biological_process
+111727,111727,negative regulation of interleukin-4-mediated signaling pathway,GO,1902215,biological_process
+111728,111728,negative regulation of interleukin-2-mediated signaling pathway,GO,1902206,biological_process
+111729,111729,negative regulation of tumor necrosis factor-mediated signaling pathway,GO,10804,biological_process
+111733,111733,negative regulation of macrophage colony-stimulating factor signaling pathway,GO,1902227,biological_process
+111753,111753,negative regulation of activated T cell proliferation,GO,46007,biological_process
+111827,111827,embryonic liver development,GO,1990402,biological_process
+111880,111880,T-helper 2 cell cytokine production,GO,35745,biological_process
+112001,112001,negative regulation of glucagon secretion,GO,70093,biological_process
+112023,112023,negative regulation of macrophage cytokine production,GO,10936,biological_process
+112026,112026,ceramide translocation,GO,99040,biological_process
+112030,112030,positive regulation of insulin secretion involved in cellular response to glucose stimulus,GO,35774,biological_process
+112055,112055,cellular response to hydrogen peroxide,GO,70301,biological_process
+112086,112086,positive regulation of small intestine smooth muscle contraction,GO,1904349,biological_process
+112105,112105,positive regulation of receptor signaling pathway via JAK-STAT,GO,46427,biological_process
+112127,112127,positive regulation of interferon-alpha production,GO,32727,biological_process
+112158,112158,positive regulation of T-helper 17 cell lineage commitment,GO,2000330,biological_process
+112177,112177,positive regulation of activated T cell proliferation,GO,42104,biological_process
+112193,112193,positive regulation of sprouting angiogenesis,GO,1903672,biological_process
+112273,112273,peptide antigen assembly with MHC class II protein complex,GO,2503,biological_process
+112333,112333,positive regulation of vascular endothelial cell proliferation,GO,1905564,biological_process
+112344,112344,positive regulation of phosphatidic acid biosynthetic process,GO,1905695,biological_process
+112365,112365,xenophagy,GO,98792,biological_process
+112373,112373,positive regulation of histone deacetylase activity,GO,1901727,biological_process
+112472,112472,cellular response to dopamine,GO,1903351,biological_process
+112474,112474,cellular response to epinephrine stimulus,GO,71872,biological_process
+112487,112487,neutrophil degranulation,GO,43312,biological_process
+112568,112568,PERK-mediated unfolded protein response,GO,36499,biological_process
+112582,112582,T-helper 17 cell lineage commitment,GO,72540,biological_process
+112695,112695,positive regulation of extracellular matrix disassembly,GO,90091,biological_process
+112724,112724,positive regulation of core promoter binding,GO,1904798,biological_process
+112766,112766,positive regulation of luteinizing hormone secretion,GO,33686,biological_process
+112789,112789,positive regulation of monocyte differentiation,GO,45657,biological_process
+112803,112803,ureteric bud development,GO,1657,biological_process
+112849,112849,L-fucose catabolic process,GO,42355,biological_process
+112918,112918,low-density lipoprotein particle remodeling,GO,34374,biological_process
+112926,112926,negative regulation of interferon-alpha production,GO,32687,biological_process
+113033,113033,detection of muramyl dipeptide,GO,32498,biological_process
+113042,113042,"blood coagulation, fibrin clot formation",GO,72378,biological_process
+113108,113108,negative regulation of cardiac muscle hypertrophy in response to stress,GO,1903243,biological_process
+113109,113109,in utero embryonic development,GO,1701,biological_process
+113168,113168,establishment of endothelial intestinal barrier,GO,90557,biological_process
+113169,113169,negative regulation of alkaline phosphatase activity,GO,10693,biological_process
+113213,113213,hepatic immune response,GO,2384,biological_process
+113243,113243,energy homeostasis,GO,97009,biological_process
+113244,113244,multicellular organismal iron ion homeostasis,GO,60586,biological_process
+113272,113272,endochondral bone growth,GO,3416,biological_process
+113290,113290,positive regulation of tumor necrosis factor production,GO,32760,biological_process
+113324,113324,negative regulation of protein processing involved in protein targeting to mitochondrion,GO,1903217,biological_process
+113338,113338,positive regulation of apoptotic DNA fragmentation,GO,1902512,biological_process
+113399,113399,(R)-carnitine transmembrane transport,GO,1902270,biological_process
+113406,113406,negative regulation of lung blood pressure,GO,61767,biological_process
+113408,113408,intestinal epithelial structure maintenance,GO,60729,biological_process
+113411,113411,isotype switching to IgA isotypes,GO,48290,biological_process
+113456,113456,T cell receptor signaling pathway,GO,50852,biological_process
+113480,113480,antifungal humoral response,GO,19732,biological_process
+113527,113527,mineralocorticoid receptor signaling pathway,GO,31959,biological_process
+113577,113577,hepatocyte proliferation,GO,72574,biological_process
+113597,113597,positive regulation of glucose import,GO,46326,biological_process
+113641,113641,entry of bacterium into host cell,GO,35635,biological_process
+113738,113738,nitrogen catabolite activation of transcription from RNA polymerase II promoter,GO,1080,biological_process
+113770,113770,establishment of Sertoli cell barrier,GO,97368,biological_process
+113784,113784,negative regulation of tumor necrosis factor production,GO,32720,biological_process
+113811,113811,negative regulation of interleukin-1 beta production,GO,32691,biological_process
+113885,113885,protein lipidation involved in autophagosome assembly,GO,61739,biological_process
+113912,113912,DN3 thymocyte differentiation,GO,1904156,biological_process
+113913,113913,DN2 thymocyte differentiation,GO,1904155,biological_process
+113947,113947,positive regulation of keratinocyte migration,GO,51549,biological_process
+113958,113958,blood coagulation,GO,7596,biological_process
+113985,113985,intracellular distribution of mitochondria,GO,48312,biological_process
+113995,113995,positive regulation of p38MAPK cascade,GO,1900745,biological_process
+114001,114001,macrophage derived foam cell differentiation,GO,10742,biological_process
+114024,114024,positive regulation of peptidyl-serine phosphorylation of STAT protein,GO,33141,biological_process
+114073,114073,antimicrobial humoral immune response mediated by antimicrobial peptide,GO,61844,biological_process
+114118,114118,G2/M transition of mitotic cell cycle,GO,86,biological_process
+114120,114120,activation of cysteine-type endopeptidase activity,GO,97202,biological_process
+114257,114257,Arp2/3 complex-mediated actin nucleation,GO,34314,biological_process
+114301,114301,membrane to membrane docking,GO,22614,biological_process
+114305,114305,positive regulation of T-helper 2 cell cytokine production,GO,2000553,biological_process
+114326,114326,"antigen processing and presentation of exogenous peptide antigen via MHC class I, TAP-dependent",GO,2479,biological_process
+114344,114344,positive regulation of cholesterol efflux,GO,10875,biological_process
+114380,114380,positive regulation of growth factor dependent skeletal muscle satellite cell proliferation,GO,1902728,biological_process
+114413,114413,tyrosine phosphorylation of STAT protein,GO,7260,biological_process
+114429,114429,activation of cysteine-type endopeptidase activity involved in apoptotic signaling pathway,GO,97296,biological_process
+114453,114453,tumor necrosis factor production,GO,32640,biological_process
+114455,114455,receptor signaling pathway via JAK-STAT,GO,7259,biological_process
+114456,114456,positive regulation of macrophage cytokine production,GO,60907,biological_process
+114503,114503,negative regulation of positive thymic T cell selection,GO,1902233,biological_process
+114551,114551,protein localization to endoplasmic reticulum exit site,GO,70973,biological_process
+114555,114555,positive regulation of defense response to virus by host,GO,2230,biological_process
+114574,114574,activation of GTPase activity,GO,90630,biological_process
+114613,114613,positive regulation of biosynthetic process of antibacterial peptides active against Gram-positive bacteria,GO,6965,biological_process
+114681,114681,positive regulation of calcineurin-NFAT signaling cascade,GO,70886,biological_process
+114699,114699,low-density lipoprotein particle clearance,GO,34383,biological_process
+114797,114797,histone H3-Y41 phosphorylation,GO,35409,biological_process
+114807,114807,negative regulation of vascular associated smooth muscle cell apoptotic process,GO,1905460,biological_process
+114831,114831,fever generation,GO,1660,biological_process
+114900,114900,gastric emptying,GO,35483,biological_process
+114919,114919,heart looping,GO,1947,biological_process
+114926,114926,negative regulation of bone resorption,GO,45779,biological_process
+114939,114939,phosphatidylinositol 3-kinase signaling,GO,14065,biological_process
+114940,114940,response to gold nanoparticle,GO,1990268,biological_process
+114997,114997,growth hormone receptor signaling pathway via JAK-STAT,GO,60397,biological_process
+115023,115023,bone mineralization involved in bone maturation,GO,35630,biological_process
+115034,115034,apoptotic DNA fragmentation,GO,6309,biological_process
+115045,115045,Peyer's patch development,GO,48541,biological_process
+115174,115174,primary miRNA binding,GO,70878,molecular_function
+115192,115192,protein threonine kinase activity,GO,106311,molecular_function
+115199,115199,GTP-dependent protein kinase activity,GO,34211,molecular_function
+115202,115202,protein serine kinase activity,GO,106310,molecular_function
+115459,115459,heme binding,GO,20037,molecular_function
+116467,116467,magnesium ion binding,GO,287,molecular_function
+116663,116663,secondary active organic cation transmembrane transporter activity,GO,8513,molecular_function
+116712,116712,LIM domain binding,GO,30274,molecular_function
+116715,116715,ankyrin repeat binding,GO,71532,molecular_function
+116725,116725,CARD domain binding,GO,50700,molecular_function
+116734,116734,DNA binding domain binding,GO,50692,molecular_function
+116750,116750,SH2 domain binding,GO,42169,molecular_function
+116751,116751,PDZ domain binding,GO,30165,molecular_function
+116753,116753,disordered domain specific binding,GO,97718,molecular_function
+116781,116781,LBD domain binding,GO,50693,molecular_function
+116782,116782,heparin binding,GO,8201,molecular_function
+116786,116786,peptidoglycan binding,GO,42834,molecular_function
+116806,116806,G protein-coupled bile acid receptor activity,GO,38182,molecular_function
+116854,116854,interleukin-2 binding,GO,19976,molecular_function
+116858,116858,interleukin-10 binding,GO,19969,molecular_function
+117085,117085,phosphate ion binding,GO,42301,molecular_function
+117390,117390,chenodeoxycholic acid binding,GO,1902122,molecular_function
+117411,117411,interleukin-2 receptor binding,GO,5134,molecular_function
+117413,117413,interleukin-6 receptor binding,GO,5138,molecular_function
+117417,117417,interleukin-12 receptor binding,GO,5143,molecular_function
+117418,117418,interleukin-10 receptor binding,GO,5141,molecular_function
+117638,117638,growth factor activity,GO,8083,molecular_function
+117654,117654,ghrelin receptor binding,GO,31768,molecular_function
+117962,117962,NAD+ kinase activity,GO,3951,molecular_function
+117973,117973,sphinganine kinase activity,GO,8481,molecular_function
+118059,118059,complement component C1q complex binding,GO,1849,molecular_function
+118069,118069,T cell receptor binding,GO,42608,molecular_function
+118079,118079,insulin receptor binding,GO,5158,molecular_function
+118087,118087,proteasome binding,GO,70628,molecular_function
+118101,118101,G-protein beta/gamma-subunit complex binding,GO,31683,molecular_function
+118105,118105,beta-catenin destruction complex binding,GO,1904713,molecular_function
+118224,118224,oxalate transmembrane transporter activity,GO,19531,molecular_function
+118509,118509,MHC class II receptor activity,GO,32395,molecular_function
+118985,118985,insulin-like growth factor receptor binding,GO,5159,molecular_function
+118994,118994,leptin receptor binding,GO,1990460,molecular_function
+118999,118999,acetylcholine receptor binding,GO,33130,molecular_function
+119014,119014,CD4 receptor binding,GO,42609,molecular_function
+119015,119015,scavenger receptor binding,GO,5124,molecular_function
+119029,119029,sialic acid binding,GO,33691,molecular_function
+119045,119045,protein C-terminus binding,GO,8022,molecular_function
+119049,119049,calmodulin binding,GO,5516,molecular_function
+119050,119050,GTPase activating protein binding,GO,32794,molecular_function
+119055,119055,beta-catenin binding,GO,8013,molecular_function
+119064,119064,chaperone binding,GO,51087,molecular_function
+119074,119074,insulin receptor substrate binding,GO,43560,molecular_function
+119080,119080,co-receptor binding,GO,39706,molecular_function
+119084,119084,gamma-catenin binding,GO,45295,molecular_function
+119096,119096,MDM2/MDM4 family protein binding,GO,97371,molecular_function
+119106,119106,ion channel binding,GO,44325,molecular_function
+119328,119328,growth hormone receptor binding,GO,5131,molecular_function
+119330,119330,interferon-gamma receptor binding,GO,5133,molecular_function
+119346,119346,interleukin-23 receptor binding,GO,45519,molecular_function
+119362,119362,N-formyl peptide receptor activity,GO,4982,molecular_function
+119433,119433,chemokine activity,GO,8009,molecular_function
+119560,119560,D-erythro-sphingosine kinase activity,GO,17050,molecular_function
+119596,119596,interleukin-12 alpha subunit binding,GO,42164,molecular_function
+119635,119635,scavenger receptor activity,GO,5044,molecular_function
+119696,119696,choline binding,GO,33265,molecular_function
+119707,119707,CCR6 chemokine receptor binding,GO,31731,molecular_function
+119712,119712,CCR2 chemokine receptor binding,GO,31727,molecular_function
+119713,119713,CCR5 chemokine receptor binding,GO,31730,molecular_function
+119776,119776,low-density lipoprotein particle receptor binding,GO,50750,molecular_function
+119847,119847,peroxidase inhibitor activity,GO,36479,molecular_function
+119968,119968,galactoside 2-alpha-L-fucosyltransferase activity,GO,8107,molecular_function
+119999,119999,superoxide-generating NADPH oxidase activator activity,GO,16176,molecular_function
+120259,120259,arachidonic acid binding,GO,50544,molecular_function
+120291,120291,ankyrin binding,GO,30506,molecular_function
+120568,120568,interleukin-23 binding,GO,42019,molecular_function
+120581,120581,histone deacetylase binding,GO,42826,molecular_function
+120584,120584,DEAD/H-box RNA helicase binding,GO,17151,molecular_function
+120629,120629,D5 dopamine receptor binding,GO,31752,molecular_function
+120794,120794,ATP binding,GO,5524,molecular_function
+120879,120879,"interleukin-1, type II, blocking receptor activity",GO,4910,molecular_function
+121108,121108,lipopolysaccharide binding,GO,1530,molecular_function
+121112,121112,nuclear receptor activity,GO,4879,molecular_function
+121113,121113,"DNA-binding transcription activator activity, RNA polymerase II-specific",GO,1228,molecular_function
+121114,121114,"DNA-binding transcription repressor activity, RNA polymerase II-specific",GO,1227,molecular_function
+121267,121267,growth hormone-releasing hormone activity,GO,16608,molecular_function
+121367,121367,interleukin-8 receptor activity,GO,4918,molecular_function
+121591,121591,protein-cysteine methyltransferase activity,GO,106363,molecular_function
+121636,121636,virus receptor activity,GO,1618,molecular_function
+121655,121655,complement component C4b binding,GO,1855,molecular_function
+121658,121658,complement component C3b binding,GO,1851,molecular_function
+121719,121719,serine-type endopeptidase activity,GO,4252,molecular_function
+121815,121815,BH3 domain binding,GO,51434,molecular_function
+121941,121941,chloride transmembrane transporter activity,GO,15108,molecular_function
+122016,122016,interleukin-2 receptor activity,GO,4911,molecular_function
+122022,122022,interleukin-18 receptor activity,GO,42008,molecular_function
+122023,122023,interleukin-10 receptor activity,GO,4920,molecular_function
+122044,122044,interleukin-23 receptor activity,GO,42020,molecular_function
+122046,122046,interleukin-7 receptor activity,GO,4917,molecular_function
+122081,122081,mineralocorticoid receptor binding,GO,31962,molecular_function
+122117,122117,muramyl dipeptide binding,GO,32500,molecular_function
+122191,122191,IgG binding,GO,19864,molecular_function
+122208,122208,caspase binding,GO,89720,molecular_function
+122386,122386,Hsp70 protein binding,GO,30544,molecular_function
+122387,122387,Hsp90 protein binding,GO,51879,molecular_function
+122445,122445,peptide antigen binding,GO,42605,molecular_function
+122448,122448,amyloid-beta binding,GO,1540,molecular_function
+122450,122450,E-box binding,GO,70888,molecular_function
+122514,122514,low-density lipoprotein particle binding,GO,30169,molecular_function
+122515,122515,metalloaminopeptidase activity,GO,70006,molecular_function
+122601,122601,protein phosphatase 2A binding,GO,51721,molecular_function
+122627,122627,NAD(P)+ nucleosidase activity,GO,50135,molecular_function
+122720,122720,non-membrane spanning protein tyrosine phosphatase activity,GO,4726,molecular_function
+122739,122739,methylenetetrahydrofolate reductase NADH activity,GO,106312,molecular_function
+122740,122740,methylenetetrahydrofolate reductase NADPH activity,GO,106313,molecular_function
+122806,122806,promoter-specific chromatin binding,GO,1990841,molecular_function
+122819,122819,primary amine oxidase activity,GO,8131,molecular_function
+122836,122836,FAD binding,GO,71949,molecular_function
+122869,122869,lipopolysaccharide immune receptor activity,GO,1875,molecular_function
+122946,122946,NF-kappaB binding,GO,51059,molecular_function
+122947,122947,STAT family protein binding,GO,97677,molecular_function
+122948,122948,NFAT protein binding,GO,51525,molecular_function
+123006,123006,phosphatidylcholine floppase activity,GO,90554,molecular_function
+123017,123017,GTP binding,GO,5525,molecular_function
+123091,123091,cyclin-dependent protein serine/threonine kinase inhibitor activity,GO,4861,molecular_function
+123116,123116,RNA polymerase II core promoter sequence-specific DNA binding,GO,979,molecular_function
+123189,123189,phosphatidylinositol-3-phosphate binding,GO,32266,molecular_function
+123204,123204,phosphatidylethanolamine flippase activity,GO,90555,molecular_function
+123249,123249,R-SMAD binding,GO,70412,molecular_function
+123250,123250,co-SMAD binding,GO,70410,molecular_function
+123251,123251,I-SMAD binding,GO,70411,molecular_function
+123289,123289,MHC class II protein complex binding,GO,23026,molecular_function
+123317,123317,guanyl-nucleotide exchange factor activity,GO,5085,molecular_function
+123359,123359,unmethylated CpG binding,GO,45322,molecular_function
+123407,123407,syntaxin-1 binding,GO,17075,molecular_function
+123430,123430,type II transforming growth factor beta receptor binding,GO,5114,molecular_function
+123431,123431,type I transforming growth factor beta receptor binding,GO,34713,molecular_function
+123432,123432,type III transforming growth factor beta receptor binding,GO,34714,molecular_function
+123446,123446,ceramide floppase activity,GO,99038,molecular_function
+123459,123459,histone kinase activity (H3-Y41 specific),GO,35401,molecular_function
+123515,123515,cysteine-type endopeptidase activity involved in apoptotic signaling pathway,GO,97199,molecular_function
+123516,123516,cysteine-type endopeptidase activity involved in execution phase of apoptosis,GO,97200,molecular_function
+123554,123554,sphingosine-1-phosphate receptor activity,GO,38036,molecular_function
+123579,123579,tumor necrosis factor receptor binding,GO,5164,molecular_function
+123654,123654,phospholipase A2 activator activity,GO,16005,molecular_function
+123748,123748,type 1 angiotensin receptor binding,GO,31702,molecular_function
+123914,123914,ubiquitin conjugating enzyme binding,GO,31624,molecular_function
+123917,123917,JUN kinase kinase kinase activity,GO,4706,molecular_function
+123983,123983,transcription coactivator binding,GO,1223,molecular_function
+124035,124035,ubiquitin protein ligase binding,GO,31625,molecular_function
+124050,124050,siRNA binding,GO,35197,molecular_function
+124125,124125,protein homodimerization activity,GO,42803,molecular_function
+124128,124128,protein heterodimerization activity,GO,46982,molecular_function
+124137,124137,interleukin-8 binding,GO,19959,molecular_function
+124184,124184,"NAD+ nucleotidase, cyclic ADP-ribose generating",GO,61809,molecular_function
+124195,124195,retinoid X receptor binding,GO,46965,molecular_function
+124208,124208,small GTPase binding,GO,31267,molecular_function
+124245,124245,extracellular space,GO,5615,cellular_component
+124249,124249,nucleoplasm,GO,5654,cellular_component
+124254,124254,phagocytic cup,GO,1891,cellular_component
+124260,124260,nuclear matrix,GO,16363,cellular_component
+124298,124298,sperm midpiece,GO,97225,cellular_component
+124326,124326,lateral plasma membrane,GO,16328,cellular_component
+124357,124357,immunological synapse,GO,1772,cellular_component
+124358,124358,endoplasmic reticulum exit site,GO,70971,cellular_component
+124455,124455,midbody,GO,30496,cellular_component
+124474,124474,apical part of cell,GO,45177,cellular_component
+124479,124479,cell surface,GO,9986,cellular_component
+124481,124481,axoneme,GO,5930,cellular_component
+124518,124518,perikaryon,GO,43204,cellular_component
+124519,124519,sperm principal piece,GO,97228,cellular_component
+124597,124597,"multivesicular body, internal vesicle",GO,97487,cellular_component
+124627,124627,interleukin-28 receptor complex,GO,32002,cellular_component
+124636,124636,interleukin-23 receptor complex,GO,72536,cellular_component
+124639,124639,interleukin-6 receptor complex,GO,5896,cellular_component
+124646,124646,interleukin-18 receptor complex,GO,45092,cellular_component
+124650,124650,interleukin-2 receptor complex,GO,5893,cellular_component
+124674,124674,alphav-beta3 integrin-IGF-1-IGF1R complex,GO,35867,cellular_component
+124707,124707,catenin complex,GO,16342,cellular_component
+124740,124740,NADPH oxidase complex,GO,43020,cellular_component
+124764,124764,heterotrimeric G-protein complex,GO,5834,cellular_component
+124769,124769,alpha9-beta1 integrin-vascular cell adhesion molecule-1 complex,GO,71065,cellular_component
+124827,124827,flotillin complex,GO,16600,cellular_component
+124830,124830,alphav-beta3 integrin-vitronectin complex,GO,71062,cellular_component
+124869,124869,heteromeric SMAD protein complex,GO,71144,cellular_component
+124919,124919,lipopolysaccharide receptor complex,GO,46696,cellular_component
+125004,125004,endoplasmic reticulum-Golgi intermediate compartment,GO,5793,cellular_component
+125013,125013,mitochondrion,GO,5739,cellular_component
+125040,125040,fibrinogen complex,GO,5577,cellular_component
+125118,125118,Wnt signalosome,GO,1990909,cellular_component
+125123,125123,interleukin-23 complex,GO,70743,cellular_component
+125174,125174,interleukin-12 complex,GO,43514,cellular_component
+125198,125198,CBM complex,GO,32449,cellular_component
+125205,125205,Arp2/3 protein complex,GO,5885,cellular_component
+125617,125617,integral component of lumenal side of endoplasmic reticulum membrane,GO,71556,cellular_component
+125634,125634,phagophore assembly site membrane,GO,34045,cellular_component
+125654,125654,laminin-1 complex,GO,5606,cellular_component
+125661,125661,laminin-8 complex,GO,43257,cellular_component
+125666,125666,laminin-2 complex,GO,5607,cellular_component
+125667,125667,laminin-10 complex,GO,43259,cellular_component
+125707,125707,Schaffer collateral - CA1 synapse,GO,98685,cellular_component
+125717,125717,trans-Golgi network,GO,5802,cellular_component
+125777,125777,endolysosome,GO,36019,cellular_component
+125860,125860,ruffle,GO,1726,cellular_component
+125870,125870,autolysosome,GO,44754,cellular_component
+125942,125942,caveola neck,GO,99400,cellular_component
+125960,125960,clathrin-coated pit,GO,5905,cellular_component
+125962,125962,apical plasma membrane,GO,16324,cellular_component
+125963,125963,basolateral plasma membrane,GO,16323,cellular_component
+125993,125993,podosome,GO,2102,cellular_component
+125998,125998,centriole,GO,5814,cellular_component
+126001,126001,nucleolus,GO,5730,cellular_component
+126038,126038,sperm flagellum,GO,36126,cellular_component
+126061,126061,nuclear inner membrane,GO,5637,cellular_component
+126074,126074,tertiary granule lumen,GO,1904724,cellular_component
+126077,126077,mitochondrial matrix,GO,5759,cellular_component
+126078,126078,ficolin-1-rich granule lumen,GO,1904813,cellular_component
+126092,126092,mitochondrial inner membrane,GO,5743,cellular_component
+126093,126093,mitochondrial outer membrane,GO,5741,cellular_component
+126102,126102,XY body,GO,1741,cellular_component
+126196,126196,extracellular exosome,GO,70062,cellular_component
+126226,126226,ficolin-1-rich granule membrane,GO,101003,cellular_component
+126228,126228,tertiary granule membrane,GO,70821,cellular_component
+126229,126229,specific granule membrane,GO,35579,cellular_component
+126261,126261,muscle cell projection membrane,GO,36195,cellular_component
+126264,126264,brush border membrane,GO,31526,cellular_component
+126289,126289,endolysosome membrane,GO,36020,cellular_component
+126309,126309,integrin alphaM-beta2 complex,GO,34688,cellular_component
+126329,126329,apical junction complex,GO,43296,cellular_component
+126336,126336,mast cell granule,GO,42629,cellular_component
+126344,126344,azurophil granule lumen,GO,35578,cellular_component
+126355,126355,specific granule,GO,42581,cellular_component
+126359,126359,azurophil granule,GO,42582,cellular_component
+126428,126428,cytoplasmic cyclin-dependent protein kinase holoenzyme complex,GO,308,cellular_component
+126444,126444,vacuole-isolation membrane contact site,GO,120095,cellular_component
+126476,126476,insulin-like growth factor ternary complex,GO,42567,cellular_component
+126556,126556,ER to Golgi transport vesicle membrane,GO,12507,cellular_component
+126596,126596,NLRP3 inflammasome complex,GO,72559,cellular_component
+126708,126708,basement membrane,GO,5604,cellular_component
+126815,126815,SPOTS complex,GO,35339,cellular_component
+126859,126859,microtubule cytoskeleton,GO,15630,cellular_component
+126873,126873,focal adhesion,GO,5925,cellular_component
+126913,126913,euchromatin,GO,791,cellular_component
+126938,126938,cytoplasmic side of mitochondrial outer membrane,GO,32473,cellular_component
+126941,126941,early phagosome,GO,32009,cellular_component
+126948,126948,mitotic spindle,GO,72686,cellular_component
+127022,127022,NF-kappaB p50/p65 complex,GO,35525,cellular_component
+127025,127025,inner mucus layer,GO,70702,cellular_component
+127026,127026,outer mucus layer,GO,70703,cellular_component
+127126,127126,MHC class II protein complex,GO,42613,cellular_component
+127133,127133,sarcolemma,GO,42383,cellular_component
+127134,127134,sperm plasma membrane,GO,97524,cellular_component
+127185,127185,neuronal cell body,GO,43025,cellular_component
+127192,127192,platelet alpha granule lumen,GO,31093,cellular_component
+127193,127193,platelet dense granule lumen,GO,31089,cellular_component
+127195,127195,specific granule lumen,GO,35580,cellular_component
+127227,127227,external side of apical plasma membrane,GO,98591,cellular_component
+127250,127250,presynaptic cytosol,GO,99523,cellular_component
+127256,127256,synaptic vesicle membrane,GO,30672,cellular_component
+127358,127358,site of double-strand break,GO,35861,cellular_component
+127370,127370,amphisome,GO,44753,cellular_component
+127374,127374,caveola,GO,5901,cellular_component
+127383,127383,trans-Golgi network membrane,GO,32588,cellular_component
+129373,129373,multi-cellular organism,UBERON,468,anatomy
+129374,129374,female gonad,UBERON,992,anatomy
