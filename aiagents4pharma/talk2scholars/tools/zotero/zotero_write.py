@@ -33,7 +33,7 @@ class ZoteroSaveInput(BaseModel):
         default=None,
         description=(
             "The path where the paper should be saved in the Zotero library."
-            "Example: '/machine/cern/mobile'."
+            "Example: '/machine/cern/mobile'"
         ),
     )
     state: Annotated[dict, InjectedState]
