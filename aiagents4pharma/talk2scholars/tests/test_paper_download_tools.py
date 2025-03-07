@@ -34,29 +34,6 @@ def test_abstract_downloader_cannot_be_instantiated(class_obj):
         class_obj()
 
 
-@pytest.fixture()
-def mock_hydra_config_setup(mocker):
-    """
-    Mocks Hydra's initialize() and compose() calls to prevent real config loading.
-    """
-    mocker.patch("hydra.initialize")
-    mocker.patch(
-        "hydra.compose",
-        return_value=mocker.MagicMock(
-            tools=mocker.MagicMock(
-                download_arxiv_paper=mocker.MagicMock(
-                    api_url="http://test.arxiv.org/mockapi",
-                    request_timeout=10,
-                    chunk_size=1024,
-                    pdf_base_url="http://test.arxiv.org/pdf/",
-                )
-            )
-        ),
-    )
-    return mocker.MagicMock()
-
-
-
 @pytest.fixture(name="arxiv_downloader_fixture")
 @pytest.mark.usefixtures("mock_hydra_config_setup")
 def fixture_arxiv_downloader():
@@ -66,7 +43,7 @@ def fixture_arxiv_downloader():
     return ArxivPaperDownloader()
 
 
-def test_fetch_metadata_success(arxiv_downloader_fixture):
+def test_fetch_metadata_success(arxiv_downloader_fixture,):
     """
     Ensures fetch_metadata retrieves XML data correctly, given a successful HTTP response.
     """
