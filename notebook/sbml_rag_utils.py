@@ -144,7 +144,7 @@ def extract_keywords_from_pdf(documents):
     
     # Process the result to get a clean list
     keyword_list = [k.strip() for k in keywords.split(',')]
-    return keyword_list[:3]  # Ensure we get exactly 3 keywords
+    return keyword_list[:20]  # Ensure we get top keywords
 
 def parse_sbml_model(sbml_file_path):
     """Parse SBML model and extract species only, handling duplicate names"""
