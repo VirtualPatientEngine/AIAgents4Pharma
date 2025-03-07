@@ -131,6 +131,7 @@ def zotero_save_tool(
         elif isinstance(paths, str) and paths.lower() == normalized_path:
             matched_collection_key = key
             logger.info("Found direct match in zotero_read: %s -> %s", paths, key)
+            break
 
     # If not found in zotero_read, try matching by collection name
     if not matched_collection_key:
