@@ -60,5 +60,6 @@ class Talk2Scholars(AgentState):
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
     papers: Annotated[Dict[str, Any], replace_dict]
     multi_papers: Annotated[Dict[str, Any], replace_dict]
+    pdf_data: Annotated[Dict[str, Any], replace_dict]
     zotero_read: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel

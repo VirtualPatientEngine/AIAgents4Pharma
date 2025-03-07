@@ -65,6 +65,7 @@ nav:
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
           - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb
           - PyG2DataFrame: ./notebooks/talk2knowledgegraphs/tutorial_pyg2dataframe.ipynb
+          - UniProt ID Mapping: ./notebooks/talk2knowledgegraphs/tutorial_uniprot_mapping.ipynb
       - Datasets:
           - Dataset: talk2knowledgegraphs/datasets/dataset.md
           - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
@@ -98,6 +99,7 @@ nav:
           - Main Agent: talk2scholars/agents/main_agent.md
           - S2 Agent: talk2scholars/agents/s2_agent.md
           - Zotero Agent: talk2scholars/agents/zotero_agent.md
+          - PDF Agent: talk2scholars/agents/pdf_agent.md
       - States:
           - Talk2Scholars state: talk2scholars/states/state_talk2scholars.md
       - Tools:
@@ -108,6 +110,7 @@ nav:
           - Query results: talk2scholars/tools/query_results.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
+          - Question and answer: talk2scholars/tools/question_and_answer.md
 
   - Documentation:
       - Ops:
