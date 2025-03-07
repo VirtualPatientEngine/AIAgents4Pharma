@@ -109,7 +109,7 @@ def load_and_process_pdf(pdf_path):
     return vectorstore, documents
 
 def extract_keywords_from_pdf(documents):
-    """Extract the top 3 biomedical entity keywords from the PDF"""
+    """Extract the top biomedical entity keywords from the PDF"""
     llm = ChatOpenAI(model="gpt-4o")
     
     # Combine all document content
@@ -120,7 +120,7 @@ def extract_keywords_from_pdf(documents):
     # Create a prompt for keyword extraction focusing on biomedical entities
     prompt = PromptTemplate.from_template(
         """You are given a scientific document related to a systems biology model.
-        Extract exactly THREE key biomedical entities that best represent the main focus of this document.
+        Extract exactly top thirty key biomedical entities that best represent the main focus of this document.
         
         FOCUS ONLY ON:
         - Disease names (e.g., Alzheimer's disease, cancer, diabetes)
@@ -135,7 +135,7 @@ def extract_keywords_from_pdf(documents):
         Document:
         {text}
         
-        THREE BIOMEDICAL ENTITY KEYWORDS:"""
+        top thirty BIOMEDICAL ENTITY KEYWORDS:"""
     )
     
     # Create and run the chain
