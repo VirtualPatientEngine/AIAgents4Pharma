@@ -90,7 +90,9 @@ def search_tool(
     if "data" not in data:
         logger.error("Unexpected API response format: %s", data)
         raise RuntimeError(
-            "Unexpected response from Semantic Scholar API. Please retry the same query."
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
         )
 
     papers = data.get("data", [])
@@ -99,7 +101,8 @@ def search_tool(
             "No papers returned from Semantic Scholar API for query: %s", query
         )
         raise RuntimeError(
-            "No papers returned from Semantic Scholar API. Please retry the same query."
+            "No papers were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
         )
 
     # Create a dictionary to store the papers

@@ -115,10 +115,13 @@ def get_multi_paper_recommendations(
 
     data = response.json()
 
+    # Check for expected data format
     if "recommendedPapers" not in data:
         logger.error("Unexpected API response format: %s", data)
         raise RuntimeError(
-            "Unexpected response from Semantic Scholar API. Please retry the same query."
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
         )
 
     recommendations = data.get("recommendedPapers", [])
@@ -127,7 +130,8 @@ def get_multi_paper_recommendations(
             "No recommendations returned from API for paper IDs: %s", paper_ids
         )
         raise RuntimeError(
-            "No recommendations returned from Semantic Scholar API. Please retry the same query."
+            "No recommendations were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
         )
 
     # Create a dictionary to store the papers

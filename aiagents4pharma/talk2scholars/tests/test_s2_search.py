@@ -213,7 +213,11 @@ def test_search_tool_unexpected_format(monkeypatch):
     tool_call_id = "test_tool_call_id"
     with pytest.raises(
         RuntimeError,
-        match="Unexpected response from Semantic Scholar API. Please retry the same query.",
+        match=(
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
+        ),
     ):
         search_tool.run(
             {
@@ -231,7 +235,10 @@ def test_search_tool_no_papers(monkeypatch):
     tool_call_id = "test_tool_call_id"
     with pytest.raises(
         RuntimeError,
-        match="No papers returned from Semantic Scholar API. Please retry the same query.",
+        match=(
+            "No papers were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
+        ),
     ):
         search_tool.run(
             {

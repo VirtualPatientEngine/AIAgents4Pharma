@@ -226,7 +226,11 @@ def test_single_paper_rec_unexpected_format(monkeypatch):
     }
     with pytest.raises(
         RuntimeError,
-        match="Unexpected response from Semantic Scholar API. Please retry the same query.",
+        match=(
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
+        ),
     ):
         get_single_paper_recommendations.run(input_data)
 
@@ -244,7 +248,10 @@ def test_single_paper_rec_no_recommendations(monkeypatch):
     }
     with pytest.raises(
         RuntimeError,
-        match="No recommendations returned from Semantic Scholar API. Please retry the same query.",
+        match=(
+            "No recommendations were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
+        ),
     ):
         get_single_paper_recommendations.run(input_data)
 

@@ -361,7 +361,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     ):
         """
         Test that if get_item_collections raises an exception, the fallback branch
-        (lines 92-99) raises a RuntimeError.
+        raises a RuntimeError.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -417,7 +417,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     ):
         """
         Test that if an entry in zotero_read is a string that matches the normalized path,
-        it is used as the collection key (lines 119-123).
+        it is used as the collection key
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -477,7 +477,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         """
         Test that if zotero_read does not yield a match, the tool finds
         a direct match by collection name
-        in the collections list (lines 125-133).
+        in the collections list
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -534,7 +534,6 @@ class TestZoteroSaveTool(unittest.TestCase):
         """
         Test that if no direct match is found, a match is found by comparing
         the stripped collection path.
-        This covers lines 137-142.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -589,7 +588,6 @@ class TestZoteroSaveTool(unittest.TestCase):
         """
         Test that if no full-string match is found, the tool can match
         by one of the path components.
-        This covers lines 144-151.
         """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
