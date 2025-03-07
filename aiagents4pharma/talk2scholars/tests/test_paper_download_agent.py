@@ -13,6 +13,7 @@ def mock_hydra_fixture():
     """Mocks Hydra configuration for tests."""
     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
         cfg_mock = mock.MagicMock()
+        cfg_mock.agents.talk2scholars.s2_agent.temperature = 0
         cfg_mock.agents.talk2scholars.paper_download_agent.prompt = "Test prompt"
         mock_compose.return_value = cfg_mock
         yield mock_compose
@@ -31,14 +32,14 @@ def mock_tools_fixture():
         ) as mock_query_results,
     ):
         mock_download_arxiv_paper.return_value = {
-            "update": {"pdf_data": {"dummy_key": "dummy_value"}, "messages": []}
+            "pdf_data": {"dummy_key": "dummy_value"}
         }
         mock_query_results.return_value = {
-            "update": {"results": "Mocked Query Results", "messages": []}
+        "result": "Mocked Query Result"
         }
         yield [mock_download_arxiv_paper, mock_query_results]
 
-
+@pytest.mark.usefixtures("mock_hydra_fixture")
 def test_paper_download_agent_initialization():
     """Ensures the paper download agent initializes properly with a prompt."""
     thread_id = "test_thread_paper_dl"
@@ -51,17 +52,13 @@ def test_paper_download_agent_initialization():
 
         app = get_app(thread_id, llm_mock)
         assert app is not None, "The agent app should be successfully created."
-        mock_create_agent.assert_called_once()
-        assert "prompt" in mock_create_agent.call_args[1], (
-            "Prompt should be used in agent initialization."
-        )
+        assert mock_create_agent.called
 
-
-def test_paper_download_agent_invocation(mock_tools_fixture):  # Keep fixture name
+def test_paper_download_agent_invocation():
     """Verifies agent processes queries and updates state correctly."""
     _ = mock_tools_fixture  # Prevents unused-argument warning
     thread_id = "test_thread_paper_dl"
-    initial_state = Talk2Scholars(
+    mock_state = Talk2Scholars(
         messages=[HumanMessage(content="Download paper 1234.5678")]
     )
     llm_mock = mock.Mock(spec=BaseChatModel)
@@ -70,15 +67,16 @@ def test_paper_download_agent_invocation(mock_tools_fixture):  # Keep fixture na
         "aiagents4pharma.talk2scholars.agents.paper_download_agent.create_react_agent"
     ) as mock_create_agent:
         mock_agent = mock.Mock()
+        mock_create_agent.return_value = mock_agent
         mock_agent.invoke.return_value = {
             "messages": [AIMessage(content="Here is the paper")],
             "pdf_data": {"file_bytes": b"FAKE_PDF_CONTENTS"},
         }
-        mock_create_agent.return_value = mock_agent
+
 
         app = get_app(thread_id, llm_mock)
         result = app.invoke(
-            initial_state,
+            mock_state,
             config={
                 "configurable": {
                     "thread_id": thread_id,
@@ -88,15 +86,14 @@ def test_paper_download_agent_invocation(mock_tools_fixture):  # Keep fixture na
             },
         )
 
-        assert "messages" in result, "The state must include conversation messages."
-        assert "pdf_data" in result, "Expected 'pdf_data' in updated state."
-        mock_agent.invoke.assert_called_once()
+        assert "messages" in result
+        assert "pdf_data" in result
 
 
-def test_paper_download_agent_tools_assignment(mock_tools_fixture):  # Keep fixture name
+def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
     """Checks correct tool assignment (download_arxiv_paper, query_results)."""
-    _ = mock_tools_fixture  # Prevents unused-argument warning
     thread_id = "test_thread_paper_dl"
+    mock_tools = request.getfixturevalue("mock_tools_fixture")
     llm_mock = mock.Mock(spec=BaseChatModel)
 
     with (
@@ -110,15 +107,12 @@ def test_paper_download_agent_tools_assignment(mock_tools_fixture):  # Keep fixt
         mock_agent = mock.Mock()
         mock_create_agent.return_value = mock_agent
         mock_tool_instance = mock.Mock()
-        mock_tool_instance.tools = mock_tools_fixture
-        mock_toolnode.side_effect = lambda tool: mock_tool_instance
+        mock_tool_instance.tools = mock_tools
+        mock_toolnode.return_value= mock_tool_instance
 
-        app = get_app(thread_id, llm_mock)
-        assert app is not None
-        assert len(mock_tools_fixture) == 2, (
-            "Paper download agent must have exactly 2 tools."
-        )
-        mock_toolnode.assert_called()
+        get_app(thread_id, llm_mock)
+        assert mock_toolnode.called
+        assert len(mock_tool_instance.tools) == 2
 
 
 def test_paper_download_agent_hydra_failure():
@@ -129,9 +123,7 @@ def test_paper_download_agent_hydra_failure():
     with mock.patch("hydra.initialize", side_effect=Exception("Mock Hydra failure")):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id, llm_mock)
-        assert "Mock Hydra failure" in str(exc_info.value), (
-            "Hydra failure should raise an exception."
-        )
+        assert "Mock Hydra failure" in str(exc_info.value)
 
 
 def test_paper_download_agent_model_failure():

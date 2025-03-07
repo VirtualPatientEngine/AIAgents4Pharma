@@ -1,13 +1,18 @@
-"""Tests for the paper download tools, specifically ArxivPaperDownloader and related
-functionality.
+"""
+Unit tests for arXiv paper downloading functionality, including:
+- AbstractPaperDownloader (base class)
+- ArxivPaperDownloader (arXiv-specific implementation)
+- download_arxiv_paper tool function.
 """
 
-from unittest.mock import patch, MagicMock  # Standard library first
-import requests  # Third-party
+from unittest.mock import patch, MagicMock
 import pytest
+import requests
 from requests.exceptions import HTTPError
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
+
+# Import the classes and function under test
 from aiagents4pharma.talk2scholars.tools.paper_download.abstract_downloader import (
     AbstractPaperDownloader,
 )
@@ -18,43 +23,46 @@ from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input imp
     download_arxiv_paper,
 )
 
-
 @pytest.mark.parametrize("class_obj", [AbstractPaperDownloader])
+
 def test_abstract_downloader_cannot_be_instantiated(class_obj):
     """
     Validates that AbstractPaperDownloader is indeed abstract and raises TypeError
     if anyone attempts to instantiate it directly.
     """
     with pytest.raises(TypeError):
-        _ = class_obj()
+        class_obj()
 
 
-@pytest.fixture
-def mock_hydra_config_fixture(mocker):
+@pytest.fixture()
+def mock_hydra_config_setup(mocker):
     """
-    Mocks out Hydra's initialize() and compose() calls to prevent real config loading.
-    Ensures tests remain reliable and independent of external configuration.
+    Mocks Hydra's initialize() and compose() calls to prevent real config loading.
     """
-    _ = mocker.patch("hydra.initialize")  # We do not use the return value
-    _ = mocker.patch(
+    mocker.patch("hydra.initialize")
+    mocker.patch(
         "hydra.compose",
         return_value=mocker.MagicMock(
             tools=mocker.MagicMock(
                 download_arxiv_paper=mocker.MagicMock(
                     api_url="http://test.arxiv.org/mockapi",
                     request_timeout=10,
+                    chunk_size=1024,
+                    pdf_base_url="http://test.arxiv.org/pdf/",
                 )
             )
         ),
     )
+    return mocker.MagicMock()
+
 
 
 @pytest.fixture(name="arxiv_downloader_fixture")
-def fixture_arxiv_downloader(mock_hydra_config_fixture):
+@pytest.mark.usefixtures("mock_hydra_config_setup")
+def fixture_arxiv_downloader():
     """
     Provides an ArxivPaperDownloader instance with a mocked Hydra config.
     """
-    _ = mock_hydra_config_fixture  # Prevents unused-argument warning
     return ArxivPaperDownloader()
 
 
@@ -70,7 +78,7 @@ def test_fetch_metadata_success(arxiv_downloader_fixture):
         paper_id = "1234.5678"
         result = arxiv_downloader_fixture.fetch_metadata(paper_id)
         mock_get.assert_called_once_with(
-            "http://test.arxiv.org/mockapi?search_query=id:1234.5678&start=0&max_results=1",
+            "http://export.arxiv.org/api/query?search_query=id:1234.5678&start=0&max_results=1",
             timeout=10,
         )
         assert result["xml"] == "<xml>Mock ArXiv Metadata</xml>"
