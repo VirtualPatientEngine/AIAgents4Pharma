@@ -1,8 +1,10 @@
-# File: tests/test_arxiv_tools.py
+"""Tests for the paper download tools, specifically ArxivPaperDownloader and related
+functionality.
+"""
 
+from unittest.mock import patch, MagicMock  # Standard library first
+import requests  # Third-party
 import pytest
-import requests
-from unittest.mock import patch, MagicMock
 from requests.exceptions import HTTPError
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
@@ -16,6 +18,7 @@ from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input imp
     download_arxiv_paper,
 )
 
+
 @pytest.mark.parametrize("class_obj", [AbstractPaperDownloader])
 def test_abstract_downloader_cannot_be_instantiated(class_obj):
     """
@@ -27,15 +30,13 @@ def test_abstract_downloader_cannot_be_instantiated(class_obj):
 
 
 @pytest.fixture
-def mock_hydra_config(mocker):
+def mock_hydra_config_fixture(mocker):
     """
-    Mocks out Hydra's initialize() and compose() calls to prevent real configuration loading
-    during tests. This keeps tests reliable and independent of external config.
+    Mocks out Hydra's initialize() and compose() calls to prevent real config loading.
+    Ensures tests remain reliable and independent of external configuration.
     """
-    # Patch the Hydra initialization process:
-    mocker.patch("hydra.initialize")
-    # Patch compose() to return a mock config with expected structure:
-    mocker.patch(
+    _ = mocker.patch("hydra.initialize")  # We do not use the return value
+    _ = mocker.patch(
         "hydra.compose",
         return_value=mocker.MagicMock(
             tools=mocker.MagicMock(
@@ -48,15 +49,16 @@ def mock_hydra_config(mocker):
     )
 
 
-@pytest.fixture
-def arxiv_downloader(mock_hydra_config):
+@pytest.fixture(name="arxiv_downloader_fixture")
+def fixture_arxiv_downloader(mock_hydra_config_fixture):
     """
     Provides an ArxivPaperDownloader instance with a mocked Hydra config.
     """
+    _ = mock_hydra_config_fixture  # Prevents unused-argument warning
     return ArxivPaperDownloader()
 
 
-def test_fetch_metadata_success(arxiv_downloader):
+def test_fetch_metadata_success(arxiv_downloader_fixture):
     """
     Ensures fetch_metadata retrieves XML data correctly, given a successful HTTP response.
     """
@@ -66,15 +68,15 @@ def test_fetch_metadata_success(arxiv_downloader):
 
     with patch.object(requests, "get", return_value=mock_response) as mock_get:
         paper_id = "1234.5678"
-        result = arxiv_downloader.fetch_metadata(paper_id)
+        result = arxiv_downloader_fixture.fetch_metadata(paper_id)
         mock_get.assert_called_once_with(
-            f"http://test.arxiv.org/mockapi?search_query=id:{paper_id}&start=0&max_results=1",
+            "http://test.arxiv.org/mockapi?search_query=id:1234.5678&start=0&max_results=1",
             timeout=10,
         )
         assert result["xml"] == "<xml>Mock ArXiv Metadata</xml>"
 
 
-def test_fetch_metadata_http_error(arxiv_downloader):
+def test_fetch_metadata_http_error(arxiv_downloader_fixture):
     """
     Validates that fetch_metadata raises HTTPError when the response indicates a failure.
     """
@@ -83,14 +85,14 @@ def test_fetch_metadata_http_error(arxiv_downloader):
 
     with patch.object(requests, "get", return_value=mock_response):
         with pytest.raises(HTTPError):
-            arxiv_downloader.fetch_metadata("invalid_id")
+            arxiv_downloader_fixture.fetch_metadata("invalid_id")
 
 
-def test_download_pdf_success(arxiv_downloader):
+def test_download_pdf_success(arxiv_downloader_fixture):
     """
-    Tests that download_pdf successfully fetches the PDF link from metadata and retrieves the binary.
+    Tests that download_pdf fetches the PDF link from metadata and successfully
+    retrieves the binary content.
     """
-    # Mock metadata to include a valid PDF link:
     mock_metadata = {
         "xml": """
         <feed xmlns="http://www.w3.org/2005/Atom">
@@ -105,9 +107,9 @@ def test_download_pdf_success(arxiv_downloader):
     mock_pdf_response.raise_for_status = MagicMock()
     mock_pdf_response.iter_content = lambda chunk_size: [b"FAKE_PDF_CONTENT"]
 
-    with patch.object(arxiv_downloader, "fetch_metadata", return_value=mock_metadata):
+    with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
         with patch.object(requests, "get", return_value=mock_pdf_response) as mock_get:
-            result = arxiv_downloader.download_pdf("1234.5678")
+            result = arxiv_downloader_fixture.download_pdf("1234.5678")
             assert result["pdf_object"] == b"FAKE_PDF_CONTENT"
             assert result["pdf_url"] == "http://test.arxiv.org/pdf/1234.5678v1.pdf"
             assert result["arxiv_id"] == "1234.5678"
@@ -118,23 +120,22 @@ def test_download_pdf_success(arxiv_downloader):
             )
 
 
-def test_download_pdf_no_pdf_link(arxiv_downloader):
+def test_download_pdf_no_pdf_link(arxiv_downloader_fixture):
     """
     Ensures a RuntimeError is raised if no <link> with title="pdf" is found in the XML.
     """
     mock_metadata = {"xml": "<feed></feed>"}
 
-    with patch.object(arxiv_downloader, "fetch_metadata", return_value=mock_metadata):
+    with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
         with pytest.raises(RuntimeError, match="Failed to download PDF"):
-            arxiv_downloader.download_pdf("1234.5678")
+            arxiv_downloader_fixture.download_pdf("1234.5678")
 
 
-def test_download_arxiv_paper_tool_success(arxiv_downloader):
+def test_download_arxiv_paper_tool_success(arxiv_downloader_fixture):
     """
-    Validates the download_arxiv_paper function orchestrates the ArxivPaperDownloader correctly,
+    Validates download_arxiv_paper orchestrates the ArxivPaperDownloader correctly,
     returning a Command with PDF data and success messages.
     """
-
     mock_metadata = {"xml": "<mockxml></mockxml>"}
     mock_pdf_response = {
         "pdf_object": b"FAKE_PDF_CONTENT",
@@ -142,20 +143,21 @@ def test_download_arxiv_paper_tool_success(arxiv_downloader):
         "arxiv_id": "9999.8888",
     }
 
-    # Patch the ArxivPaperDownloader constructor to return our fixture
     with patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.ArxivPaperDownloader",
-        return_value=arxiv_downloader,
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input."
+        "ArxivPaperDownloader",
+        return_value=arxiv_downloader_fixture,
     ):
-        with patch.object(arxiv_downloader, "fetch_metadata", return_value=mock_metadata):
-            with patch.object(arxiv_downloader, "download_pdf", return_value=mock_pdf_response):
-                # Invoke the tool by passing a SINGLE dictionary argument:
-                command_result = download_arxiv_paper.invoke({
-                    "arxiv_id": "9999.8888",
-                    "tool_call_id": "test_tool_call",
-                })
+        with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
+            with patch.object(
+                arxiv_downloader_fixture,
+                "download_pdf",
+                return_value=mock_pdf_response,
+            ):
+                command_result = download_arxiv_paper.invoke(
+                    {"arxiv_id": "9999.8888", "tool_call_id": "test_tool_call"}
+                )
 
-                # Validate structure
                 assert isinstance(command_result, Command)
                 assert "pdf_data" in command_result.update
                 assert command_result.update["pdf_data"] == mock_pdf_response

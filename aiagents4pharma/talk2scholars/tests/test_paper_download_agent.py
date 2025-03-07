@@ -1,5 +1,7 @@
+"""Unit tests for the paper download agent in Talk2Scholars."""
+
+from unittest import mock  # Fix for Pylint R0402
 import pytest
-from unittest import mock
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from ..agents.paper_download_agent import get_app
@@ -11,7 +13,6 @@ def mock_hydra_fixture():
     """Mocks Hydra configuration for tests."""
     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
         cfg_mock = mock.MagicMock()
-        # Ensure 'prompt' is properly mocked
         cfg_mock.agents.talk2scholars.paper_download_agent.prompt = "Test prompt"
         mock_compose.return_value = cfg_mock
         yield mock_compose
@@ -51,13 +52,18 @@ def test_paper_download_agent_initialization():
         app = get_app(thread_id, llm_mock)
         assert app is not None, "The agent app should be successfully created."
         mock_create_agent.assert_called_once()
-        assert "prompt" in mock_create_agent.call_args[1], "Prompt should be used in agent initialization."
+        assert "prompt" in mock_create_agent.call_args[1], (
+            "Prompt should be used in agent initialization."
+        )
 
 
-def test_paper_download_agent_invocation(mock_tools_fixture):
+def test_paper_download_agent_invocation(mock_tools_fixture):  # Keep fixture name
     """Verifies agent processes queries and updates state correctly."""
+    _ = mock_tools_fixture  # Prevents unused-argument warning
     thread_id = "test_thread_paper_dl"
-    initial_state = Talk2Scholars(messages=[HumanMessage(content="Download paper 1234.5678")])
+    initial_state = Talk2Scholars(
+        messages=[HumanMessage(content="Download paper 1234.5678")]
+    )
     llm_mock = mock.Mock(spec=BaseChatModel)
 
     with mock.patch(
@@ -74,7 +80,11 @@ def test_paper_download_agent_invocation(mock_tools_fixture):
         result = app.invoke(
             initial_state,
             config={
-                "configurable": {"thread_id": thread_id, "checkpoint_ns": "test_ns", "checkpoint_id": "test_checkpoint"}
+                "configurable": {
+                    "thread_id": thread_id,
+                    "checkpoint_ns": "test_ns",
+                    "checkpoint_id": "test_checkpoint",
+                }
             },
         )
 
@@ -83,8 +93,9 @@ def test_paper_download_agent_invocation(mock_tools_fixture):
         mock_agent.invoke.assert_called_once()
 
 
-def test_paper_download_agent_tools_assignment(mock_tools_fixture):
+def test_paper_download_agent_tools_assignment(mock_tools_fixture):  # Keep fixture name
     """Checks correct tool assignment (download_arxiv_paper, query_results)."""
+    _ = mock_tools_fixture  # Prevents unused-argument warning
     thread_id = "test_thread_paper_dl"
     llm_mock = mock.Mock(spec=BaseChatModel)
 
@@ -104,7 +115,9 @@ def test_paper_download_agent_tools_assignment(mock_tools_fixture):
 
         app = get_app(thread_id, llm_mock)
         assert app is not None
-        assert len(mock_tools_fixture) == 2, "Paper download agent must have exactly 2 tools."
+        assert len(mock_tools_fixture) == 2, (
+            "Paper download agent must have exactly 2 tools."
+        )
         mock_toolnode.assert_called()
 
 
@@ -116,7 +129,9 @@ def test_paper_download_agent_hydra_failure():
     with mock.patch("hydra.initialize", side_effect=Exception("Mock Hydra failure")):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id, llm_mock)
-        assert "Mock Hydra failure" in str(exc_info.value), "Hydra failure should raise an exception."
+        assert "Mock Hydra failure" in str(exc_info.value), (
+            "Hydra failure should raise an exception."
+        )
 
 
 def test_paper_download_agent_model_failure():
@@ -130,4 +145,6 @@ def test_paper_download_agent_model_failure():
     ):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id, llm_mock)
-        assert "Mock model failure" in str(exc_info.value), "Model initialization failure should raise an exception."
+        assert "Mock model failure" in str(exc_info.value), (
+            "Model initialization failure should raise an exception."
+        )
