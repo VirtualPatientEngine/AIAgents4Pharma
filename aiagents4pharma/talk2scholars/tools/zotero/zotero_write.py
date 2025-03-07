@@ -32,7 +32,7 @@ class ZoteroSaveInput(BaseModel):
     collection_path: str = Field(
         default=None,
         description=(
-            "The path where the paper should be saved in the Zotero library. "
+            "The path where the paper should be saved in the Zotero library."
             "Example: '/machine/cern/mobile'."
         ),
     )
