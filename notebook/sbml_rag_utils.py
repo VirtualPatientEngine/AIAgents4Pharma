@@ -7,6 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_community.vectorstores import FAISS
 import libsbml
+import re
 
 
 def analyze_model_species(sbml_file_path):
@@ -108,8 +109,16 @@ def load_and_process_pdf(pdf_path):
     
     return vectorstore, documents
 
-def extract_keywords_from_pdf(documents):
-    """Extract the top biomedical entity keywords from the PDF"""
+def extract_keywords_from_pdf(documents, num_keywords=20):
+    """Extract the top N biomedical entity keywords from the PDF
+    
+    Args:
+        documents: List of documents to extract keywords from
+        num_keywords: Number of keywords to extract (default: 10)
+        
+    Returns:
+        List of keywords with standardized format (uses abbreviations, removes parentheses)
+    """
     llm = ChatOpenAI(model="gpt-4o")
     
     # Combine all document content
@@ -120,7 +129,7 @@ def extract_keywords_from_pdf(documents):
     # Create a prompt for keyword extraction focusing on biomedical entities
     prompt = PromptTemplate.from_template(
         """You are given a scientific document related to a systems biology model.
-        Extract exactly top thirty key biomedical entities that best represent the main focus of this document.
+        Extract exactly {num_keywords} key biomedical entities that best represent the main focus of this document.
         
         FOCUS ONLY ON:
         - Disease names (e.g., Alzheimer's disease, cancer, diabetes)
@@ -131,20 +140,39 @@ def extract_keywords_from_pdf(documents):
         
         DO NOT INCLUDE general methodologies, modeling approaches, or broad fields of study.
         
+        IMPORTANT FORMATTING RULES:
+        1. When an entity has both a full name and abbreviation, use ONLY the abbreviation (e.g., use "IL-6" instead of "Interleukin-6")
+        2. Do not include any parentheses in your output
+        3. Do not include the full name with the abbreviation (e.g., do not return "Interleukin-6 (IL-6)")
+        
         Format your response as a comma-separated list.
         Document:
         {text}
         
-        top thirty BIOMEDICAL ENTITY KEYWORDS:"""
+        {num_keywords} BIOMEDICAL ENTITY KEYWORDS:"""
     )
     
     # Create and run the chain
     chain = prompt | llm | StrOutputParser()
-    keywords = chain.invoke({"text": full_text[:10000]})  # Use first 10000 chars if doc is very large
+    keywords = chain.invoke({"text": full_text[:15000], "num_keywords": num_keywords})  # Increased char limit to get more context
     
     # Process the result to get a clean list
     keyword_list = [k.strip() for k in keywords.split(',')]
-    return keyword_list[:20]  # Ensure we get top keywords
+    
+    # Additional processing to standardize format
+    cleaned_keywords = []
+    for keyword in keyword_list:
+        # Remove any remaining parenthetical content
+        cleaned = re.sub(r'\s*\([^)]*\)', '', keyword)
+        # Remove any special characters except hyphens and spaces
+        cleaned = re.sub(r'[^\w\s\-]', '', cleaned)
+        # Normalize whitespace
+        cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+        if cleaned:  # Only add non-empty strings
+            cleaned_keywords.append(cleaned)
+    
+    # Ensure we get exactly the requested number of keywords (if available)
+    return cleaned_keywords[:num_keywords]
 
 def parse_sbml_model(sbml_file_path):
     """Parse SBML model and extract species only, handling duplicate names"""

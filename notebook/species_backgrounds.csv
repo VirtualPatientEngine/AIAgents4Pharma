@@ -1,22 +1,8 @@
 id,name,original_name,compartment,background
-mwf626e95e_543f_41e4_aad4_c6bf60ab345b,IL6,IL6,mw53ffe9e6_beef_45c4_90a5_a79197ed506e,"The species named 'IL6' in the provided context likely refers to the cytokine Interleukin-6, which plays a crucial role in the immune system.
+mwf626e95e_543f_41e4_aad4_c6bf60ab345b,IL6,IL6,mw53ffe9e6_beef_45c4_90a5_a79197ed506e,"IL6, or Interleukin 6, is a cytokine that plays a significant role in the immune system. It is particularly important in the context of Crohn's disease, as it contributes to enhanced T-cell survival and apoptosis resistance in the lamina propria, along with increased chemokine secretion. IL-6 signaling occurs through two pathways: the classical pathway mediated by the membrane-bound IL-6 receptor (IL-6Rα) and the trans-signaling pathway mediated by the soluble IL-6 receptor (sIL-6Rα). Both pathways involve the recruitment of the gp130 coreceptor to form a receptor complex that initiates downstream signaling cascades.
 
-### Biological Function:
-- **Interleukin-6 (IL-6)** is a cytokine, a type of signaling molecule in the immune system, involved in inflammation and infection responses, as well as the regulation of metabolic, regenerative, and neural processes.
+The active hexameric IL-6 receptor complex leads to the phosphorylation of gp130-bound Janus kinase (Jak) family proteins and subsequent activation of signal transducer and activator of transcription 3 (STAT3) via phosphorylation. This signaling is implicated in inflammation and autoimmunity processes, which are central to the pathology of Crohn's disease. 
 
-### Role in Pathways:
-- IL-6 is essential in **immune regulation**, particularly in inflammatory responses. 
-- It signals via two main pathways:
-  - **Classical Pathway**: Involves the membrane-bound IL-6 receptor (IL-6Rα), where IL-6 binds to the IL-6Rα, and this complex recruits the membrane-bound co-receptor gp130, forming a heterotrimer, which subsequently dimerizes into an active hexameric complex.
-  - **Trans-Signaling Pathway**: Involves the soluble IL-6 receptor (sIL-6Rα), where a preformed IL-6/sIL-6Rα complex in the circulation interacts with gp130 on the cell surface, allowing cells that do not express the IL-6Rα on their surface to respond to IL-6.
+Additionally, the model discussed in the provided context focuses on the pharmacokinetics and dynamics of anti–IL-6 and anti–IL-6Rα antibodies, such as tocilizumab, used in the treatment of autoimmune diseases like rheumatoid arthritis. These antibodies target the IL-6 pathways, particularly affecting how IL-6 signaling is modulated, and the model attempts to understand the therapeutic impact and dosing regimens of these biologics.
 
-### Interactions with Other Molecules:
-- IL-6 interacts with **IL-6Rα** (both membrane-bound and soluble) and the co-receptor **gp130**, leading to activation of intracellular signaling cascades, primarily involving the **Janus kinase (Jak) family** proteins and subsequent phosphorylation of **signal transducer and activator of transcription 3 (STAT3)**.
-- Antibodies targeting IL-6, such as in therapeutics, can affect these interactions and pathways, influencing the immune response and highlighting their use in treatments for diseases like rheumatoid arthritis and potentially Crohn's disease.
-
-### Importance in the Biological System Being Modeled:
-- In the context of **Crohn's Disease**, IL-6 is a significant player in exacerbating disease symptoms by promoting T-cell survival and resistance to apoptosis, thus contributing to chronic inflammation.
-- IL-6 signaling increases chemokine secretion, further amplifying inflammatory responses.
-- Its pathways are critical targets for therapeutic interventions aiming to modulate immune responses and alleviate disease symptoms.
-
-Overall, IL-6 is a multifunctional cytokine, pivotal in immune regulation, inflammation, and cellular signaling, making it a critical focus for therapeutic targeting in various inflammatory diseases."
+Overall, IL6 is critical in immune regulation and is a key target for therapeutic intervention in diseases characterized by dysregulated immune responses."
