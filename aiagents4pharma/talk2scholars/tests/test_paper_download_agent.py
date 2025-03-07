@@ -1,6 +1,6 @@
 """Unit tests for the paper download agent in Talk2Scholars."""
 
-from unittest import mock  # Fix for Pylint R0402
+from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.language_models.chat_models import BaseChatModel
