@@ -65,6 +65,7 @@ nav:
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
           - Talk2KG Agentic Tools: ./notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools.ipynb
           - PyG2DataFrame: ./notebooks/talk2knowledgegraphs/tutorial_pyg2dataframe.ipynb
+          - UniProt ID Mapping: ./notebooks/talk2knowledgegraphs/tutorial_uniprot_mapping.ipynb
       - Datasets:
           - Dataset: talk2knowledgegraphs/datasets/dataset.md
           - PrimeKG: talk2knowledgegraphs/datasets/primekg.md
