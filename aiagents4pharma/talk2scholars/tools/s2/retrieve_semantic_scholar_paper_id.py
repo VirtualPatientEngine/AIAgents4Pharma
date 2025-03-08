@@ -19,14 +19,6 @@ from pydantic import Field
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config",
-        overrides=["tools/retrieve_semantic_scholar_paper_id=default"],
-    )
-    cfg = cfg.tools.retrieve_semantic_scholar_paper_id
-
 
 @tool("retrieve_semantic_scholar_paper_id", parse_docstring=True)
 def retrieve_semantic_scholar_paper_id(
@@ -49,6 +41,14 @@ def retrieve_semantic_scholar_paper_id(
     Returns:
         ToolMessage: A message containing the paper ID.
     """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/retrieve_semantic_scholar_paper_id=default"],
+        )
+        cfg = cfg.tools.retrieve_semantic_scholar_paper_id
+        logger.info("Loaded configuration for Semantic Scholar paper ID retrieval tool")
     logger.info("Retrieving ID of paper with title: %s", paper_title)
     endpoint = cfg.api_endpoint
     params = {

@@ -16,6 +16,7 @@ from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
+# pylint: disable=R0914,R0912,R0915
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +27,7 @@ class MultiPaperRecInput(BaseModel):
     """Input schema for multiple paper recommendations tool."""
 
     paper_ids: List[str] = Field(
-        description=("List of Semantic Scholar Paper IDs to get recommendations for")
+        description="List of Semantic Scholar Paper IDs to get recommendations for"
     )
     limit: int = Field(
         default=2,
@@ -42,14 +43,6 @@ class MultiPaperRecInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
     model_config = {"arbitrary_types_allowed": True}
-
-
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config", overrides=["tools/multi_paper_recommendation=default"]
-    )
-    cfg = cfg.tools.multi_paper_recommendation
 
 
 @tool(args_schema=MultiPaperRecInput, parse_docstring=True)
@@ -73,7 +66,14 @@ def get_multi_paper_recommendations(
     Returns:
         Dict[str, Any]: The recommendations and related information.
     """
-    logging.info(
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["tools/multi_paper_recommendation=default"]
+        )
+        cfg = cfg.tools.multi_paper_recommendation
+        logger.info("Loaded configuration for multi-paper recommendation tool")
+    logger.info(
         "Starting multi-paper recommendations search with paper IDs: %s", paper_ids
     )
 
@@ -89,45 +89,61 @@ def get_multi_paper_recommendations(
     if year:
         params["year"] = year
 
-    # Getting recommendations
-    response = requests.post(
-        endpoint,
-        headers=headers,
-        params=params,
-        data=json.dumps(payload),
-        timeout=cfg.request_timeout,
-    )
-    logging.info(
+    # Wrap API call in try/except to catch connectivity issues and validate response format
+    try:
+        response = requests.post(
+            endpoint,
+            headers=headers,
+            params=params,
+            data=json.dumps(payload),
+            timeout=cfg.request_timeout,
+        )
+        response.raise_for_status()  # Raises HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        logger.error(
+            "Failed to connect to Semantic Scholar API for multi-paper recommendations: %s",
+            e,
+        )
+        raise RuntimeError(
+            "Failed to connect to Semantic Scholar API. Please retry the same query."
+        ) from e
+
+    logger.info(
         "API Response Status for multi-paper recommendations: %s", response.status_code
     )
+    logger.info("Request params: %s", params)
 
     data = response.json()
-    recommendations = data.get("recommendedPapers", [])
 
+    # Check for expected data format
+    if "recommendedPapers" not in data:
+        logger.error("Unexpected API response format: %s", data)
+        raise RuntimeError(
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
+        )
+
+    recommendations = data.get("recommendedPapers", [])
     if not recommendations:
-        return Command(
-            update={  # Place 'messages' inside 'update'
-                "messages": [
-                    ToolMessage(
-                        content="No recommendations found based on multiple papers.",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+        logger.error(
+            "No recommendations returned from API for paper IDs: %s", paper_ids
+        )
+        raise RuntimeError(
+            "No recommendations were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
         )
 
     # Create a dictionary to store the papers
     filtered_papers = {
         paper["paperId"]: {
-            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
+            "paper_id": paper["paperId"],
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
-            # "arXiv_ID": paper.get("externalIds", {}).get(
-            #     "ArXiv", "N/A"
-            # ),  # Extract arXiv ID
+            "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
         }
         for paper in recommendations
         if paper.get("title") and paper.get("authors")
@@ -156,7 +172,7 @@ def get_multi_paper_recommendations(
 
     return Command(
         update={
-            "multi_papers": filtered_papers,  # Now sending the dictionary directly
+            "multi_papers": filtered_papers,  # Sending the dictionary directly
             "last_displayed_papers": "multi_papers",
             "messages": [
                 ToolMessage(

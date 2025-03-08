@@ -3,119 +3,194 @@ Unit tests for main agent functionality.
 Tests the supervisor agent's routing logic and state management.
 """
 
-# pylint: disable=redefined-outer-name
 # pylint: disable=redefined-outer-name,too-few-public-methods
-import random
-from unittest.mock import Mock, patch, MagicMock
+
+from types import SimpleNamespace
 import pytest
-from langchain_core.messages import HumanMessage, AIMessage
-from langgraph.graph import END
-from ..agents.main_agent import make_supervisor_node, get_hydra_config, get_app
-from ..state.state_talk2scholars import Talk2Scholars
+import hydra
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_openai import ChatOpenAI
+from pydantic import Field
+from aiagents4pharma.talk2scholars.agents.main_agent import get_app
+
+# --- Dummy LLM Implementation ---
+
+
+class DummyLLM(BaseChatModel):
+    """A dummy language model implementation for testing purposes."""
+
+    model_name: str = Field(...)
+
+    def _generate(self, prompt, stop=None):
+        """Generate a response given a prompt."""
+        DummyLLM.called_prompt = prompt
+        return "dummy output"
+
+    @property
+    def _llm_type(self):
+        """Return the type of the language model."""
+        return "dummy"
+
+
+# --- Dummy Workflow and Sub-agent Functions ---
+
+
+class DummyWorkflow:
+    """A dummy workflow class that records arguments for verification."""
+
+    def __init__(self, supervisor_args=None):
+        """Initialize the workflow with the given supervisor arguments."""
+        self.supervisor_args = supervisor_args or {}
+        self.checkpointer = None
+        self.name = None
+
+    def compile(self, checkpointer, name):
+        """Compile the workflow with the given checkpointer and name."""
+        self.checkpointer = checkpointer
+        self.name = name
+        return self
+
+
+def dummy_get_app_s2(uniq_id, llm_model):
+    """Return a DummyWorkflow for the S2 agent."""
+    dummy_get_app_s2.called_uniq_id = uniq_id
+    dummy_get_app_s2.called_llm_model = llm_model
+    return DummyWorkflow(supervisor_args={"agent": "s2", "uniq_id": uniq_id})
+
+
+def dummy_get_app_zotero(uniq_id, llm_model):
+    """Return a DummyWorkflow for the Zotero agent."""
+    dummy_get_app_zotero.called_uniq_id = uniq_id
+    dummy_get_app_zotero.called_llm_model = llm_model
+    return DummyWorkflow(supervisor_args={"agent": "zotero", "uniq_id": uniq_id})
+
+
+def dummy_create_supervisor(apps, model, state_schema, **kwargs):
+    """Return a DummyWorkflow for the supervisor."""
+    dummy_create_supervisor.called_kwargs = kwargs
+    return DummyWorkflow(
+        supervisor_args={
+            "apps": apps,
+            "model": model,
+            "state_schema": state_schema,
+            **kwargs,
+        }
+    )
+
+
+# --- Dummy Hydra Configuration Setup ---
+
+
+class DummyHydraContext:
+    """A dummy context manager for mocking Hydra's initialize and compose functions."""
+
+    def __enter__(self):
+        """Return None when entering the context."""
+        return None
+
+    def __exit__(self, exc_type, exc_val, traceback):
+        """Exit function that does nothing."""
+        return None
+
+
+def dict_to_namespace(d):
+    """Convert a dictionary to a SimpleNamespace object."""
+    return SimpleNamespace(
+        **{
+            key: dict_to_namespace(val) if isinstance(val, dict) else val
+            for key, val in d.items()
+        }
+    )
+
+
+dummy_config = {
+    "agents": {
+        "talk2scholars": {"main_agent": {"system_prompt": "Dummy system prompt"}}
+    }
+}
+
+
+class DummyHydraCompose:
+    """A dummy class that returns a namespace from a dummy config dictionary."""
+
+    def __init__(self, config):
+        """Constructor that stores the dummy config."""
+        self.config = config
+
+    def __getattr__(self, item):
+        """Return a namespace from the dummy config."""
+        return dict_to_namespace(self.config.get(item, {}))
+
+
+# --- Pytest Fixtures to Patch Dependencies ---
 
 
 @pytest.fixture(autouse=True)
-def mock_hydra():
-    """Mock Hydra configuration."""
-    with patch("hydra.initialize"), patch("hydra.compose") as mock_compose:
-        cfg_mock = MagicMock()
-        cfg_mock.agents.talk2scholars.main_agent.temperature = 0
-        cfg_mock.agents.talk2scholars.main_agent.system_prompt = "System prompt"
-        cfg_mock.agents.talk2scholars.main_agent.router_prompt = "Router prompt"
-        mock_compose.return_value = cfg_mock
-        yield mock_compose
+def patch_hydra(monkeypatch):
+    """Patch the hydra.initialize and hydra.compose functions to return dummy objects."""
+    monkeypatch.setattr(
+        hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
+    )
+    monkeypatch.setattr(
+        hydra, "compose", lambda config_name, overrides: DummyHydraCompose(dummy_config)
+    )
 
 
-def test_get_app():
-    """Test the full initialization of the LangGraph application."""
-    thread_id = "test_thread"
-    mock_llm = Mock()
-    app = get_app(thread_id, mock_llm)
-    assert app is not None
-    assert "supervisor" in app.nodes
-    assert "s2_agent" in app.nodes  # Ensure nodes exist
-    assert "zotero_agent" in app.nodes
+@pytest.fixture(autouse=True)
+def patch_sub_agents_and_supervisor(monkeypatch):
+    """Patch the sub-agents and supervisor creation functions."""
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_get_app_s2
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_zotero",
+        dummy_get_app_zotero,
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.agents.main_agent.create_supervisor",
+        dummy_create_supervisor,
+    )
 
 
-def test_get_app_with_default_llm():
-    """Test app initialization with default LLM parameters."""
-    thread_id = "test_thread"
-    llm_mock = Mock()
-
-    # We need to explicitly pass the mock instead of patching, since the function uses
-    # ChatOpenAI as a default argument value which is evaluated at function definition time
-    app = get_app(thread_id, llm_mock)
-    assert app is not None
-    # We can only verify the app was created successfully
+# --- Test Cases ---
 
 
-def test_get_hydra_config():
-    """Test that Hydra configuration loads correctly."""
-    with patch("hydra.initialize"), patch("hydra.compose") as mock_compose:
-        cfg_mock = MagicMock()
-        cfg_mock.agents.talk2scholars.main_agent.temperature = 0
-        mock_compose.return_value = cfg_mock
-        cfg = get_hydra_config()
-        assert cfg is not None
-        assert cfg.temperature == 0
+def test_dummy_llm_generate():
+    """Test the dummy LLM's generate function."""
+    dummy = DummyLLM(model_name="test-model")
+    output = getattr(dummy, "_generate")("any prompt")
+    assert output == "dummy output"
 
 
-def test_hydra_failure():
-    """Test exception handling when Hydra fails to load config."""
-    thread_id = "test_thread"
-    llm_mock = Mock()
-    with patch("hydra.initialize", side_effect=Exception("Hydra error")):
-        with pytest.raises(Exception) as exc_info:
-            get_app(thread_id, llm_model=llm_mock)
-        assert "Hydra error" in str(exc_info.value)
+def test_dummy_llm_llm_type():
+    """Test the dummy LLM's _llm_type property."""
+    dummy = DummyLLM(model_name="test-model")
+    assert getattr(dummy, "_llm_type") == "dummy"
 
 
-def test_supervisor_node_execution():
-    """Test that the supervisor node routes correctly."""
-    mock_llm = Mock()
-    thread_id = "test_thread"
+def test_get_app_with_gpt4o_mini():
+    """
+    Test that get_app replaces a 'gpt-4o-mini' LLM with a new ChatOpenAI instance.
+    """
+    uniq_id = "test_thread"
+    dummy_llm = DummyLLM(model_name="gpt-4o-mini")
+    app = get_app(uniq_id, dummy_llm)
 
-    class MockRouter:
-        """Mock router class."""
-
-        next = random.choice(["s2_agent", "zotero_agent"])
-
-    with (
-        patch.object(mock_llm, "with_structured_output", return_value=mock_llm),
-        patch.object(mock_llm, "invoke", return_value=MockRouter()),
-    ):
-        supervisor_node = make_supervisor_node(mock_llm, thread_id)
-        mock_state = Talk2Scholars(messages=[HumanMessage(content="Find AI papers")])
-        result = supervisor_node(mock_state)
-
-        # Accept either "s2_agent" or "zotero_agent"
-        assert result.goto in ["s2_agent", "zotero_agent"]
+    supervisor_args = getattr(app, "supervisor_args", {})
+    assert isinstance(supervisor_args.get("model"), ChatOpenAI)
+    assert supervisor_args.get("prompt") == "Dummy system prompt"
+    assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"
 
 
-def test_supervisor_node_finish():
-    """Test that supervisor node correctly handles FINISH case."""
-    mock_llm = Mock()
-    thread_id = "test_thread"
+def test_get_app_with_other_model():
+    """
+    Test that get_app does not replace the LLM if its model_name is not 'gpt-4o-mini'.
+    """
+    uniq_id = "test_thread_2"
+    dummy_llm = DummyLLM(model_name="other-model")
+    app = get_app(uniq_id, dummy_llm)
 
-    class MockRouter:
-        """Mock router class."""
-
-        next = "FINISH"
-
-    class MockAIResponse:
-        """Mock AI response class."""
-
-        def __init__(self):
-            self.content = "Final AI Response"
-
-    with (
-        patch.object(mock_llm, "with_structured_output", return_value=mock_llm),
-        patch.object(mock_llm, "invoke", side_effect=[MockRouter(), MockAIResponse()]),
-    ):
-        supervisor_node = make_supervisor_node(mock_llm, thread_id)
-        mock_state = Talk2Scholars(messages=[HumanMessage(content="End conversation")])
-        result = supervisor_node(mock_state)
-        assert result.goto == END
-        assert "messages" in result.update
-        assert isinstance(result.update["messages"], AIMessage)
-        assert result.update["messages"].content == "Final AI Response"
+    supervisor_args = getattr(app, "supervisor_args", {})
+    assert supervisor_args.get("model") is dummy_llm
+    assert supervisor_args.get("prompt") == "Dummy system prompt"
+    assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"

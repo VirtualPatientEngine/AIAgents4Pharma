@@ -44,7 +44,7 @@ def query_results(question: str, state: Annotated[dict, InjectedState]) -> str:
         raise NoPapersFoundError(
             "No papers found. A search needs to be performed first."
         )
-    context_key = state.get("last_displayed_papers")
+    context_key = state.get("last_displayed_papers","pdf_data")
     dic_papers = state.get(context_key)
     df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
     df_agent = create_pandas_dataframe_agent(

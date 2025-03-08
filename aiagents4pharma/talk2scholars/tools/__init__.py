@@ -5,5 +5,5 @@ Import statements
 """
 
 from . import s2
-from . import paper_download
+from . import pdf
 from . import zotero

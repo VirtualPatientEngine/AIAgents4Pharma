@@ -5,9 +5,12 @@ defaults:
   - agents/talk2scholars/paper_download_agent: default
   - agents/talk2scholars/zotero_agent: default
   - app/frontend: default
+  - agents/talk2scholars/pdf_agent: default
   - tools/search: default
   - tools/download_arxiv_paper: default
   - tools/single_paper_recommendation: default
   - tools/multi_paper_recommendation: default
   - tools/retrieve_semantic_scholar_paper_id: default
+  - tools/question_and_answer: default
   - tools/zotero_read: default
+  - tools/zotero_write: default

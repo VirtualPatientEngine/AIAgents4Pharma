@@ -37,12 +37,6 @@ class SearchInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
-# Load hydra configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/search=default"])
-    cfg = cfg.tools.search
-
-
 @tool("search_tool", args_schema=SearchInput, parse_docstring=True)
 def search_tool(
     query: str,
@@ -56,13 +50,18 @@ def search_tool(
     Args:
         query (str): The search query string to find academic papers.
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
-        limit (int, optional): The maximum number of results to return. Defaults to 2.
+        limit (int, optional): The maximum number of results to return. Defaults to 5.
         year (str, optional): Year range for papers.
         Supports formats like "2024-", "-2024", "2024:2025". Defaults to None.
 
     Returns:
         The number of papers found on Semantic Scholar.
     """
+    # Load hydra configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(config_name="config", overrides=["tools/search=default"])
+        cfg = cfg.tools.search
+        logger.info("Loaded configuration for search tool")
     logger.info("Searching for papers on %s", query)
     endpoint = cfg.api_endpoint
     params = {
@@ -75,33 +74,47 @@ def search_tool(
     if year:
         params["year"] = year
 
-    response = requests.get(endpoint, params=params, timeout=10)
+    # Wrap API call in try/except to catch connectivity issues
+    try:
+        response = requests.get(endpoint, params=params, timeout=10)
+        response.raise_for_status()  # Raises HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        logger.error("Failed to connect to Semantic Scholar API: %s", e)
+        raise RuntimeError(
+            "Failed to connect to Semantic Scholar API. Please retry the same query."
+        ) from e
+
     data = response.json()
-    papers = data.get("data", [])
-    logger.info("Received %d papers", len(papers))
-    if not papers:
-        return Command(
-            update={  # Place 'messages' inside 'update'
-                "messages": [
-                    ToolMessage(
-                        content="No papers found. Please try a different search query.",
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
+
+    # Check for expected data format
+    if "data" not in data:
+        logger.error("Unexpected API response format: %s", data)
+        raise RuntimeError(
+            "Unexpected response from Semantic Scholar API. The results could not be "
+            "retrieved due to an unexpected format. "
+            "Please modify your search query and try again."
         )
+
+    papers = data.get("data", [])
+    if not papers:
+        logger.error(
+            "No papers returned from Semantic Scholar API for query: %s", query
+        )
+        raise RuntimeError(
+            "No papers were found for your query. Consider refining your search "
+            "by using more specific keywords or different terms."
+        )
+
     # Create a dictionary to store the papers
     filtered_papers = {
         paper["paperId"]: {
-            # "semantic_scholar_id": paper["paperId"],  # Store Semantic Scholar ID
+            "paper_id": paper["paperId"],
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "URL": paper.get("url", "N/A"),
-            # "arXiv_ID": paper.get("externalIds", {}).get(
-            #     "ArXiv", "N/A"
-            # ),  # Extract arXiv ID
+            "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
         }
         for paper in papers
         if paper.get("title") and paper.get("authors")
@@ -129,7 +142,7 @@ def search_tool(
 
     return Command(
         update={
-            "papers": filtered_papers,  # Now sending the dictionary directly
+            "papers": filtered_papers,  # Sending the dictionary directly
             "last_displayed_papers": "papers",
             "messages": [
                 ToolMessage(
