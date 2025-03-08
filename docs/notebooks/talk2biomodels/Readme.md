@@ -61,7 +61,7 @@ In a BKG like PrimeKG, this single SBML species would map to multiple nodes and 
 
 This creates a one-to-many mapping where a single SBML species corresponds to a subgraph within the BKG.
 
-Other examples from your model demonstrate this complexity:
+Other examples from the provided BSML model demonstrate this complexity:
 - `IL6{serum}`: The cytokine IL-6 in the blood circulation context
 - `sR_IL6_gp130{gut}`: A complex of soluble IL-6 receptor, IL-6, and gp130 in the gut compartment
 
