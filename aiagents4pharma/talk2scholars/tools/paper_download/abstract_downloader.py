@@ -9,7 +9,6 @@ inherit from this class and implement its methods.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-
 class AbstractPaperDownloader(ABC):
     """
     Abstract base class for scholarly paper downloaders.
@@ -30,17 +29,15 @@ class AbstractPaperDownloader(ABC):
         Returns:
             Dict[str, Any]: The metadata dictionary (format depends on the data source).
         """
-        raise NotImplementedError
 
     @abstractmethod
-    def download_pdf(self, paper_id: str) -> Dict[str, Any]:
+    def download_pdf(self, paper_id: str) -> bytes:
         """
-        Download the paper's PDF for a given paper ID.
+        Download the PDF for a given paper ID.
 
         Args:
             paper_id (str): The unique identifier for the paper.
 
         Returns:
-            Dict[str, Any]: Contains at least `pdf_object` and `pdf_url`.
+            bytes: The binary content of the downloaded PDF.
         """
-        raise NotImplementedError
