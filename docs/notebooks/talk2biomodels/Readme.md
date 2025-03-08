@@ -124,6 +124,7 @@ The annotations generated can be directly used to connect the SBML model compone
 - `species_dict.json`: Dictionary mapping species display names to descriptions from reasoning LLM
 - `species_dict_annotated.json`: Species dictionary enriched with ontology annotations
 - `species_dict_umls.json`: Species dictionary with UMLS codes
+- `species2primekg_map.csv`: A final mapping between primekg nodes and species
 
 #### Scripts
 - `bioontology_api.py`: Custom module for interacting with Bio-Ontology API
