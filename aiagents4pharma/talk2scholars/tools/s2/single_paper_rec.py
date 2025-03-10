@@ -85,16 +85,27 @@ def get_single_paper_recommendations(
         params["year"] = year
 
     # Wrap API call in try/except to catch connectivity issues and check response format
-    try:
-        response = requests.get(endpoint, params=params, timeout=cfg.request_timeout)
-        response.raise_for_status()  # Raises HTTPError for bad responses
-    except requests.exceptions.RequestException as e:
-        logger.error(
-            "Failed to connect to Semantic Scholar API for recommendations: %s", e
-        )
-        raise RuntimeError(
-            "Failed to connect to Semantic Scholar API. Please retry the same query."
-        ) from e
+    response = None
+    for attempt in range(10):
+        try:
+            response = requests.get(
+                endpoint, params=params, timeout=cfg.request_timeout
+            )
+            response.raise_for_status()  # Raises HTTPError for bad responses
+            break  # Exit loop if request is successful
+        except requests.exceptions.RequestException as e:
+            logger.error(
+                "Attempt %d: Failed to connect to Semantic Scholar API for recommendations: %s",
+                attempt + 1,
+                e,
+            )
+            if attempt == 9:  # Last attempt
+                raise RuntimeError(
+                    "Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query."
+                ) from e
+
+    if response is None:
+        raise RuntimeError("Failed to obtain a response from the Semantic Scholar API.")
 
     logger.info(
         "API Response Status for recommendations of paper %s: %s",

@@ -75,14 +75,25 @@ def search_tool(
         params["year"] = year
 
     # Wrap API call in try/except to catch connectivity issues
-    try:
-        response = requests.get(endpoint, params=params, timeout=10)
-        response.raise_for_status()  # Raises HTTPError for bad responses
-    except requests.exceptions.RequestException as e:
-        logger.error("Failed to connect to Semantic Scholar API: %s", e)
-        raise RuntimeError(
-            "Failed to connect to Semantic Scholar API. Please retry the same query."
-        ) from e
+    response = None
+    for attempt in range(10):
+        try:
+            response = requests.get(endpoint, params=params, timeout=10)
+            response.raise_for_status()  # Raises HTTPError for bad responses
+            break  # Exit loop if request is successful
+        except requests.exceptions.RequestException as e:
+            logger.error(
+                "Attempt %d: Failed to connect to Semantic Scholar API: %s",
+                attempt + 1,
+                e,
+            )
+            if attempt == 9:  # Last attempt
+                raise RuntimeError(
+                    "Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query."
+                ) from e
+
+    if response is None:
+        raise RuntimeError("Failed to obtain a response from the Semantic Scholar API.")
 
     data = response.json()
 
@@ -119,7 +130,6 @@ def search_tool(
         for paper in papers
         if paper.get("title") and paper.get("authors")
     }
-    print (filtered_papers)
 
     logger.info("Filtered %d papers", len(filtered_papers))
 
