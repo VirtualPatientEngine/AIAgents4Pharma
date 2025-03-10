@@ -122,6 +122,17 @@ def zotero_search_tool(
         item_type = data.get("itemType", "N/A")
         logger.debug("Item type: %s", item_type)
 
+        # Exclude attachments, notes, and other unwanted types
+        # if (
+        #     not item_type
+        #     or not isinstance(item_type, str)
+        #     or item_type in filter_excluded_types  # Skip attachments & notes
+        #     or (
+        #         only_articles and item_type not in filter_item_types
+        #     )  # Skip non-research types
+        # ):
+        #     continue
+
         key = data.get("key")
         if not key:
             continue
