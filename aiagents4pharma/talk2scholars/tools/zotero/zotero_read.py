@@ -112,7 +112,6 @@ def zotero_search_tool(
     filtered_papers = {}
 
     for item in items:
-        print (item)
         if not isinstance(item, dict):
             continue
 
@@ -120,19 +119,8 @@ def zotero_search_tool(
         if not isinstance(data, dict):
             continue
 
-        item_type = data.get("itemType")
+        item_type = data.get("itemType", "N/A")
         logger.debug("Item type: %s", item_type)
-
-        # Exclude attachments, notes, and other unwanted types
-        # if (
-        #     not item_type
-        #     or not isinstance(item_type, str)
-        #     or item_type in filter_excluded_types  # Skip attachments & notes
-        #     or (
-        #         only_articles and item_type not in filter_item_types
-        #     )  # Skip non-research types
-        # ):
-        #     continue
 
         key = data.get("key")
         if not key:
@@ -141,13 +129,29 @@ def zotero_search_tool(
         # Use the imported utility function's mapping to get collection paths
         collection_paths = item_to_collections.get(key, ["/Unknown"])
 
+        # Extract metadata safely
         filtered_papers[key] = {
             "Title": data.get("title", "N/A"),
             "Abstract": data.get("abstractNote", "N/A"),
-            "Date": data.get("date", "N/A"),
+            "Publication Date": data.get(
+                "date", "N/A"
+            ),  # Correct field for publication date
             "URL": data.get("url", "N/A"),
             "Type": item_type if isinstance(item_type, str) else "N/A",
-            "Collections": collection_paths,  # Now displays full paths
+            "Collections": collection_paths,  # Displays full collection paths
+            "Citation Count": data.get("citationCount", "N/A"),  # Shows citations
+            "Venue": data.get("venue", "N/A"),  # Displays venue
+            "Publication Venue": data.get(
+                "publicationTitle", "N/A"
+            ),  # Matches with Zotero Write
+            "Journal Name": data.get("journalAbbreviation", "N/A"),  # Journal Name
+            "Journal Volume": data.get("volume", "N/A"),  # Journal Volume
+            "Journal Pages": data.get("pages", "N/A"),  # Journal Pages
+            "Authors": [
+                f"{creator.get('firstName', '')} {creator.get('lastName', '')}".strip()
+                for creator in data.get("creators", [])  # Prevents NoneType error
+                if isinstance(creator, dict) and creator.get("creatorType") == "author"
+            ],
         }
 
     if not filtered_papers:
