@@ -123,7 +123,18 @@ def search_tool(
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
+            "Publication Date": paper.get("publicationDate", "N/A"),
+            "Venue": paper.get("venue", "N/A"),
+            "Publication Venue": paper.get("publicationVenue", {}).get("name", "N/A"),
+            "Venue Type": paper.get("publicationVenue", {}).get("type", "N/A"),
+            "Journal Name": paper.get("journal", {}).get("name", "N/A"),
+            "Journal Volume": paper.get("journal", {}).get("volume", "N/A"),
+            "Journal Pages": paper.get("journal", {}).get("pages", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
+            "Authors": [
+                f"{author.get('name', 'N/A')} (ID: {author.get('authorId', 'N/A')})"
+                for author in paper.get("authors", [])
+            ],
             "URL": paper.get("url", "N/A"),
             "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
         }
