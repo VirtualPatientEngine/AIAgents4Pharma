@@ -6,10 +6,16 @@ api_fields:
   - "title"
   - "abstract"
   - "year"
-  - "authors"
+  - "authors.name"
+  - "authors.authorId"
   - "citationCount"
   - "url"
   - "externalIds"
+  - "venue"
+  - "publicationVenue" # Full object, instead of specific subfields
+  - "journal" # Full object, instead of specific subfields
+  - "publicationDate"
+
 # Commented fields that could be added later if needed
 #  - "publicationTypes"
 #  - "openAccessPdf"
