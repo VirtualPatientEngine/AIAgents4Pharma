@@ -1,0 +1,3 @@
+﻿condition_occurrence_id,person_id,condition_concept_id,condition_start_date,condition_start_datetime,condition_end_date,condition_end_datetime,condition_type_concept_id,condition_status_concept_id,stop_reason,provider_id,visit_occurrence_id,visit_detail_id,condition_source_value,condition_source_concept_id,condition_status_source_value
+85115159584,42779731,195585,8/27/2017,08/27/2017 00:00:00,,,32855,,,,4040291676,,5550,44827872,
+72018811831,10866894,195585,4/3/2019,04/03/2019 00:00:00,,,32855,,,,4044989767,,5550,44827872,
