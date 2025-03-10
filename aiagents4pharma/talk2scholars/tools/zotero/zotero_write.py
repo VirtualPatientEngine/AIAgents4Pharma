@@ -185,21 +185,53 @@ def zotero_save_tool(
     # Format papers for Zotero and assign to the specified collection
     zotero_items = []
     for paper_id, paper in fetched_papers.items():
-        title = paper.get("Title", paper.get("title", "N/A"))
-        abstract = paper.get("Abstract", paper.get("abstractNote", "N/A"))
-        date = paper.get("Date", paper.get("date", "N/A"))
-        url = paper.get("URL", paper.get("url", paper.get("URL", "N/A")))
-        citations = paper.get("Citations", "N/A")
+        title = paper.get("Title", "N/A")
+        abstract = paper.get("Abstract", "N/A")
+        publication_date = paper.get("Publication Date", "N/A")  # Use Publication Date
+        url = paper.get("URL", "N/A")
+        citations = paper.get("Citation Count", "N/A")
+        venue = paper.get("Venue", "N/A")
+        publication_venue = paper.get("Publication Venue", "N/A")
+        journal_name = paper.get("Journal Name", "N/A")
+        journal_volume = paper.get("Journal Volume", "N/A")
+        journal_pages = paper.get("Journal Pages", "N/A")
+
+        # Convert Authors list to Zotero format
+        authors = [
+            (
+                {
+                    "creatorType": "author",
+                    "firstName": name.split(" ")[0],
+                    "lastName": " ".join(name.split(" ")[1:]),
+                }
+                if " " in name
+                else {"creatorType": "author", "lastName": name}
+            )
+            for name in [
+                author.split(" (ID: ")[0] for author in paper.get("Authors", [])
+            ]
+        ]
 
         zotero_items.append(
             {
                 "itemType": "journalArticle",
                 "title": title,
                 "abstractNote": abstract,
-                "date": date,
+                "date": publication_date,  # Now saving full publication date
                 "url": url,
                 "extra": f"Paper ID: {paper_id}\nCitations: {citations}",
                 "collections": [matched_collection_key],
+                "publicationTitle": (
+                    publication_venue if publication_venue != "N/A" else venue
+                ),  # Use publication venue if available
+                "journalAbbreviation": journal_name,  # Save Journal Name
+                "volume": (
+                    journal_volume if journal_volume != "N/A" else None
+                ),  # Save Journal Volume
+                "pages": (
+                    journal_pages if journal_pages != "N/A" else None
+                ),  # Save Journal Pages
+                "creators": authors,  # Save authors list properly
             }
         )
 
