@@ -100,7 +100,7 @@ def get_app(
     checkpointer = MemorySaver()
 
     # Compile the graph into a runnable app.
-    app = workflow.compile(checkpointer=checkpointer)
+    app = workflow.compile(checkpointer=checkpointer, name="agent_pdf")
     logger.info("Compiled the PDF agent graph.")
 
     return app

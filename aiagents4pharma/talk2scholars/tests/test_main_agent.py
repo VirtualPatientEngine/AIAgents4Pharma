@@ -64,6 +64,11 @@ def dummy_get_app_zotero(uniq_id, llm_model):
     dummy_get_app_zotero.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "zotero", "uniq_id": uniq_id})
 
+def dummy_get_app_pdf(uniq_id, llm_model):
+    """Return a DummyWorkflow for the PDF agent."""
+    dummy_get_app_pdf.called_uniq_id = uniq_id
+    dummy_get_app_pdf.called_llm_model = llm_model
+    return DummyWorkflow(supervisor_args={"agent": "pdf", "uniq_id": uniq_id})
 
 def dummy_create_supervisor(apps, model, state_schema, **kwargs):
     """Return a DummyWorkflow for the supervisor."""
@@ -145,6 +150,10 @@ def patch_sub_agents_and_supervisor(monkeypatch):
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_zotero",
         dummy_get_app_zotero,
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_pdf",
+        dummy_get_app_pdf,
     )
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.create_supervisor",

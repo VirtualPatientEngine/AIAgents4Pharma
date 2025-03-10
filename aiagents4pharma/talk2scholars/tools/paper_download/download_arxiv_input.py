@@ -49,6 +49,7 @@ def download_arxiv_paper(
 
     # If the downloader fails or the arxiv_id is invalid, this might raise an error
     pdf_data = downloader.download_pdf(arxiv_id)
+    # print (pdf_data)
 
     content = f"Successfully downloaded PDF for arXiv ID {arxiv_id}"
 

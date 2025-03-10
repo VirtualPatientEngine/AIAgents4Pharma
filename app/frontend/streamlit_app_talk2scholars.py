@@ -114,36 +114,36 @@ def _submit_feedback(user_response):
     )
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
-# @st.fragment
-# def process_pdf_upload():
-#     """
-#     Process the uploaded PDF file automatically:
-#     Read the file as binary and store it in session state under "pdf_data".
-#     """
-#     pdf_file = st.file_uploader(
-#         "Upload a PDF article",
-#         help="Upload a PDF article to ask questions.",
-#         type=["pdf"],
-#         key="pdf_upload"
-#     )
+@st.fragment
+def process_pdf_upload():
+    """
+    Process the uploaded PDF file automatically:
+    Read the file as binary and store it in session state under "pdf_data".
+    """
+    pdf_file = st.file_uploader(
+        "Upload an article",
+        help="Upload an article in PDF format.",
+        type=["pdf"],
+        key="pdf_upload"
+    )
     
-#     if pdf_file is not None:
-#         # Read the PDF file as binary data
-#         pdf_binary = pdf_file.read()
-#         # Save the binary PDF (and placeholders) to session state
-#         st.session_state.pdf_data = {
-#             "pdf_object": pdf_binary,  # binary formatted PDF
-#             "pdf_url": None,           # placeholder for URL if needed later
-#             "arxiv_id": None           # placeholder for an arXiv id if applicable
-#         }
-#         st.success("PDF has been processed and stored in state!")
-#         # Create config for the agent
-#         config = {"configurable": {"thread_id": st.session_state.unique_id}}
-#         # Update the agent state with the selected LLM model
-#         app.update_state(
-#             config,
-#             {"pdf_data": st.session_state.pdf_data}
-#         )
+    if pdf_file is not None:
+        # Read the PDF file as binary data
+        pdf_binary = pdf_file.read()
+        # Save the binary PDF (and placeholders) to session state
+        st.session_state.pdf_data = {
+            "pdf_object": pdf_binary,  # binary formatted PDF
+            "pdf_url": pdf_binary,     # placeholder for URL if needed later
+            "arxiv_id": None           # placeholder for an arXiv id if applicable
+        }
+        st.success("PDF has been processed and stored in state!")
+        # Create config for the agent
+        config = {"configurable": {"thread_id": st.session_state.unique_id}}
+        # Update the agent state with the selected LLM model
+        app.update_state(
+            config,
+            {"pdf_data": st.session_state.pdf_data}
+        )
 
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
@@ -171,7 +171,7 @@ with main_col1:
         )
 
         # Upload files (placeholder)
-        # process_pdf_upload()
+        process_pdf_upload()
         # uploaded_file = st.file_uploader(
         #     "Upload sequencing data",
         #     accept_multiple_files=False,
@@ -242,8 +242,8 @@ with main_col2:
                             )
                         },
                     )
-                    intro_prompt = "Tell your name and about yourself. Always start with a greeting."
-                    intro_prompt += " and tell about the tools you can run to perform analysis with short description."
+                    intro_prompt = "Greeting and tell your name and about yourself."
+                    intro_prompt += " Also, tell about the agents you can access and ther short description."
                     intro_prompt += " We have provided starter questions (separately) outisde your response."
                     intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
                     intro_prompt += " simply click on the questions to execute them."
@@ -332,6 +332,8 @@ with main_col2:
                             )
                         },
                     )
+                    current_state = app.get_state(config)
+                    print ('PDF_DATA', len(current_state.values["pdf_data"]))
 
                     streamlit_utils.get_response("T2S", None, app, st, prompt)
 

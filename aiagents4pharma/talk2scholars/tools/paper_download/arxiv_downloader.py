@@ -95,11 +95,14 @@ class ArxivPaperDownloader(AbstractPaperDownloader):
         logger.info("Downloading PDF from: %s", pdf_url)
         pdf_response = requests.get(pdf_url, stream=True, timeout=self.request_timeout)
         pdf_response.raise_for_status()
+        # print (pdf_response)
 
         # Combine the PDF data from chunks.
         pdf_object = b"".join(
             chunk for chunk in pdf_response.iter_content(chunk_size=self.chunk_size) if chunk
             )
+        # print (pdf_object)
+        print ('PDF_URL', pdf_url)
 
         return {
             "pdf_object": pdf_object,

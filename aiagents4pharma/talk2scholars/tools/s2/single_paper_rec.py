@@ -153,10 +153,9 @@ def get_single_paper_recommendations(
         "Papers are attached as an artifact. "
         "Here is a summary of the recommendations:\n"
     )
-    content += f"Number of papers found: {len(filtered_papers)}\n"
+    content += f"Number of recommended papers found: {len(filtered_papers)}\n"
     content += f"Query Paper ID: {paper_id}\n"
-    content += f"Year: {year}\n" if year else ""
-    content += "Top papers:\n" + top_papers_info
+    content += "Top 3 papers:\n" + top_papers_info
 
     return Command(
         update={

@@ -112,6 +112,7 @@ def zotero_search_tool(
     filtered_papers = {}
 
     for item in items:
+        print (item)
         if not isinstance(item, dict):
             continue
 
@@ -123,15 +124,15 @@ def zotero_search_tool(
         logger.debug("Item type: %s", item_type)
 
         # Exclude attachments, notes, and other unwanted types
-        if (
-            not item_type
-            or not isinstance(item_type, str)
-            or item_type in filter_excluded_types  # Skip attachments & notes
-            or (
-                only_articles and item_type not in filter_item_types
-            )  # Skip non-research types
-        ):
-            continue
+        # if (
+        #     not item_type
+        #     or not isinstance(item_type, str)
+        #     or item_type in filter_excluded_types  # Skip attachments & notes
+        #     or (
+        #         only_articles and item_type not in filter_item_types
+        #     )  # Skip non-research types
+        # ):
+        #     continue
 
         key = data.get("key")
         if not key:
