@@ -14,15 +14,18 @@ from langgraph.types import Command
 # Local import from the same package:
 from .arxiv_downloader import ArxivPaperDownloader
 
+
 class DownloadArxivPaperInput(BaseModel):
     """
     Input schema for the arXiv paper download tool.
     (Optional: if you decide to keep Pydantic validation in the future)
     """
+
     arxiv_id: str = Field(
         description="The arXiv paper ID used to retrieve the paper details and PDF."
-        )
+    )
     tool_call_id: Annotated[str, InjectedToolCallId]
+
 
 @tool(args_schema=DownloadArxivPaperInput, parse_docstring=True)
 def download_arxiv_paper(

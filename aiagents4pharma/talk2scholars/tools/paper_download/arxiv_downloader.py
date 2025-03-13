@@ -8,6 +8,7 @@ downloads the corresponding PDF.
 By using an abstract base class, this implementation is extendable to other
 APIs like PubMed, IEEE Xplore, etc.
 """
+
 import xml.etree.ElementTree as ET
 from typing import Any, Dict
 import logging
@@ -18,6 +19,7 @@ from .abstract_downloader import AbstractPaperDownloader
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class ArxivPaperDownloader(AbstractPaperDownloader):
     """
@@ -35,13 +37,13 @@ class ArxivPaperDownloader(AbstractPaperDownloader):
         """
         with hydra.initialize(version_base=None, config_path="../../configs"):
             cfg = hydra.compose(
-                config_name="config",
-                overrides=["tools/download_arxiv_paper=default"]
+                config_name="config", overrides=["tools/download_arxiv_paper=default"]
             )
             self.api_url = cfg.tools.download_arxiv_paper.api_url
             self.request_timeout = cfg.tools.download_arxiv_paper.request_timeout
             self.chunk_size = cfg.tools.download_arxiv_paper.chunk_size
             self.pdf_base_url = cfg.tools.download_arxiv_paper.pdf_base_url
+
     def fetch_metadata(self, paper_id: str) -> Dict[str, Any]:
         """
         Fetch metadata from arXiv for a given paper ID.
@@ -99,10 +101,12 @@ class ArxivPaperDownloader(AbstractPaperDownloader):
 
         # Combine the PDF data from chunks.
         pdf_object = b"".join(
-            chunk for chunk in pdf_response.iter_content(chunk_size=self.chunk_size) if chunk
-            )
+            chunk
+            for chunk in pdf_response.iter_content(chunk_size=self.chunk_size)
+            if chunk
+        )
         # print (pdf_object)
-        print ('PDF_URL', pdf_url)
+        print("PDF_URL", pdf_url)
 
         return {
             "pdf_object": pdf_object,

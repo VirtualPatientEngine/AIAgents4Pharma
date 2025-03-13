@@ -9,6 +9,8 @@ inherit from this class and implement its methods.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
+
+
 class AbstractPaperDownloader(ABC):
     """
     Abstract base class for scholarly paper downloaders.
