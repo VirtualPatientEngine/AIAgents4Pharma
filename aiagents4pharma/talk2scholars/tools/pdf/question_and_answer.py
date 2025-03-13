@@ -2,8 +2,8 @@
 """
 question_and_answer: Tool for performing Q&A on PDF documents using retrieval augmented generation.
 
-This module provides functionality to extract text from PDF binary data, split it into 
-chunks, retrieve relevant segments via a vector store, and generate an answer to a 
+This module provides functionality to extract text from PDF binary data, split it into
+chunks, retrieve relevant segments via a vector store, and generate an answer to a
 user-provided question using a language model chain.
 """
 
@@ -27,6 +27,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
+from langchain_core.embeddings import Embeddings
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 
@@ -37,9 +38,12 @@ logger.setLevel(logging.INFO)
 
 # Load configuration using Hydra.
 with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(config_name="config", overrides=["tools/question_and_answer=default"])
+    cfg = hydra.compose(
+        config_name="config", overrides=["tools/question_and_answer=default"]
+    )
     cfg = cfg.tools.question_and_answer
     logger.info("Loaded Question and Answer tool configuration.")
+
 
 class QuestionAndAnswerInput(BaseModel):
     """
@@ -49,11 +53,11 @@ class QuestionAndAnswerInput(BaseModel):
         question (str): The question to ask regarding the PDF content.
         tool_call_id (str): Unique identifier for the tool call, injected automatically.
     """
-    question: str = Field(
-        description="The question to ask regarding the PDF content."
-    )
+
+    question: str = Field(description="The question to ask regarding the PDF content.")
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
+
 
 def extract_text_from_pdf_data(pdf_bytes: bytes) -> str:
     """
@@ -75,7 +79,10 @@ def extract_text_from_pdf_data(pdf_bytes: bytes) -> str:
         text += page_text
     return text
 
-def generate_answer(question: str, pdf_bytes: bytes, llm_model: BaseChatModel) -> Dict[str, Any]:
+
+def generate_answer(
+    question: str, pdf_bytes: bytes, llm_model: BaseChatModel
+) -> Dict[str, Any]:
     """
     Generate an answer for a question using retrieval augmented generation on PDF content.
 
@@ -94,9 +101,7 @@ def generate_answer(question: str, pdf_bytes: bytes, llm_model: BaseChatModel) -
     text = extract_text_from_pdf_data(pdf_bytes)
     logger.info("Extracted text from PDF.")
     text_splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=cfg.chunk_size,
-        chunk_overlap=cfg.chunk_overlap
+        separator="\n", chunk_size=cfg.chunk_size, chunk_overlap=cfg.chunk_overlap
     )
     chunks = text_splitter.split_text(text)
     documents: List[Document] = [Document(page_content=chunk) for chunk in chunks]
@@ -104,10 +109,7 @@ def generate_answer(question: str, pdf_bytes: bytes, llm_model: BaseChatModel) -
 
     embeddings = OpenAIEmbeddings(openai_api_key=cfg.openai_api_key)
     vector_store = Annoy.from_documents(documents, embeddings)
-    search_results = vector_store.similarity_search(
-        question,
-        k=cfg.num_retrievals
-    )
+    search_results = vector_store.similarity_search(question, k=cfg.num_retrievals)
     logger.info("Retrieved %d relevant document chunks.", len(search_results))
     # Use the provided llm_model to build the QA chain.
     qa_chain = load_qa_chain(llm_model, chain_type=cfg.qa_chain_type)
@@ -116,7 +118,10 @@ def generate_answer(question: str, pdf_bytes: bytes, llm_model: BaseChatModel) -
     )
     return answer
 
-def generate_answer2(question: str, pdf_url: str) -> Dict[str, Any]:
+
+def generate_answer2(
+    question: str, pdf_url: str, text_embedding_model: Embeddings
+) -> Dict[str, Any]:
     """
     Generate an answer for a question using retrieval augmented generation on PDF content.
 
@@ -145,17 +150,16 @@ def generate_answer2(question: str, pdf_url: str) -> Dict[str, Any]:
         pages.append(page)
     # Set up text embedding model
     # text_embedding_model = state['text_embedding_model']
-    text_embedding_model = OpenAIEmbeddings(openai_api_key=cfg.openai_api_key)
+    # text_embedding_model = OpenAIEmbeddings(openai_api_key=cfg.openai_api_key)
     logging.info("Loaded text embedding model %s", text_embedding_model)
     # Create a vector store from the pages
-    vector_store = InMemoryVectorStore.from_documents(
-                                        pages,
-                                        text_embedding_model)
+    vector_store = InMemoryVectorStore.from_documents(pages, text_embedding_model)
     # Search the article with the question
     docs = vector_store.similarity_search(question)
     # Return the content of the pages
     return "\n".join([doc.page_content for doc in docs])
     # return answer
+
 
 @tool(args_schema=QuestionAndAnswerInput)
 def question_and_answer_tool(
@@ -167,7 +171,7 @@ def question_and_answer_tool(
     Answer a question using PDF content stored in the state via retrieval augmented generation.
 
     This tool retrieves the PDF binary data from the state (under the key "pdf_data"), extracts its
-    textual content, and generates an answer to the specified question. It also extracts the 
+    textual content, and generates an answer to the specified question. It also extracts the
     llm_model (of type BaseChatModel) from the state to use for answering.
 
     Args:
@@ -181,15 +185,15 @@ def question_and_answer_tool(
         Dict[str, Any]: A dictionary containing the generated answer or an error message.
     """
     logger.info("Starting PDF Question and Answer tool using PDF data from state.")
+    # print (state['text_embedding_model'])
+    text_embedding_model = state["text_embedding_model"]
     pdf_state = state.get("pdf_data")
     if not pdf_state:
         error_msg = "No pdf_data found in state."
         logger.error(error_msg)
         return Command(
             update={
-                "messages": [
-                    ToolMessage(content=error_msg, tool_call_id=tool_call_id)
-                ]
+                "messages": [ToolMessage(content=error_msg, tool_call_id=tool_call_id)]
             }
         )
     pdf_bytes = pdf_state.get("pdf_object")
@@ -198,9 +202,7 @@ def question_and_answer_tool(
         logger.error(error_msg)
         return Command(
             update={
-                "messages": [
-                    ToolMessage(content=error_msg, tool_call_id=tool_call_id)
-                ]
+                "messages": [ToolMessage(content=error_msg, tool_call_id=tool_call_id)]
             }
         )
     pdf_url = pdf_state.get("pdf_url")
@@ -210,7 +212,7 @@ def question_and_answer_tool(
         logger.error("Missing LLM model instance in state.")
         return {"error": "No LLM model found in state."}
     # answer = generate_answer(question, pdf_bytes, llm_model)
-    print (pdf_url)
-    answer = generate_answer2(question, pdf_url)
+    print(pdf_url)
+    answer = generate_answer2(question, pdf_url, text_embedding_model)
     # logger.info("Generated answer: %s", answer)
     return answer
