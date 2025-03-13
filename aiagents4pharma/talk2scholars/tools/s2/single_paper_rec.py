@@ -44,7 +44,7 @@ class SinglePaperRecInput(BaseModel):
 def get_single_paper_recommendations(
     paper_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    limit: int = 5,
+    limit: int = 10,
     year: Optional[str] = None,
 ) -> Command[Any]:
     """
@@ -133,20 +133,28 @@ def get_single_paper_recommendations(
             "by using more specific keywords or different terms."
         )
 
+    # for paper in recommendations:
+    #     if paper.get("title") and paper.get("authors"):
+    #         print (paper)
+    #         # try:
+    #     print (paper['paperId'], paper.get("journal", {}).get("name", "N/A"))
+    # except:
+    #     print (paper['paperId'], (paper.get("journal") or {}).get("name", "N/A"))
+
     # Extract paper ID and title from recommendations
     filtered_papers = {
         paper["paperId"]: {
-            "paper_id": paper["paperId"],
+            "semantic_scholar_paper_id": paper["paperId"],
             "Title": paper.get("title", "N/A"),
             "Abstract": paper.get("abstract", "N/A"),
             "Year": paper.get("year", "N/A"),
             "Publication Date": paper.get("publicationDate", "N/A"),
             "Venue": paper.get("venue", "N/A"),
-            "Publication Venue": paper.get("publicationVenue", {}).get("name", "N/A"),
-            "Venue Type": paper.get("publicationVenue", {}).get("type", "N/A"),
-            "Journal Name": paper.get("journal", {}).get("name", "N/A"),
-            "Journal Volume": paper.get("journal", {}).get("volume", "N/A"),
-            "Journal Pages": paper.get("journal", {}).get("pages", "N/A"),
+            # "Publication Venue": (paper.get("publicationVenue") or {}).get("name", "N/A"),
+            # "Venue Type": (paper.get("publicationVenue") or {}).get("name", "N/A"),
+            "Journal Name": (paper.get("journal") or {}).get("name", "N/A"),
+            # "Journal Volume": paper.get("journal", {}).get("volume", "N/A"),
+            # "Journal Pages": paper.get("journal", {}).get("pages", "N/A"),
             "Citation Count": paper.get("citationCount", "N/A"),
             "Authors": [
                 f"{author.get('name', 'N/A')} (ID: {author.get('authorId', 'N/A')})"
@@ -163,7 +171,8 @@ def get_single_paper_recommendations(
     top_papers = list(filtered_papers.values())[:3]
     top_papers_info = "\n".join(
         [
-            f"{i+1}. {paper['Title']} ({paper['Year']})"
+            # f"{i+1}. {paper['Title']} ({paper['Year']})"
+            f"{i+1}. {paper['Title']} ({paper['Year']}; semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; arXiv ID: {paper['arxiv_id']})"
             for i, paper in enumerate(top_papers)
         ]
     )
@@ -177,7 +186,7 @@ def get_single_paper_recommendations(
     )
     content += f"Number of recommended papers found: {len(filtered_papers)}\n"
     content += f"Query Paper ID: {paper_id}\n"
-    content += "Top 3 papers:\n" + top_papers_info
+    content += "Here are a few of these papers:\n" + top_papers_info
 
     return Command(
         update={

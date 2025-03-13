@@ -156,8 +156,8 @@ def zotero_search_tool(
                 "publicationTitle", "N/A"
             ),  # Matches with Zotero Write
             "Journal Name": data.get("journalAbbreviation", "N/A"),  # Journal Name
-            "Journal Volume": data.get("volume", "N/A"),  # Journal Volume
-            "Journal Pages": data.get("pages", "N/A"),  # Journal Pages
+            # "Journal Volume": data.get("volume", "N/A"),  # Journal Volume
+            # "Journal Pages": data.get("pages", "N/A"),  # Journal Pages
             "Authors": [
                 f"{creator.get('firstName', '')} {creator.get('lastName', '')}".strip()
                 for creator in data.get("creators", [])  # Prevents NoneType error
@@ -186,7 +186,7 @@ def zotero_search_tool(
     content += " And here is a summary of the retrieval results:\n"
     content += f"Number of papers found: {len(filtered_papers)}\n"
     content += f"Query: {query}\n"
-    content += "Top papers:\n" + top_papers_info
+    content += "Here are a few of these papers:\n" + top_papers_info
 
     return Command(
         update={

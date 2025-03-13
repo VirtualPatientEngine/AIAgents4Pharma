@@ -264,7 +264,7 @@ def zotero_save_tool(
             for i, paper in enumerate(top_papers)
         ]
     )
-    content += "Here are the top articles:\n" + top_papers_info
+    content += "Here are a few of these articles:\n" + top_papers_info
 
     return Command(
         update={
