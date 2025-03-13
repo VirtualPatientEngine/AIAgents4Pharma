@@ -1,4 +1,4 @@
 api_url: "http://export.arxiv.org/api/query"
 request_timeout: 10
 chunk_size: 1024
-pdf_base_url: "https://arxiv.org/pdf" 
+pdf_base_url: "https://arxiv.org/pdf"

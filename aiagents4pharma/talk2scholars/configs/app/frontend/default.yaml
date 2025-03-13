@@ -8,6 +8,7 @@ page:
 llms:
   available_models:
     - "OpenAI/gpt-4o-mini"
+    - "NVIDIA/llama-3.3-70b-instruct"
 # # Chat UI configuration
 # chat:
 #   assistant_avatar: "🤖"
