@@ -208,10 +208,11 @@ def sample_questions_t2s():
     Function to get the sample questions for Talk2Scholars.
     """
     questions = [
-        'Search articles on "PrimeKG"',
-        "Explain the details of the first article in the last search results",
-        "Recommend more such articles",
-        "Read all papers from my Zotero library",
+        'Search articles on "Role of DNA damage response (DDR) in Cancer"',
+        "Save these articles in my Zotero library under the collection 'Curiosity'",
+        "Tell me more about the first article in the last search results",
+        "Download the article 'Attention is All You Need'",
+        "Describe the methods of the downloaded paper",
     ]
     return questions
 
@@ -236,13 +237,20 @@ def stream_response(response):
     Args:
         response: dict: The response from the agent
     """
+    agent_responded = False
     for chunk in response:
         # Stream only the AIMessageChunk
         if not isinstance(chunk[0], AIMessageChunk):
             continue
         # print (chunk)
         # Exclude the tool calls that are not part of the conversation
-        if "branch:agent:should_continue:tools" not in chunk[1]["langgraph_triggers"]:
+        # if "branch:agent:should_continue:tools" not in chunk[1]["langgraph_triggers"]:
+        if "tools" in chunk[1]["langgraph_triggers"]:
+            agent_responded = True
+            if chunk[0].content == "":
+                yield "\n"
+            yield chunk[0].content
+        if "start:agent" in chunk[1]["langgraph_triggers"] and agent_responded is False:
             if chunk[0].content == "":
                 yield "\n"
             yield chunk[0].content
@@ -278,10 +286,19 @@ def update_state_t2kg(st):
 
 
 def get_ai_messages(current_state):
+    # If only supervisor answered i.e. no agent was called
+    if isinstance(current_state.values["messages"][-2], HumanMessage):
+        msgs_to_consider = current_state.values["messages"]
+    else:
+        # If agent answered i.e. ignore the supervisor msg
+        msgs_to_consider = current_state.values["messages"][:-1]
     # Get all the AI msgs in the
     # last response from the state
     assistant_content = []
-    for msg in current_state.values["messages"][::-1]:
+    # print ('LEN:', len(current_state.values["messages"][:-1]))
+    # print (current_state.values["messages"][-2])
+    # for msg in current_state.values["messages"][:-1][::-1]:
+    for msg in msgs_to_consider[::-1]:
         if isinstance(msg, HumanMessage):
             break
         if isinstance(msg, AIMessage) and msg.content != "":
@@ -634,7 +651,12 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             df_papers.reset_index(drop=True, inplace=True)
             # Drop colum abstract
             # Define the columns to drop
-            columns_to_drop = ["Abstract", "Key", "arxiv_id", "paper_id"]
+            columns_to_drop = [
+                "Abstract",
+                "Key",
+                "arxiv_id",
+                "semantic_scholar_paper_id",
+            ]
 
             # Check if columns exist before dropping
             existing_columns = [
