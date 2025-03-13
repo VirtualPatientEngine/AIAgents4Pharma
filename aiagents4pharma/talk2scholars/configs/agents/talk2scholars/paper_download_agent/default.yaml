@@ -36,4 +36,3 @@ paper_download_agent: >
   Do not attempt to analyze or summarize papers beyond what is retrieved from the API.
   Ensure responses are structured clearly and concisely, making
   it easy for the user to understand the retrieved information.
-
