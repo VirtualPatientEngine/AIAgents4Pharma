@@ -114,6 +114,7 @@ def _submit_feedback(user_response):
     )
     st.info("Your feedback is on its way to the developers. Thank you!", icon="🚀")
 
+
 @st.fragment
 def process_pdf_upload():
     """
@@ -124,26 +125,26 @@ def process_pdf_upload():
         "Upload an article",
         help="Upload an article in PDF format.",
         type=["pdf"],
-        key="pdf_upload"
+        key="pdf_upload",
     )
-    
-    if pdf_file is not None:
-        # Read the PDF file as binary data
-        pdf_binary = pdf_file.read()
-        # Save the binary PDF (and placeholders) to session state
+
+    if pdf_file:
+        import tempfile
+
+        # print (pdf_file.name)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            f.write(pdf_file.read())
+            # print (f.name)
         st.session_state.pdf_data = {
-            "pdf_object": pdf_binary,  # binary formatted PDF
-            "pdf_url": pdf_binary,     # placeholder for URL if needed later
-            "arxiv_id": None           # placeholder for an arXiv id if applicable
+            "pdf_object": f.name,  # binary formatted PDF
+            "pdf_url": f.name,  # placeholder for URL if needed later
+            "arxiv_id": None,  # placeholder for an arXiv id if applicable
         }
-        st.success("PDF has been processed and stored in state!")
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
         # Update the agent state with the selected LLM model
-        app.update_state(
-            config,
-            {"pdf_data": st.session_state.pdf_data}
-        )
+        app.update_state(config, {"pdf_data": st.session_state.pdf_data})
+
 
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
@@ -170,15 +171,23 @@ with main_col1:
             help="Used for tool calling and generating responses.",
         )
 
+        # Text embedding model panel
+        text_models = [
+            "OpenAI/text-embedding-ada-002",
+            "NVIDIA/llama-3.2-nv-embedqa-1b-v2",
+        ]
+        st.selectbox(
+            "Pick a text embedding model",
+            text_models,
+            index=0,
+            key="text_embedding_model",
+            on_change=streamlit_utils.update_text_embedding_model,
+            kwargs={"app": app},
+            help="Used for Retrival Augmented Generation (RAG)",
+        )
+
         # Upload files (placeholder)
         process_pdf_upload()
-        # uploaded_file = st.file_uploader(
-        #     "Upload sequencing data",
-        #     accept_multiple_files=False,
-        #     type=["h5ad"],
-        #     help='''Upload a single h5ad file containing the sequencing data.
-        #     The file should be in the AnnData format.'''
-        #     )
 
     with st.container(border=False, height=500):
         prompt = st.chat_input("Say something ...", key="st_chat_input")
@@ -186,7 +195,7 @@ with main_col1:
 # Second column
 with main_col2:
     # Chat history panel
-    with st.container(border=True, height=575):
+    with st.container(border=True, height=775):
         st.write("#### 💬 Chat History")
 
         # Display chat messages
@@ -242,7 +251,7 @@ with main_col2:
                             )
                         },
                     )
-                    intro_prompt = "Greeting and tell your name and about yourself."
+                    intro_prompt = "Greet and tell your name and about yourself."
                     intro_prompt += " Also, tell about the agents you can access and ther short description."
                     intro_prompt += " We have provided starter questions (separately) outisde your response."
                     intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
@@ -329,11 +338,14 @@ with main_col2:
                         {
                             "llm_model": streamlit_utils.get_base_chat_model(
                                 st.session_state.llm_model
-                            )
+                            ),
+                            "text_embedding_model": streamlit_utils.get_text_embedding_model(
+                                st.session_state.text_embedding_model
+                            ),
                         },
                     )
                     current_state = app.get_state(config)
-                    print ('PDF_DATA', len(current_state.values["pdf_data"]))
+                    print("PDF_DATA", len(current_state.values["pdf_data"]))
 
                     streamlit_utils.get_response("T2S", None, app, st, prompt)
 
