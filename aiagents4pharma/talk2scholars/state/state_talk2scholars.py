@@ -9,6 +9,7 @@ across agent interactions.
 import logging
 from typing import Annotated, Any, Dict
 from langchain_core.language_models import BaseChatModel
+from langchain_core.embeddings import Embeddings
 from langgraph.prebuilt.chat_agent_executor import AgentState
 
 # Configure logging
@@ -63,3 +64,4 @@ class Talk2Scholars(AgentState):
     pdf_data: Annotated[Dict[str, Any], replace_dict]
     zotero_read: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
+    text_embedding_model: Embeddings
