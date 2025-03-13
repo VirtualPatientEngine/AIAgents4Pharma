@@ -20,6 +20,7 @@ from ..tools.s2.query_results import query_results
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Talk2Scholars paper download agent.
@@ -39,14 +40,12 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     with hydra.initialize(version_base=None, config_path="../configs"):
         cfg = hydra.compose(
             config_name="config",
-            overrides=["agents/talk2scholars/paper_download_agent=default"]
+            overrides=["agents/talk2scholars/paper_download_agent=default"],
         )
         cfg = cfg.agents.talk2scholars.paper_download_agent
 
     # Define tools properly
-    tools = ToolNode(
-    [download_arxiv_paper, query_results]
-    )
+    tools = ToolNode([download_arxiv_paper, query_results])
 
     # Define the model
     logger.info("Using OpenAI model %s", llm_model)
