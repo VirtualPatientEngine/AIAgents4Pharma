@@ -170,3 +170,7 @@ experiment/web/vectordb
 
 # Test notebooks
 *.ipynb
+
+# Temporary ignored
+docs/notebooks/talk2knowledgegraphs/checkpoints/*
+docs/notebooks/talk2knowledgegraphs/wandb/*

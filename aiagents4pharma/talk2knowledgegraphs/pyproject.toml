@@ -38,6 +38,7 @@ dependencies = [
     "torch_geometric==2.6.1",
     "tqdm==4.66.6",
     "transformers==4.48.0",
+    "pytorch_lightning==2.5.0",
     "mkdocs==1.6.1",
     "mkdocs-jupyter==0.25.1",
     "mkdocs-material==9.5.47",
