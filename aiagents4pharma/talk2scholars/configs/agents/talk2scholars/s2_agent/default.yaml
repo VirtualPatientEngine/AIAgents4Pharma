@@ -15,5 +15,5 @@ s2_agent: >
   1. When user requests papers, use search/recommendation tools to find papers
   2. Use `display_results` tool to display the response from the search/recommendation tools 
   3. Use `query_results` tool to query over the selected paper only when the user asks to
-  4. When the user wants recommendations, you can get the "paper_id" using `query_results` tool in the "last_displayed_results" key, then
+  4. When the user wants recommendations, you can get the "semantic_scholar_paper_id" using `query_results` tool in the "last_displayed_results" key, then
      pass the "semantic_scholar_paper_id" to `search`, `single_paper_rec` or `multi_paper_rec` tools depending on the user's query. Do not use "arxiv_id"
