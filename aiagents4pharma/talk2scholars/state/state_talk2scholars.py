@@ -55,7 +55,8 @@ class Talk2Scholars(AgentState):
         multi_papers (Dict[str, Any]): Stores multiple recommended papers from various sources.
         zotero_read (Dict[str, Any]): Stores the papers retrieved from Zotero.
         llm_model (BaseChatModel): The language model instance used for generating responses.
-        text_embedding_model (Embeddings): The text embedding model used for similarity calculations.
+        text_embedding_model (Embeddings): The text embedding model used for
+        similarity calculations.
     """
 
     # Agent state fields
