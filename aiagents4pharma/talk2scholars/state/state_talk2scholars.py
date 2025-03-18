@@ -38,7 +38,7 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
         >>> print(updated_state)
         {"papers": {"id2": "Paper 2"}}
     """
-    # logger.info("Updating existing state %s with the state dict: %s", existing, new)
+    logger.info("Updating existing state %s with the state dict: %s", existing, new)
     return new
 
 
@@ -55,6 +55,7 @@ class Talk2Scholars(AgentState):
         multi_papers (Dict[str, Any]): Stores multiple recommended papers from various sources.
         zotero_read (Dict[str, Any]): Stores the papers retrieved from Zotero.
         llm_model (BaseChatModel): The language model instance used for generating responses.
+        text_embedding_model (Embeddings): The text embedding model used for similarity calculations.
     """
 
     # Agent state fields
