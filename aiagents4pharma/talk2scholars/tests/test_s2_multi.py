@@ -277,7 +277,8 @@ def test_multi_paper_rec_requests_exception(monkeypatch):
     }
     with pytest.raises(
         RuntimeError,
-        match="Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query.",
+        match="Failed to connect to Semantic Scholar API after 10 attempts."
+        "Please retry the same query.",
     ):
         get_multi_paper_recommendations.run(input_data)
 
@@ -285,7 +286,8 @@ def test_multi_paper_rec_requests_exception(monkeypatch):
 def test_multi_paper_rec_no_response(monkeypatch):
     """
     Test that get_multi_paper_recommendations raises a RuntimeError when no response is obtained.
-    This is simulated by patching 'range' in the underlying function's globals to return an empty iterator,
+    This is simulated by patching 'range' in the underlying function's globals to
+    return an empty iterator,
     so that the for loop does not iterate and response remains None.
     """
     # Patch 'range' in the underlying function's globals (accessed via .func.__globals__)

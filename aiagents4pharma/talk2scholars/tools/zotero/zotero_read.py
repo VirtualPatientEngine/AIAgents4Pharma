@@ -104,9 +104,10 @@ def zotero_search_tool(
 
     # Define filter criteria
     filter_item_types = cfg.zotero.filter_item_types if only_articles else []
-    filter_excluded_types = (
-        cfg.zotero.filter_excluded_types
-    )  # Exclude non-research items
+    logger.debug("Filtering item types: %s", filter_item_types)
+    # filter_excluded_types = (
+    #     cfg.zotero.filter_excluded_types
+    # )  # Exclude non-research items
 
     # Filter and format papers
     filtered_papers = {}

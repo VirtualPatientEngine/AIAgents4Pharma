@@ -256,7 +256,8 @@ def test_search_tool_requests_exception(monkeypatch):
     tool_call_id = "test_tool_call_id"
     with pytest.raises(
         RuntimeError,
-        match="Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query.",
+        match="Failed to connect to Semantic Scholar API after 10 attempts."
+        "Please retry the same query.",
     ):
         search_tool.run(
             {

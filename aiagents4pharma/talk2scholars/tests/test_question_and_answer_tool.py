@@ -3,13 +3,14 @@ Unit tests for question_and_answer tool functionality.
 """
 
 from langchain.docstore.document import Document
-
 from ..tools.pdf import question_and_answer
 from ..tools.pdf.question_and_answer import (
     extract_text_from_pdf_data,
     question_and_answer_tool,
     generate_answer,
 )
+
+# pylint: disable=redefined-outer-name,too-few-public-methods
 
 
 def test_extract_text_from_pdf_data():
@@ -135,15 +136,18 @@ def test_generate_answer2_actual(monkeypatch):
     Test the actual behavior of generate_answer2 using fake dependencies
     to exercise its internal logic.
     """
-    from langchain.docstore.document import Document
 
     # Create a fake PyPDFLoader that does not perform a network call.
     class FakePyPDFLoader:
+        """class to fake PyPDFLoader"""
+
         def __init__(self, file_path, headers=None):
+            """Initialize the fake PyPDFLoader."""
             self.file_path = file_path
             self.headers = headers
 
         def lazy_load(self):
+            """Return a list with one fake Document."""
             # Return a list with one fake Document.
             return [Document(page_content="Answer for Test question?")]
 
@@ -151,7 +155,10 @@ def test_generate_answer2_actual(monkeypatch):
 
     # Create a fake vector store that returns a controlled result for similarity_search.
     class FakeVectorStore:
+        """Fake vector store for similarity search."""
+
         def similarity_search(self, query):
+            """Return a list with one Document containing our expected answer."""
             # Return a list with one Document containing our expected answer.
             return [Document(page_content=f"Answer for {query}")]
 

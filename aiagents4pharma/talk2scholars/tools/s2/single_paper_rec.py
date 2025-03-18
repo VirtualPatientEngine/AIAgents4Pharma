@@ -14,6 +14,7 @@ from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
+# pylint: disable=R0914,R0912,R0915
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -101,7 +102,8 @@ def get_single_paper_recommendations(
             )
             if attempt == 9:  # Last attempt
                 raise RuntimeError(
-                    "Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query."
+                    "Failed to connect to Semantic Scholar API after 10 attempts."
+                    "Please retry the same query."
                 ) from e
 
     if response is None:
@@ -132,14 +134,6 @@ def get_single_paper_recommendations(
             "No recommendations were found for your query. Consider refining your search "
             "by using more specific keywords or different terms."
         )
-
-    # for paper in recommendations:
-    #     if paper.get("title") and paper.get("authors"):
-    #         print (paper)
-    #         # try:
-    #     print (paper['paperId'], paper.get("journal", {}).get("name", "N/A"))
-    # except:
-    #     print (paper['paperId'], (paper.get("journal") or {}).get("name", "N/A"))
 
     # Extract paper ID and title from recommendations
     filtered_papers = {
@@ -172,7 +166,9 @@ def get_single_paper_recommendations(
     top_papers_info = "\n".join(
         [
             # f"{i+1}. {paper['Title']} ({paper['Year']})"
-            f"{i+1}. {paper['Title']} ({paper['Year']}; semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; arXiv ID: {paper['arxiv_id']})"
+            f"{i+1}. {paper['Title']} ({paper['Year']}; "
+            f"semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; "
+            f"arXiv ID: {paper['arxiv_id']})"
             for i, paper in enumerate(top_papers)
         ]
     )

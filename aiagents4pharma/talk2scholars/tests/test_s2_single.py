@@ -269,7 +269,8 @@ def test_single_paper_rec_requests_exception(monkeypatch):
     }
     with pytest.raises(
         RuntimeError,
-        match="Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query.",
+        match="Failed to connect to Semantic Scholar API after 10 attempts."
+        "Please retry the same query.",
     ):
         get_single_paper_recommendations.run(input_data)
 

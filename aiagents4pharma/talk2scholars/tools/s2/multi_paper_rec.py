@@ -104,13 +104,15 @@ def get_multi_paper_recommendations(
             break  # Exit loop if request is successful
         except requests.exceptions.RequestException as e:
             logger.error(
-                "Attempt %d: Failed to connect to Semantic Scholar API for multi-paper recommendations: %s",
+                "Attempt %d: Failed to connect to Semantic Scholar API for "
+                "multi-paper recommendations: %s",
                 attempt + 1,
                 e,
             )
             if attempt == 9:  # Last attempt
                 raise RuntimeError(
-                    "Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query."
+                    "Failed to connect to Semantic Scholar API after 10 attempts."
+                    "Please retry the same query."
                 ) from e
 
     if response is None:
@@ -173,7 +175,9 @@ def get_multi_paper_recommendations(
     top_papers_info = "\n".join(
         [
             # f"{i+1}. {paper['Title']} ({paper['Year']})"
-            f"{i+1}. {paper['Title']} ({paper['Year']}; semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; arXiv ID: {paper['arxiv_id']})"
+            f"{i+1}. {paper['Title']} ({paper['Year']}; "
+            f"semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; "
+            f"arXiv ID: {paper['arxiv_id']})"
             for i, paper in enumerate(top_papers)
         ]
     )
