@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 """
-Main agent for the talk2scholars app using ReAct pattern.
+Main agent module for initializing and running the Talk2Scholars application.
 
-This module implements a hierarchical agent system where a supervisor agent
-routes queries to specialized sub-agents. It follows the LangGraph patterns
-for multi-agent systems and implements proper state management.
+This module sets up the hierarchical agent system using LangGraph and integrates
+various sub-agents for handling different tasks such as semantic scholar, zotero,
+PDF processing, and paper downloading.
+
+Functions:
+- get_app: Initializes and returns the LangGraph-based hierarchical agent system.
 """
 
 import logging
