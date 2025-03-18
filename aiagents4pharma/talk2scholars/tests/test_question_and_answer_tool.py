@@ -46,40 +46,6 @@ DUMMY_PDF_BYTES = (
 )
 
 
-# def fake_generate_answer(question, pdf_bytes, _llm_model):
-#     """
-#     Fake generate_answer function to bypass external dependencies.
-#     """
-#     return {
-#         "answer": "Mock answer",
-#         "question": question,
-#         "pdf_bytes_length": len(pdf_bytes),
-#     }
-#
-#
-# def test_question_and_answer_tool_success(monkeypatch):
-#     """
-#     Test that question_and_answer_tool returns the expected result on success.
-#     """
-#     monkeypatch.setattr(
-#         question_and_answer, "generate_answer", fake_generate_answer
-#     )
-#     # Create a valid state with pdf_data containing both pdf_object and pdf_url,
-#     # and include a dummy llm_model.
-#     state = {
-#         "pdf_data": {"pdf_object": DUMMY_PDF_BYTES, "pdf_url": "http://dummy.url"},
-#         "llm_model": object(),  # Provide a dummy LLM model instance.
-#     }
-#     question = "What is in the PDF?"
-#     # Call the underlying function directly via .func to bypass the StructuredTool wrapper.
-#     result = question_and_answer_tool.func(
-#         question=question, tool_call_id="test_call_id", state=state
-#     )
-#     assert result["answer"] == "Mock answer"
-#     assert result["question"] == question
-#     assert result["pdf_bytes_length"] == len(DUMMY_PDF_BYTES)
-
-
 def fake_generate_answer2(question, pdf_url, _text_embedding_model):
     """
     Fake generate_answer2 function to bypass external dependencies.
@@ -164,48 +130,49 @@ def test_question_and_answer_tool_no_llm_model():
     assert result == {"error": "No LLM model found in state."}
 
 
-# def test_question_and_answer_tool_no_pdf_data():
-#     """
-#     Test that an error is returned if the state lacks the 'pdf_data' key.
-#     """
-#     state = {}  # pdf_data key is missing.
-#     question = "Any question?"
-#     result = question_and_answer_tool.func(
-#         question=question, tool_call_id="test_call_id", state=state
-#     )
-#     messages = result.update["messages"]
-#     assert any("No pdf_data found in state." in msg.content for msg in messages)
-#
-#
-# def test_question_and_answer_tool_no_pdf_object():
-#     """
-#     Test that an error is returned if the pdf_object is missing within pdf_data.
-#     """
-#     state = {"pdf_data": {"pdf_object": None}}
-#     question = "Any question?"
-#     result = question_and_answer_tool.func(
-#         question=question, tool_call_id="test_call_id", state=state
-#     )
-#     messages = result.update["messages"]
-#     assert any(
-#         "PDF binary data is missing in the pdf_data from state." in msg.content
-#         for msg in messages
-#     )
-#
-#
-# def test_question_and_answer_tool_no_llm_model():
-#     """
-#     Test that an error is returned if the LLM model is missing in the state.
-#     """
-#     state = {
-#         "pdf_data": {"pdf_object": DUMMY_PDF_BYTES, "pdf_url": "http://dummy.url"}
-#         # Note: llm_model is intentionally omitted.
-#     }
-#     question = "What is in the PDF?"
-#     result = question_and_answer_tool.func(
-#         question=question, tool_call_id="test_call_id", state=state
-#     )
-#     assert result == {"error": "No LLM model found in state."}
+def test_generate_answer2_actual(monkeypatch):
+    """
+    Test the actual behavior of generate_answer2 using fake dependencies
+    to exercise its internal logic.
+    """
+    from langchain.docstore.document import Document
+
+    # Create a fake PyPDFLoader that does not perform a network call.
+    class FakePyPDFLoader:
+        def __init__(self, file_path, headers=None):
+            self.file_path = file_path
+            self.headers = headers
+
+        def lazy_load(self):
+            # Return a list with one fake Document.
+            return [Document(page_content="Answer for Test question?")]
+
+    monkeypatch.setattr(question_and_answer, "PyPDFLoader", FakePyPDFLoader)
+
+    # Create a fake vector store that returns a controlled result for similarity_search.
+    class FakeVectorStore:
+        def similarity_search(self, query):
+            # Return a list with one Document containing our expected answer.
+            return [Document(page_content=f"Answer for {query}")]
+
+    monkeypatch.setattr(
+        question_and_answer.InMemoryVectorStore,
+        "from_documents",
+        lambda docs, emb: FakeVectorStore(),
+    )
+
+    # Provide a dummy text embedding model.
+    dummy_text_embedding_model = object()
+    question = "Test question?"
+    pdf_url = "http://dummy.pdf"
+
+    # Call generate_answer2 without triggering an actual network call.
+    result = question_and_answer.generate_answer2(
+        question, pdf_url, dummy_text_embedding_model
+    )
+    # The function should join the page content from the similarity search.
+    expected = "Answer for Test question?"
+    assert result == expected
 
 
 def test_generate_answer(monkeypatch):

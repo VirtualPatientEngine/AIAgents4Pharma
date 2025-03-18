@@ -23,8 +23,7 @@ def mock_router():
 
     def mock_supervisor_node(state):
         query = state["messages"][-1].content.lower()
-
-        # Expanded keyword matching for S2 Agent
+        # Define keywords for each sub-agent.
         s2_keywords = [
             "paper",
             "research",
@@ -34,13 +33,19 @@ def mock_router():
             "references",
         ]
         zotero_keywords = ["zotero", "library", "saved papers", "academic library"]
+        pdf_keywords = ["pdf", "document", "read pdf"]
+        paper_download_keywords = ["download", "arxiv", "fetch paper", "paper download"]
 
+        # Priority ordering: Zotero, then paper download, then PDF, then S2.
         if any(keyword in query for keyword in zotero_keywords):
             return Command(goto="zotero_agent")
+        if any(keyword in query for keyword in paper_download_keywords):
+            return Command(goto="paper_download_agent")
+        if any(keyword in query for keyword in pdf_keywords):
+            return Command(goto="pdf_agent")
         if any(keyword in query for keyword in s2_keywords):
             return Command(goto="s2_agent")
-
-        # If no match, default to ending the conversation
+        # Default to end if no keyword matches.
         return Command(goto=END)
 
     return mock_supervisor_node
@@ -55,10 +60,9 @@ def mock_router():
         ("Fetch my academic library.", "zotero_agent"),
         ("Retrieve citations.", "s2_agent"),
         ("Can you get journal articles?", "s2_agent"),
-        (
-            "Completely unrelated query.",
-            "__end__",
-        ),  # NEW: Should trigger the `END` case
+        ("I want to read the PDF document.", "pdf_agent"),
+        ("Download the paper from arxiv.", "paper_download_agent"),
+        ("Completely unrelated query.", "__end__"),
     ],
 )
 def test_routing_logic(mock_state, mock_router, user_query, expected_agent):
