@@ -26,7 +26,7 @@ dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_
 
 
 class TestZoteroSearchTool(unittest.TestCase):
-    """test for Zotero search tool"""
+    """Tests for Zotero search tool."""
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
@@ -41,7 +41,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """test valid query"""
+        """Test valid query returns correct Command output."""
         # Setup Hydra mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
@@ -116,7 +116,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """test empty query fetches all items"""
+        """Test empty query fetches all items."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -166,7 +166,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """test no items returned from Zotero"""
+        """Test no items returned from Zotero."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -199,7 +199,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """test no matching papers returned from Zotero"""
+        """
+        Test that when non-research items (e.g. attachments, notes) are returned,
+        they are still included since filtering is disabled.
+        """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -240,9 +243,13 @@ class TestZoteroSearchTool(unittest.TestCase):
             "tool_call_id": tool_call_id,
             "limit": 2,
         }
-        with self.assertRaises(RuntimeError) as context:
-            zotero_search_tool.run(tool_input)
-        self.assertIn("No matching papers returned from Zotero", str(context.exception))
+        # Instead of expecting a RuntimeError, we now expect both items to be returned.
+        result = zotero_search_tool.run(tool_input)
+        update = result.update
+        filtered_papers = update["zotero_read"]
+        self.assertIn("paper1", filtered_papers)
+        self.assertIn("paper2", filtered_papers)
+        self.assertEqual(len(filtered_papers), 2)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
@@ -257,7 +264,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """test items API exception"""
+        """Test items API exception is properly raised."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
         mock_get_item_collections.return_value = {}
@@ -306,7 +313,7 @@ class TestZoteroSearchTool(unittest.TestCase):
                     "url": "http://example.com",
                     "itemType": "journalArticle",
                 }
-            },  # missing key triggers line 136
+            },  # Missing 'key' field
             {
                 "data": {
                     "key": "paper_valid",

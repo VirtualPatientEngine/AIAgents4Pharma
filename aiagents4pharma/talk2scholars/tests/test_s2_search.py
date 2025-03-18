@@ -85,7 +85,7 @@ def dummy_requests_get_success(url, params, timeout):
             {
                 "paperId": "1",
                 "title": "Paper 1",
-                "authors": ["Author A"],
+                "authors": [{"name": "Author A", "authorId": "A1"}],
                 "year": 2020,
                 "citationCount": 10,
                 "url": "http://paper1",
@@ -94,7 +94,7 @@ def dummy_requests_get_success(url, params, timeout):
             {
                 "paperId": "2",
                 "title": "Paper 2",
-                "authors": ["Author B"],
+                "authors": [{"name": "Author B", "authorId": "B1"}],
                 "year": 2021,
                 "citationCount": 20,
                 "url": "http://paper2",
@@ -256,7 +256,7 @@ def test_search_tool_requests_exception(monkeypatch):
     tool_call_id = "test_tool_call_id"
     with pytest.raises(
         RuntimeError,
-        match="Failed to connect to Semantic Scholar API. Please retry the same query.",
+        match="Failed to connect to Semantic Scholar API after 10 attempts. Please retry the same query.",
     ):
         search_tool.run(
             {
