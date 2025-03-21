@@ -20,7 +20,7 @@ from .utils.zotero_path import (
 )
 
 
-# pylint: disable=R0914,R0912,R0915
+# pylint: disable=R0914,R0911,R0912,R0915
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -283,6 +283,7 @@ def zotero_save_tool(
             }
         )
 
+    # pylint: disable=broad-exception-caught
     # Save items to Zotero
     try:
         response = zot.create_items(zotero_items)

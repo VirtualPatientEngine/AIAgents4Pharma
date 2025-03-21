@@ -9,6 +9,7 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+# pylint: disable=broad-exception-caught
 
 
 def get_item_collections(zot):

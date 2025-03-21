@@ -18,6 +18,8 @@ from .utils.zotero_path import fetch_papers_for_save
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# pylint: disable=R0914,R0912,R0915
+
 
 class ZoteroReviewInput(BaseModel):
     """Input schema for the Zotero review tool."""
@@ -163,7 +165,7 @@ def zotero_review_tool(
                 "approved_zotero_save": {"approved": False},
             }
         )
-
+    # pylint: disable=broad-exception-caught
     except Exception as e:
         # If interrupt doesn't work, we need to show the summary and ask for confirmation
         logger.warning("Interrupt not supported in this context: %s", e)
