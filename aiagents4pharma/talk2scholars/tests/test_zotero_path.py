@@ -11,6 +11,12 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_all_collection_paths,
     get_item_collections,
 )
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
+    zotero_search_tool,
+)
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
+    zotero_save_tool,
+)
 
 
 class TestGetItemCollections(unittest.TestCase):
@@ -62,7 +68,10 @@ class TestGetItemCollections(unittest.TestCase):
 
 
 class TestFindOrCreateCollectionExtra(unittest.TestCase):
+    """Extra tests for the find_or_create_collection function."""
+
     def setUp(self):
+        """Set up a fake Zotero client with some default collections."""
         # Set up a fake Zotero client with some default collections.
         self.fake_zot = MagicMock()
         self.fake_zot.collections.return_value = [
@@ -283,10 +292,7 @@ class TestZoteroWrite:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with (
-            patch("hydra.initialize") as mock_init,
-            patch("hydra.compose") as mock_compose,
-        ):
+        with (patch("hydra.compose") as mock_compose,):
             cfg = MagicMock()
             cfg.tools.zotero_write.user_id = "test_user"
             cfg.tools.zotero_write.library_type = "user"
@@ -305,12 +311,9 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
-    def test_zotero_save_no_papers(self, mock_fetch, mock_hydra, mock_zotero):
+    def test_zotero_save_no_papers(self, mock_fetch):
         """When no papers exist (even after approval), we get a
         helpful Command, not an exception."""
-        from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
-            zotero_save_tool,
-        )
 
         mock_fetch.return_value = None
 
@@ -334,13 +337,8 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
     )
-    def test_zotero_save_invalid_collection(
-        self, mock_find, mock_fetch, mock_hydra, mock_zotero
-    ):
+    def test_zotero_save_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
         """Saving to a nonexistent Zotero collection returns an error Command."""
-        from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
-            zotero_save_tool,
-        )
 
         sample = {"paper1": {"Title": "Test Paper"}}
         mock_fetch.return_value = sample
@@ -378,9 +376,6 @@ class TestZoteroWrite:
     )
     def test_zotero_save_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
         """A valid approved save returns a success Command with summary."""
-        from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
-            zotero_save_tool,
-        )
 
         sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
         mock_fetch.return_value = sample
@@ -447,9 +442,6 @@ class TestZoteroRead:
         self, mock_get_collections, mock_hydra, mock_zotero
     ):
         """Test that zotero_read_tool handles errors in get_item_collections."""
-        from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
-            zotero_search_tool,
-        )
 
         # Setup mocks
         mock_get_collections.side_effect = Exception("Test error")
