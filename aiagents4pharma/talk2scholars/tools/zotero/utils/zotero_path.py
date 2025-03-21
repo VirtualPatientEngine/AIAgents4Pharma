@@ -64,44 +64,46 @@ def get_item_collections(zot):
 
 
 def find_or_create_collection(zot, path, create_missing=False):
-    """Find a collection by path, with improved case-insensitive matching."""
     logger.info(
         f"Finding collection for path: {path} (create_missing={create_missing})"
     )
-
-    # Normalize path - remove leading/trailing slashes and convert to lowercase for comparison
-    path = path.strip("/").lower()
-    path_parts = path.split("/") if path else []
+    # Normalize path: remove leading/trailing slashes and convert to lowercase
+    normalized = path.strip("/").lower()
+    path_parts = normalized.split("/") if normalized else []
 
     if not path_parts:
         logger.warning("Empty path provided")
         return None
 
-    # Get all collections to work with
+    # Get all collections from Zotero
     all_collections = zot.collections()
     logger.info(f"Found {len(all_collections)} collections in Zotero")
 
-    # Debug: Log all collection names to help diagnose the issue
-    collection_names = [col["data"]["name"] for col in all_collections]
-    logger.info(f"Available collections: {collection_names}")
+    # Determine target name (last part) and, if nested, find the parent's key
+    target_name = path_parts[-1]
+    parent_key = None
+    if len(path_parts) > 1:
+        parent_name = path_parts[-2]
+        # Look for a collection with name matching the parent (case-insensitive)
+        for col in all_collections:
+            if col["data"]["name"].lower() == parent_name:
+                parent_key = col["key"]
+                break
 
-    # Try direct match first (ignoring hierarchy)
-    target_name = path_parts[-1]  # Just the final part of the path
-
-    # Check for a direct match by name (case-insensitive)
+    # Try to find an existing collection by direct match (ignoring hierarchy)
     for col in all_collections:
         if col["data"]["name"].lower() == target_name:
             logger.info(f"Found direct match for {target_name}: {col['key']}")
             return col["key"]
 
-    # If we need more precise path matching, implement hierarchy checks here
-    # (only needed if you have multiple collections with the same name in different hierarchies)
-
-    # If we reach here, no match was found
+    # No match found: create one if allowed
     if create_missing:
-        # Logic to create the collection
+        payload = {"name": target_name}
+        if parent_key:
+            payload["parentCollection"] = parent_key
         try:
-            result = zot.create_collection({"name": target_name})
+            result = zot.create_collection(payload)
+            # Interpret result based on structure
             if "success" in result:
                 new_key = result["success"]["0"]
             else:

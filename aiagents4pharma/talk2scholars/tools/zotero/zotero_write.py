@@ -99,7 +99,7 @@ def zotero_save_tool(
         names_display = ", ".join(collection_names)
 
         raise RuntimeError(
-            f"Error: Could not find or create collection '{collection_path}'. "
+            f"Error: The collection path '{collection_path}' does not exist in Zotero. "
             f"Available collections are: {names_display}. "
             f"Please try saving to one of these existing collections."
         )
