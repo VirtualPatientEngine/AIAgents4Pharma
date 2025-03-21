@@ -5,7 +5,6 @@ Unit tests for Zotero write tool in zotero_write.py.
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
-from langgraph.types import Command
 
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_save_tool
 
@@ -61,6 +60,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "state": self.make_state({}, True),
             }
         )
+        mock_fetch.assert_called_once()
         self.assertIn(
             "No fetched papers were found to save", result.update["messages"][0].content
         )
@@ -84,6 +84,8 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "state": self.make_state({"p1": {}}, True),
             }
         )
+        mock_fetch.return_value = {"p1": {"Title": "X"}}
+        mock_find.return_value = None
         content = result.update["messages"][0].content
         self.assertIn("Error: Collection path mismatch", content)
         self.assertIn("/DoesNotExist", content)
@@ -113,6 +115,8 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "state": self.make_state({"p1": {}}, True),
             }
         )
+        mock_fetch.return_value = {"p1": {"Title": "X"}}
+        mock_find.return_value = "colKey"
         self.assertIn(
             "Error saving papers to Zotero", result.update["messages"][0].content
         )
@@ -132,6 +136,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.fake_zot.create_items.return_value = {
             "successful": {"0": {"key": "item1"}}
         }
+        mock_fetch.return_value = {"p1": {"Title": "X"}}
+        mock_find.return_value = "colKey"
 
         result = zotero_save_tool.run(
             {
@@ -167,6 +173,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         result = zotero_save_tool.run(
             {"tool_call_id": "id", "collection_path": "/DoesNotExist", "state": state}
         )
+        mock_fetch.return_value = {"p1": {"Title": "X"}}
+        mock_find.return_value = None
         content = result.update["messages"][0].content
         self.assertIn("does not exist in Zotero", content)
         self.assertIn("Existing", content)
@@ -192,6 +200,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "user_confirmation": "Yes",
             }
         )
+        mock_fetch.assert_called_once()
         content = result.update["messages"][0].content
         self.assertIn("No fetched papers were found to save", content)
 
