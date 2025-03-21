@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This tool is used to save fetched papers to Zotero library.
+This tool is used to save fetched papers to Zotero library after human approval.
 """
 
 import logging
@@ -34,13 +34,13 @@ class ZoteroSaveInput(BaseModel):
 
     tool_call_id: Annotated[str, InjectedToolCallId]
     collection_path: str = Field(
-        default=None,
-        description=(
-            "The path where the paper should be saved in the Zotero library."
-            "Example: '/machine/cern/mobile'"
-        ),
+        description="The path where the paper should be saved in the Zotero library."
     )
     state: Annotated[dict, InjectedState]
+    user_confirmation: str = Field(
+        default="",
+        description="Optional user confirmation message when the interrupt mechanism is not available.",
+    )
 
 
 @tool(args_schema=ZoteroSaveInput, parse_docstring=True)
@@ -48,19 +48,120 @@ def zotero_save_tool(
     tool_call_id: Annotated[str, InjectedToolCallId],
     collection_path: str,
     state: Annotated[dict, InjectedState],
+    user_confirmation: str = "",
 ) -> Command[Any]:
     """
     Use this tool to save previously fetched papers from Semantic Scholar
-    to a specified Zotero collection.
+    to a specified Zotero collection after human approval.
+
+    This tool checks if the user has approved the save operation via the
+    zotero_review_tool. If approved, it will save the papers to the
+    approved collection path.
 
     Args:
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
         collection_path (str): The Zotero collection path where papers should be saved.
         state (Annotated[dict, InjectedState]): The state containing previously fetched papers.
+        user_confirmation (str, optional): User confirmation message when interrupt is not available.
 
     Returns:
         Command[Any]: The save results and related information.
     """
+    # First check if we have approval from the interrupt mechanism
+    approval_info = state.get("approved_zotero_save", {})
+
+    # If we don't have explicit approval but have papers_reviewed state and user confirmation
+    if not approval_info.get("approved", False) and approval_info.get(
+        "papers_reviewed", False
+    ):
+        # Check if user has confirmed in this non-interrupt workflow
+        if user_confirmation.lower() in [
+            "yes",
+            "y",
+            "approve",
+            "confirmed",
+            "approve saving to zotero",
+            "true",
+        ]:
+            # Update the approval info since user confirmed via text
+            approval_info["approved"] = True
+        elif user_confirmation:
+            # User explicitly rejected via text
+            return Command(
+                update={
+                    "messages": [
+                        ToolMessage(
+                            content="Save operation was rejected by the user.",
+                            tool_call_id=tool_call_id,
+                        )
+                    ],
+                    "approved_zotero_save": {"approved": False},
+                }
+            )
+
+    # Now proceed with normal checks
+    if not approval_info:
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content="Error: Save operation not reviewed by user. Please use zotero_review_tool first.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
+
+    if not approval_info.get("approved", False) and not approval_info.get(
+        "papers_reviewed", False
+    ):
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content="Save operation was rejected by the user.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
+
+    # If papers were reviewed but not approved and no confirmation provided
+    if (
+        not approval_info.get("approved", False)
+        and approval_info.get("papers_reviewed", False)
+        and not user_confirmation
+    ):
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content="Papers have been reviewed but not yet approved. "
+                        "Please respond with 'Yes' to confirm saving the papers.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
+
+    # Verify collection path
+    # If approval info has a collection path, ensure it matches what was approved
+    if (
+        "collection_path" in approval_info
+        and approval_info["collection_path"] != collection_path
+    ):
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content=f"Error: Collection path mismatch. You're trying to save to '{collection_path}' "
+                        f"but approved path was '{approval_info['collection_path']}'.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
+
     # Load hydra configuration
     with hydra.initialize(version_base=None, config_path="../../configs"):
         cfg = hydra.compose(
@@ -79,8 +180,15 @@ def zotero_save_tool(
     fetched_papers = fetch_papers_for_save(state)
 
     if not fetched_papers:
-        raise RuntimeError(
-            "No fetched papers were found to save. Please retrieve papers using Zotero Read or Semantic Scholar first."
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content="No fetched papers were found to save. Please retrieve papers using Zotero Read or Semantic Scholar first.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
         )
 
     # Normalize the requested collection path
@@ -98,10 +206,17 @@ def zotero_save_tool(
         collection_names = [col["data"]["name"] for col in available_collections]
         names_display = ", ".join(collection_names)
 
-        raise RuntimeError(
-            f"Error: The collection path '{collection_path}' does not exist in Zotero. "
-            f"Available collections are: {names_display}. "
-            f"Please try saving to one of these existing collections."
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content=f"Error: The collection path '{collection_path}' does not exist in Zotero. "
+                        f"Available collections are: {names_display}. "
+                        f"Please try saving to one of these existing collections.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
         )
 
     # Format papers for Zotero and assign to the specified collection
@@ -163,7 +278,16 @@ def zotero_save_tool(
         logger.info("Papers successfully saved to Zotero: %s", response)
     except Exception as e:
         logger.error("Error saving to Zotero: %s", str(e))
-        raise RuntimeError(f"Error saving papers to Zotero: {str(e)}") from e
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content=f"Error saving papers to Zotero: {str(e)}",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+            }
+        )
 
     # Get the collection name for better feedback
     collections = zot.collections()
@@ -189,6 +313,7 @@ def zotero_save_tool(
     )
     content += "Here are a few of these articles:\n" + top_papers_info
 
+    # Clear the approval info so it's not reused
     return Command(
         update={
             "messages": [
@@ -198,5 +323,6 @@ def zotero_save_tool(
                     artifact=fetched_papers,
                 )
             ],
+            "approved_zotero_save": {},  # Clear approval info
         }
     )
