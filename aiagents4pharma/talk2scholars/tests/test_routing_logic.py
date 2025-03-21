@@ -22,6 +22,7 @@ def mock_router():
     """Creates a mock supervisor router that routes based on keyword matching."""
 
     def mock_supervisor_node(state):
+        """Mock supervisor node that routes based on keyword matching."""
         query = state["messages"][-1].content.lower()
         # Define keywords for each sub-agent.
         s2_keywords = [
@@ -69,7 +70,5 @@ def test_routing_logic(mock_state, mock_router, user_query, expected_agent):
     """Tests that the routing logic correctly assigns the right agent or ends conversation."""
     mock_state["messages"].append(HumanMessage(content=user_query))
     result = mock_router(mock_state)
-
-    print(f"\nDEBUG: Query '{user_query}' routed to: {result.goto}")
 
     assert result.goto == expected_agent, f"Failed for query: {user_query}"
