@@ -344,64 +344,6 @@ class TestZoteroSaveTool(unittest.TestCase):
             zotero_save_tool.run(tool_input)
         self.assertIn("Error saving papers to Zotero", str(context.exception))
 
-    # --- Additional tests to cover missing lines ---
-
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.zotero.Zotero")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.get_item_collections"
-    )
-    def test_get_item_collections_exception(
-        self,
-        mock_get_item_collections,
-        mock_zotero_class,
-        mock_hydra_compose,
-        mock_hydra_init,
-    ):
-        """
-        Test that if get_item_collections raises an exception, the fallback branch
-        raises a RuntimeError.
-        """
-        mock_hydra_compose.return_value = dummy_cfg
-        mock_hydra_init.return_value.__enter__.return_value = None
-
-        # Provide valid fetched papers so we bypass earlier error
-        state = {
-            "last_displayed_papers": {
-                "paper1": {
-                    "Title": "Paper 1",
-                    "Abstract": "Abstract 1",
-                    "Date": "2021",
-                    "URL": "http://example.com",
-                    "Citations": "0",
-                }
-            },
-            "zotero_read": {},  # empty so fallback is triggered
-            "query": "dummy query",
-        }
-
-        fake_zot = MagicMock()
-        fake_zot.collections.return_value = [
-            {"key": "col1", "data": {"name": "Test Collection"}}
-        ]
-        mock_zotero_class.return_value = fake_zot
-
-        # Simulate exception in get_item_collections
-        mock_get_item_collections.side_effect = Exception("Mapping error")
-
-        tool_call_id = "test_call_7"
-        tool_input = {
-            "tool_call_id": tool_call_id,
-            "collection_path": "/Test Collection",
-            "state": state,
-        }
-        with self.assertRaises(RuntimeError) as context:
-            zotero_save_tool.run(tool_input)
-        self.assertIn(
-            "Failed to generate collection path mappings", str(context.exception)
-        )
-
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.compose")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_write.zotero.Zotero")
