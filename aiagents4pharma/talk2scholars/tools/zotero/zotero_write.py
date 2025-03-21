@@ -39,7 +39,8 @@ class ZoteroSaveInput(BaseModel):
     state: Annotated[dict, InjectedState]
     user_confirmation: str = Field(
         default="",
-        description="Optional user confirmation message when the interrupt mechanism is not available.",
+        description="Optional user confirmation message when the interrupt "
+        "mechanism is not available.",
     )
 
 
@@ -62,7 +63,8 @@ def zotero_save_tool(
         tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
         collection_path (str): The Zotero collection path where papers should be saved.
         state (Annotated[dict, InjectedState]): The state containing previously fetched papers.
-        user_confirmation (str, optional): User confirmation message when interrupt is not available.
+        user_confirmation (str, optional): User confirmation message when interrupt is
+        not available.
 
     Returns:
         Command[Any]: The save results and related information.
@@ -105,7 +107,8 @@ def zotero_save_tool(
             update={
                 "messages": [
                     ToolMessage(
-                        content="Error: Save operation not reviewed by user. Please use zotero_review_tool first.",
+                        content="Error: Save operation not reviewed by user. "
+                        "Please use zotero_review_tool first.",
                         tool_call_id=tool_call_id,
                     )
                 ],
@@ -150,12 +153,16 @@ def zotero_save_tool(
         "collection_path" in approval_info
         and approval_info["collection_path"] != collection_path
     ):
+
         return Command(
             update={
                 "messages": [
                     ToolMessage(
-                        content=f"Error: Collection path mismatch. You're trying to save to '{collection_path}' "
-                        f"but approved path was '{approval_info['collection_path']}'.",
+                        content=(
+                            f"Error: Collection path mismatch. You're trying to save to "
+                            f"'{collection_path}' but approved path was "
+                            f"'{approval_info['collection_path']}'."
+                        ),
                         tool_call_id=tool_call_id,
                     )
                 ],
@@ -184,7 +191,10 @@ def zotero_save_tool(
             update={
                 "messages": [
                     ToolMessage(
-                        content="No fetched papers were found to save. Please retrieve papers using Zotero Read or Semantic Scholar first.",
+                        content=(
+                            "No fetched papers were found to save. "
+                            "Please retrieve papers using Zotero Read or Semantic Scholar first."
+                        ),
                         tool_call_id=tool_call_id,
                     )
                 ],
@@ -210,9 +220,12 @@ def zotero_save_tool(
             update={
                 "messages": [
                     ToolMessage(
-                        content=f"Error: The collection path '{collection_path}' does not exist in Zotero. "
-                        f"Available collections are: {names_display}. "
-                        f"Please try saving to one of these existing collections.",
+                        content=(
+                            f"Error: The collection path '{collection_path}' does "
+                            f"not exist in Zotero. "
+                            f"Available collections are: {names_display}. "
+                            f"Please try saving to one of these existing collections."
+                        ),
                         tool_call_id=tool_call_id,
                     )
                 ],
