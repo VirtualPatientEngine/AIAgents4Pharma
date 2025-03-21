@@ -292,13 +292,15 @@ class TestZoteroWrite:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with (patch("hydra.compose") as mock_compose,):
+        with patch("hydra.compose") as mock_compose:
             cfg = MagicMock()
             cfg.tools.zotero_write.user_id = "test_user"
             cfg.tools.zotero_write.library_type = "user"
             cfg.tools.zotero_write.api_key = "test_key"
+            cfg.tools.zotero_write.zotero = MagicMock()
+            cfg.tools.zotero_write.zotero.max_limit = 50
             mock_compose.return_value = cfg
-            yield
+            yield cfg
 
     @pytest.fixture
     def mock_zotero(self):
@@ -312,20 +314,20 @@ class TestZoteroWrite:
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
     def test_zotero_save_no_papers(self, mock_fetch):
-        """When no papers exist (even after approval), we get a
-        helpful Command, not an exception."""
-
+        """When no papers exist (even after approval),
+        we get a helpful Command, not an exception."""
         mock_fetch.return_value = None
 
-        # Simulate prior human approval
         state = {
             "approved_zotero_save": {"approved": True, "collection_path": "/Curiosity"}
         }
 
-        result = zotero_save_tool.func(
-            tool_call_id="test_id",
-            collection_path="/Curiosity",
-            state=state,
+        result = zotero_save_tool.run(
+            {
+                "tool_call_id": "test_id",
+                "collection_path": "/Curiosity",
+                "state": state,
+            }
         )
 
         msg = result.update["messages"][0].content
@@ -339,11 +341,9 @@ class TestZoteroWrite:
     )
     def test_zotero_save_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
         """Saving to a nonexistent Zotero collection returns an error Command."""
-
         sample = {"paper1": {"Title": "Test Paper"}}
         mock_fetch.return_value = sample
         mock_find.return_value = None
-        # Return two existing collections from the mocked Zotero client
         mock_zotero.collections.return_value = [
             {"key": "k1", "data": {"name": "Curiosity"}},
             {"key": "k2", "data": {"name": "Random"}},
@@ -358,10 +358,12 @@ class TestZoteroWrite:
             "papers": sample,
         }
 
-        result = zotero_save_tool.func(
-            tool_call_id="test_id",
-            collection_path="/NonExistent",
-            state=state,
+        result = zotero_save_tool.run(
+            {
+                "tool_call_id": "test_id",
+                "collection_path": "/NonExistent",
+                "state": state,
+            }
         )
 
         msg = result.update["messages"][0].content
@@ -376,7 +378,6 @@ class TestZoteroWrite:
     )
     def test_zotero_save_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
         """A valid approved save returns a success Command with summary."""
-
         sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
         mock_fetch.return_value = sample
         mock_find.return_value = "abc123"
@@ -386,6 +387,7 @@ class TestZoteroWrite:
         mock_zotero.create_items.return_value = {
             "successful": {"0": {"key": "item123"}}
         }
+        mock_hydra.tools.zotero_write.zotero.max_limit = 50
 
         state = {
             "approved_zotero_save": {"approved": True, "collection_path": "/radiation"},
@@ -393,10 +395,12 @@ class TestZoteroWrite:
             "papers": sample,
         }
 
-        result = zotero_save_tool.func(
-            tool_call_id="test_id",
-            collection_path="/radiation",
-            state=state,
+        result = zotero_save_tool.run(
+            {
+                "tool_call_id": "test_id",
+                "collection_path": "/radiation",
+                "state": state,
+            }
         )
 
         msg = result.update["messages"][0].content
@@ -410,10 +414,7 @@ class TestZoteroRead:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with (
-            patch("hydra.initialize") as mock_init,
-            patch("hydra.compose") as mock_compose,
-        ):
+        with patch("hydra.initialize"), patch("hydra.compose") as mock_compose:
             cfg = MagicMock()
             cfg.tools.zotero_read.user_id = "test_user"
             cfg.tools.zotero_read.library_type = "user"
@@ -425,7 +426,7 @@ class TestZoteroRead:
                 "conferencePaper",
             ]
             mock_compose.return_value = cfg
-            yield
+            yield cfg
 
     @pytest.fixture
     def mock_zotero(self):
@@ -443,10 +444,8 @@ class TestZoteroRead:
     ):
         """Test that zotero_read_tool handles errors in get_item_collections."""
 
-        # Setup mocks
         mock_get_collections.side_effect = Exception("Test error")
 
-        # Setup items
         mock_zotero.items.return_value = [
             {
                 "data": {
@@ -456,16 +455,17 @@ class TestZoteroRead:
                 }
             }
         ]
+        mock_hydra.tools.zotero_read.zotero.max_limit = 50
 
-        # Access the underlying function directly for testing
-        underlying_func = zotero_search_tool.func
-
-        # Test reading with get_item_collections error
-        result = underlying_func(
-            query="test", only_articles=True, tool_call_id="test_id", limit=2
+        result = zotero_search_tool.run(
+            {
+                "query": "test",
+                "only_articles": True,
+                "tool_call_id": "test_id",
+                "limit": 2,
+            }
         )
 
-        # Verify the function didn't crash and returned some result
         assert result is not None
         assert isinstance(result.update, dict)
         assert "zotero_read" in result.update

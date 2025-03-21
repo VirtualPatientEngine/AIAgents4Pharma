@@ -126,7 +126,7 @@ def zotero_review_tool(
                 }
             )
 
-        elif isinstance(human_review, dict) and human_review.get("custom_path"):
+        if isinstance(human_review, dict) and human_review.get("custom_path"):
             # User provided a custom collection path
             custom_path = human_review.get("custom_path")
             logger.info("User approved with custom path: %s", custom_path)
@@ -149,21 +149,20 @@ def zotero_review_tool(
                 }
             )
 
-        else:
-            # User rejected
-            logger.info("User rejected saving papers to Zotero")
+        # fallback: rejection
+        logger.info("User rejected saving papers to Zotero")
 
-            return Command(
-                update={
-                    "messages": [
-                        ToolMessage(
-                            content="Human rejected saving papers to Zotero.",
-                            tool_call_id=tool_call_id,
-                        )
-                    ],
-                    "approved_zotero_save": {"approved": False},
-                }
-            )
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content="Human rejected saving papers to Zotero.",
+                        tool_call_id=tool_call_id,
+                    )
+                ],
+                "approved_zotero_save": {"approved": False},
+            }
+        )
 
     except Exception as e:
         # If interrupt doesn't work, we need to show the summary and ask for confirmation
