@@ -23,6 +23,7 @@ class TestZoteroReviewTool(unittest.TestCase):
         result = zotero_review_tool.run(
             {"tool_call_id": "tc", "collection_path": "/Col", "state": {}}
         )
+        mock_fetch.assert_called_once()
         self.assertIsInstance(result, Command)
         self.assertIn(
             "No fetched papers were found to save", result.update["messages"][0].content
@@ -45,6 +46,8 @@ class TestZoteroReviewTool(unittest.TestCase):
                 "state": {"last_displayed_papers": "dummy"},
             }
         )
+        mock_fetch.return_value = {"p1": {"Title": "T1", "Authors": ["A1"]}}
+        mock_interrupt.return_value = True
         upd = result.update
         self.assertEqual(
             upd["approved_zotero_save"], {"collection_path": "/Col", "approved": True}
@@ -71,6 +74,8 @@ class TestZoteroReviewTool(unittest.TestCase):
                 "state": {"last_displayed_papers": "dummy"},
             }
         )
+        mock_fetch.return_value = {"p1": {"Title": "T1", "Authors": ["A1"]}}
+        mock_interrupt.return_value = {"custom_path": "/Custom"}
         upd = result.update
         self.assertEqual(
             upd["approved_zotero_save"],
@@ -98,6 +103,8 @@ class TestZoteroReviewTool(unittest.TestCase):
                 "state": {"last_displayed_papers": "dummy"},
             }
         )
+        mock_fetch.return_value = {"p1": {"Title": "T1", "Authors": ["A1"]}}
+        mock_interrupt.return_value = False
         upd = result.update
         self.assertEqual(upd["approved_zotero_save"], {"approved": False})
         self.assertIn(
@@ -118,6 +125,7 @@ class TestZoteroReviewTool(unittest.TestCase):
             for i in range(7)
         }
         mock_fetch.return_value = papers
+        mock_interrupt.side_effect = Exception("no interrupt")
 
         result = zotero_review_tool.run(
             {

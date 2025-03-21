@@ -15,9 +15,7 @@ from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 from pydantic import BaseModel, Field
 from .utils.zotero_path import (
-    get_item_collections,
     find_or_create_collection,
-    get_all_collection_paths,
     fetch_papers_for_save,
 )
 
