@@ -7,6 +7,9 @@ from unittest.mock import MagicMock
 from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_item_collections,
 )
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
+    find_or_create_collection,
+)
 
 
 class TestGetItemCollections(unittest.TestCase):
@@ -55,3 +58,64 @@ class TestGetItemCollections(unittest.TestCase):
 
         result = get_item_collections(fake_zot)
         self.assertEqual(result, expected_mapping)
+
+
+class TestFindOrCreateCollectionExtra(unittest.TestCase):
+    def setUp(self):
+        # Set up a fake Zotero client with some default collections.
+        self.fake_zot = MagicMock()
+        self.fake_zot.collections.return_value = [
+            {"key": "parent1", "data": {"name": "Parent", "parentCollection": None}},
+            {"key": "child1", "data": {"name": "Child", "parentCollection": "parent1"}},
+        ]
+
+    def test_empty_path(self):
+        """Test that an empty path returns None."""
+        result = find_or_create_collection(self.fake_zot, "", create_missing=False)
+        self.assertIsNone(result)
+
+    def test_create_collection_with_success_key(self):
+        """
+        Test that when create_missing is True and the response contains a "success" key,
+        the function returns the new collection key.
+        """
+        # Simulate no existing collections (so direct match fails)
+        self.fake_zot.collections.return_value = []
+        # Simulate create_collection returning a dict with a "success" key.
+        self.fake_zot.create_collection.return_value = {
+            "success": {"0": "new_key_success"}
+        }
+        result = find_or_create_collection(
+            self.fake_zot, "/NewCollection", create_missing=True
+        )
+        self.assertEqual(result, "new_key_success")
+        # Verify payload formatting: for a simple (non-nested) path, no parentCollection.
+        args, _ = self.fake_zot.create_collection.call_args
+        payload = args[0]
+        self.assertEqual(payload["name"], "newcollection")
+        self.assertNotIn("parentCollection", payload)
+
+    def test_create_collection_with_successful_key(self):
+        """
+        Test that when create_missing is True and the response contains a "successful" key,
+        the function returns the new collection key.
+        """
+        self.fake_zot.collections.return_value = []
+        self.fake_zot.create_collection.return_value = {
+            "successful": {"0": {"data": {"key": "new_key_successful"}}}
+        }
+        result = find_or_create_collection(
+            self.fake_zot, "/NewCollection", create_missing=True
+        )
+        self.assertEqual(result, "new_key_successful")
+
+    def test_create_collection_exception(self):
+        """
+        Test that if create_collection raises an exception, the function logs the error and returns None.
+        """
+        self.fake_zot.collections.return_value = []
+        self.fake_zot.create_collection.side_effect = Exception("Creation error")
+        result = find_or_create_collection(
+            self.fake_zot, "/NewCollection", create_missing=True
+        )
+        self.assertIsNone(result)
