@@ -12,13 +12,16 @@ from aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool import (
 
 
 class TestZoteroReviewTool(unittest.TestCase):
+    """test class for Zotero review tool"""
+
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save",
         return_value=None,
     )
     def test_no_fetched_papers(self, mock_fetch):
-        result = zotero_review_tool.func(
-            tool_call_id="tc", collection_path="/Col", state={}
+        """Test when no fetched papers are found"""
+        result = zotero_review_tool.run(
+            {"tool_call_id": "tc", "collection_path": "/Col", "state": {}}
         )
         self.assertIsInstance(result, Command)
         self.assertIn(
@@ -34,10 +37,13 @@ class TestZoteroReviewTool(unittest.TestCase):
         return_value=True,
     )
     def test_human_approve_boolean(self, mock_interrupt, mock_fetch):
-        result = zotero_review_tool.func(
-            tool_call_id="tc",
-            collection_path="/Col",
-            state={"last_displayed_papers": "dummy"},
+        """Test when human approves saving papers"""
+        result = zotero_review_tool.run(
+            {
+                "tool_call_id": "tc",
+                "collection_path": "/Col",
+                "state": {"last_displayed_papers": "dummy"},
+            }
         )
         upd = result.update
         self.assertEqual(
@@ -57,10 +63,13 @@ class TestZoteroReviewTool(unittest.TestCase):
         return_value={"custom_path": "/Custom"},
     )
     def test_human_approve_custom_path(self, mock_interrupt, mock_fetch):
-        result = zotero_review_tool.func(
-            tool_call_id="tc",
-            collection_path="/Col",
-            state={"last_displayed_papers": "dummy"},
+        """Test when human approves saving papers to custom path"""
+        result = zotero_review_tool.run(
+            {
+                "tool_call_id": "tc",
+                "collection_path": "/Col",
+                "state": {"last_displayed_papers": "dummy"},
+            }
         )
         upd = result.update
         self.assertEqual(
@@ -81,10 +90,13 @@ class TestZoteroReviewTool(unittest.TestCase):
         return_value=False,
     )
     def test_human_reject(self, mock_interrupt, mock_fetch):
-        result = zotero_review_tool.func(
-            tool_call_id="tc",
-            collection_path="/Col",
-            state={"last_displayed_papers": "dummy"},
+        """Test when human rejects saving papers"""
+        result = zotero_review_tool.run(
+            {
+                "tool_call_id": "tc",
+                "collection_path": "/Col",
+                "state": {"last_displayed_papers": "dummy"},
+            }
         )
         upd = result.update
         self.assertEqual(upd["approved_zotero_save"], {"approved": False})
@@ -100,16 +112,19 @@ class TestZoteroReviewTool(unittest.TestCase):
         side_effect=Exception("no interrupt"),
     )
     def test_interrupt_exception_summary(self, mock_interrupt, mock_fetch):
+        """Test when an exception is raised during interrupt"""
         papers = {
             f"id{i}": {"Title": f"Title{i}", "Authors": ["A1", "A2", "A3"]}
             for i in range(7)
         }
         mock_fetch.return_value = papers
 
-        result = zotero_review_tool.func(
-            tool_call_id="tc",
-            collection_path="/MyCol",
-            state={"last_displayed_papers": "dummy"},
+        result = zotero_review_tool.run(
+            {
+                "tool_call_id": "tc",
+                "collection_path": "/MyCol",
+                "state": {"last_displayed_papers": "dummy"},
+            }
         )
         upd = result.update
         content = upd["messages"][0].content
