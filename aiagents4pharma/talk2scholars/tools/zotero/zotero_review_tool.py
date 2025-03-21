@@ -48,29 +48,27 @@ def zotero_review_tool(
     Returns:
         Command[Any]: The next action to take based on human input.
     """
-    logger.info(f"Requesting human review for saving to collection: {collection_path}")
+    logger.info("Requesting human review for saving to collection: %s", collection_path)
 
     # Use our utility function to fetch papers from state
     fetched_papers = fetch_papers_for_save(state)
 
     if not fetched_papers:
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content="No fetched papers were found to save. Please retrieve papers using Zotero Read or Semantic Scholar first.",
-                        tool_call_id=tool_call_id,
-                    )
-                ],
-            }
+        message = ToolMessage(
+            content=(
+                "No fetched papers were found to save. "
+                "Please retrieve papers using Zotero Read or Semantic Scholar first."
+            ),
+            tool_call_id=tool_call_id,
         )
+        return Command(update={"messages": [message]})
 
     # Prepare papers summary for review
     papers_summary = []
     for paper_id, paper in list(fetched_papers.items())[
         :5
     ]:  # Limit to 5 papers for readability
-        logger.info(f"Paper ID: {paper_id}")
+        logger.info("Paper ID: %s", paper_id)
         title = paper.get("Title", "N/A")
         authors = ", ".join(
             [author.split(" (ID: ")[0] for author in paper.get("Authors", [])[:2]]
@@ -91,7 +89,10 @@ def zotero_review_tool(
         "collection_path": collection_path,
         "total_papers": total_papers,
         "papers_preview": papers_preview,
-        "message": f"Would you like to save {total_papers} papers to Zotero collection '{collection_path}'?",
+        "message": (
+            f"Would you like to save {total_papers} papers to Zotero "
+            f"collection '{collection_path}'?"
+        ),
     }
 
     try:
@@ -111,7 +112,10 @@ def zotero_review_tool(
                 update={
                     "messages": [
                         ToolMessage(
-                            content=f"Human approved saving {total_papers} papers to Zotero collection '{collection_path}'.",
+                            content=(
+                                f"Human approved saving {total_papers} papers to Zotero "
+                                f"collection '{collection_path}'."
+                            ),
                             tool_call_id=tool_call_id,
                         )
                     ],
@@ -125,13 +129,16 @@ def zotero_review_tool(
         elif isinstance(human_review, dict) and human_review.get("custom_path"):
             # User provided a custom collection path
             custom_path = human_review.get("custom_path")
-            logger.info(f"User approved with custom path: {custom_path}")
+            logger.info("User approved with custom path: %s", custom_path)
 
             return Command(
                 update={
                     "messages": [
                         ToolMessage(
-                            content=f"Human approved saving papers to custom Zotero collection '{custom_path}'.",
+                            content=(
+                                f"Human approved saving papers to custom Zotero "
+                                f"collection '{custom_path}'."
+                            ),
                             tool_call_id=tool_call_id,
                         )
                     ],
@@ -160,16 +167,19 @@ def zotero_review_tool(
 
     except Exception as e:
         # If interrupt doesn't work, we need to show the summary and ask for confirmation
-        logger.warning(f"Interrupt not supported in this context: {str(e)}")
+        logger.warning("Interrupt not supported in this context: %s", e)
 
         # Return a message requiring explicit confirmation
         return Command(
             update={
                 "messages": [
                     ToolMessage(
-                        content=f"REVIEW REQUIRED: Would you like to save {total_papers} papers to Zotero collection '{collection_path}'?\n\n"
-                        f"Papers to save:\n{papers_preview}\n\n"
-                        f"Please respond with 'Yes' to confirm or 'No' to cancel.",
+                        content=(
+                            f"REVIEW REQUIRED: Would you like to save {total_papers} papers "
+                            f"to Zotero collection '{collection_path}'?\n\n"
+                            f"Papers to save:\n{papers_preview}\n\n"
+                            "Please respond with 'Yes' to confirm or 'No' to cancel."
+                        ),
                         tool_call_id=tool_call_id,
                     )
                 ],

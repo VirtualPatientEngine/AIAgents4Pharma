@@ -34,6 +34,7 @@ def get_item_collections(zot):
 
     # Build full paths for collections
     def build_collection_path(col_key):
+        """build collection path from collection key"""
         path = []
         while col_key:
             path.insert(0, collection_map.get(col_key, "Unknown"))
@@ -64,8 +65,9 @@ def get_item_collections(zot):
 
 
 def find_or_create_collection(zot, path, create_missing=False):
+    """find collection or create if missing"""
     logger.info(
-        f"Finding collection for path: {path} (create_missing={create_missing})"
+        "Finding collection for path: %s (create_missing=%s)", path, create_missing
     )
     # Normalize path: remove leading/trailing slashes and convert to lowercase
     normalized = path.strip("/").lower()
@@ -77,7 +79,7 @@ def find_or_create_collection(zot, path, create_missing=False):
 
     # Get all collections from Zotero
     all_collections = zot.collections()
-    logger.info(f"Found {len(all_collections)} collections in Zotero")
+    logger.info("Found %d collections in Zotero", len(all_collections))
 
     # Determine target name (last part) and, if nested, find the parent's key
     target_name = path_parts[-1]
@@ -93,7 +95,7 @@ def find_or_create_collection(zot, path, create_missing=False):
     # Try to find an existing collection by direct match (ignoring hierarchy)
     for col in all_collections:
         if col["data"]["name"].lower() == target_name:
-            logger.info(f"Found direct match for {target_name}: {col['key']}")
+            logger.info("Found direct match for %s: %s", target_name, col["key"])
             return col["key"]
 
     # No match found: create one if allowed
@@ -108,13 +110,13 @@ def find_or_create_collection(zot, path, create_missing=False):
                 new_key = result["success"]["0"]
             else:
                 new_key = result["successful"]["0"]["data"]["key"]
-            logger.info(f"Created collection {target_name} with key {new_key}")
+            logger.info("Created collection %s with key %s", target_name, new_key)
             return new_key
         except Exception as e:
-            logger.error(f"Failed to create collection: {e}")
+            logger.error("Failed to create collection: %s", e)
             return None
     else:
-        logger.warning(f"No matching collection found for {target_name}")
+        logger.warning("No matching collection found for %s", target_name)
         return None
 
 
@@ -146,7 +148,7 @@ def get_all_collection_paths(zot):
         return "/" + "/".join(path)
 
     collection_paths = [build_collection_path(key) for key in collection_map]
-    logger.info(f"Found {len(collection_paths)} collection paths")
+    logger.info("Found %d collection paths", len(collection_paths))
     return collection_paths
 
 
@@ -172,7 +174,7 @@ def fetch_papers_for_save(state):
     if isinstance(last_displayed_key, str):
         # If it's a string (key to another state object), get that object
         fetched_papers = state.get(last_displayed_key, {})
-        logger.info(f"Using papers from '{last_displayed_key}' state key")
+        logger.info("Using papers from '%s' state key", last_displayed_key)
     else:
         # If it's already the papers object
         fetched_papers = last_displayed_key

@@ -2,9 +2,9 @@
 Unit tests for Zotero path utility in zotero_path.py.
 """
 
-import pytest
 import unittest
 from unittest.mock import MagicMock, patch
+import pytest
 from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     fetch_papers_for_save,
     find_or_create_collection,
@@ -112,7 +112,8 @@ class TestFindOrCreateCollectionExtra(unittest.TestCase):
 
     def test_create_collection_exception(self):
         """
-        Test that if create_collection raises an exception, the function logs the error and returns None.
+        Test that if create_collection raises an exception,
+        the function logs the error and returns None.
         """
         self.fake_zot.collections.return_value = []
         self.fake_zot.create_collection.side_effect = Exception("Creation error")
@@ -305,7 +306,8 @@ class TestZoteroWrite:
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
     def test_zotero_save_no_papers(self, mock_fetch, mock_hydra, mock_zotero):
-        """When no papers exist (even after approval), we get a helpful Command, not an exception."""
+        """When no papers exist (even after approval), we get a
+        helpful Command, not an exception."""
         from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
             zotero_save_tool,
         )

@@ -17,7 +17,10 @@ dummy_cfg = SimpleNamespace(
 
 
 class TestZoteroSaveTool(unittest.TestCase):
+    """Test class for Zotero save tool"""
+
     def setUp(self):
+        """Patch Hydra and Zotero client globally"""
         # Patch Hydra and Zotero client globally
         self.hydra_init = patch(
             "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize"
@@ -34,9 +37,11 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.zotero_class.return_value = self.fake_zot
 
     def tearDown(self):
+        """Stop all patches"""
         patch.stopall()
 
     def make_state(self, papers=None, approved=True, path="/Test Collection"):
+        """Create a state dictionary with optional papers and approval info"""
         state = {}
         if approved:
             state["approved_zotero_save"] = {"approved": True, "collection_path": path}
@@ -53,6 +58,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value=None,
     )
     def test_no_papers_after_approval(self, mock_fetch):
+        """Test when no fetched papers are found after approval"""
         result = zotero_save_tool.run(
             {
                 "tool_call_id": "id",
@@ -74,6 +80,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value=None,
     )
     def test_invalid_collection(self, mock_find, mock_fetch):
+        """Test when collection path is invalid"""
         self.fake_zot.collections.return_value = [
             {"key": "k1", "data": {"name": "Existing"}}
         ]
@@ -104,6 +111,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value="colKey",
     )
     def test_save_failure(self, mock_find, mock_fetch):
+        """Test when Zotero save operation fails"""
         self.fake_zot.collections.return_value = [
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
@@ -130,6 +138,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value="colKey",
     )
     def test_successful_save(self, mock_find, mock_fetch):
+        """Test when Zotero save operation is successful"""
         self.fake_zot.collections.return_value = [
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
@@ -151,6 +160,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.assertIn("Test Collection", content)
 
     def test_without_approval(self):
+        """Test when no approval info is found"""
         result = zotero_save_tool.run(
             {"tool_call_id": "id", "collection_path": "/Test Collection", "state": {}}
         )
@@ -165,6 +175,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value=None,
     )
     def test_invalid_collection_exists_branch(self, mock_find, mock_fetch):
+        """Test when collection path is invalid but exists"""
         self.fake_zot.collections.return_value = [
             {"key": "k1", "data": {"name": "Existing"}}
         ]
@@ -184,7 +195,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         return_value=None,
     )
     def test_user_confirms_via_text_then_no_papers(self, mock_fetch):
-        """If user_confirmation is truthy & approved via text, we mark approved then hit no‑papers path."""
+        """If user_confirmation is truthy & approved via text,
+        we mark approved then hit no‑papers path."""
         state = {
             "approved_zotero_save": {
                 "approved": False,
@@ -205,7 +217,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.assertIn("No fetched papers were found to save", content)
 
     def test_user_rejects_via_text(self):
-        """If user_confirmation is non‑empty but not an approval keyword, return rejected Command."""
+        """If user_confirmation is non‑empty but not an
+        approval keyword, return rejected Command."""
         state = {
             "approved_zotero_save": {
                 "approved": False,
@@ -235,7 +248,8 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.assertIn("Save operation was rejected by the user", content)
 
     def test_awaiting_user_confirmation(self):
-        """If papers_reviewed=True but approved=False and no user_confirmation, ask for confirmation."""
+        """If papers_reviewed=True but approved=False and no
+        user_confirmation, ask for confirmation."""
         state = {
             "approved_zotero_save": {
                 "approved": False,
