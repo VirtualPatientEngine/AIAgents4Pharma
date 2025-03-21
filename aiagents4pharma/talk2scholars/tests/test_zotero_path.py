@@ -305,25 +305,26 @@ class TestZoteroWrite:
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
     def test_zotero_save_no_papers(self, mock_fetch, mock_hydra, mock_zotero):
-        """Test that zotero_save_tool raises error when no papers are available."""
+        """When no papers exist (even after approval), we get a helpful Command, not an exception."""
         from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
             zotero_save_tool,
         )
 
-        # Setup mock
         mock_fetch.return_value = None
 
-        # Access the underlying function directly for testing
-        underlying_func = zotero_save_tool.func
+        # Simulate prior human approval
+        state = {
+            "approved_zotero_save": {"approved": True, "collection_path": "/Curiosity"}
+        }
 
-        # Test saving with no papers
-        with pytest.raises(RuntimeError) as excinfo:
-            # Call the underlying function directly with the arguments it expects
-            underlying_func(
-                tool_call_id="test_id", collection_path="/Curiosity", state={}
-            )
+        result = zotero_save_tool.func(
+            tool_call_id="test_id",
+            collection_path="/Curiosity",
+            state=state,
+        )
 
-        assert "No fetched papers were found" in str(excinfo.value)
+        msg = result.update["messages"][0].content
+        assert "No fetched papers were found to save" in msg
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
@@ -331,41 +332,41 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
     )
-    def test_zotero_save_invalid_collection(self, mock_find, mock_hydra, mock_zotero):
-        """Test that zotero_save_tool raises error for invalid collection path."""
+    def test_zotero_save_invalid_collection(
+        self, mock_find, mock_fetch, mock_hydra, mock_zotero
+    ):
+        """Saving to a nonexistent Zotero collection returns an error Command."""
         from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
             zotero_save_tool,
         )
 
-        # Create a test state with papers data
-        sample_papers = {"paper1": {"Title": "Test Paper"}}
-        test_state = {"papers": sample_papers, "last_displayed_papers": "papers"}
+        sample = {"paper1": {"Title": "Test Paper"}}
+        mock_fetch.return_value = sample
+        mock_find.return_value = None
+        # Return two existing collections from the mocked Zotero client
+        mock_zotero.collections.return_value = [
+            {"key": "k1", "data": {"name": "Curiosity"}},
+            {"key": "k2", "data": {"name": "Random"}},
+        ]
 
-        # Set up mock for find_or_create_collection to return None (not found)
-        with patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
-        ) as mock_find:
-            mock_find.return_value = None
+        state = {
+            "approved_zotero_save": {
+                "approved": True,
+                "collection_path": "/NonExistent",
+            },
+            "last_displayed_papers": "papers",
+            "papers": sample,
+        }
 
-            # Mock get_all_collection_paths
-            with patch(
-                "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_all_collection_paths"
-            ) as mock_get_paths:
-                mock_get_paths.return_value = ["/Curiosity", "/Random"]
+        result = zotero_save_tool.func(
+            tool_call_id="test_id",
+            collection_path="/NonExistent",
+            state=state,
+        )
 
-                # Access underlying function
-                underlying_func = zotero_save_tool.func
-
-                # Test saving to invalid collection
-                with pytest.raises(RuntimeError) as excinfo:
-                    underlying_func(
-                        tool_call_id="test_id",
-                        collection_path="/NonExistent",
-                        state=test_state,
-                    )
-
-                # Check the correct error message is returned
-                assert "does not exist in Zotero" in str(excinfo.value)
+        msg = result.update["messages"][0].content
+        assert "does not exist in Zotero" in msg
+        assert "Curiosity, Random" in msg
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
@@ -374,43 +375,36 @@ class TestZoteroWrite:
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
     )
     def test_zotero_save_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
-        """Test that zotero_save_tool successfully saves papers to a valid collection."""
+        """A valid approved save returns a success Command with summary."""
         from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
             zotero_save_tool,
         )
 
-        # Setup mocks for successful save
-        sample_papers = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
-        mock_fetch.return_value = sample_papers
-        mock_find.return_value = "abc123"  # Valid collection key
-
-        # Setup collection name retrieval
+        sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
+        mock_fetch.return_value = sample
+        mock_find.return_value = "abc123"
         mock_zotero.collections.return_value = [
             {"key": "abc123", "data": {"name": "radiation"}}
         ]
-
-        # Setup successful item creation
         mock_zotero.create_items.return_value = {
             "successful": {"0": {"key": "item123"}}
         }
 
-        # Access underlying function
-        underlying_func = zotero_save_tool.func
+        state = {
+            "approved_zotero_save": {"approved": True, "collection_path": "/radiation"},
+            "last_displayed_papers": "papers",
+            "papers": sample,
+        }
 
-        # Create a test state that contains the fetched papers.
-        test_state = {"last_displayed_papers": "papers", "papers": sample_papers}
-
-        # Test successful save with valid state
-        result = underlying_func(
-            tool_call_id="test_id", collection_path="/radiation", state=test_state
+        result = zotero_save_tool.func(
+            tool_call_id="test_id",
+            collection_path="/radiation",
+            state=state,
         )
 
-        # Verify result contains success message by accessing the update attribute
-        assert result.update is not None
-        assert "messages" in result.update
-        assert len(result.update["messages"]) > 0
-        assert "Save was successful" in result.update["messages"][0].content
-        assert "radiation" in result.update["messages"][0].content
+        msg = result.update["messages"][0].content
+        assert "Save was successful" in msg
+        assert "radiation" in msg
 
 
 class TestZoteroRead:
