@@ -13,13 +13,13 @@ from langgraph.types import Command
 from langchain_core.messages import ToolMessage
 
 # Import the classes and function under test
-from aiagents4pharma.talk2scholars.tools.paper_download.abstract_downloader import (
+from ..tools.paper_download.abstract_downloader import (
     AbstractPaperDownloader,
 )
-from aiagents4pharma.talk2scholars.tools.paper_download.arxiv_downloader import (
+from ..tools.paper_download.arxiv_downloader import (
     ArxivPaperDownloader,
 )
-from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input import (
+from ..tools.paper_download.download_arxiv_input import (
     download_arxiv_paper,
 )
 

@@ -1,0 +1,6 @@
+# Config for PubMed downloader tool
+
+efetch_url: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+pdf_lookup_url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC"  # simplified PMC pattern
+request_timeout: 10
+
