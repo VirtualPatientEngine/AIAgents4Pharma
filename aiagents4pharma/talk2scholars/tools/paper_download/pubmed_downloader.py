@@ -1,7 +1,7 @@
 """
-PubMed Paper Downloader (Standalone Version)
+PubMed Paper Downloader
 
-Implements AbstractPaperDownloader without Hydra, for use in testing or script-based execution.
+Implements AbstractPaperDownloader with Hydra. it downloads the pdf from through the PubMed API.
 """
 
 import logging
