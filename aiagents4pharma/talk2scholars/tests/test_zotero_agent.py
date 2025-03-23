@@ -10,7 +10,8 @@ from langchain_openai import ChatOpenAI
 from ..agents.zotero_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
-LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
 
 @pytest.fixture(autouse=True)
 def mock_hydra_fixture():
@@ -39,7 +40,7 @@ def mock_tools_fixture():
             "retrieve_semantic_scholar_paper_id"
         ) as mock_s2_retrieve_id,
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search_tool"
+            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search"
         ) as mock_zotero_query_results,
     ):
         mock_s2_display.return_value = {"result": "Mock Display Result"}

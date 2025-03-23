@@ -13,9 +13,9 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.zotero.zotero_read import zotero_search_tool
-from ..tools.zotero.zotero_review_tool import zotero_review_tool
-from ..tools.zotero.zotero_write import zotero_save_tool
+from ..tools.zotero.zotero_read import zotero_search
+from ..tools.zotero.zotero_review import zotero_review
+from ..tools.zotero.zotero_write import zotero_save
 from ..tools.s2.display_results import display_results as s2_display
 from ..tools.s2.query_results import query_results as s2_query_results
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
@@ -88,12 +88,12 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # Define the tools
     tools = ToolNode(
         [
-            zotero_search_tool,
+            zotero_search,
             s2_display,
             s2_query_results,
             retrieve_semantic_scholar_paper_id,
-            zotero_review_tool,  # First review
-            zotero_save_tool,  # Then save with user confirmation
+            zotero_review,  # First review
+            zotero_save,  # Then save with user confirmation
         ]
     )
 

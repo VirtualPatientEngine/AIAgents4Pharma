@@ -32,14 +32,14 @@ class ZoteroReviewInput(BaseModel):
 
 
 @tool(args_schema=ZoteroReviewInput, parse_docstring=True)
-def zotero_review_tool(
+def zotero_review(
     tool_call_id: Annotated[str, InjectedToolCallId],
     collection_path: str,
     state: Annotated[dict, InjectedState],
 ) -> Command[Any]:
     """
     Use this tool to get human review and approval before saving papers to Zotero.
-    This tool should be called before the zotero_save_tool to ensure the user approves
+    This tool should be called before the zotero_save to ensure the user approves
     the operation.
 
     Args:

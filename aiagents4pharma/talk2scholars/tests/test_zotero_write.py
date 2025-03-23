@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
-from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_save_tool
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_save
 
 dummy_zotero_write_config = SimpleNamespace(
     user_id="dummy", library_type="user", api_key="dummy"
@@ -59,7 +59,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     )
     def test_no_papers_after_approval(self, mock_fetch):
         """Test when no fetched papers are found after approval"""
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -84,7 +84,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.fake_zot.collections.return_value = [
             {"key": "k1", "data": {"name": "Existing"}}
         ]
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/DoesNotExist",
@@ -116,7 +116,7 @@ class TestZoteroSaveTool(unittest.TestCase):
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
         self.fake_zot.create_items.side_effect = Exception("Creation error")
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -148,7 +148,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_fetch.return_value = {"p1": {"Title": "X"}}
         mock_find.return_value = "colKey"
 
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -161,7 +161,7 @@ class TestZoteroSaveTool(unittest.TestCase):
 
     def test_without_approval(self):
         """Test when no approval info is found"""
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {"tool_call_id": "id", "collection_path": "/Test Collection", "state": {}}
         )
         self.assertIn("not reviewed by user", result.update["messages"][0].content)
@@ -181,7 +181,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         ]
         state = self.make_state({"p1": {}}, approved=True, path="/DoesNotExist")
 
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {"tool_call_id": "id", "collection_path": "/DoesNotExist", "state": state}
         )
         mock_fetch.return_value = {"p1": {"Title": "X"}}
@@ -204,7 +204,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test",
@@ -226,7 +226,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test",
@@ -241,7 +241,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     def test_rejected_without_review(self):
         """If approval_info exists but no papers_reviewed flag, it’s rejected."""
         state = {"approved_zotero_save": {"approved": False}}
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {"tool_call_id": "id", "collection_path": "/Test", "state": state}
         )
         content = result.update["messages"][0].content
@@ -257,7 +257,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {"tool_call_id": "id", "collection_path": "/Test", "state": state}
         )
         content = result.update["messages"][0].content

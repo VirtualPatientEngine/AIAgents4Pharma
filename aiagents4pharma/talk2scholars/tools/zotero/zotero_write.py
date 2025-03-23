@@ -43,7 +43,7 @@ class ZoteroSaveInput(BaseModel):
 
 
 @tool(args_schema=ZoteroSaveInput, parse_docstring=True)
-def zotero_save_tool(
+def zotero_save(
     tool_call_id: Annotated[str, InjectedToolCallId],
     collection_path: str,
     state: Annotated[dict, InjectedState],
@@ -54,7 +54,7 @@ def zotero_save_tool(
     to a specified Zotero collection after human approval.
 
     This tool checks if the user has approved the save operation via the
-    zotero_review_tool. If approved, it will save the papers to the
+    zotero_review. If approved, it will save the papers to the
     approved collection path.
 
     Args:
@@ -102,7 +102,7 @@ def zotero_save_tool(
     # Now proceed with normal checks
     if not approval_info:
         raise RuntimeError(
-            "Error: Save operation not reviewed by user. Please use zotero_review_tool first."
+            "Error: Save operation not reviewed by user. Please use zotero_review first."
         )
 
     if not approval_info.get("approved", False) and not approval_info.get(

@@ -1,13 +1,13 @@
 """
-Unit tests for Zotero human in the loop in zotero_review_tool.py.
+Unit tests for Zotero human in the loop in zotero_review.py.
 """
 
 import unittest
 from unittest.mock import patch
 
 from langgraph.types import Command
-from aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool import (
-    zotero_review_tool,
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_review import (
+    zotero_review,
 )
 
 
@@ -15,12 +15,12 @@ class TestZoteroReviewTool(unittest.TestCase):
     """test class for Zotero review tool"""
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
         return_value=None,
     )
     def test_no_fetched_papers(self, mock_fetch):
         """Test when no fetched papers are found"""
-        result = zotero_review_tool.run(
+        result = zotero_review.run(
             {"tool_call_id": "tc", "collection_path": "/Col", "state": {}}
         )
         mock_fetch.assert_called_once()
@@ -30,16 +30,16 @@ class TestZoteroReviewTool(unittest.TestCase):
         )
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
         return_value={"p1": {"Title": "T1", "Authors": ["A1"]}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.interrupt",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt",
         return_value=True,
     )
     def test_human_approve_boolean(self, mock_interrupt, mock_fetch):
         """Test when human approves saving papers"""
-        result = zotero_review_tool.run(
+        result = zotero_review.run(
             {
                 "tool_call_id": "tc",
                 "collection_path": "/Col",
@@ -58,16 +58,16 @@ class TestZoteroReviewTool(unittest.TestCase):
         )
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
         return_value={"p1": {"Title": "T1", "Authors": ["A1"]}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.interrupt",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt",
         return_value={"custom_path": "/Custom"},
     )
     def test_human_approve_custom_path(self, mock_interrupt, mock_fetch):
         """Test when human approves saving papers to custom path"""
-        result = zotero_review_tool.run(
+        result = zotero_review.run(
             {
                 "tool_call_id": "tc",
                 "collection_path": "/Col",
@@ -87,16 +87,16 @@ class TestZoteroReviewTool(unittest.TestCase):
         )
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
         return_value={"p1": {"Title": "T1", "Authors": ["A1"]}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.interrupt",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt",
         return_value=False,
     )
     def test_human_reject(self, mock_interrupt, mock_fetch):
         """Test when human rejects saving papers"""
-        result = zotero_review_tool.run(
+        result = zotero_review.run(
             {
                 "tool_call_id": "tc",
                 "collection_path": "/Col",
@@ -112,10 +112,10 @@ class TestZoteroReviewTool(unittest.TestCase):
         )
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.fetch_papers_for_save"
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review_tool.interrupt",
+        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt",
         side_effect=Exception("no interrupt"),
     )
     def test_interrupt_exception_summary(self, mock_interrupt, mock_fetch):
@@ -127,7 +127,7 @@ class TestZoteroReviewTool(unittest.TestCase):
         mock_fetch.return_value = papers
         mock_interrupt.side_effect = Exception("no interrupt")
 
-        result = zotero_review_tool.run(
+        result = zotero_review.run(
             {
                 "tool_call_id": "tc",
                 "collection_path": "/MyCol",

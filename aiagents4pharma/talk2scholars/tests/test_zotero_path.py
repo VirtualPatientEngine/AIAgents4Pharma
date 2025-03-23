@@ -12,10 +12,10 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_item_collections,
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
-    zotero_search_tool,
+    zotero_search,
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
-    zotero_save_tool,
+    zotero_save,
 )
 
 
@@ -322,7 +322,7 @@ class TestZoteroWrite:
             "approved_zotero_save": {"approved": True, "collection_path": "/Curiosity"}
         }
 
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/Curiosity",
@@ -358,7 +358,7 @@ class TestZoteroWrite:
             "papers": sample,
         }
 
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/NonExistent",
@@ -395,7 +395,7 @@ class TestZoteroWrite:
             "papers": sample,
         }
 
-        result = zotero_save_tool.run(
+        result = zotero_save.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/radiation",
@@ -442,7 +442,7 @@ class TestZoteroRead:
     def test_zotero_read_item_collections_error(
         self, mock_get_collections, mock_hydra, mock_zotero
     ):
-        """Test that zotero_read_tool handles errors in get_item_collections."""
+        """Test that zotero_read handles errors in get_item_collections."""
 
         mock_get_collections.side_effect = Exception("Test error")
 
@@ -457,7 +457,7 @@ class TestZoteroRead:
         ]
         mock_hydra.tools.zotero_read.zotero.max_limit = 50
 
-        result = zotero_search_tool.run(
+        result = zotero_search.run(
             {
                 "query": "test",
                 "only_articles": True,
