@@ -283,23 +283,13 @@ def zotero_save_tool(
             }
         )
 
-    # pylint: disable=broad-exception-caught
     # Save items to Zotero
     try:
         response = zot.create_items(zotero_items)
         logger.info("Papers successfully saved to Zotero: %s", response)
     except Exception as e:
         logger.error("Error saving to Zotero: %s", str(e))
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content=f"Error saving papers to Zotero: {str(e)}",
-                        tool_call_id=tool_call_id,
-                    )
-                ],
-            }
-        )
+        raise RuntimeError(f"Error saving papers to Zotero: {str(e)}") from e
 
     # Get the collection name for better feedback
     collections = zot.collections()
