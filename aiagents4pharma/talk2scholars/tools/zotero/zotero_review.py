@@ -56,14 +56,10 @@ def zotero_review(
     fetched_papers = fetch_papers_for_save(state)
 
     if not fetched_papers:
-        message = ToolMessage(
-            content=(
-                "No fetched papers were found to save. "
-                "Please retrieve papers using Zotero Read or Semantic Scholar first."
-            ),
-            tool_call_id=tool_call_id,
+        raise ValueError(
+            "No fetched papers were found to save. "
+            "Please retrieve papers using Zotero Read or Semantic Scholar first."
         )
-        return Command(update={"messages": [message]})
 
     # Prepare papers summary for review
     papers_summary = []
