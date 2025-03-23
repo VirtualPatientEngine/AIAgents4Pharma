@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from langgraph.types import Command
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
-    zotero_search,
+    zotero_read,
 )
 
 
@@ -87,7 +87,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "tool_call_id": tool_call_id,
             "limit": 2,
         }
-        result = zotero_search.run(tool_input)
+        result = zotero_read.run(tool_input)
 
         # Verify the Command update structure and contents
         self.assertIsInstance(result, Command)
@@ -144,7 +144,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "tool_call_id": tool_call_id,
             "limit": 2,
         }
-        result = zotero_search.run(tool_input)
+        result = zotero_read.run(tool_input)
 
         update = result.update
         filtered_papers = update["zotero_read"]
@@ -183,7 +183,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 2,
         }
         with self.assertRaises(RuntimeError) as context:
-            zotero_search.run(tool_input)
+            zotero_read.run(tool_input)
         self.assertIn("No items returned from Zotero", str(context.exception))
 
     @patch(
@@ -244,7 +244,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 2,
         }
         # Instead of expecting a RuntimeError, we now expect both items to be returned.
-        result = zotero_search.run(tool_input)
+        result = zotero_read.run(tool_input)
         update = result.update
         filtered_papers = update["zotero_read"]
         self.assertIn("paper1", filtered_papers)
@@ -281,7 +281,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 2,
         }
         with self.assertRaises(RuntimeError) as context:
-            zotero_search.run(tool_input)
+            zotero_read.run(tool_input)
         self.assertIn("Failed to fetch items from Zotero", str(context.exception))
 
     @patch(
@@ -336,7 +336,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "tool_call_id": tool_call_id,
             "limit": 2,
         }
-        result = zotero_search.run(tool_input)
+        result = zotero_read.run(tool_input)
 
         update = result.update
         filtered_papers = update["zotero_read"]
@@ -378,7 +378,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 2,
         }
         with self.assertRaises(RuntimeError) as context:
-            zotero_search.run(tool_input)
+            zotero_read.run(tool_input)
         self.assertIn("No matching papers returned from Zotero", str(context.exception))
 
     @patch(
@@ -415,5 +415,5 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 2,
         }
         with self.assertRaises(RuntimeError) as context:
-            zotero_search.run(tool_input)
+            zotero_read.run(tool_input)
         self.assertIn("No matching papers returned from Zotero", str(context.exception))

@@ -12,10 +12,10 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path import (
     get_item_collections,
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
-    zotero_search,
+    zotero_read,
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import (
-    zotero_save,
+    zotero_write,
 )
 
 
@@ -313,16 +313,19 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
-    def test_zotero_save_no_papers(self, mock_fetch):
+    def test_zotero_write_no_papers(self, mock_fetch):
         """When no papers exist (even after approval),
         we get a helpful Command, not an exception."""
         mock_fetch.return_value = None
 
         state = {
-            "approved_zotero_save": {"approved": True, "collection_path": "/Curiosity"}
+            "zotero_write_approval_status": {
+                "approved": True,
+                "collection_path": "/Curiosity",
+            }
         }
 
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/Curiosity",
@@ -339,7 +342,7 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
     )
-    def test_zotero_save_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
+    def test_zotero_write_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
         """Saving to a nonexistent Zotero collection returns an error Command."""
         sample = {"paper1": {"Title": "Test Paper"}}
         mock_fetch.return_value = sample
@@ -350,7 +353,7 @@ class TestZoteroWrite:
         ]
 
         state = {
-            "approved_zotero_save": {
+            "zotero_write_approval_status": {
                 "approved": True,
                 "collection_path": "/NonExistent",
             },
@@ -358,7 +361,7 @@ class TestZoteroWrite:
             "papers": sample,
         }
 
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/NonExistent",
@@ -376,7 +379,7 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
     )
-    def test_zotero_save_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
+    def test_zotero_write_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
         """A valid approved save returns a success Command with summary."""
         sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
         mock_fetch.return_value = sample
@@ -390,12 +393,15 @@ class TestZoteroWrite:
         mock_hydra.tools.zotero_write.zotero.max_limit = 50
 
         state = {
-            "approved_zotero_save": {"approved": True, "collection_path": "/radiation"},
+            "zotero_write_approval_status": {
+                "approved": True,
+                "collection_path": "/radiation",
+            },
             "last_displayed_papers": "papers",
             "papers": sample,
         }
 
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "test_id",
                 "collection_path": "/radiation",
@@ -457,7 +463,7 @@ class TestZoteroRead:
         ]
         mock_hydra.tools.zotero_read.zotero.max_limit = 50
 
-        result = zotero_search.run(
+        result = zotero_read.run(
             {
                 "query": "test",
                 "only_articles": True,

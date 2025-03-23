@@ -39,7 +39,7 @@ class ZoteroSearchInput(BaseModel):
 
 
 @tool(args_schema=ZoteroSearchInput, parse_docstring=True)
-def zotero_search(
+def zotero_read(
     query: str,
     only_articles: bool,
     tool_call_id: Annotated[str, InjectedToolCallId],

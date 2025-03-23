@@ -40,7 +40,7 @@ def mock_tools_fixture():
             "retrieve_semantic_scholar_paper_id"
         ) as mock_s2_retrieve_id,
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_search"
+            "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_read"
         ) as mock_zotero_query_results,
     ):
         mock_s2_display.return_value = {"result": "Mock Display Result"}

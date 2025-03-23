@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
-from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_save
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_write
 
 dummy_zotero_write_config = SimpleNamespace(
     user_id="dummy", library_type="user", api_key="dummy"
@@ -44,7 +44,10 @@ class TestZoteroSaveTool(unittest.TestCase):
         """Create a state dictionary with optional papers and approval info"""
         state = {}
         if approved:
-            state["approved_zotero_save"] = {"approved": True, "collection_path": path}
+            state["zotero_write_approval_status"] = {
+                "approved": True,
+                "collection_path": path,
+            }
         if papers is not None:
             state["last_displayed_papers"] = (
                 papers if isinstance(papers, dict) else "papers"
@@ -59,7 +62,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     )
     def test_no_papers_after_approval(self, mock_fetch):
         """Test when no fetched papers are found after approval"""
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -84,7 +87,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.fake_zot.collections.return_value = [
             {"key": "k1", "data": {"name": "Existing"}}
         ]
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/DoesNotExist",
@@ -116,7 +119,7 @@ class TestZoteroSaveTool(unittest.TestCase):
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
         self.fake_zot.create_items.side_effect = Exception("Creation error")
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -148,7 +151,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_fetch.return_value = {"p1": {"Title": "X"}}
         mock_find.return_value = "colKey"
 
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
@@ -161,7 +164,7 @@ class TestZoteroSaveTool(unittest.TestCase):
 
     def test_without_approval(self):
         """Test when no approval info is found"""
-        result = zotero_save.run(
+        result = zotero_write.run(
             {"tool_call_id": "id", "collection_path": "/Test Collection", "state": {}}
         )
         self.assertIn("not reviewed by user", result.update["messages"][0].content)
@@ -181,7 +184,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         ]
         state = self.make_state({"p1": {}}, approved=True, path="/DoesNotExist")
 
-        result = zotero_save.run(
+        result = zotero_write.run(
             {"tool_call_id": "id", "collection_path": "/DoesNotExist", "state": state}
         )
         mock_fetch.return_value = {"p1": {"Title": "X"}}
@@ -198,13 +201,13 @@ class TestZoteroSaveTool(unittest.TestCase):
         """If user_confirmation is truthy & approved via text,
         we mark approved then hit no‑papers path."""
         state = {
-            "approved_zotero_save": {
+            "zotero_write_approval_status": {
                 "approved": False,
                 "papers_reviewed": True,
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test",
@@ -220,13 +223,13 @@ class TestZoteroSaveTool(unittest.TestCase):
         """If user_confirmation is non‑empty but not an
         approval keyword, return rejected Command."""
         state = {
-            "approved_zotero_save": {
+            "zotero_write_approval_status": {
                 "approved": False,
                 "papers_reviewed": True,
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save.run(
+        result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test",
@@ -236,12 +239,14 @@ class TestZoteroSaveTool(unittest.TestCase):
         )
         content = result.update["messages"][0].content
         self.assertIn("Save operation was rejected by the user", content)
-        self.assertEqual(result.update.get("approved_zotero_save"), {"approved": False})
+        self.assertEqual(
+            result.update.get("zotero_write_approval_status"), {"approved": False}
+        )
 
     def test_rejected_without_review(self):
         """If approval_info exists but no papers_reviewed flag, it’s rejected."""
-        state = {"approved_zotero_save": {"approved": False}}
-        result = zotero_save.run(
+        state = {"zotero_write_approval_status": {"approved": False}}
+        result = zotero_write.run(
             {"tool_call_id": "id", "collection_path": "/Test", "state": state}
         )
         content = result.update["messages"][0].content
@@ -251,13 +256,13 @@ class TestZoteroSaveTool(unittest.TestCase):
         """If papers_reviewed=True but approved=False and no
         user_confirmation, ask for confirmation."""
         state = {
-            "approved_zotero_save": {
+            "zotero_write_approval_status": {
                 "approved": False,
                 "papers_reviewed": True,
                 "collection_path": "/Test",
             }
         }
-        result = zotero_save.run(
+        result = zotero_write.run(
             {"tool_call_id": "id", "collection_path": "/Test", "state": state}
         )
         content = result.update["messages"][0].content

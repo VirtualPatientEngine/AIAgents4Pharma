@@ -50,7 +50,8 @@ class TestZoteroReviewTool(unittest.TestCase):
         mock_interrupt.return_value = True
         upd = result.update
         self.assertEqual(
-            upd["approved_zotero_save"], {"collection_path": "/Col", "approved": True}
+            upd["zotero_write_approval_status"],
+            {"collection_path": "/Col", "approved": True},
         )
         self.assertIn(
             "Human approved saving 1 papers to Zotero collection '/Col'",
@@ -78,7 +79,7 @@ class TestZoteroReviewTool(unittest.TestCase):
         mock_interrupt.return_value = {"custom_path": "/Custom"}
         upd = result.update
         self.assertEqual(
-            upd["approved_zotero_save"],
+            upd["zotero_write_approval_status"],
             {"collection_path": "/Custom", "approved": True},
         )
         self.assertIn(
@@ -106,7 +107,7 @@ class TestZoteroReviewTool(unittest.TestCase):
         mock_fetch.return_value = {"p1": {"Title": "T1", "Authors": ["A1"]}}
         mock_interrupt.return_value = False
         upd = result.update
-        self.assertEqual(upd["approved_zotero_save"], {"approved": False})
+        self.assertEqual(upd["zotero_write_approval_status"], {"approved": False})
         self.assertIn(
             "Human rejected saving papers to Zotero", upd["messages"][0].content
         )
@@ -141,7 +142,7 @@ class TestZoteroReviewTool(unittest.TestCase):
         self.assertIn("Would you like to save 7 papers", content)
         self.assertIn("... and 2 more papers", content)
 
-        approved = upd["approved_zotero_save"]
+        approved = upd["zotero_write_approval_status"]
         self.assertEqual(approved["collection_path"], "/MyCol")
         self.assertTrue(approved["papers_reviewed"])
         self.assertFalse(approved["approved"])

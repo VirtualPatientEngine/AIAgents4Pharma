@@ -18,8 +18,6 @@ from .utils.zotero_path import fetch_papers_for_save
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# pylint: disable=R0914,R0912,R0915
-
 
 class ZoteroReviewInput(BaseModel):
     """Input schema for the Zotero review tool."""
@@ -39,7 +37,7 @@ def zotero_review(
 ) -> Command[Any]:
     """
     Use this tool to get human review and approval before saving papers to Zotero.
-    This tool should be called before the zotero_save to ensure the user approves
+    This tool should be called before the zotero_write to ensure the user approves
     the operation.
 
     Args:
@@ -117,7 +115,7 @@ def zotero_review(
                             tool_call_id=tool_call_id,
                         )
                     ],
-                    "approved_zotero_save": {
+                    "zotero_write_approval_status": {
                         "collection_path": collection_path,
                         "approved": True,
                     },
@@ -140,7 +138,7 @@ def zotero_review(
                             tool_call_id=tool_call_id,
                         )
                     ],
-                    "approved_zotero_save": {
+                    "zotero_write_approval_status": {
                         "collection_path": custom_path,
                         "approved": True,
                     },
@@ -158,7 +156,7 @@ def zotero_review(
                         tool_call_id=tool_call_id,
                     )
                 ],
-                "approved_zotero_save": {"approved": False},
+                "zotero_write_approval_status": {"approved": False},
             }
         )
     # pylint: disable=broad-exception-caught
@@ -180,7 +178,7 @@ def zotero_review(
                         tool_call_id=tool_call_id,
                     )
                 ],
-                "approved_zotero_save": {
+                "zotero_write_approval_status": {
                     "collection_path": collection_path,
                     "papers_reviewed": True,
                     "approved": False,  # Not approved yet

@@ -38,7 +38,7 @@ class ZoteroSaveInput(BaseModel):
 
 
 @tool(args_schema=ZoteroSaveInput, parse_docstring=True)
-def zotero_save(
+def zotero_write(
     tool_call_id: Annotated[str, InjectedToolCallId],
     collection_path: str,
     state: Annotated[dict, InjectedState],
@@ -210,6 +210,6 @@ def zotero_save(
                     artifact=fetched_papers,
                 )
             ],
-            "approved_zotero_save": {},  # Clear approval info
+            "zotero_write_approval_status": {},  # Clear approval info
         }
     )

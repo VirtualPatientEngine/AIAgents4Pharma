@@ -54,7 +54,7 @@ class Talk2Scholars(AgentState):
         papers (Dict[str, Any]): Stores the research papers retrieved from the agent's queries.
         multi_papers (Dict[str, Any]): Stores multiple recommended papers from various sources.
         zotero_read (Dict[str, Any]): Stores the papers retrieved from Zotero.
-        approved_zotero_save (Dict[str, Any]): Stores the approval status and collection
+        zotero_write_approval_status (Dict[str, Any]): Stores the approval status and collection
         path for Zotero save operations.
         llm_model (BaseChatModel): The language model instance used for generating responses.
         text_embedding_model (Embeddings): The text embedding model used for
@@ -67,6 +67,6 @@ class Talk2Scholars(AgentState):
     multi_papers: Annotated[Dict[str, Any], replace_dict]
     pdf_data: Annotated[Dict[str, Any], replace_dict]
     zotero_read: Annotated[Dict[str, Any], replace_dict]
-    approved_zotero_save: Annotated[Dict[str, Any], replace_dict]
+    zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
