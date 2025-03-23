@@ -90,17 +90,16 @@ def test_download_pdf_success(arxiv_downloader_fixture):
 
     mock_pdf_response = MagicMock()
     mock_pdf_response.raise_for_status = MagicMock()
-    mock_pdf_response.iter_content = lambda chunk_size: [b"FAKE_PDF_CONTENT"]
+    mock_pdf_response.content = "FAKE_PDF_CONTENT"
 
     with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
         with patch.object(requests, "get", return_value=mock_pdf_response) as mock_get:
             result = arxiv_downloader_fixture.download_pdf("1234.5678")
-            assert result["pdf_object"] == b"FAKE_PDF_CONTENT"
+            assert result["pdf_object"] == "FAKE_PDF_CONTENT"
             assert result["pdf_url"] == "http://test.arxiv.org/pdf/1234.5678v1.pdf"
             assert result["arxiv_id"] == "1234.5678"
             mock_get.assert_called_once_with(
                 "http://test.arxiv.org/pdf/1234.5678v1.pdf",
-                stream=True,
                 timeout=10,
             )
 

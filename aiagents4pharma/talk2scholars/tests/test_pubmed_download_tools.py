@@ -82,10 +82,10 @@ def test_download_pdf_success(pubmed_downloader_fixture): # pylint: disable=rede
                       return_value="1234567"):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.iter_content = lambda chunk_size: [b"PDF_DATA"]
+        mock_response.content = "PDF_DATA"
         with patch("requests.get", return_value=mock_response):
             result = pubmed_downloader_fixture.download_pdf("123456")
-            assert result["pdf_object"] == b"PDF_DATA"
+            assert result["pdf_object"] == "PDF_DATA"
             assert result["pmcid"] == "1234567"
 
 

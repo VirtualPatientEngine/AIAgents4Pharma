@@ -87,13 +87,13 @@ class PubMedPaperDownloader(AbstractPaperDownloader):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
                     }
-        response = requests.get(pdf_url, stream=True, timeout=self.request_timeout, headers=headers)
+        response = requests.get(pdf_url,timeout=self.request_timeout, headers=headers)
 
         if response.status_code != 200:
             raise RuntimeError(f"No PDF found or access denied at {pdf_url}")
 
-        pdf_object = b"".join(chunk for chunk in response.iter_content(chunk_size=1024) if chunk)
-
+        pdf_object = response.content
+        print("PDF_URL", pdf_url)
         return {
             "pdf_object": pdf_object,
             "pdf_url": pdf_url,
