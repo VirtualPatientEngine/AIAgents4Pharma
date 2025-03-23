@@ -101,16 +101,8 @@ def zotero_save_tool(
 
     # Now proceed with normal checks
     if not approval_info:
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content="Error: Save operation not reviewed by user. "
-                        "Please use zotero_review_tool first.",
-                        tool_call_id=tool_call_id,
-                    )
-                ],
-            }
+        raise RuntimeError(
+            "Error: Save operation not reviewed by user. Please use zotero_review_tool first."
         )
 
     if not approval_info.get("approved", False) and not approval_info.get(
