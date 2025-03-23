@@ -67,8 +67,6 @@ class Talk2Scholars(AgentState):
     multi_papers: Annotated[Dict[str, Any], replace_dict]
     pdf_data: Annotated[Dict[str, Any], replace_dict]
     zotero_read: Annotated[Dict[str, Any], replace_dict]
-    approved_zotero_save: Annotated[
-        Dict[str, Any], replace_dict
-    ]  # New field for Zotero save approval
+    approved_zotero_save: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
