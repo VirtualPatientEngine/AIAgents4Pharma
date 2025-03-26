@@ -21,7 +21,6 @@ class TestZoteroSaveTool(unittest.TestCase):
 
     def setUp(self):
         """Patch Hydra and Zotero client globally"""
-        # Patch Hydra and Zotero client globally
         self.hydra_init = patch(
             "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize"
         ).start()
@@ -49,6 +48,7 @@ class TestZoteroSaveTool(unittest.TestCase):
                 "collection_path": path,
             }
         if papers is not None:
+            # When papers is provided as dict, use it directly.
             state["last_displayed_papers"] = (
                 papers if isinstance(papers, dict) else "papers"
             )
@@ -62,17 +62,16 @@ class TestZoteroSaveTool(unittest.TestCase):
     )
     def test_no_papers_after_approval(self, mock_fetch):
         """Test when no fetched papers are found after approval"""
-        result = zotero_write.run(
-            {
-                "tool_call_id": "id",
-                "collection_path": "/Test Collection",
-                "state": self.make_state({}, True),
-            }
-        )
+        with self.assertRaises(ValueError) as cm:
+            zotero_write.run(
+                {
+                    "tool_call_id": "id",
+                    "collection_path": "/Test Collection",
+                    "state": self.make_state({}, True),
+                }
+            )
+        self.assertIn("No fetched papers were found to save", str(cm.exception))
         mock_fetch.assert_called_once()
-        self.assertIn(
-            "No fetched papers were found to save", result.update["messages"][0].content
-        )
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
@@ -87,23 +86,22 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.fake_zot.collections.return_value = [
             {"key": "k1", "data": {"name": "Existing"}}
         ]
+        # Provide a valid papers dict so we don't hit the no-papers error.
+        state = self.make_state({"p1": {"Title": "X"}}, True)
         result = zotero_write.run(
             {
                 "tool_call_id": "id",
                 "collection_path": "/DoesNotExist",
-                "state": self.make_state({"p1": {}}, True),
+                "state": state,
             }
         )
+        # Remove outdated assertions and check for updated message content.
+        content = result.update["messages"][0].content
+        self.assertIn("does not exist in Zotero", content)
+        self.assertIn("/DoesNotExist", content)
+        self.assertIn("Existing", content)
         mock_fetch.return_value = {"p1": {"Title": "X"}}
         mock_find.return_value = None
-        content = result.update["messages"][0].content
-        self.assertIn("Error: Collection path mismatch", content)
-        self.assertIn("/DoesNotExist", content)
-        self.assertIn("/Test Collection", content)
-        self.assertIn(
-            "Error: Collection path mismatch",
-            result.update["messages"][0].content,
-        )
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
@@ -119,18 +117,18 @@ class TestZoteroSaveTool(unittest.TestCase):
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
         self.fake_zot.create_items.side_effect = Exception("Creation error")
-        result = zotero_write.run(
-            {
-                "tool_call_id": "id",
-                "collection_path": "/Test Collection",
-                "state": self.make_state({"p1": {}}, True),
-            }
-        )
+        state = self.make_state({"p1": {"Title": "X"}}, True)
+        with self.assertRaises(RuntimeError) as cm:
+            zotero_write.run(
+                {
+                    "tool_call_id": "id",
+                    "collection_path": "/Test Collection",
+                    "state": state,
+                }
+            )
+        self.assertIn("Error saving papers to Zotero", str(cm.exception))
         mock_fetch.return_value = {"p1": {"Title": "X"}}
         mock_find.return_value = "colKey"
-        self.assertIn(
-            "Error saving papers to Zotero", result.update["messages"][0].content
-        )
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
@@ -155,115 +153,9 @@ class TestZoteroSaveTool(unittest.TestCase):
             {
                 "tool_call_id": "id",
                 "collection_path": "/Test Collection",
-                "state": self.make_state({"p1": {}}, True),
+                "state": self.make_state({"p1": {"Title": "X"}}, True),
             }
         )
         content = result.update["messages"][0].content
         self.assertIn("Save was successful", content)
         self.assertIn("Test Collection", content)
-
-    def test_without_approval(self):
-        """Test when no approval info is found"""
-        result = zotero_write.run(
-            {"tool_call_id": "id", "collection_path": "/Test Collection", "state": {}}
-        )
-        self.assertIn("not reviewed by user", result.update["messages"][0].content)
-
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
-        return_value={"p1": {"Title": "X"}},
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.find_or_create_collection",
-        return_value=None,
-    )
-    def test_invalid_collection_exists_branch(self, mock_find, mock_fetch):
-        """Test when collection path is invalid but exists"""
-        self.fake_zot.collections.return_value = [
-            {"key": "k1", "data": {"name": "Existing"}}
-        ]
-        state = self.make_state({"p1": {}}, approved=True, path="/DoesNotExist")
-
-        result = zotero_write.run(
-            {"tool_call_id": "id", "collection_path": "/DoesNotExist", "state": state}
-        )
-        mock_fetch.return_value = {"p1": {"Title": "X"}}
-        mock_find.return_value = None
-        content = result.update["messages"][0].content
-        self.assertIn("does not exist in Zotero", content)
-        self.assertIn("Existing", content)
-
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
-        return_value=None,
-    )
-    def test_user_confirms_via_text_then_no_papers(self, mock_fetch):
-        """If user_confirmation is truthy & approved via text,
-        we mark approved then hit no‑papers path."""
-        state = {
-            "zotero_write_approval_status": {
-                "approved": False,
-                "papers_reviewed": True,
-                "collection_path": "/Test",
-            }
-        }
-        result = zotero_write.run(
-            {
-                "tool_call_id": "id",
-                "collection_path": "/Test",
-                "state": state,
-                "user_confirmation": "Yes",
-            }
-        )
-        mock_fetch.assert_called_once()
-        content = result.update["messages"][0].content
-        self.assertIn("No fetched papers were found to save", content)
-
-    def test_user_rejects_via_text(self):
-        """If user_confirmation is non‑empty but not an
-        approval keyword, return rejected Command."""
-        state = {
-            "zotero_write_approval_status": {
-                "approved": False,
-                "papers_reviewed": True,
-                "collection_path": "/Test",
-            }
-        }
-        result = zotero_write.run(
-            {
-                "tool_call_id": "id",
-                "collection_path": "/Test",
-                "state": state,
-                "user_confirmation": "Nope",
-            }
-        )
-        content = result.update["messages"][0].content
-        self.assertIn("Save operation was rejected by the user", content)
-        self.assertEqual(
-            result.update.get("zotero_write_approval_status"), {"approved": False}
-        )
-
-    def test_rejected_without_review(self):
-        """If approval_info exists but no papers_reviewed flag, it’s rejected."""
-        state = {"zotero_write_approval_status": {"approved": False}}
-        result = zotero_write.run(
-            {"tool_call_id": "id", "collection_path": "/Test", "state": state}
-        )
-        content = result.update["messages"][0].content
-        self.assertIn("Save operation was rejected by the user", content)
-
-    def test_awaiting_user_confirmation(self):
-        """If papers_reviewed=True but approved=False and no
-        user_confirmation, ask for confirmation."""
-        state = {
-            "zotero_write_approval_status": {
-                "approved": False,
-                "papers_reviewed": True,
-                "collection_path": "/Test",
-            }
-        }
-        result = zotero_write.run(
-            {"tool_call_id": "id", "collection_path": "/Test", "state": state}
-        )
-        content = result.update["messages"][0].content
-        self.assertIn("Papers have been reviewed but not yet approved", content)

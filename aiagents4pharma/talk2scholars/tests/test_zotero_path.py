@@ -314,8 +314,7 @@ class TestZoteroWrite:
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
     )
     def test_zotero_write_no_papers(self, mock_fetch):
-        """When no papers exist (even after approval),
-        we get a helpful Command, not an exception."""
+        """When no papers exist (even after approval), the function raises a ValueError."""
         mock_fetch.return_value = None
 
         state = {
@@ -325,16 +324,15 @@ class TestZoteroWrite:
             }
         }
 
-        result = zotero_write.run(
-            {
-                "tool_call_id": "test_id",
-                "collection_path": "/Curiosity",
-                "state": state,
-            }
-        )
-
-        msg = result.update["messages"][0].content
-        assert "No fetched papers were found to save" in msg
+        with pytest.raises(ValueError) as excinfo:
+            zotero_write.run(
+                {
+                    "tool_call_id": "test_id",
+                    "collection_path": "/Curiosity",
+                    "state": state,
+                }
+            )
+        assert "No fetched papers were found to save" in str(excinfo.value)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"

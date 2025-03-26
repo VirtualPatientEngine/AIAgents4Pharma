@@ -5,7 +5,6 @@ Unit tests for Zotero human in the loop in zotero_review.py.
 import unittest
 from unittest.mock import patch
 
-from langgraph.types import Command
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_review import (
     zotero_review,
 )
@@ -20,14 +19,12 @@ class TestZoteroReviewTool(unittest.TestCase):
     )
     def test_no_fetched_papers(self, mock_fetch):
         """Test when no fetched papers are found"""
-        result = zotero_review.run(
-            {"tool_call_id": "tc", "collection_path": "/Col", "state": {}}
-        )
+        with self.assertRaises(ValueError) as context:
+            zotero_review.run(
+                {"tool_call_id": "tc", "collection_path": "/Col", "state": {}}
+            )
+        self.assertIn("No fetched papers were found to save", str(context.exception))
         mock_fetch.assert_called_once()
-        self.assertIsInstance(result, Command)
-        self.assertIn(
-            "No fetched papers were found to save", result.update["messages"][0].content
-        )
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
