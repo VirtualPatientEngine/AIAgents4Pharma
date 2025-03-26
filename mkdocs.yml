@@ -18,7 +18,6 @@ nav:
           - Epidemiology: talk2biomodels/cases/Case_2.md
           - Emergent system properties: talk2biomodels/cases/Case_3.md
       - Tutorials:
-          - ./notebooks/talk2biomodels/tutorial_load_model.ipynb
           - ./notebooks/talk2biomodels/example_models.md
       - Agents:
           - T2B agent: talk2biomodels/agents/t2b_agent.md
