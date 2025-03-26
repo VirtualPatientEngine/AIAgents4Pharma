@@ -5,18 +5,30 @@ This tool implements human-in-the-loop review for Zotero write operations.
 """
 
 import logging
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional, Literal
 from langchain_core.tools import tool
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import ToolMessage, HumanMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command, interrupt
 from pydantic import BaseModel, Field
 from .utils.zotero_path import fetch_papers_for_save
 
+# pylint: disable=R0914,R0911,R0912,R0915
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class ZoteroReviewDecision(BaseModel):
+    """
+    Structured output schema for the human review decision.
+    - decision: "approve", "reject", or "custom"
+    - custom_path: Optional custom collection path if the decision is "custom"
+    """
+
+    decision: Literal["approve", "reject", "custom"]
+    custom_path: Optional[str] = None
 
 
 class ZoteroReviewInput(BaseModel):
@@ -87,23 +99,28 @@ def zotero_review(
         "papers_preview": papers_preview,
         "message": (
             f"Would you like to save {total_papers} papers to Zotero "
-            f"collection '{collection_path}'?"
+            f"collection '{collection_path}'? Please respond with a structured decision "
+            f"using one of the following options: 'approve', 'reject', or 'custom' "
+            f"(with a custom_path)."
         ),
     }
 
     try:
         # Interrupt the graph to get human approval
-        # This follows the langgraph documentation for human-in-the-loop
         human_review = interrupt(review_info)
+        # Process human response using structured output via LLM
+        llm_model = state.get("llm_model")
+        if llm_model is None:
+            raise ValueError("LLM model is not available in the state.")
+        structured_llm = llm_model.with_structured_output(ZoteroReviewDecision)
+        # Convert the raw human response to a message for structured parsing
+        decision_response = structured_llm.invoke(
+            [HumanMessage(content=str(human_review))]
+        )
 
-        # Process human response
-        if human_review is True or (
-            isinstance(human_review, str)
-            and human_review.lower() in ["yes", "approve", "true"]
-        ):
-            # User approved, proceed with saving
+        # Process the structured response
+        if decision_response.decision == "approve":
             logger.info("User approved saving papers to Zotero")
-
             return Command(
                 update={
                     "messages": [
@@ -121,33 +138,28 @@ def zotero_review(
                     },
                 }
             )
-
-        if isinstance(human_review, dict) and human_review.get("custom_path"):
-            # User provided a custom collection path
-            custom_path = human_review.get("custom_path")
-            logger.info("User approved with custom path: %s", custom_path)
-
+        if decision_response.decision == "custom" and decision_response.custom_path:
+            logger.info(
+                "User approved with custom path: %s", decision_response.custom_path
+            )
             return Command(
                 update={
                     "messages": [
                         ToolMessage(
                             content=(
                                 f"Human approved saving papers to custom Zotero "
-                                f"collection '{custom_path}'."
+                                f"collection '{decision_response.custom_path}'."
                             ),
                             tool_call_id=tool_call_id,
                         )
                     ],
                     "zotero_write_approval_status": {
-                        "collection_path": custom_path,
+                        "collection_path": decision_response.custom_path,
                         "approved": True,
                     },
                 }
             )
-
-        # fallback: rejection
         logger.info("User rejected saving papers to Zotero")
-
         return Command(
             update={
                 "messages": [
@@ -159,12 +171,10 @@ def zotero_review(
                 "zotero_write_approval_status": {"approved": False},
             }
         )
-    # pylint: disable=broad-exception-caught
+        # pylint: disable=broad-except
     except Exception as e:
-        # If interrupt doesn't work, we need to show the summary and ask for confirmation
-        logger.warning("Interrupt not supported in this context: %s", e)
-
-        # Return a message requiring explicit confirmation
+        # If interrupt or structured output processing fails, fallback to explicit confirmation
+        logger.warning("Structured review processing failed: %s", e)
         return Command(
             update={
                 "messages": [
