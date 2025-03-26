@@ -188,6 +188,8 @@ class TestZoteroReviewTool(unittest.TestCase):
         self.assertIn(
             "Human rejected saving papers to Zotero", upd["messages"][0].content
         )
+        mock_fetch.assert_called_once()
+        mock_interrupt.assert_called_once()
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save"
@@ -267,3 +269,5 @@ class TestZoteroReviewTool(unittest.TestCase):
         )
         fallback_message = result.update["messages"][0].content
         self.assertIn("et al.", fallback_message)
+        mock_fetch.assert_called_once()
+        mock_interrupt.assert_called_once()
