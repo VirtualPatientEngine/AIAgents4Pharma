@@ -9,6 +9,7 @@ import requests
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
 from aiagents4pharma.talk2scholars.tools.s2.search import search_tool
+from aiagents4pharma.talk2scholars.tools.s2.utils import search_helper
 
 # --- Dummy Hydra Config Setup ---
 
@@ -269,12 +270,15 @@ def test_search_tool_requests_exception(monkeypatch):
 
 def test_search_tool_no_response(monkeypatch):
     """
-    Test that search_tool raises a RuntimeError when no response is obtained.
-    This is simulated by patching 'range' in the original function's globals (a dict)
-    so that it returns an empty iterator, leaving response as None.
+    Test that search_tool raises a RuntimeError when no response
+    is obtained. This is simulated by patching 'range' in the
+    module namespace of search_helper to return an empty iterator,
+    so that the for-loop in _fetch_papers never iterates and self.response
+    remains None.
     """
-    # Patch 'range' in the original function's globals using setitem.
-    monkeypatch.setitem(search_tool.func.__globals__, "range", lambda x: iter([]))
+    # Patch 'range' in the module globals of search_helper.
+    monkeypatch.setitem(search_helper.__dict__, "range", lambda x: iter([]))
+
     tool_call_id = "test_tool_call_id"
     with pytest.raises(
         RuntimeError, match="Failed to obtain a response from the Semantic Scholar API."

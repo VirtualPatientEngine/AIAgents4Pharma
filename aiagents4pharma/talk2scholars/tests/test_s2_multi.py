@@ -12,6 +12,7 @@ import hydra
 from aiagents4pharma.talk2scholars.tools.s2.multi_paper_rec import (
     get_multi_paper_recommendations,
 )
+from aiagents4pharma.talk2scholars.tools.s2.utils import multi_helper
 
 # --- Dummy Hydra Config Setup ---
 
@@ -285,20 +286,21 @@ def test_multi_paper_rec_requests_exception(monkeypatch):
 
 def test_multi_paper_rec_no_response(monkeypatch):
     """
-    Test that get_multi_paper_recommendations raises a RuntimeError when no response is obtained.
-    This is simulated by patching 'range' in the underlying function's globals to
-    return an empty iterator,
-    so that the for loop does not iterate and response remains None.
+    Test that get_multi_paper_recommendations raises a RuntimeError
+    when no response is obtained. This is simulated by patching 'range'
+    in the module namespace of multi_helper to return an empty iterator,
+    so that the for loop in _fetch_recommendations never iterates and
+    self.response remains None.
     """
-    # Patch 'range' in the underlying function's globals (accessed via .func.__globals__)
-    monkeypatch.setitem(
-        get_multi_paper_recommendations.func.__globals__, "range", lambda x: iter([])
-    )
+    # Inject a patched 'range' into the multi_helper module's dictionary.
+    monkeypatch.setitem(multi_helper.__dict__, "range", lambda x: iter([]))
+
     tool_call_id = "test_tool_call_id"
     input_data = {
         "paper_ids": ["p1", "p2"],
         "tool_call_id": tool_call_id,
     }
+
     with pytest.raises(
         RuntimeError, match="Failed to obtain a response from the Semantic Scholar API."
     ):

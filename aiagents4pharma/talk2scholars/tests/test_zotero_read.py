@@ -6,9 +6,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch, MagicMock
 from langgraph.types import Command
-from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import (
-    zotero_read,
-)
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
 
 
 # Dummy Hydra configuration to be used in tests
@@ -29,11 +27,13 @@ class TestZoteroSearchTool(unittest.TestCase):
     """Tests for Zotero search tool."""
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_valid_query(
         self,
         mock_hydra_init,
@@ -104,11 +104,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("Number of papers found: 2", message_content)
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_empty_query_fetch_all_items(
         self,
         mock_hydra_init,
@@ -154,11 +156,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         )
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_no_items_returned(
         self,
         mock_hydra_init,
@@ -187,11 +191,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("No items returned from Zotero", str(context.exception))
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_filtering_no_matching_papers(
         self,
         mock_hydra_init,
@@ -252,11 +258,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertEqual(len(filtered_papers), 2)
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_items_api_exception(
         self,
         mock_hydra_init,
@@ -285,11 +293,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("Failed to fetch items from Zotero", str(context.exception))
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_missing_key_in_item(
         self,
         mock_hydra_init,
@@ -344,11 +354,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertEqual(len(filtered_papers), 1)
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_item_not_dict(
         self,
         mock_hydra_init,
@@ -382,11 +394,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("No matching papers returned from Zotero", str(context.exception))
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.compose")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_read.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
     def test_data_not_dict(
         self,
         mock_hydra_init,

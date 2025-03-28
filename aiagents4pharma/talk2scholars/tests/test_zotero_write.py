@@ -22,14 +22,14 @@ class TestZoteroSaveTool(unittest.TestCase):
     def setUp(self):
         """Patch Hydra and Zotero client globally"""
         self.hydra_init = patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.initialize"
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.initialize"
         ).start()
         self.hydra_compose = patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.hydra.compose",
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.compose",
             return_value=dummy_cfg,
         ).start()
         self.zotero_class = patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.zotero.Zotero"
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.zotero.Zotero"
         ).start()
 
         self.fake_zot = MagicMock()
@@ -57,7 +57,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         return state
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save",
         return_value=None,
     )
     def test_no_papers_after_approval(self, mock_fetch):
@@ -74,11 +74,11 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_fetch.assert_called_once()
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save",
         return_value={"p1": {"Title": "X"}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.find_or_create_collection",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection",
         return_value=None,
     )
     def test_invalid_collection(self, mock_find, mock_fetch):
@@ -104,11 +104,11 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_find.return_value = None
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save",
         return_value={"p1": {"Title": "X"}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.find_or_create_collection",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection",
         return_value="colKey",
     )
     def test_save_failure(self, mock_find, mock_fetch):
@@ -131,11 +131,11 @@ class TestZoteroSaveTool(unittest.TestCase):
         mock_find.return_value = "colKey"
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.fetch_papers_for_save",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save",
         return_value={"p1": {"Title": "X"}},
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_write.find_or_create_collection",
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection",
         return_value="colKey",
     )
     def test_successful_save(self, mock_find, mock_fetch):

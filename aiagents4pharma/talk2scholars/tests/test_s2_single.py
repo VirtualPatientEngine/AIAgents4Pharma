@@ -11,6 +11,7 @@ from langchain_core.messages import ToolMessage
 from aiagents4pharma.talk2scholars.tools.s2.single_paper_rec import (
     get_single_paper_recommendations,
 )
+from aiagents4pharma.talk2scholars.tools.s2.utils import single_helper
 
 # --- Dummy Hydra Config Setup ---
 
@@ -279,14 +280,13 @@ def test_single_paper_rec_no_response(monkeypatch):
     """
     Test that get_single_paper_recommendations raises a RuntimeError
     when no response is obtained from the API.
-
-    This is simulated by patching 'range' in the underlying function's globals
-    to return an empty iterator, so the for-loop never iterates and response remains None.
+    This is simulated by patching 'range' in the module namespace
+    of single_helper to return an empty iterator, so that the for-loop
+    in _fetch_recommendations never iterates and response remains None.
     """
-    # Patch 'range' in the underlying function's globals (accessed via .func.__globals__)
-    monkeypatch.setitem(
-        get_single_paper_recommendations.func.__globals__, "range", lambda x: iter([])
-    )
+    # Patch 'range' in the module globals of single_helper.
+    monkeypatch.setitem(single_helper.__dict__, "range", lambda x: iter([]))
+
     tool_call_id = "test_tool_call_id"
     input_data = {
         "paper_id": "12345",

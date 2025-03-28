@@ -292,7 +292,9 @@ class TestZoteroWrite:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with patch("hydra.compose") as mock_compose:
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.compose"
+        ) as mock_compose:
             cfg = MagicMock()
             cfg.tools.zotero_write.user_id = "test_user"
             cfg.tools.zotero_write.library_type = "user"
@@ -305,13 +307,15 @@ class TestZoteroWrite:
     @pytest.fixture
     def mock_zotero(self):
         """Fixture to mock Zotero client."""
-        with patch("pyzotero.zotero.Zotero") as mock_zot_class:
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.zotero.Zotero"
+        ) as mock_zot_class:
             mock_zot = MagicMock()
             mock_zot_class.return_value = mock_zot
             yield mock_zot
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save"
     )
     def test_zotero_write_no_papers(self, mock_fetch):
         """When no papers exist (even after approval), the function raises a ValueError."""
@@ -335,12 +339,14 @@ class TestZoteroWrite:
         assert "No fetched papers were found to save" in str(excinfo.value)
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection"
     )
-    def test_zotero_write_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
+    def test_zotero_write_invalid_collection(
+        self, mock_find, mock_fetch, mock_zotero
+    ):
         """Saving to a nonexistent Zotero collection returns an error Command."""
         sample = {"paper1": {"Title": "Test Paper"}}
         mock_fetch.return_value = sample
@@ -372,12 +378,14 @@ class TestZoteroWrite:
         assert "Curiosity, Random" in msg
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.fetch_papers_for_save"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.fetch_papers_for_save"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.find_or_create_collection"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection"
     )
-    def test_zotero_write_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
+    def test_zotero_write_success(
+        self, mock_find, mock_fetch, mock_hydra, mock_zotero
+    ):
         """A valid approved save returns a success Command with summary."""
         sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
         mock_fetch.return_value = sample
@@ -418,7 +426,11 @@ class TestZoteroRead:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with patch("hydra.initialize"), patch("hydra.compose") as mock_compose:
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.initialize"
+        ), patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.compose"
+        ) as mock_compose:
             cfg = MagicMock()
             cfg.tools.zotero_read.user_id = "test_user"
             cfg.tools.zotero_read.library_type = "user"
@@ -435,7 +447,9 @@ class TestZoteroRead:
     @pytest.fixture
     def mock_zotero(self):
         """Fixture to mock Zotero client."""
-        with patch("pyzotero.zotero.Zotero") as mock_zot_class:
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.zotero.Zotero"
+        ) as mock_zot_class:
             mock_zot = MagicMock()
             mock_zot_class.return_value = mock_zot
             yield mock_zot
