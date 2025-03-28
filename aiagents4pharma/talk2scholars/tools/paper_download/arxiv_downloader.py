@@ -95,17 +95,9 @@ class ArxivPaperDownloader(AbstractPaperDownloader):
             raise RuntimeError(f"Failed to download PDF for arXiv ID {paper_id}.")
 
         logger.info("Downloading PDF from: %s", pdf_url)
-        pdf_response = requests.get(pdf_url, stream=True, timeout=self.request_timeout)
+        pdf_response = requests.get(pdf_url, timeout=self.request_timeout)
         pdf_response.raise_for_status()
-        # print (pdf_response)
-
-        # Combine the PDF data from chunks.
-        pdf_object = b"".join(
-            chunk
-            for chunk in pdf_response.iter_content(chunk_size=self.chunk_size)
-            if chunk
-        )
-        # print (pdf_object)
+        pdf_object = pdf_response.content
         print("PDF_URL", pdf_url)
 
         return {
