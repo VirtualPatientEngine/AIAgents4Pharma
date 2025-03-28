@@ -36,5 +36,6 @@ packages = [
   "talk2scholars",
   "talk2scholars.agents",
   "talk2scholars.tools",
-  "talk2scholars.states",
+  "talk2scholars.state",
+  "talk2scholars.configs",
 ]
