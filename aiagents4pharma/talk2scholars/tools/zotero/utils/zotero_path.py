@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Utility functions for Zotero tools.
+Utility functions for Zotero path operations.
 """
 
 import logging
