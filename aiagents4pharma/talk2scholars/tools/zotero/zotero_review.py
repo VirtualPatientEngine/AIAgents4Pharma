@@ -13,8 +13,8 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command, interrupt
 from pydantic import BaseModel, Field
 from .utils.zotero_path import fetch_papers_for_save
+from .utils.review_helper import ReviewData
 
-# pylint: disable=R0914,R0911,R0912,R0915
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -71,43 +71,12 @@ def zotero_review(
             "Please retrieve papers using Zotero Read or Semantic Scholar first."
         )
 
-    # Prepare papers summary for review
-    papers_summary = []
-    for paper_id, paper in list(fetched_papers.items())[
-        :5
-    ]:  # Limit to 5 papers for readability
-        logger.info("Paper ID: %s", paper_id)
-        title = paper.get("Title", "N/A")
-        authors = ", ".join(
-            [author.split(" (ID: ")[0] for author in paper.get("Authors", [])[:2]]
-        )
-        if len(paper.get("Authors", [])) > 2:
-            authors += " et al."
-        papers_summary.append(f"- {title} by {authors}")
-
-    if len(fetched_papers) > 5:
-        papers_summary.append(f"... and {len(fetched_papers) - 5} more papers")
-
-    papers_preview = "\n".join(papers_summary)
-    total_papers = len(fetched_papers)
-
-    # Prepare review information
-    review_info = {
-        "action": "save_to_zotero",
-        "collection_path": collection_path,
-        "total_papers": total_papers,
-        "papers_preview": papers_preview,
-        "message": (
-            f"Would you like to save {total_papers} papers to Zotero "
-            f"collection '{collection_path}'? Please respond with a structured decision "
-            f"using one of the following options: 'approve', 'reject', or 'custom' "
-            f"(with a custom_path)."
-        ),
-    }
+    # Create review data object to organize variables
+    review_data = ReviewData(collection_path, fetched_papers, tool_call_id, state)
 
     try:
         # Interrupt the graph to get human approval
-        human_review = interrupt(review_info)
+        human_review = interrupt(review_data.review_info)
         # Process human response using structured output via LLM
         llm_model = state.get("llm_model")
         if llm_model is None:
@@ -125,15 +94,12 @@ def zotero_review(
                 update={
                     "messages": [
                         ToolMessage(
-                            content=(
-                                f"Human approved saving {total_papers} papers to Zotero "
-                                f"collection '{collection_path}'."
-                            ),
+                            content=review_data.get_approval_message(),
                             tool_call_id=tool_call_id,
                         )
                     ],
                     "zotero_write_approval_status": {
-                        "collection_path": collection_path,
+                        "collection_path": review_data.collection_path,
                         "approved": True,
                     },
                 }
@@ -146,9 +112,8 @@ def zotero_review(
                 update={
                     "messages": [
                         ToolMessage(
-                            content=(
-                                f"Human approved saving papers to custom Zotero "
-                                f"collection '{decision_response.custom_path}'."
+                            content=review_data.get_custom_path_approval_message(
+                                decision_response.custom_path
                             ),
                             tool_call_id=tool_call_id,
                         )
@@ -180,19 +145,20 @@ def zotero_review(
                 "messages": [
                     ToolMessage(
                         content=(
-                            f"REVIEW REQUIRED: Would you like to save {total_papers} papers "
-                            f"to Zotero collection '{collection_path}'?\n\n"
-                            f"Papers to save:\n{papers_preview}\n\n"
+                            f"REVIEW REQUIRED: Would you like to save "
+                            f"{review_data.total_papers} papers to Zotero collection "
+                            f"'{review_data.collection_path}'?\n\n"
+                            f"Papers to save:\n{review_data.papers_preview}\n\n"
                             "Please respond with 'Yes' to confirm or 'No' to cancel."
                         ),
                         tool_call_id=tool_call_id,
                     )
                 ],
                 "zotero_write_approval_status": {
-                    "collection_path": collection_path,
+                    "collection_path": review_data.collection_path,
                     "papers_reviewed": True,
                     "approved": False,  # Not approved yet
-                    "papers_count": total_papers,
+                    "papers_count": review_data.total_papers,
                 },
             }
         )
