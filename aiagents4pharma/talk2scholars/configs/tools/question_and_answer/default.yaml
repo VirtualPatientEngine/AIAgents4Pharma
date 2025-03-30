@@ -1,5 +1,4 @@
 # Default configuration for the PDF question_and_answer Tool
-openai_api_key: ${oc.env:OPENAI_API_KEY}
 chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
 num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
