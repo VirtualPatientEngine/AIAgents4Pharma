@@ -3,11 +3,15 @@ Unit tests for question_and_answer tool functionality.
 """
 
 import contextlib
+import re
+from unittest import mock
+
 import hydra
 import pytest
 from langchain.docstore.document import Document
 from langchain_core.vectorstores import InMemoryVectorStore
 from langgraph.types import Command
+
 from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     extract_text_from_pdf_data,
     generate_answer,
@@ -569,3 +573,116 @@ def test_dummy_embeddings_embed():
     sample_text = "hello"
     expected_output = [0.0] * len(sample_text)
     assert dummy.embed(sample_text) == expected_output
+
+
+def test_question_and_answer_tool_dash_title_extraction(monkeypatch):
+    """Test extracting title from filenames with dashes (covers line 257)."""
+    setup_monkeypatch(monkeypatch)
+
+    # Create test data with filenames containing dashes
+    dummy_pdf_data = {
+        "paper1": {
+            "attachment1": {
+                "data": b"dummy pdf bytes",
+                "url": "",
+                "filename": "Author - 2020 - Complex Title With Multiple Words.pdf",
+            }
+        },
+        "paper2": {
+            "attachment1": {
+                "data": b"dummy pdf bytes",
+                "url": "",
+                "filename": "No Dashes Here.pdf",
+            }
+        },
+    }
+
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+
+    # Test with a query matching words from the title part (after the last dash)
+    result = question_and_answer_tool(
+        {
+            "question": "Can you explain the Complex Title With Multiple Words paper?",
+            "tool_call_id": "test-dash-title",
+            "state": state,
+        }
+    )
+
+    # Verify that the paper with the matching title was selected
+    assert (
+        "Author - 2020 - Complex Title With Multiple Words.pdf"
+        in result.update["messages"][0].content
+    )
+
+
+def test_question_and_answer_tool_numeric_reference(monkeypatch):
+    """Test selecting a paper by numeric reference with improved regex pattern."""
+    setup_monkeypatch(monkeypatch)
+
+    # Create test data with ordered, predictable keys
+    dummy_pdf_data = {
+        "key1": {
+            "attachment1": {
+                "data": b"dummy pdf bytes paper1",
+                "url": "",
+                "filename": "Paper One.pdf",
+            }
+        },
+        "key2": {
+            "attachment1": {
+                "data": b"dummy pdf bytes paper2",
+                "url": "",
+                "filename": "Paper Two.pdf",
+            }
+        },
+        "key3": {
+            "attachment1": {
+                "data": b"dummy pdf bytes paper3",
+                "url": "",
+                "filename": "Paper Three.pdf",
+            }
+        },
+    }
+
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+
+    # Test cases for various numeric patterns
+    test_cases = [
+        # Test both "paper number" and "number paper" formats
+        ("show me paper 2", 2, "Paper Two.pdf"),
+        ("get the 3rd paper", 3, "Paper Three.pdf"),
+        ("paper 1 summary", 1, "Paper One.pdf"),
+    ]
+
+    for query, expected_num, expected_filename in test_cases:
+        # Use mock.patch to observe the info logging
+        with mock.patch("logging.Logger.info") as mock_info:
+            # Run the function with the test query
+            result = question_and_answer_tool(
+                {
+                    "question": query,
+                    "tool_call_id": "test-numeric-reference",
+                    "state": state,
+                }
+            )
+
+            # Check that the numeric selection log message was generated
+            expected_log = f"Selected paper {expected_num} based on numerical reference"
+            log_messages = [call.args[0] for call in mock_info.call_args_list]
+
+            assert any(
+                expected_log in message for message in log_messages
+            ), f"Expected log message '{expected_log}' not found"
+
+            # Verify the correct paper was selected
+            assert (
+                expected_filename in result.update["messages"][0].content
+            ), f"Expected '{expected_filename}' to be in the response content"
