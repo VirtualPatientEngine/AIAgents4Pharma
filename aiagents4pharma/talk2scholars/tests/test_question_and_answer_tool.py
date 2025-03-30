@@ -2,23 +2,45 @@
 Unit tests for question_and_answer tool functionality.
 """
 
+import contextlib
+import hydra
+import pytest
 from langchain.docstore.document import Document
-from ..tools.pdf import question_and_answer
-from ..tools.pdf.question_and_answer import (
+from langchain_core.vectorstores import InMemoryVectorStore
+from langgraph.types import Command
+from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     extract_text_from_pdf_data,
-    question_and_answer_tool,
     generate_answer,
+    question_and_answer_tool,
 )
 
-# pylint: disable=redefined-outer-name,too-few-public-methods
+# --- Dummy Hydra configuration and context ---
 
 
-def test_extract_text_from_pdf_data():
-    """
-    Test that extract_text_from_pdf_data returns text containing 'Hello World'.
-    """
-    extracted_text = extract_text_from_pdf_data(DUMMY_PDF_BYTES)
-    assert "Hello World" in extracted_text
+@contextlib.contextmanager
+def dummy_hydra_initialize(*args, **kwargs):
+    yield
+
+
+def dummy_hydra_compose(*args, **kwargs):
+    class DummyQAConfig:
+        chunk_size = 100
+        chunk_overlap = 0
+        num_retrievals = 1
+        prompt_template = "Context:\n{context}\n\nQuestion: {question}"
+
+    class DummyTools:
+        question_and_answer = DummyQAConfig()
+
+    class DummyCfg:
+        tools = DummyTools()
+
+    return DummyCfg()
+
+
+def setup_hydra(monkeypatch):
+    monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
+    monkeypatch.setattr(hydra, "compose", dummy_hydra_compose)
 
 
 DUMMY_PDF_BYTES = (
@@ -47,204 +69,503 @@ DUMMY_PDF_BYTES = (
 )
 
 
-def fake_generate_answer2(question, pdf_url, _text_embedding_model):
+def test_extract_text_from_pdf_data():
     """
-    Fake generate_answer2 function to bypass external dependencies.
+    Test that extract_text_from_pdf_data returns text containing 'Hello World'.
     """
-    return {
-        "answer": "Mock answer",
-        "question": question,
-        "pdf_url": pdf_url,
-    }
+    extracted_text = extract_text_from_pdf_data(DUMMY_PDF_BYTES)
+    assert "Hello World" in extracted_text
 
 
-def test_question_and_answer_tool_success(monkeypatch):
-    """
-    Test that question_and_answer_tool returns the expected result on success.
-    """
-    # Patch generate_answer2 because the tool calls that.
-    monkeypatch.setattr(question_and_answer, "generate_answer2", fake_generate_answer2)
-    dummy_text_embedding_model = object()  # Provide a dummy text embedding model.
-    # Create a valid state with pdf_data and include dummy llm_model and text_embedding_model.
-    state = {
-        "pdf_data": {"pdf_object": DUMMY_PDF_BYTES, "pdf_url": "http://dummy.url"},
-        "llm_model": object(),  # Provide a dummy LLM model instance.
-        "text_embedding_model": dummy_text_embedding_model,
-    }
-    question = "What is in the PDF?"
-    result = question_and_answer_tool.func(
-        question=question, tool_call_id="test_call_id", state=state
-    )
-    assert result["answer"] == "Mock answer"
-    assert result["question"] == question
-    assert result["pdf_url"] == "http://dummy.url"
+# --- Dummy Vector Store and Models ---
 
 
-def test_question_and_answer_tool_no_pdf_data():
-    """
-    Test that an error is returned if the state lacks the 'pdf_data' key.
-    """
-    state = {
-        "text_embedding_model": object(),  # Added to avoid KeyError.
-    }
-    question = "Any question?"
-    result = question_and_answer_tool.func(
-        question=question, tool_call_id="test_call_id", state=state
-    )
-    messages = result.update["messages"]
-    assert any("No pdf_data found in state." in msg.content for msg in messages)
+class DummyVectorStore:
+    def __init__(self, documents):
+        self.documents = documents
+
+    def similarity_search(self, question, k):
+        # Always return one dummy Document regardless of the question.
+        return [Document(page_content="dummy context")]
 
 
-def test_question_and_answer_tool_no_pdf_object():
-    """
-    Test that an error is returned if the pdf_object is missing within pdf_data.
-    """
-    state = {
-        "pdf_data": {"pdf_object": None},
-        "text_embedding_model": object(),  # Added to avoid KeyError.
-        "llm_model": object(),  # Dummy LLM model.
-    }
-    question = "Any question?"
-    result = question_and_answer_tool.func(
-        question=question, tool_call_id="test_call_id", state=state
-    )
-    messages = result.update["messages"]
-    assert any(
-        "PDF binary data is missing in the pdf_data from state." in msg.content
-        for msg in messages
-    )
+class DummyEmbeddings:
+    def embed(self, text: str):
+        # Dummy implementation.
+        return [0.0] * len(text)
 
 
-def test_question_and_answer_tool_no_llm_model():
-    """
-    Test that an error is returned if the LLM model is missing in the state.
-    """
-    state = {
-        "pdf_data": {"pdf_object": DUMMY_PDF_BYTES, "pdf_url": "http://dummy.url"},
-        "text_embedding_model": object(),  # Added to avoid KeyError.
-        # llm_model is intentionally omitted.
-    }
-    question = "What is in the PDF?"
-    result = question_and_answer_tool.func(
-        question=question, tool_call_id="test_call_id", state=state
-    )
-    assert result == {"error": "No LLM model found in state."}
+class DummyLLM:
+    def invoke(self, prompt: str):
+        # Always return a dummy answer.
+        class DummyResponse:
+            content = "dummy answer"
+
+        return DummyResponse()
 
 
-def test_generate_answer2_actual(monkeypatch):
-    """
-    Test the actual behavior of generate_answer2 using fake dependencies
-    to exercise its internal logic.
-    """
+# --- Setup function to patch dependencies for question_and_answer_tool ---
 
-    # Create a fake PyPDFLoader that does not perform a network call.
-    class FakePyPDFLoader:
-        """class to fake PyPDFLoader"""
 
-        def __init__(self, file_path, headers=None):
-            """Initialize the fake PyPDFLoader."""
-            self.file_path = file_path
-            self.headers = headers
-
-        def lazy_load(self):
-            """Return a list with one fake Document."""
-            # Return a list with one fake Document.
-            return [Document(page_content="Answer for Test question?")]
-
-    monkeypatch.setattr(question_and_answer, "PyPDFLoader", FakePyPDFLoader)
-
-    # Create a fake vector store that returns a controlled result for similarity_search.
-    class FakeVectorStore:
-        """Fake vector store for similarity search."""
-
-        def similarity_search(self, query):
-            """Return a list with one Document containing our expected answer."""
-            # Return a list with one Document containing our expected answer.
-            return [Document(page_content=f"Answer for {query}")]
+def setup_monkeypatch(monkeypatch):
+    # Patch hydra initialize/compose to use our dummy config.
+    monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
+    monkeypatch.setattr(hydra, "compose", dummy_hydra_compose)
+    # Patch the vector store so that similarity_search returns a dummy document.
 
     monkeypatch.setattr(
-        question_and_answer.InMemoryVectorStore,
+        InMemoryVectorStore,
         "from_documents",
-        lambda docs, emb: FakeVectorStore(),
+        lambda docs, model: DummyVectorStore(docs),
+    )
+    # Patch the PDF text extraction to avoid processing real PDF data.
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
+        lambda pdf_bytes: "dummy text",
     )
 
-    # Provide a dummy text embedding model.
-    dummy_text_embedding_model = object()
-    question = "Test question?"
-    pdf_url = "http://dummy.pdf"
 
-    # Call generate_answer2 without triggering an actual network call.
-    result = question_and_answer.generate_answer2(
-        question, pdf_url, dummy_text_embedding_model
+# --- Tests for question_and_answer_tool (basic cases) ---
+
+
+def test_question_and_answer_tool_arxiv(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    # Prepare a dummy state in arXiv format.
+    dummy_pdf_data = {
+        "pdf_object": b"dummy pdf bytes",
+        "pdf_url": "http://example.com/dummy.pdf",
+        "arxiv_id": "1234.5678",
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    result = question_and_answer_tool(
+        {
+            "question": "What is this PDF about?",
+            "tool_call_id": "test-call-id-arxiv",
+            "state": state,
+        }
     )
-    # The function should join the page content from the similarity search.
-    expected = "Answer for Test question?"
-    assert result == expected
+    assert isinstance(result, Command)
+    assert "messages" in result.update
+    message = result.update["messages"][0]
+    assert "ArXiv paper 1234.5678" in message.content
+    assert "dummy answer" in message.content
 
 
-def test_generate_answer(monkeypatch):
-    """
-    Test generate_answer function with controlled monkeypatched dependencies.
-    """
+def test_question_and_answer_tool_zotero(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    # Prepare a dummy state in Zotero (nested) format.
+    dummy_pdf_data = {
+        "paper1": {
+            "attachment1": {
+                "data": b"dummy pdf bytes",
+                "url": "",
+                "filename": "dummy_zotero.pdf",
+            }
+        }
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    result = question_and_answer_tool(
+        {
+            "question": "Explain the content of the PDF",
+            "tool_call_id": "test-call-id-zotero",
+            "state": state,
+        }
+    )
+    assert isinstance(result, Command)
+    assert "messages" in result.update
+    message = result.update["messages"][0]
+    assert "dummy_zotero.pdf" in message.content
+    assert "dummy answer" in message.content
 
-    def fake_split_text(_self, _text):
-        """Fake split_text method that returns controlled chunks."""
-        return ["chunk1", "chunk2"]
+
+def test_missing_text_embedding_model(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    dummy_pdf_data = {
+        "pdf_object": b"dummy pdf bytes",
+        "pdf_url": "http://example.com/dummy.pdf",
+        "arxiv_id": "1234.5678",
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        # Missing "text_embedding_model"
+        "llm_model": DummyLLM(),
+    }
+    with pytest.raises(ValueError, match="No text embedding model found in state."):
+        question_and_answer_tool(
+            {
+                "question": "What is this PDF about?",
+                "tool_call_id": "test-call-id-missing-embeddings",
+                "state": state,
+            }
+        )
+
+
+def test_missing_llm_model(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    dummy_pdf_data = {
+        "pdf_object": b"dummy pdf bytes",
+        "pdf_url": "http://example.com/dummy.pdf",
+        "arxiv_id": "1234.5678",
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        # Missing "llm_model"
+    }
+    with pytest.raises(ValueError, match="No LLM model found in state."):
+        question_and_answer_tool(
+            {
+                "question": "What is this PDF about?",
+                "tool_call_id": "test-call-id-missing-llm",
+                "state": state,
+            }
+        )
+
+
+def test_missing_pdf_data(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    state = {
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+        # Missing "pdf_data"
+    }
+    with pytest.raises(ValueError, match="No pdf_data found in state."):
+        question_and_answer_tool(
+            {
+                "question": "What is this PDF about?",
+                "tool_call_id": "test-call-id-missing-pdf",
+                "state": state,
+            }
+        )
+
+
+# --- Additional tests for generate_answer function ---
+
+
+def test_generate_answer_bytes_success(monkeypatch):
+    # Cover the normal bytes processing branch in generate_answer.
+    setup_hydra(monkeypatch)
+    # Patch text extraction to return dummy text that splits into two chunks.
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
+        lambda pdf_bytes: "page1\npage2",
+    )
+    # Patch the vector store to return a dummy document.
+
+    class DummyVectorStoreBytes:
+        def __init__(self, documents):
+            self.documents = documents
+
+        def similarity_search(self, question, k):
+            return [Document(page_content="dummy context bytes")]
 
     monkeypatch.setattr(
-        question_and_answer.CharacterTextSplitter, "split_text", fake_split_text
+        InMemoryVectorStore,
+        "from_documents",
+        lambda docs, model: DummyVectorStoreBytes(docs),
     )
 
-    def fake_annoy_from_documents(_documents, _embeddings):
-        """
-        Fake Annoy.from_documents function that returns a fake vector store.
-        """
+    result = generate_answer(
+        "dummy question", b"dummy pdf bytes", DummyEmbeddings(), DummyLLM()
+    )
+    assert "dummy answer" in result["output_text"]
 
-        # pylint: disable=too-few-public-methods, unused-argument
-        class FakeVectorStore:
-            """Fake vector store for similarity search."""
 
-            def similarity_search(self, _question, k):
-                """Return a list with a single dummy Document."""
-                return [Document(page_content="dummy content")]
+def test_generate_answer_bytes_exception(monkeypatch):
+    # Force extract_text_from_pdf_data to raise an exception so that the except branch is executed.
+    setup_hydra(monkeypatch)
 
-        return FakeVectorStore()
+    def failing_extract(pdf_bytes):
+        raise Exception("simulated extraction failure")
 
     monkeypatch.setattr(
-        question_and_answer.Annoy, "from_documents", fake_annoy_from_documents
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
+        failing_extract,
     )
 
-    def fake_load_qa_chain(_llm, chain_type):  # chain_type matches the keyword argument
-        """
-        Fake load_qa_chain function that returns a fake QA chain.
-        """
+    # Patch PyPDFLoader to return a dummy document list.
+    class DummyLoader:
+        def __init__(self, path):
+            self.path = path
 
-        # pylint: disable=too-few-public-methods, unused-argument
-        class FakeChain:
-            """Fake QA chain for testing generate_answer."""
+        def load(self):
+            return [Document(page_content="loaded via PyPDFLoader")]
 
-            def invoke(self, **kwargs):
-                """
-                Fake invoke method that returns a mock answer.
-                """
-                input_data = kwargs.get("input")
-                return {
-                    "answer": "real mock answer",
-                    "question": input_data.get("question"),
-                }
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader",
+        lambda path: DummyLoader(path),
+    )
+    # Patch the vector store as before.
 
-        return FakeChain()
+    class DummyVectorStoreFallback:
+        def __init__(self, documents):
+            self.documents = documents
 
-    monkeypatch.setattr(question_and_answer, "load_qa_chain", fake_load_qa_chain)
-    # Set dummy configuration values so that generate_answer can run.
-    question_and_answer.cfg.chunk_size = 1000
-    question_and_answer.cfg.chunk_overlap = 0
-    question_and_answer.cfg.openai_api_key = "dummy_key"
-    question_and_answer.cfg.num_retrievals = 1
-    question_and_answer.cfg.qa_chain_type = "dummy-chain"
+        def similarity_search(self, question, k):
+            return [Document(page_content="dummy context fallback")]
 
-    question = "What is in the PDF?"
-    dummy_llm_model = object()  # A dummy model placeholder.
-    answer = generate_answer(question, DUMMY_PDF_BYTES, dummy_llm_model)
-    assert answer["answer"] == "real mock answer"
-    assert answer["question"] == question
+    monkeypatch.setattr(
+        InMemoryVectorStore,
+        "from_documents",
+        lambda docs, model: DummyVectorStoreFallback(docs),
+    )
+
+    result = generate_answer(
+        "dummy question", b"dummy pdf bytes", DummyEmbeddings(), DummyLLM()
+    )
+    assert "dummy answer" in result["output_text"]
+
+
+def test_generate_answer_url(monkeypatch):
+    # Test the branch when pdf_source is a URL.
+    setup_hydra(monkeypatch)
+
+    # Patch PyPDFLoader to simulate loading from a URL.
+    class DummyLoaderURL:
+        def __init__(self, url):
+            self.url = url
+
+        def load(self):
+            return [Document(page_content="loaded via URL")]
+
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader",
+        lambda url: DummyLoaderURL(url),
+    )
+    # Patch the vector store.
+
+    class DummyVectorStoreURL:
+        def __init__(self, documents):
+            self.documents = documents
+
+        def similarity_search(self, question, k):
+            return [Document(page_content="dummy context URL")]
+
+    monkeypatch.setattr(
+        InMemoryVectorStore,
+        "from_documents",
+        lambda docs, model: DummyVectorStoreURL(docs),
+    )
+
+    result = generate_answer(
+        "dummy question", "http://dummy.url/dummy.pdf", DummyEmbeddings(), DummyLLM()
+    )
+    assert "dummy answer" in result["output_text"]
+
+
+def test_generate_answer_invalid_source(monkeypatch):
+    # Passing an invalid type (e.g. int) should raise a ValueError.
+    with pytest.raises(ValueError, match="pdf_source must be either bytes"):
+        generate_answer("dummy question", 12345, DummyEmbeddings(), DummyLLM())
+
+
+# --- Additional tests for question_and_answer_tool extra branches ---
+
+
+def test_question_and_answer_tool_zotero_multiple(monkeypatch):
+    # Call setup_monkeypatch so that extract_text_from_pdf_data is patched.
+    setup_monkeypatch(monkeypatch)
+    dummy_pdf_data = {
+        "paper1": {
+            "attachment1": {
+                "data": b"dummy pdf bytes paper1",
+                "url": "",
+                "filename": "Deep Learning Advances.pdf",
+            }
+        },
+        "paper2": {
+            "attachment1": {
+                "data": b"dummy pdf bytes paper2",
+                "url": "",
+                "filename": "Quantum Computing Insights.pdf",
+            }
+        },
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    result = question_and_answer_tool(
+        {
+            "question": "What are the insights on Quantum Computing?",
+            "tool_call_id": "test-call-id-multi-zotero",
+            "state": state,
+        }
+    )
+    # Expect that the selected paper's filename (Quantum Computing Insights.pdf) is used.
+    assert "Quantum Computing Insights.pdf" in result.update["messages"][0].content
+
+
+def test_question_and_answer_tool_generate_answer_exception(monkeypatch):
+    # Force generate_answer to raise an exception to cover the try/except in question_and_answer_tool.
+    def failing_generate_answer(*args, **kwargs):
+        raise Exception("simulated generate_answer failure")
+
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer",
+        failing_generate_answer,
+    )
+    dummy_pdf_data = {
+        "pdf_object": b"dummy pdf bytes",
+        "pdf_url": "http://example.com/dummy.pdf",
+        "arxiv_id": "1234.5678",
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    with pytest.raises(
+        ValueError, match="Error processing PDF: simulated generate_answer failure"
+    ):
+        question_and_answer_tool(
+            {
+                "question": "What is this PDF about?",
+                "tool_call_id": "test-call-id-gen-err",
+                "state": state,
+            }
+        )
+
+
+class NonEmptyButNoKeys(dict):
+    def __bool__(self):
+        return True
+
+    def keys(self):
+        return []
+
+
+def test_question_and_answer_tool_empty_papers(monkeypatch):
+    # Supply a custom dict that is truthy but returns no keys.
+    setup_monkeypatch(monkeypatch)
+    state = {
+        "pdf_data": NonEmptyButNoKeys(),
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    with pytest.raises(ValueError, match="No papers with PDFs found in pdf_data."):
+        question_and_answer_tool(
+            {
+                "question": "dummy question",
+                "tool_call_id": "test-empty-papers",
+                "state": state,
+            }
+        )
+
+
+def test_question_and_answer_tool_no_attachments(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    dummy_pdf_data = {"paper1": {}}  # Empty attachments dict.
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    with pytest.raises(ValueError, match="No PDF attachments found for paper paper1."):
+        question_and_answer_tool(
+            {
+                "question": "dummy question",
+                "tool_call_id": "test-no-attachments",
+                "state": state,
+            }
+        )
+
+
+def test_question_and_answer_tool_no_pdf_data(monkeypatch):
+    setup_monkeypatch(monkeypatch)
+    dummy_pdf_data = {
+        "pdf_object": None,
+        "pdf_url": "",
+        "arxiv_id": "1234.5678",
+    }
+    state = {
+        "pdf_data": dummy_pdf_data,
+        "text_embedding_model": DummyEmbeddings(),
+        "llm_model": DummyLLM(),
+    }
+    with pytest.raises(
+        ValueError, match="Neither PDF binary data nor URL is available."
+    ):
+        question_and_answer_tool(
+            {
+                "question": "dummy question",
+                "tool_call_id": "test-no-pdf",
+                "state": state,
+            }
+        )
+
+
+def test_generate_answer_default_prompt(monkeypatch):
+    # Create a Hydra config without prompt_template.
+    def dummy_hydra_compose_no_prompt(*args, **kwargs):
+        class DummyQAConfig:
+            chunk_size = 100
+            chunk_overlap = 0
+            num_retrievals = 1
+
+        class DummyTools:
+            question_and_answer = DummyQAConfig()
+
+        class DummyCfg:
+            tools = DummyTools()
+
+        return DummyCfg()
+
+    monkeypatch.setattr(hydra, "compose", dummy_hydra_compose_no_prompt)
+    monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
+
+    # Patch the vector store so that similarity_search returns a document with dummy context.
+    from langchain_core.vectorstores import InMemoryVectorStore
+
+    class DummyVectorStoreNoPrompt:
+        def __init__(self, documents):
+            self.documents = documents
+
+        def similarity_search(self, question, k):
+            return [Document(page_content="default context")]
+
+    monkeypatch.setattr(
+        InMemoryVectorStore,
+        "from_documents",
+        lambda docs, model: DummyVectorStoreNoPrompt(docs),
+    )
+
+    # Patch text extraction and text splitting.
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
+        lambda pdf: "dummy text",
+    )
+    from langchain.text_splitter import CharacterTextSplitter
+
+    monkeypatch.setattr(CharacterTextSplitter, "split_text", lambda self, text: [text])
+
+    class DummyLLM:
+        def invoke(self, prompt: str):
+            class DummyResponse:
+                content = prompt
+
+            return DummyResponse()
+
+    dummy_pdf_source = b"dummy pdf bytes"
+    result = generate_answer(
+        "What is the question?", dummy_pdf_source, DummyEmbeddings(), DummyLLM()
+    )
+    expected_prompt = "Context:\ndefault context\n\nQuestion: What is the question?"
+    assert expected_prompt in result["output_text"]
+
+
+def test_dummy_embeddings_embed():
+    # Test that DummyEmbeddings.embed returns a list of zeros with length equal to the input text.
+    dummy = DummyEmbeddings()
+    sample_text = "hello"
+    expected_output = [0.0] * len(sample_text)
+    assert dummy.embed(sample_text) == expected_output

@@ -29,15 +29,11 @@ def mock_tools_fixture():
         mock.patch(
             "aiagents4pharma.talk2scholars.agents.pdf_agent.question_and_answer_tool"
         ) as mock_question_and_answer_tool,
-        mock.patch(
-            "aiagents4pharma.talk2scholars.agents.pdf_agent.query_results"
-        ) as mock_query_results,
     ):
         mock_question_and_answer_tool.return_value = {
             "result": "Mock Question and Answer Result"
         }
-        mock_query_results.return_value = {"result": "Mock Query Result"}
-        yield [mock_question_and_answer_tool, mock_query_results]
+        yield [mock_question_and_answer_tool]
 
 
 @pytest.fixture
@@ -73,9 +69,7 @@ def test_pdf_agent_invocation(mock_llm):
         mock_create.return_value = mock_agent
         # Simulate a response from the PDF agent.
         mock_agent.invoke.return_value = {
-            "messages": [
-                AIMessage(content="PDF content extracted successfully")
-            ],
+            "messages": [AIMessage(content="PDF content extracted successfully")],
             "pdf_data": {"page": 1, "text": "Sample PDF text"},
         }
         app = get_app(thread_id, mock_llm)
@@ -109,12 +103,11 @@ def test_pdf_agent_tools_assignment(request, mock_llm):
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
         mock_tool_instance = mock.Mock()
-        # For the PDF agent, we expect two tools: question_and_answer_tool and query_results.
         mock_tool_instance.tools = mock_tools
         mock_toolnode.return_value = mock_tool_instance
         get_app(thread_id, mock_llm)
         assert mock_toolnode.called
-        assert len(mock_tool_instance.tools) == 2
+        assert len(mock_tool_instance.tools) == 1
 
 
 def test_pdf_agent_hydra_failure(mock_llm):
