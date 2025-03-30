@@ -8,6 +8,7 @@ user-provided question using a language model chain.
 """
 
 import io
+import re
 import logging
 import os
 import tempfile
@@ -224,31 +225,68 @@ def question_and_answer_tool(
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-        # Try to find the most relevant paper based on the question
         selected_paper_key = None
         if len(paper_keys) > 1:
             logger.info("Multiple papers found, trying to select the most relevant one")
-            # Check if the question mentions a specific paper title
-            for key in paper_keys:
-                # Get filenames from attachments
-                for _, att_data in pdf_data[key].items():
-                    if "filename" in att_data:
-                        filename = att_data["filename"]
-                        # Check if significant parts of the filename appear in the question
-                        title_parts = filename.split()
-                        for part in title_parts:
-                            if len(part) > 3 and part.lower() in question.lower():
-                                selected_paper_key = key
-                                logger.info(
-                                    "Selected paper with filename '{}' based on question content".format(
-                                        filename
-                                    )
+
+            # 1. First try to match by paper number/position
+            number_match = re.search(
+                r"(?:^|\s)(?:(\d+)(?:st|nd|rd|th)?\s*(?:paper|pdf)|(?:paper|pdf)\s*(\d+))",
+                question.lower(),
+            )
+
+            if number_match:
+                # Get the number from whichever group matched (group 1 or group 2)
+                paper_num_str = (
+                    number_match.group(1)
+                    if number_match.group(1)
+                    else number_match.group(2)
+                )
+                paper_num = int(paper_num_str)
+                if 1 <= paper_num <= len(paper_keys):
+                    # Use 1-based indexing for user-friendly reference
+                    selected_paper_key = paper_keys[paper_num - 1]
+                    logger.info(
+                        f"Selected paper {paper_num} based on numerical reference"
+                    )
+
+            # 2. If not found by number, check for title matches
+            if not selected_paper_key:
+                # Create a mapping of papers to their score for best match
+                paper_scores = {key: 0 for key in paper_keys}
+
+                for key in paper_keys:
+                    for _, att_data in pdf_data[key].items():
+                        if "filename" in att_data:
+                            filename = att_data["filename"]
+
+                            # Extract title component (after the last dash if present)
+                            if " - " in filename:
+                                title_part = filename.split(" - ")[-1].replace(
+                                    ".pdf", ""
                                 )
-                                break
-                    if selected_paper_key:
-                        break
-                if selected_paper_key:
-                    break
+                            else:
+                                title_part = filename.replace(".pdf", "")
+
+                            # Score: Length of longest common substring between title and question
+                            common_words = set(title_part.lower().split()) & set(
+                                question.lower().split()
+                            )
+                            paper_scores[key] = len(common_words)
+
+                # Select the paper with the highest score (if any match at all)
+                if max(paper_scores.values()) > 0:
+                    selected_paper_key = max(paper_scores.items(), key=lambda x: x[1])[
+                        0
+                    ]
+
+                    # Log which paper was selected and why
+                    for _, att_data in pdf_data[selected_paper_key].items():
+                        if "filename" in att_data:
+                            logger.info(
+                                f"Selected paper '{att_data['filename']}' with score {paper_scores[selected_paper_key]}"
+                            )
+                            break
 
         # If no specific paper was found, use the first one
         if not selected_paper_key:
