@@ -158,7 +158,7 @@ def generate_answer(
     return {"output_text": response.content}
 
 
-@tool(args_schema=QuestionAndAnswerInput)
+@tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
 def question_and_answer_tool(
     question: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
