@@ -34,6 +34,7 @@ class ZoteroSearchData:
         self.zot = self._init_zotero_client()
         self.item_to_collections = get_item_collections(self.zot)
         self.filtered_papers = {}
+        self.pdf_data = {}
         self.content = ""
 
     def process_search(self) -> None:
@@ -46,6 +47,7 @@ class ZoteroSearchData:
         """Get the search results and content."""
         return {
             "filtered_papers": self.filtered_papers,
+            "pdf_data": self.pdf_data,
             "content": self.content,
         }
 
@@ -140,6 +142,15 @@ class ZoteroSearchData:
                 ],
             }
 
+            # Fetch PDF attachments for this item
+            attachments = self._fetch_attachments(key)
+            if attachments:
+                self.pdf_data[key] = attachments
+                # Add a flag to indicate PDF availability
+                self.filtered_papers[key]["Has_PDF"] = True
+            else:
+                self.filtered_papers[key]["Has_PDF"] = False
+
         if not self.filtered_papers:
             logger.error(
                 "No matching papers returned from Zotero for query: '%s'", self.query
@@ -149,6 +160,82 @@ class ZoteroSearchData:
             )
 
         logger.info("Filtered %d items", len(self.filtered_papers))
+        logger.info("Found PDFs for %d items", len(self.pdf_data))
+
+    def _fetch_attachments(self, item_key: str) -> dict:
+        """
+        Fetch PDF attachments for a specific item.
+
+        Args:
+            item_key (str): The Zotero item key to fetch attachments for
+
+        Returns:
+            dict: A dictionary with binary data of PDFs if available
+        """
+        logger.info("Fetching attachments for item: %s", item_key)
+
+        result = {}
+
+        try:
+            # Get all child items (attachments) for this item
+            try:
+                children = self.zot.children(item_key)
+            except Exception as e:
+                # If we can't get children, the item might not support children
+                logger.debug(f"Cannot get children for item {item_key}: {str(e)}")
+                return result
+
+            # Filter for PDF attachments
+            pdf_attachments = [
+                child
+                for child in children
+                if (
+                    isinstance(child, dict)
+                    and child.get("data", {}).get("contentType") == "application/pdf"
+                )
+            ]
+
+            if not pdf_attachments:
+                logger.info("No PDF attachments found for item: %s", item_key)
+                return result
+
+            # For each PDF attachment, download the file
+            for attachment in pdf_attachments:
+                attachment_key = attachment.get("data", {}).get("key")
+                if not attachment_key:
+                    continue
+
+                logger.info("Downloading PDF attachment: %s", attachment_key)
+
+                try:
+                    # Get the binary content of the PDF
+                    pdf_binary = self.zot.file(attachment_key)
+
+                    if pdf_binary:
+                        # Log information about the binary data to verify
+                        pdf_size = len(pdf_binary) if pdf_binary else 0
+                        pdf_prefix = pdf_binary[:20].hex() if pdf_binary else "None"
+                        logger.info(
+                            f"Downloaded PDF binary data: size={pdf_size} bytes, prefix={pdf_prefix}"
+                        )
+                        result[attachment_key] = {
+                            "filename": attachment.get("data", {}).get(
+                                "filename", "unknown.pdf"
+                            ),
+                            "data": pdf_binary,
+                            "url": attachment.get("data", {}).get("url", ""),
+                        }
+                except Exception as e:
+                    logger.error(
+                        f"Failed to download attachment {attachment_key}: {str(e)}"
+                    )
+
+            logger.info("Found %d PDF attachments for item: %s", len(result), item_key)
+            return result
+
+        except Exception as e:
+            logger.error("Error fetching attachments for item %s: %s", item_key, e)
+            return {}
 
     def _create_content(self) -> None:
         """Create the content message for the response."""
