@@ -528,7 +528,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that when children() raises an exception, PDF attachment processing fails gracefully."""
+        """Test that when children() raises an exception,
+        PDF attachment processing fails gracefully."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -745,7 +746,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that an exception in the outer try block (e.g. non-iterable children) is handled (covers lines 236-238)."""
+        """Test that an exception in the outer try block
+        (e.g. non-iterable children) is handled (covers lines 236-238)."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -773,7 +775,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         ]
         fake_zot.items.return_value = fake_items
 
-        # Simulate children() returning a non-iterable (None) to trigger a TypeError in the list comprehension.
+        # Simulate children() returning a non-iterable
+        # (None) to trigger a TypeError in the list comprehension.
         fake_zot.children.return_value = None
 
         mock_zotero_class.return_value = fake_zot

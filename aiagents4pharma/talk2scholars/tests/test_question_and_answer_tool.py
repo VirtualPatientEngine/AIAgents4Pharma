@@ -3,12 +3,12 @@ Unit tests for question_and_answer tool functionality.
 """
 
 import contextlib
-import re
 from unittest import mock
 
 import hydra
 import pytest
 from langchain.docstore.document import Document
+from langchain.text_splitter import CharacterTextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
 from langgraph.types import Command
 
@@ -18,31 +18,46 @@ from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     question_and_answer_tool,
 )
 
+# pylint: disable=redefined-outer-name,too-few-public-methods
+# pylint: disable=unused-argument,protected-access
+# pylint: disable=no-value-for-parameter
+# pylint: disable=too-many-branches,too-many-statements
+# pylint: disable=broad-exception-caught
 # --- Dummy Hydra configuration and context ---
 
 
 @contextlib.contextmanager
 def dummy_hydra_initialize(*args, **kwargs):
+    """dummy_hydra_initialize to replace the original one."""
     yield
 
 
 def dummy_hydra_compose(*args, **kwargs):
+    """dummy_hydra_compose to replace the original one."""
+
     class DummyQAConfig:
+        """dummy QA config for testing."""
+
         chunk_size = 100
         chunk_overlap = 0
         num_retrievals = 1
         prompt_template = "Context:\n{context}\n\nQuestion: {question}"
 
     class DummyTools:
+        """dummy tools for testing."""
+
         question_and_answer = DummyQAConfig()
 
     class DummyCfg:
+        """dummy config for testing."""
+
         tools = DummyTools()
 
     return DummyCfg()
 
 
 def setup_hydra(monkeypatch):
+    """setup_hydra to replace the original one."""
     monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
     monkeypatch.setattr(hydra, "compose", dummy_hydra_compose)
 
@@ -81,38 +96,43 @@ def test_extract_text_from_pdf_data():
     assert "Hello World" in extracted_text
 
 
-# --- Dummy Vector Store and Models ---
-
-
 class DummyVectorStore:
+    """dummy vector store for testing."""
+
     def __init__(self, documents):
         self.documents = documents
 
     def similarity_search(self, question, k):
-        # Always return one dummy Document regardless of the question.
+        """simulate similarity search."""
         return [Document(page_content="dummy context")]
 
 
 class DummyEmbeddings:
+    """simulate embeddings for testing."""
+
     def embed(self, text: str):
+        """embed text into a vector."""
         # Dummy implementation.
         return [0.0] * len(text)
 
 
 class DummyLLM:
+    """simulate LLM for testing."""
+
     def invoke(self, prompt: str):
+        """invoke LLM with a prompt."""
+
         # Always return a dummy answer.
         class DummyResponse:
+            """dummy response for testing."""
+
             content = "dummy answer"
 
         return DummyResponse()
 
 
-# --- Setup function to patch dependencies for question_and_answer_tool ---
-
-
 def setup_monkeypatch(monkeypatch):
-    # Patch hydra initialize/compose to use our dummy config.
+    """setup_monkeypatch to replace the original one."""
     monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
     monkeypatch.setattr(hydra, "compose", dummy_hydra_compose)
     # Patch the vector store so that similarity_search returns a dummy document.
@@ -129,10 +149,8 @@ def setup_monkeypatch(monkeypatch):
     )
 
 
-# --- Tests for question_and_answer_tool (basic cases) ---
-
-
 def test_question_and_answer_tool_arxiv(monkeypatch):
+    """extract text from arXiv PDF data and generate an answer."""
     setup_monkeypatch(monkeypatch)
     # Prepare a dummy state in arXiv format.
     dummy_pdf_data = {
@@ -160,6 +178,7 @@ def test_question_and_answer_tool_arxiv(monkeypatch):
 
 
 def test_question_and_answer_tool_zotero(monkeypatch):
+    """test extracting text from Zotero PDF data and generating an answer."""
     setup_monkeypatch(monkeypatch)
     # Prepare a dummy state in Zotero (nested) format.
     dummy_pdf_data = {
@@ -191,6 +210,7 @@ def test_question_and_answer_tool_zotero(monkeypatch):
 
 
 def test_missing_text_embedding_model(monkeypatch):
+    """test missing text embedding model in state."""
     setup_monkeypatch(monkeypatch)
     dummy_pdf_data = {
         "pdf_object": b"dummy pdf bytes",
@@ -213,6 +233,7 @@ def test_missing_text_embedding_model(monkeypatch):
 
 
 def test_missing_llm_model(monkeypatch):
+    """test missing LLM model in state."""
     setup_monkeypatch(monkeypatch)
     dummy_pdf_data = {
         "pdf_object": b"dummy pdf bytes",
@@ -235,6 +256,7 @@ def test_missing_llm_model(monkeypatch):
 
 
 def test_missing_pdf_data(monkeypatch):
+    """test missing PDF data in state."""
     setup_monkeypatch(monkeypatch)
     state = {
         "text_embedding_model": DummyEmbeddings(),
@@ -251,13 +273,9 @@ def test_missing_pdf_data(monkeypatch):
         )
 
 
-# --- Additional tests for generate_answer function ---
-
-
 def test_generate_answer_bytes_success(monkeypatch):
-    # Cover the normal bytes processing branch in generate_answer.
+    """test generating an answer from PDF bytes."""
     setup_hydra(monkeypatch)
-    # Patch text extraction to return dummy text that splits into two chunks.
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
         lambda pdf_bytes: "page1\npage2",
@@ -265,10 +283,14 @@ def test_generate_answer_bytes_success(monkeypatch):
     # Patch the vector store to return a dummy document.
 
     class DummyVectorStoreBytes:
+        """dummy vector store for testing with bytes."""
+
         def __init__(self, documents):
+            """initialize with documents."""
             self.documents = documents
 
         def similarity_search(self, question, k):
+            """simulate similarity search."""
             return [Document(page_content="dummy context bytes")]
 
     monkeypatch.setattr(
@@ -284,11 +306,12 @@ def test_generate_answer_bytes_success(monkeypatch):
 
 
 def test_generate_answer_bytes_exception(monkeypatch):
-    # Force extract_text_from_pdf_data to raise an exception so that the except branch is executed.
+    """test generating an answer from PDF bytes with exception handling."""
     setup_hydra(monkeypatch)
 
     def failing_extract(pdf_bytes):
-        raise Exception("simulated extraction failure")
+        """dummy function to simulate a failure in text extraction."""
+        raise RuntimeError("simulated extraction failure")
 
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
@@ -297,23 +320,30 @@ def test_generate_answer_bytes_exception(monkeypatch):
 
     # Patch PyPDFLoader to return a dummy document list.
     class DummyLoader:
+        """dummy loader for testing."""
+
         def __init__(self, path):
+            """initialize with path."""
             self.path = path
 
         def load(self):
+            """load dummy document."""
             return [Document(page_content="loaded via PyPDFLoader")]
 
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader",
-        lambda path: DummyLoader(path),
+        DummyLoader,
     )
-    # Patch the vector store as before.
 
     class DummyVectorStoreFallback:
+        """dummy vector store for testing with fallback."""
+
         def __init__(self, documents):
+            """initialize with documents."""
             self.documents = documents
 
         def similarity_search(self, question, k):
+            """simulate similarity search."""
             return [Document(page_content="dummy context fallback")]
 
     monkeypatch.setattr(
@@ -329,28 +359,34 @@ def test_generate_answer_bytes_exception(monkeypatch):
 
 
 def test_generate_answer_url(monkeypatch):
-    # Test the branch when pdf_source is a URL.
+    """test generating an answer from a PDF URL."""
     setup_hydra(monkeypatch)
 
-    # Patch PyPDFLoader to simulate loading from a URL.
     class DummyLoaderURL:
+        """dummy loader for testing with URL."""
+
         def __init__(self, url):
+            """initialize with URL."""
             self.url = url
 
         def load(self):
+            """load dummy document."""
             return [Document(page_content="loaded via URL")]
 
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader",
-        lambda url: DummyLoaderURL(url),
+        DummyLoaderURL,
     )
-    # Patch the vector store.
 
     class DummyVectorStoreURL:
+        """dummy vector store for testing with URL."""
+
         def __init__(self, documents):
+            """initialize with documents."""
             self.documents = documents
 
         def similarity_search(self, question, k):
+            """simulate similarity search."""
             return [Document(page_content="dummy context URL")]
 
     monkeypatch.setattr(
@@ -366,16 +402,13 @@ def test_generate_answer_url(monkeypatch):
 
 
 def test_generate_answer_invalid_source(monkeypatch):
-    # Passing an invalid type (e.g. int) should raise a ValueError.
+    """test generating an answer with an invalid PDF source."""
     with pytest.raises(ValueError, match="pdf_source must be either bytes"):
         generate_answer("dummy question", 12345, DummyEmbeddings(), DummyLLM())
 
 
-# --- Additional tests for question_and_answer_tool extra branches ---
-
-
 def test_question_and_answer_tool_zotero_multiple(monkeypatch):
-    # Call setup_monkeypatch so that extract_text_from_pdf_data is patched.
+    """test extracting text from multiple Zotero PDF data and generating an answer."""
     setup_monkeypatch(monkeypatch)
     dummy_pdf_data = {
         "paper1": {
@@ -405,14 +438,14 @@ def test_question_and_answer_tool_zotero_multiple(monkeypatch):
             "state": state,
         }
     )
-    # Expect that the selected paper's filename (Quantum Computing Insights.pdf) is used.
     assert "Quantum Computing Insights.pdf" in result.update["messages"][0].content
 
 
 def test_question_and_answer_tool_generate_answer_exception(monkeypatch):
-    # Force generate_answer to raise an exception to cover the try/except in question_and_answer_tool.
+    """test generating an answer with an exception in the generate_answer function."""
+
     def failing_generate_answer(*args, **kwargs):
-        raise Exception("simulated generate_answer failure")
+        raise RuntimeError("simulated generate_answer failure")
 
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer",
@@ -441,15 +474,19 @@ def test_question_and_answer_tool_generate_answer_exception(monkeypatch):
 
 
 class NonEmptyButNoKeys(dict):
+    """non-empty dict with no keys."""
+
     def __bool__(self):
+        """bool method to always return True."""
         return True
 
     def keys(self):
+        """keys method to return an empty list."""
         return []
 
 
 def test_question_and_answer_tool_empty_papers(monkeypatch):
-    # Supply a custom dict that is truthy but returns no keys.
+    """test empty papers in PDF data."""
     setup_monkeypatch(monkeypatch)
     state = {
         "pdf_data": NonEmptyButNoKeys(),
@@ -467,6 +504,7 @@ def test_question_and_answer_tool_empty_papers(monkeypatch):
 
 
 def test_question_and_answer_tool_no_attachments(monkeypatch):
+    """test no attachments in PDF data."""
     setup_monkeypatch(monkeypatch)
     dummy_pdf_data = {"paper1": {}}  # Empty attachments dict.
     state = {
@@ -485,6 +523,7 @@ def test_question_and_answer_tool_no_attachments(monkeypatch):
 
 
 def test_question_and_answer_tool_no_pdf_data(monkeypatch):
+    """test no PDF data in state."""
     setup_monkeypatch(monkeypatch)
     dummy_pdf_data = {
         "pdf_object": None,
@@ -509,17 +548,26 @@ def test_question_and_answer_tool_no_pdf_data(monkeypatch):
 
 
 def test_generate_answer_default_prompt(monkeypatch):
-    # Create a Hydra config without prompt_template.
+    """test generating an answer with default prompt."""
+
     def dummy_hydra_compose_no_prompt(*args, **kwargs):
+        """dummy_hydra_compose_no_prompt to replace the original one."""
+
         class DummyQAConfig:
+            """dummy QA config for testing."""
+
             chunk_size = 100
             chunk_overlap = 0
             num_retrievals = 1
 
         class DummyTools:
+            """dummy tools for testing."""
+
             question_and_answer = DummyQAConfig()
 
         class DummyCfg:
+            """dummy config for testing."""
+
             tools = DummyTools()
 
         return DummyCfg()
@@ -527,14 +575,15 @@ def test_generate_answer_default_prompt(monkeypatch):
     monkeypatch.setattr(hydra, "compose", dummy_hydra_compose_no_prompt)
     monkeypatch.setattr(hydra, "initialize", dummy_hydra_initialize)
 
-    # Patch the vector store so that similarity_search returns a document with dummy context.
-    from langchain_core.vectorstores import InMemoryVectorStore
-
     class DummyVectorStoreNoPrompt:
+        """dummy vector store for testing with no prompt."""
+
         def __init__(self, documents):
+            """initialize with documents."""
             self.documents = documents
 
         def similarity_search(self, question, k):
+            """simulate similarity search."""
             return [Document(page_content="default context")]
 
     monkeypatch.setattr(
@@ -548,13 +597,18 @@ def test_generate_answer_default_prompt(monkeypatch):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.extract_text_from_pdf_data",
         lambda pdf: "dummy text",
     )
-    from langchain.text_splitter import CharacterTextSplitter
 
     monkeypatch.setattr(CharacterTextSplitter, "split_text", lambda self, text: [text])
 
     class DummyLLM:
+        """dummy LLM for testing."""
+
         def invoke(self, prompt: str):
+            """invoke LLM with a prompt."""
+
             class DummyResponse:
+                """dummy response for testing."""
+
                 content = prompt
 
             return DummyResponse()
@@ -568,7 +622,7 @@ def test_generate_answer_default_prompt(monkeypatch):
 
 
 def test_dummy_embeddings_embed():
-    # Test that DummyEmbeddings.embed returns a list of zeros with length equal to the input text.
+    """test DummyEmbeddings embed method."""
     dummy = DummyEmbeddings()
     sample_text = "hello"
     expected_output = [0.0] * len(sample_text)
@@ -676,7 +730,9 @@ def test_question_and_answer_tool_numeric_reference(monkeypatch):
 
             # Check that the numeric selection log message was generated
             expected_log = f"Selected paper {expected_num} based on numerical reference"
-            log_messages = [call.args[0] for call in mock_info.call_args_list]
+            log_messages = [
+                call.args[0] % call.args[1:] for call in mock_info.call_args_list
+            ]
 
             assert any(
                 expected_log in message for message in log_messages

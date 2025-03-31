@@ -15,6 +15,8 @@ from .zotero_path import get_item_collections
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# pylint: disable=broad-exception-caught
+
 
 class ZoteroSearchData:
     """Helper class to organize Zotero search-related data."""
@@ -182,7 +184,7 @@ class ZoteroSearchData:
                 children = self.zot.children(item_key)
             except Exception as e:
                 # If we can't get children, the item might not support children
-                logger.debug(f"Cannot get children for item {item_key}: {str(e)}")
+                logger.debug("Cannot get children for item %s: %s", item_key, str(e))
                 return result
 
             # Filter for PDF attachments
@@ -216,7 +218,9 @@ class ZoteroSearchData:
                         pdf_size = len(pdf_binary) if pdf_binary else 0
                         pdf_prefix = pdf_binary[:20].hex() if pdf_binary else "None"
                         logger.info(
-                            f"Downloaded PDF binary data: size={pdf_size} bytes, prefix={pdf_prefix}"
+                            "Downloaded PDF binary data: size=%s bytes, prefix=%s",
+                            pdf_size,
+                            pdf_prefix,
                         )
                         result[attachment_key] = {
                             "filename": attachment.get("data", {}).get(
@@ -227,7 +231,7 @@ class ZoteroSearchData:
                         }
                 except Exception as e:
                     logger.error(
-                        f"Failed to download attachment {attachment_key}: {str(e)}"
+                        "Failed to download attachment %s: %s", attachment_key, str(e)
                     )
 
             logger.info("Found %d PDF attachments for item: %s", len(result), item_key)

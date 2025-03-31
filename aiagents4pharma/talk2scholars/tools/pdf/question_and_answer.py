@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-question_and_answer: Tool for performing Q&A on PDF documents using retrieval augmented generation.
-
+Tool for performing Q&A on PDF documents using retrieval augmented generation.
 This module provides functionality to extract text from PDF binary data, split it into
 chunks, retrieve relevant segments via a vector store, and generate an answer to a
 user-provided question using a language model chain.
 """
 
 import io
-import re
 import logging
 import os
+import re
 import tempfile
 from typing import Annotated, Any, Dict
 
@@ -33,6 +32,8 @@ from PyPDF2 import PdfReader
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+# pylint: disable=too-many-locals, too-many-nested-blocks, too-many-branches, too-many-statements
+# pylint: disable=broad-exception-caught
 
 
 class QuestionAndAnswerInput(BaseModel):
@@ -86,7 +87,7 @@ def generate_answer(
         )
         cfg = cfg.tools.question_and_answer
         logger.info("Loaded Question and Answer tool configuration.")
-    logger.info(f"Processing PDF with question: {question}")
+    logger.info("Processing PDF with question: %s", question)
 
     # Handle different source types (binary data or URL)
     if isinstance(pdf_source, bytes):
@@ -103,11 +104,12 @@ def generate_answer(
             )
             chunks = text_splitter.split_text(text)
             documents = [Document(page_content=chunk) for chunk in chunks]
-            logger.info(f"Split PDF text into {len(documents)} chunks.")
+            logger.info("Split PDF text into %d chunks.", len(documents))
         except Exception as e:
             # If binary processing fails, try saving to temp file and using PyPDFLoader
             logger.warning(
-                f"Error extracting text from binary: {str(e)}. Trying with temp file..."
+                "Error extracting text from binary: %s. Trying with temp file...",
+                str(e),
             )
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
                 tmp.write(pdf_source)
@@ -118,7 +120,7 @@ def generate_answer(
                 loader = PyPDFLoader(tmp_path)
                 documents = loader.load()
                 logger.info(
-                    f"Loaded {len(documents)} pages with PyPDFLoader from temp file"
+                    "Loaded %d pages with PyPDFLoader from temp file", len(documents)
                 )
             finally:
                 # Clean up temp file
@@ -127,10 +129,10 @@ def generate_answer(
 
     elif isinstance(pdf_source, str):
         # For URL, use PyPDFLoader
-        logger.info(f"Processing PDF from URL: {pdf_source}")
+        logger.info("Processing PDF from URL: %s", pdf_source)
         loader = PyPDFLoader(pdf_source)
         documents = loader.load()
-        logger.info(f"Loaded {len(documents)} pages with PyPDFLoader from URL")
+        logger.info("Loaded %d pages with PyPDFLoader from URL", len(documents))
 
     else:
         raise ValueError(
@@ -140,7 +142,7 @@ def generate_answer(
     # Create vector store and perform similarity search
     vector_store = InMemoryVectorStore.from_documents(documents, text_embedding_model)
     search_results = vector_store.similarity_search(question, k=cfg.num_retrievals)
-    logger.info(f"Retrieved {len(search_results)} relevant document chunks")
+    logger.info("Retrieved %d relevant document chunks", len(search_results))
 
     # Prepare context from retrieved documents
     context = "\n\n".join([doc.page_content for doc in search_results])
@@ -216,7 +218,7 @@ def question_and_answer_tool(
         logger.info("Detected arxiv_downloader PDF format")
         pdf_bytes = pdf_data.get("pdf_object")
         pdf_url = pdf_data.get("pdf_url", "")
-        pdf_filename = "ArXiv paper {}".format(pdf_data.get("arxiv_id", "unknown"))
+        pdf_filename = f"ArXiv paper {pdf_data.get('arxiv_id', 'unknown')}"
     else:
         # This is the Zotero format - navigate the nested structure
         paper_keys = list(pdf_data.keys())
@@ -247,7 +249,7 @@ def question_and_answer_tool(
                     # Use 1-based indexing for user-friendly reference
                     selected_paper_key = paper_keys[paper_num - 1]
                     logger.info(
-                        f"Selected paper {paper_num} based on numerical reference"
+                        "Selected paper %s based on numerical reference", paper_num
                     )
 
             # 2. If not found by number, check for title matches
@@ -284,9 +286,10 @@ def question_and_answer_tool(
                     for _, att_data in pdf_data[selected_paper_key].items():
                         if "filename" in att_data:
                             logger.info(
-                                f"Selected paper '{att_data['filename']}' with score {paper_scores[selected_paper_key]}"
+                                "Selected paper '%s' with score %s",
+                                att_data["filename"],
+                                paper_scores[selected_paper_key],
                             )
-                            break
 
         # If no specific paper was found, use the first one
         if not selected_paper_key:
@@ -300,7 +303,7 @@ def question_and_answer_tool(
 
         attachment_keys = list(attachments.keys())
         if not attachment_keys:
-            error_msg = "No PDF attachments found for paper {}.".format(paper_key)
+            error_msg = f"No PDF attachments found for paper {paper_key}."
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -319,11 +322,11 @@ def question_and_answer_tool(
         raise ValueError(error_msg)
 
     # Log information about the PDF
-    logger.info("Retrieved PDF: {}".format(pdf_filename))
+    logger.info("Retrieved PDF: %s", pdf_filename)
     if pdf_bytes:
-        logger.info("PDF size: {} bytes".format(len(pdf_bytes)))
+        logger.info("PDF size: %d bytes", len(pdf_bytes))
     if pdf_url:
-        logger.info("PDF URL: {}".format(pdf_url))
+        logger.info("PDF URL: %s", pdf_url)
 
     try:
         # Try to process the PDF (prioritize binary data if available)
@@ -336,9 +339,7 @@ def question_and_answer_tool(
             update={
                 "messages": [
                     ToolMessage(
-                        content="Answer based on PDF '{}':\n\n{}".format(
-                            pdf_filename, answer_text
-                        ),
+                        content=f"Answer based on PDF '{pdf_filename}':\n\n{answer_text}",
                         tool_call_id=tool_call_id,
                     )
                 ]
@@ -346,6 +347,6 @@ def question_and_answer_tool(
         )
 
     except Exception as e:
-        error_msg = "Error processing PDF: {}".format(str(e))
+        error_msg = f"Error processing PDF: {str(e)}"
         logger.error(error_msg)
-        raise ValueError(error_msg)
+        raise ValueError(error_msg) from e
