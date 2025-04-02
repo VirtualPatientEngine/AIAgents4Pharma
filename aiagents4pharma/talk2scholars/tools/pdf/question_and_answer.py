@@ -603,21 +603,10 @@ def question_and_answer_tool(
             logger.warning(f"{call_id}: {error_msg}")
 
             if tool_call_id:
-                return Command(
-                    update={
-                        "messages": [
-                            ToolMessage(
-                                content=f"I couldn't find relevant information to answer your question: '{question}'. Please try rephrasing or asking a different question.",
-                                tool_call_id=tool_call_id,
-                            )
-                        ]
-                    }
+                raise RuntimeError(
+                    f"I couldn't find relevant information to answer your question: '{question}'. "
+                    "Please try rephrasing or asking a different question."
                 )
-            else:
-                return {
-                    "output": "No relevant information found",
-                    "error": "No chunks retrieved",
-                }
 
         # Generate answer using retrieved chunks
         result = generate_answer(question, relevant_chunks, llm_model)
@@ -667,15 +656,8 @@ def question_and_answer_tool(
         logger.error(f"{call_id}: {error_msg}")
 
         if tool_call_id:
-            return Command(
-                update={
-                    "messages": [
-                        ToolMessage(
-                            content=f"I encountered an error while processing your question: {error_msg}",
-                            tool_call_id=tool_call_id,
-                        )
-                    ]
-                }
+            raise RuntimeError(
+                f"I encountered an error while processing your question: {error_msg}"
             )
         else:
             raise ValueError(error_msg) from e
