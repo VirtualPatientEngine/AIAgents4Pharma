@@ -1,28 +1,30 @@
-# File: aiagents4pharma/talk2scholars/tools/paper_download/download_arxiv_input.py
+#!/usr/bin/env python3
 """
-This module defines the `download_arxiv_paper` tool, which leverages the
-`ArxivPaperDownloader` class to fetch and download academic papers from arXiv
-based on their unique arXiv ID.
+Tool for downloading arXiv paper metadata and retrieving the PDF URL.
 """
+
+import logging
+import xml.etree.ElementTree as ET
 from typing import Annotated, Any
-from pydantic import BaseModel, Field
-from langchain_core.tools import tool
+
+import hydra
+import requests
 from langchain_core.messages import ToolMessage
+from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
+from pydantic import BaseModel, Field
 
-# Local import from the same package:
-from .arxiv_downloader import ArxivPaperDownloader
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class DownloadArxivPaperInput(BaseModel):
-    """
-    Input schema for the arXiv paper download tool.
-    (Optional: if you decide to keep Pydantic validation in the future)
-    """
+    """Input schema for the arXiv paper download tool."""
 
     arxiv_id: str = Field(
-        description="The arXiv paper ID used to retrieve the paper details and PDF."
+        description="The arXiv paper ID used to retrieve the paper details and PDF URL."
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -33,13 +35,7 @@ def download_arxiv_paper(
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> Command[Any]:
     """
-    Download an arXiv paper's PDF using its unique arXiv ID.
-
-    This function:
-      1. Creates an `ArxivPaperDownloader` instance.
-      2. Fetches metadata from arXiv using the provided `arxiv_id`.
-      3. Downloads the PDF from the returned link.
-      4. Returns a `Command` object containing the PDF data and a success message.
+    Get metadata and PDF URL for an arXiv paper using its unique arXiv ID.
 
     Args:
         arxiv_id (str): The unique arXiv paper ID.
@@ -48,17 +44,77 @@ def download_arxiv_paper(
     Returns:
         Command[Any]: Contains metadata and messages about the success of the operation.
     """
-    downloader = ArxivPaperDownloader()
+    logger.info("Fetching metadata from arXiv for paper ID: %s", arxiv_id)
 
-    # If the downloader fails or the arxiv_id is invalid, this might raise an error
-    pdf_data = downloader.download_pdf(arxiv_id)
-    # print (pdf_data)
+    # Load configuration
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["tools/download_arxiv_paper=default"]
+        )
+        api_url = cfg.tools.download_arxiv_paper.api_url
+        request_timeout = cfg.tools.download_arxiv_paper.request_timeout
 
-    content = f"Successfully downloaded PDF for arXiv ID {arxiv_id}"
+    # Fetch metadata from arXiv API
+    query_url = f"{api_url}?search_query=id:{arxiv_id}&start=0&max_results=1"
+    response = requests.get(query_url, timeout=request_timeout)
+    response.raise_for_status()
+
+    # Parse XML response
+    root = ET.fromstring(response.text)
+    ns = {"atom": "http://www.w3.org/2005/Atom"}
+
+    entry = root.find("atom:entry", ns)
+    if entry is None:
+        raise ValueError(f"No entry found for arXiv ID {arxiv_id}")
+
+    # Extract metadata
+    title_elem = entry.find("atom:title", ns)
+    title = title_elem.text.strip() if title_elem is not None else "N/A"
+
+    authors = []
+    for author_elem in entry.findall("atom:author", ns):
+        name_elem = author_elem.find("atom:name", ns)
+        if name_elem is not None:
+            authors.append(name_elem.text.strip())
+
+    summary_elem = entry.find("atom:summary", ns)
+    abstract = summary_elem.text.strip() if summary_elem is not None else "N/A"
+
+    published_elem = entry.find("atom:published", ns)
+    pub_date = published_elem.text.strip() if published_elem is not None else "N/A"
+
+    # Find PDF URL
+    pdf_url = None
+    for link in entry.findall("atom:link", ns):
+        if link.attrib.get("title") == "pdf":
+            pdf_url = link.attrib.get("href")
+            break
+
+    if not pdf_url:
+        raise RuntimeError(f"Could not find PDF URL for arXiv ID {arxiv_id}")
+
+    # Create metadata with the exact format needed
+    metadata = {
+        "Title": title,
+        "Authors": authors,
+        "Abstract": abstract,
+        "Publication Date": pub_date,
+        "URL": pdf_url,
+        "pdf_url": pdf_url,  # The actual PDF URL without modifications
+        "filename": f"{arxiv_id}.pdf",  # Simple filename without prefix
+        "source": "arxiv",
+        "arxiv_id": arxiv_id,
+    }
+
+    # Create article_data entry with the paper ID as the key
+    article_data = {arxiv_id: metadata}
+
+    content = f"Successfully retrieved metadata and PDF URL for arXiv ID {arxiv_id}"
 
     return Command(
         update={
-            "pdf_data": pdf_data,
+            "article_data": article_data,
+            "last_displayed_papers": "article_data",
             "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
         }
     )

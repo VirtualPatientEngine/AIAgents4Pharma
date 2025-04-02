@@ -13,7 +13,7 @@ from langgraph.prebuilt.chat_agent_executor import create_react_agent
 from langgraph.prebuilt.tool_node import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.paper_download import download_arxiv_paper
+from ..tools.paper_download.download_arxiv_input import download_arxiv_paper
 from ..tools.s2.query_results import query_results
 
 # Initialize logger
