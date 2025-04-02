@@ -70,7 +70,7 @@ def test_pdf_agent_invocation(mock_llm):
         # Simulate a response from the PDF agent.
         mock_agent.invoke.return_value = {
             "messages": [AIMessage(content="PDF content extracted successfully")],
-            "pdf_data": {"page": 1, "text": "Sample PDF text"},
+            "article_data": {"page": 1, "text": "Sample PDF text"},
         }
         app = get_app(thread_id, mock_llm)
         result = app.invoke(
@@ -84,8 +84,8 @@ def test_pdf_agent_invocation(mock_llm):
             },
         )
         assert "messages" in result
-        assert "pdf_data" in result
-        assert result["pdf_data"]["page"] == 1
+        assert "article_data" in result
+        assert result["article_data"]["page"] == 1
 
 
 def test_pdf_agent_tools_assignment(request, mock_llm):

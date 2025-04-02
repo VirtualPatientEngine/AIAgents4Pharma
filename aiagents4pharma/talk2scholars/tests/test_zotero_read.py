@@ -92,11 +92,11 @@ class TestZoteroSearchTool(unittest.TestCase):
         # Verify the Command update structure and contents
         self.assertIsInstance(result, Command)
         update = result.update
-        self.assertIn("zotero_read", update)
+        self.assertIn("article_data", update)
         self.assertIn("last_displayed_papers", update)
         self.assertIn("messages", update)
 
-        filtered_papers = update["zotero_read"]
+        filtered_papers = update["article_data"]
         self.assertIn("paper1", filtered_papers)
         self.assertIn("paper2", filtered_papers)
         message_content = update["messages"][0].content
@@ -149,7 +149,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         result = zotero_read.run(tool_input)
 
         update = result.update
-        filtered_papers = update["zotero_read"]
+        filtered_papers = update["article_data"]
         self.assertIn("paper1", filtered_papers)
         fake_zot.items.assert_called_with(
             limit=dummy_cfg.tools.zotero_read.zotero.max_limit
@@ -252,7 +252,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         # Instead of expecting a RuntimeError, we now expect both items to be returned.
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
+        filtered_papers = update["article_data"]
         self.assertIn("paper1", filtered_papers)
         self.assertIn("paper2", filtered_papers)
         self.assertEqual(len(filtered_papers), 2)
@@ -349,7 +349,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         result = zotero_read.run(tool_input)
 
         update = result.update
-        filtered_papers = update["zotero_read"]
+        filtered_papers = update["article_data"]
         self.assertIn("paper_valid", filtered_papers)
         self.assertEqual(len(filtered_papers), 1)
 
@@ -502,16 +502,18 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
-        pdf_data = update["pdf_data"]
+        filtered_papers = update["article_data"]
+        article_data = update["article_data"]
 
         # Verify that the paper is flagged as having a PDF and the attachment data is stored
         self.assertIn("paper1", filtered_papers)
         self.assertTrue(filtered_papers["paper1"]["Has_PDF"])
-        # Updated assertion: pdf_data is keyed by paper1, then attachment key.
-        self.assertIn("paper1", pdf_data)
-        self.assertIn("attachment1", pdf_data["paper1"])
-        self.assertEqual(pdf_data["paper1"]["attachment1"]["data"], fake_binary_data)
+        # Updated assertion: article_data is keyed by paper1, then attachment key.
+        self.assertIn("paper1", article_data)
+        self.assertIn("attachment1", article_data["paper1"])
+        self.assertEqual(
+            article_data["paper1"]["attachment1"]["data"], fake_binary_data
+        )
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -571,13 +573,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
-        pdf_data = update["pdf_data"]
+        filtered_papers = update["article_data"]
+        article_data = update["article_data"]
 
         # Verify that no PDF was attached and the flag is set to False
         self.assertIn("paper1", filtered_papers)
         self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(pdf_data, {})
+        self.assertEqual(article_data, {})
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -648,13 +650,13 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
-        pdf_data = update["pdf_data"]
+        filtered_papers = update["article_data"]
+        article_data = update["article_data"]
 
         # Verify that due to the exception, no PDF data is added and the flag remains False
         self.assertIn("paper1", filtered_papers)
         self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(pdf_data, {})
+        self.assertEqual(article_data, {})
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -722,14 +724,14 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
-        pdf_data = update["pdf_data"]
+        filtered_papers = update["article_data"]
+        article_data = update["article_data"]
 
         # Since the attachment has no key, it is skipped,
         # so Has_PDF should be False and no PDF data is stored.
         self.assertIn("paper1", filtered_papers)
         self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertNotIn("paper1", pdf_data)
+        self.assertNotIn("paper1", article_data)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -791,10 +793,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         result = zotero_read.run(tool_input)
         update = result.update
-        filtered_papers = update["zotero_read"]
-        pdf_data = update["pdf_data"]
+        filtered_papers = update["article_data"]
+        article_data = update["article_data"]
 
         # When an exception occurs in _fetch_attachments, attachments is {}.
         self.assertIn("paper1", filtered_papers)
         self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(pdf_data, {})
+        self.assertEqual(article_data, {})
