@@ -3,13 +3,14 @@ chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
 num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
 qa_chain_type: "stuff" # The type of QA chain to use
-prompt_template: |
-  Use the following pieces of context to answer the question at the end.
-  If you don't know the answer, just say that you don't know, don't try to make up an answer.
+prompt_template: >
+  Answer the following question based on the provided context. 
+  If the context doesn't contain enough information to give a complete answer, say so.
+  Cite specific sources in your answer using the document numbers (e.g., [Document 1]).
 
   Context:
   {context}
 
   Question: {question}
 
-  Answer:
+  Your answer should be comprehensive, accurate, and well-structured.

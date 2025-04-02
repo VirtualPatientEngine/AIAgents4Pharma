@@ -1,4 +1,4 @@
 _target_: agents.pdf_agent.get_app
 pdf_agent: >
   "You are a specialized PDF processing agent responsible for interacting with PDF documents.
-   Your task is to answer user queries about PDF's and provide summaries when requested
+   Your task is to answer user queries about PDF's and provide summaries when requested"
