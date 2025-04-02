@@ -32,12 +32,11 @@ def mock_tools_fixture():
         ) as mock_query_results,
     ):
         mock_download_arxiv_paper.return_value = {
-            "pdf_data": {"dummy_key": "dummy_value"}
+            "article_data": {"dummy_key": "dummy_value"}
         }
-        mock_query_results.return_value = {
-        "result": "Mocked Query Result"
-        }
+        mock_query_results.return_value = {"result": "Mocked Query Result"}
         yield [mock_download_arxiv_paper, mock_query_results]
+
 
 @pytest.mark.usefixtures("mock_hydra_fixture")
 def test_paper_download_agent_initialization():
@@ -53,6 +52,7 @@ def test_paper_download_agent_initialization():
         app = get_app(thread_id, llm_mock)
         assert app is not None, "The agent app should be successfully created."
         assert mock_create_agent.called
+
 
 def test_paper_download_agent_invocation():
     """Verifies agent processes queries and updates state correctly."""
@@ -70,9 +70,8 @@ def test_paper_download_agent_invocation():
         mock_create_agent.return_value = mock_agent
         mock_agent.invoke.return_value = {
             "messages": [AIMessage(content="Here is the paper")],
-            "pdf_data": {"file_bytes": b"FAKE_PDF_CONTENTS"},
+            "article_data": {"file_bytes": b"FAKE_PDF_CONTENTS"},
         }
-
 
         app = get_app(thread_id, llm_mock)
         result = app.invoke(
@@ -87,7 +86,7 @@ def test_paper_download_agent_invocation():
         )
 
         assert "messages" in result
-        assert "pdf_data" in result
+        assert "article_data" in result
 
 
 def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
@@ -108,7 +107,7 @@ def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
         mock_create_agent.return_value = mock_agent
         mock_tool_instance = mock.Mock()
         mock_tool_instance.tools = mock_tools
-        mock_toolnode.return_value= mock_tool_instance
+        mock_toolnode.return_value = mock_tool_instance
 
         get_app(thread_id, llm_mock)
         assert mock_toolnode.called
@@ -137,6 +136,6 @@ def test_paper_download_agent_model_failure():
     ):
         with pytest.raises(Exception) as exc_info:
             get_app(thread_id, llm_mock)
-        assert "Mock model failure" in str(exc_info.value), (
-            "Model initialization failure should raise an exception."
-        )
+        assert "Mock model failure" in str(
+            exc_info.value
+        ), "Model initialization failure should raise an exception."

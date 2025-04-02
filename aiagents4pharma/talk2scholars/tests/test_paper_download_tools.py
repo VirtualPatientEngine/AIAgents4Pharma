@@ -1,154 +1,166 @@
 """
 Unit tests for arXiv paper downloading functionality, including:
-- AbstractPaperDownloader (base class)
-- ArxivPaperDownloader (arXiv-specific implementation)
 - download_arxiv_paper tool function.
 """
 
+import unittest
 from unittest.mock import patch, MagicMock
-import pytest
-import requests
-from requests.exceptions import HTTPError
-from langgraph.types import Command
-from langchain_core.messages import ToolMessage
-
-# Import the classes and function under test
-from aiagents4pharma.talk2scholars.tools.paper_download.abstract_downloader import (
-    AbstractPaperDownloader,
-)
-from aiagents4pharma.talk2scholars.tools.paper_download.arxiv_downloader import (
-    ArxivPaperDownloader,
-)
 from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input import (
     download_arxiv_paper,
 )
-
-@pytest.mark.parametrize("class_obj", [AbstractPaperDownloader])
-
-def test_abstract_downloader_cannot_be_instantiated(class_obj):
-    """
-    Validates that AbstractPaperDownloader is indeed abstract and raises TypeError
-    if anyone attempts to instantiate it directly.
-    """
-    with pytest.raises(TypeError):
-        class_obj()
+from langchain_core.messages import ToolMessage
 
 
-@pytest.fixture(name="arxiv_downloader_fixture")
-@pytest.mark.usefixtures("mock_hydra_config_setup")
-def fixture_arxiv_downloader():
-    """
-    Provides an ArxivPaperDownloader instance with a mocked Hydra config.
-    """
-    return ArxivPaperDownloader()
+class TestDownloadArxivPaper(unittest.TestCase):
+    """tests for the download_arxiv_paper tool."""
 
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
+    )
+    def test_download_arxiv_paper_success(
+        self, mock_get, mock_compose, mock_initialize
+    ):
+        """test the download_arxiv_paper tool for successful retrieval of metadata and PDF URL."""
+        # Set up a dummy Hydra config.
+        dummy_cfg = MagicMock()
+        dummy_cfg.tools.download_arxiv_paper.api_url = "http://dummy.arxiv.org/api"
+        dummy_cfg.tools.download_arxiv_paper.request_timeout = 10
+        mock_compose.return_value = dummy_cfg
+        mock_initialize.return_value.__enter__.return_value = None
 
-def test_fetch_metadata_success(arxiv_downloader_fixture,):
-    """
-    Ensures fetch_metadata retrieves XML data correctly, given a successful HTTP response.
-    """
-    mock_response = MagicMock()
-    mock_response.text = "<xml>Mock ArXiv Metadata</xml>"
-    mock_response.raise_for_status = MagicMock()
-
-    with patch.object(requests, "get", return_value=mock_response) as mock_get:
-        paper_id = "1234.5678"
-        result = arxiv_downloader_fixture.fetch_metadata(paper_id)
-        mock_get.assert_called_once_with(
-            "http://export.arxiv.org/api/query?search_query=id:1234.5678&start=0&max_results=1",
-            timeout=10,
-        )
-        assert result["xml"] == "<xml>Mock ArXiv Metadata</xml>"
-
-
-def test_fetch_metadata_http_error(arxiv_downloader_fixture):
-    """
-    Validates that fetch_metadata raises HTTPError when the response indicates a failure.
-    """
-    mock_response = MagicMock()
-    mock_response.raise_for_status.side_effect = HTTPError("Mocked HTTP failure")
-
-    with patch.object(requests, "get", return_value=mock_response):
-        with pytest.raises(HTTPError):
-            arxiv_downloader_fixture.fetch_metadata("invalid_id")
-
-
-def test_download_pdf_success(arxiv_downloader_fixture):
-    """
-    Tests that download_pdf fetches the PDF link from metadata and successfully
-    retrieves the binary content.
-    """
-    mock_metadata = {
-        "xml": """
+        # Set up a dummy XML response with a valid entry including a pdf link.
+        arxiv_id = "1234.56789"
+        dummy_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
         <feed xmlns="http://www.w3.org/2005/Atom">
             <entry>
-                <link title="pdf" href="http://test.arxiv.org/pdf/1234.5678v1.pdf"/>
+                <title>Sample Paper Title</title>
+                <author>
+                    <name>Author One</name>
+                </author>
+                <author>
+                    <name>Author Two</name>
+                </author>
+                <summary>This is a sample abstract.</summary>
+                <published>2020-01-01T00:00:00Z</published>
+                <link title="pdf" href="http://arxiv.org/pdf/{arxiv_id}v1"/>
             </entry>
         </feed>
         """
-    }
+        dummy_response = MagicMock()
+        dummy_response.text = dummy_xml
+        dummy_response.raise_for_status = MagicMock()
+        mock_get.return_value = dummy_response
 
-    mock_pdf_response = MagicMock()
-    mock_pdf_response.raise_for_status = MagicMock()
-    mock_pdf_response.iter_content = lambda chunk_size: [b"FAKE_PDF_CONTENT"]
+        tool_call_id = "test_tool_id"
+        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
+        result = download_arxiv_paper.run(tool_input)
+        update = result.update
 
-    with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
-        with patch.object(requests, "get", return_value=mock_pdf_response) as mock_get:
-            result = arxiv_downloader_fixture.download_pdf("1234.5678")
-            assert result["pdf_object"] == b"FAKE_PDF_CONTENT"
-            assert result["pdf_url"] == "http://test.arxiv.org/pdf/1234.5678v1.pdf"
-            assert result["arxiv_id"] == "1234.5678"
-            mock_get.assert_called_once_with(
-                "http://test.arxiv.org/pdf/1234.5678v1.pdf",
-                stream=True,
-                timeout=10,
-            )
+        # Check that article_data was correctly set.
+        self.assertIn("article_data", update)
+        self.assertIn(arxiv_id, update["article_data"])
+        metadata = update["article_data"][arxiv_id]
+        self.assertEqual(metadata["Title"], "Sample Paper Title")
+        self.assertEqual(metadata["Authors"], ["Author One", "Author Two"])
+        self.assertEqual(metadata["Abstract"], "This is a sample abstract.")
+        self.assertEqual(metadata["Publication Date"], "2020-01-01T00:00:00Z")
+        self.assertEqual(metadata["URL"], f"http://arxiv.org/pdf/{arxiv_id}v1")
+        self.assertEqual(metadata["pdf_url"], f"http://arxiv.org/pdf/{arxiv_id}v1")
+        self.assertEqual(metadata["filename"], f"{arxiv_id}.pdf")
+        self.assertEqual(metadata["source"], "arxiv")
+        self.assertEqual(metadata["arxiv_id"], arxiv_id)
 
+        # Check that the message content is as expected.
+        messages = update["messages"]
+        self.assertTrue(len(messages) >= 1)
+        self.assertIsInstance(messages[0], ToolMessage)
+        self.assertIn(
+            f"Successfully retrieved metadata and PDF URL for arXiv ID {arxiv_id}",
+            messages[0].content,
+        )
 
-def test_download_pdf_no_pdf_link(arxiv_downloader_fixture):
-    """
-    Ensures a RuntimeError is raised if no <link> with title="pdf" is found in the XML.
-    """
-    mock_metadata = {"xml": "<feed></feed>"}
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
+    )
+    def test_no_entry_found(self, mock_get, mock_compose, mock_initialize):
+        """test the download_arxiv_paper tool for no entry found in XML response."""
+        # Dummy config as before.
+        dummy_cfg = MagicMock()
+        dummy_cfg.tools.download_arxiv_paper.api_url = "http://dummy.arxiv.org/api"
+        dummy_cfg.tools.download_arxiv_paper.request_timeout = 10
+        mock_compose.return_value = dummy_cfg
+        mock_initialize.return_value.__enter__.return_value = None
 
-    with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
-        with pytest.raises(RuntimeError, match="Failed to download PDF"):
-            arxiv_downloader_fixture.download_pdf("1234.5678")
+        # Set up XML with no entry element.
+        arxiv_id = "1234.56789"
+        dummy_xml = """<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom"></feed>"""
+        dummy_response = MagicMock()
+        dummy_response.text = dummy_xml
+        dummy_response.raise_for_status = MagicMock()
+        mock_get.return_value = dummy_response
 
+        tool_call_id = "test_tool_id"
+        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
+        with self.assertRaises(ValueError) as context:
+            download_arxiv_paper.run(tool_input)
+        self.assertEqual(
+            str(context.exception), f"No entry found for arXiv ID {arxiv_id}"
+        )
 
-def test_download_arxiv_paper_tool_success(arxiv_downloader_fixture):
-    """
-    Validates download_arxiv_paper orchestrates the ArxivPaperDownloader correctly,
-    returning a Command with PDF data and success messages.
-    """
-    mock_metadata = {"xml": "<mockxml></mockxml>"}
-    mock_pdf_response = {
-        "pdf_object": b"FAKE_PDF_CONTENT",
-        "pdf_url": "http://test.arxiv.org/mock.pdf",
-        "arxiv_id": "9999.8888",
-    }
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
+    )
+    def test_no_pdf_url_found(self, mock_get, mock_compose, mock_initialize):
+        """test the download_arxiv_paper tool for no PDF URL found in XML response."""
+        # Dummy config.
+        dummy_cfg = MagicMock()
+        dummy_cfg.tools.download_arxiv_paper.api_url = "http://dummy.arxiv.org/api"
+        dummy_cfg.tools.download_arxiv_paper.request_timeout = 10
+        mock_compose.return_value = dummy_cfg
+        mock_initialize.return_value.__enter__.return_value = None
 
-    with patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input."
-        "ArxivPaperDownloader",
-        return_value=arxiv_downloader_fixture,
-    ):
-        with patch.object(arxiv_downloader_fixture, "fetch_metadata", return_value=mock_metadata):
-            with patch.object(
-                arxiv_downloader_fixture,
-                "download_pdf",
-                return_value=mock_pdf_response,
-            ):
-                command_result = download_arxiv_paper.invoke(
-                    {"arxiv_id": "9999.8888", "tool_call_id": "test_tool_call"}
-                )
+        # Set up XML with an entry that does not contain a pdf link.
+        arxiv_id = "1234.56789"
+        dummy_xml = """<?xml version="1.0" encoding="UTF-8"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+            <entry>
+                <title>Sample Paper Title</title>
+                <author>
+                    <name>Author One</name>
+                </author>
+                <summary>This is a sample abstract.</summary>
+                <published>2020-01-01T00:00:00Z</published>
+                <!-- Missing pdf link -->
+            </entry>
+        </feed>
+        """
+        dummy_response = MagicMock()
+        dummy_response.text = dummy_xml
+        dummy_response.raise_for_status = MagicMock()
+        mock_get.return_value = dummy_response
 
-                assert isinstance(command_result, Command)
-                assert "pdf_data" in command_result.update
-                assert command_result.update["pdf_data"] == mock_pdf_response
-
-                messages = command_result.update.get("messages", [])
-                assert len(messages) == 1
-                assert isinstance(messages[0], ToolMessage)
-                assert "Successfully downloaded PDF" in messages[0].content
-                assert "9999.8888" in messages[0].content
+        tool_call_id = "test_tool_id"
+        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
+        with self.assertRaises(RuntimeError) as context:
+            download_arxiv_paper.run(tool_input)
+        self.assertEqual(
+            str(context.exception), f"Could not find PDF URL for arXiv ID {arxiv_id}"
+        )
