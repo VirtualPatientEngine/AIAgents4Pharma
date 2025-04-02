@@ -131,19 +131,44 @@ def process_pdf_upload():
     if pdf_file:
         import tempfile
 
-        # print (pdf_file.name)
         with tempfile.NamedTemporaryFile(delete=False) as f:
             f.write(pdf_file.read())
-            # print (f.name)
-        st.session_state.article_data = {
-            "pdf_object": f.name,  # binary formatted PDF
-            "pdf_url": f.name,  # placeholder for URL if needed later
-            "arxiv_id": None,  # placeholder for an arXiv id if applicable
+
+        # Create a unique ID for the uploaded PDF
+        pdf_id = f"uploaded_{pdf_file.name.replace(' ', '_').replace('.', '_')}"
+
+        # Store in nested dictionary format that matches our other tools
+        pdf_data = {
+            "Title": pdf_file.name,
+            "Authors": ["Uploaded by user"],
+            "Abstract": "User uploaded PDF",
+            "Publication Date": "N/A",
+            "URL": f.name,
+            "pdf_url": f.name,  # The file path to the temp file
+            "filename": pdf_file.name,
+            "source": "upload",  # Source identifier
         }
+
+        # Create nested dictionary with the PDF ID as key
+        article_data = {pdf_id: pdf_data}
+
+        # Store in session state
+        st.session_state.article_data = article_data
+
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
-        # Update the agent state with the selected LLM model
-        app.update_state(config, {"article_data": st.session_state.article_data})
+
+        # Update the agent state with the correct format
+        # First get the current state
+        current_state = app.get_state(config)
+
+        # Update just the article_data field
+        state_update = {"article_data": article_data}
+
+        # Apply the update
+        app.update_state(config, state_update)
+
+        st.success(f"PDF '{pdf_file.name}' uploaded successfully!")
 
 
 # Main layout of the app split into two columns
