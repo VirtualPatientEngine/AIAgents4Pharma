@@ -119,7 +119,7 @@ def _submit_feedback(user_response):
 def process_pdf_upload():
     """
     Process the uploaded PDF file automatically:
-    Read the file as binary and store it in session state under "pdf_data".
+    Read the file as binary and store it in session state under "article_data".
     """
     pdf_file = st.file_uploader(
         "Upload an article",
@@ -135,7 +135,7 @@ def process_pdf_upload():
         with tempfile.NamedTemporaryFile(delete=False) as f:
             f.write(pdf_file.read())
             # print (f.name)
-        st.session_state.pdf_data = {
+        st.session_state.article_data = {
             "pdf_object": f.name,  # binary formatted PDF
             "pdf_url": f.name,  # placeholder for URL if needed later
             "arxiv_id": None,  # placeholder for an arXiv id if applicable
@@ -143,7 +143,7 @@ def process_pdf_upload():
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
         # Update the agent state with the selected LLM model
-        app.update_state(config, {"pdf_data": st.session_state.pdf_data})
+        app.update_state(config, {"article_data": st.session_state.article_data})
 
 
 # Main layout of the app split into two columns
@@ -345,7 +345,7 @@ with main_col2:
                         },
                     )
                     current_state = app.get_state(config)
-                    print("PDF_DATA", len(current_state.values["pdf_data"]))
+                    print("ARTICLE_DATA", len(current_state.values["article_data"]))
 
                     streamlit_utils.get_response("T2S", None, app, st, prompt)
 
