@@ -14,13 +14,14 @@ import hydra
 import numpy as np
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
-from langchain_core.vectorstores import VectorStore
+from langchain_core.vectorstores import InMemoryVectorStore, VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
@@ -83,22 +84,14 @@ class DocumentStore:
             "chunk_id",
         ]
         self.initialization_time = time.time()
-        logger.info(f"DocumentStore initialized at: {self.initialization_time}")
+        logger.info("DocumentStore initialized at: %s", self.initialization_time)
 
         # Track loaded papers to prevent duplicate loading
         self.loaded_papers = set()
-
-        # Try to import FAISS, fall back to InMemoryVectorStore
-        try:
-            from langchain_community.vectorstores import FAISS
-
-            self.vector_store_class = FAISS
-            logger.info("Using FAISS vector store")
-        except ImportError:
-            from langchain_core.vectorstores import InMemoryVectorStore
-
-            self.vector_store_class = InMemoryVectorStore
-            logger.info("Using InMemoryVectorStore (FAISS not available)")
+        self.vector_store_class = FAISS
+        logger.info("Using FAISS vector store")
+        self.vector_store_class = InMemoryVectorStore
+        logger.info("Using InMemoryVectorStore (FAISS not available)")
 
         # Store for initialized documents
         self.documents: Dict[str, Document] = {}
@@ -123,10 +116,10 @@ class DocumentStore:
         """
         # Skip if already loaded
         if paper_id in self.loaded_papers:
-            logger.info(f"Paper {paper_id} already loaded, skipping")
+            logger.info("Paper %s already loaded, skipping", paper_id)
             return
 
-        logger.info(f"Loading paper {paper_id} from {pdf_url}")
+        logger.info("Loading paper %s from %s", paper_id, pdf_url)
 
         # Store paper metadata
         self.paper_metadata[paper_id] = paper_metadata
@@ -135,7 +128,7 @@ class DocumentStore:
             # Use PyPDFLoader to load the PDF
             loader = PyPDFLoader(pdf_url)
             documents = loader.load()
-            logger.info(f"Loaded {len(documents)} pages from {paper_id}")
+            logger.info("Loaded %d pages from %s", len(documents), paper_id)
 
             # Use default splitter if none provided
             if splitter is None:
@@ -147,7 +140,7 @@ class DocumentStore:
 
             # Split documents and add metadata
             chunks = splitter.split_documents(documents)
-            logger.info(f"Split {paper_id} into {len(chunks)} chunks")
+            logger.info("Split %s into %d chunks", paper_id, len(chunks))
 
             # Enhance document metadata
             for i, chunk in enumerate(chunks):
@@ -173,10 +166,10 @@ class DocumentStore:
 
             # Mark as loaded to prevent duplicate loading
             self.loaded_papers.add(paper_id)
-            logger.info(f"Added {len(chunks)} chunks from paper {paper_id}")
+            logger.info("Added %d chunks from paper %s", len(chunks), paper_id)
 
         except Exception as e:
-            logger.error(f"Error loading paper {paper_id}: {str(e)}")
+            logger.error("Error loading paper %s: %s", paper_id, e)
             raise
 
     def build_vector_store(self) -> None:
@@ -197,7 +190,7 @@ class DocumentStore:
         self.vector_store = self.vector_store_class.from_documents(
             documents=documents_list, embedding=self.embedding_model
         )
-        logger.info(f"Built vector store with {len(documents_list)} documents")
+        logger.info("Built vector store with %d documents", len(documents_list))
 
     def rank_papers_by_query(
         self, query: str, top_k: int = 3
@@ -301,7 +294,7 @@ class DocumentStore:
         metadata_filter = None
         if paper_ids:
             metadata_filter = {"paper_id": {"$in": paper_ids}}
-            logger.info(f"Filtering retrieval to papers: {paper_ids}")
+            logger.info("Filtering retrieval to papers: %s", paper_ids)
 
         # Retrieve using MMR or standard similarity
         if use_mmr:
@@ -334,12 +327,12 @@ class DocumentStore:
                 )
 
                 results = [docs[i] for i in mmr_indices]
-                logger.info(f"Retrieved {len(results)} chunks using MMR")
+                logger.info("Retrieved %d chunks using MMR", len(results))
                 return results
 
             except Exception as e:
                 logger.warning(
-                    f"MMR retrieval failed: {e}, falling back to standard similarity"
+                    "MMR retrieval failed: %s, falling back to standard similarity", e
                 )
                 use_mmr = False
 
@@ -348,7 +341,7 @@ class DocumentStore:
             results = self.vector_store.similarity_search(
                 query, k=top_k, filter=metadata_filter
             )
-            logger.info(f"Retrieved {len(results)} chunks using similarity search")
+            logger.info("Retrieved %d chunks using similarity search", len(results))
             return results
 
     @staticmethod
@@ -401,7 +394,7 @@ def generate_answer(
                 config = cfg.tools.question_and_answer
                 logger.info("Loaded Question and Answer tool configuration.")
         except Exception as e:
-            logger.warning(f"Failed to load Hydra config: {e}. Using default values.")
+            logger.warning("Failed to load Hydra config: %s. Using default values.", e)
             config = {}
 
     # Prepare context from retrieved documents with source attribution
@@ -489,27 +482,29 @@ def question_and_answer_tool(
     # Create a unique identifier for this call to track potential infinite loops
     call_id = f"qa_call_{time.time()}"
     logger.info(
-        f"Starting PDF Question and Answer tool call {call_id} for question: {question}"
+        "Starting PDF Question and Answer tool call %s for question: %s",
+        call_id,
+        question,
     )
 
     # Get required models from state
     text_embedding_model = state.get("text_embedding_model")
     if not text_embedding_model:
         error_msg = "No text embedding model found in state."
-        logger.error(f"{call_id}: {error_msg}")
+        logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
     llm_model = state.get("llm_model")
     if not llm_model:
         error_msg = "No LLM model found in state."
-        logger.error(f"{call_id}: {error_msg}")
+        logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
     # Get article data from state
     article_data = state.get("article_data", {})
     if not article_data:
         error_msg = "No article_data found in state."
-        logger.error(f"{call_id}: {error_msg}")
+        logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
     # Get or create document store
@@ -517,12 +512,14 @@ def question_and_answer_tool(
     doc_store_created = False
 
     if not document_store:
-        logger.info(f"{call_id}: Creating new document store")
+        logger.info("%s: Creating new document store", call_id)
         document_store = DocumentStore(embedding_model=text_embedding_model)
         doc_store_created = True
     else:
         logger.info(
-            f"{call_id}: Using existing document store created at {getattr(document_store, 'initialization_time', 'unknown')}"
+            "%s: Using existing document store created at %s",
+            call_id,
+            getattr(document_store, "initialization_time", "unknown"),
         )
 
     # Choose papers to use
@@ -532,18 +529,20 @@ def question_and_answer_tool(
         # Use explicitly specified papers
         selected_paper_ids = [pid for pid in paper_ids if pid in article_data]
         logger.info(
-            f"{call_id}: Using explicitly specified papers: {selected_paper_ids}"
+            "%s: Using explicitly specified papers: %s", call_id, selected_paper_ids
         )
 
         if not selected_paper_ids:
             logger.warning(
-                f"{call_id}: None of the provided paper_ids {paper_ids} were found"
+                "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
     elif use_all_papers:
         # Use all available papers
         selected_paper_ids = list(article_data.keys())
-        logger.info(f"{call_id}: Using all {len(selected_paper_ids)} available papers")
+        logger.info(
+            "%s: Using all %d available papers", call_id, len(selected_paper_ids)
+        )
 
     else:
         # Use semantic ranking to find relevant papers
@@ -554,7 +553,9 @@ def question_and_answer_tool(
                 try:
                     document_store.add_paper(paper_id, pdf_url, paper)
                 except Exception as e:
-                    logger.warning(f"{call_id}: Error loading paper {paper_id}: {e}")
+                    logger.warning(
+                        "%s: Error loading paper %s: %s", call_id, paper_id, e
+                    )
 
         # Build vector store if needed
         if not document_store.vector_store:
@@ -564,13 +565,17 @@ def question_and_answer_tool(
         ranked_papers = document_store.rank_papers_by_query(question, top_k=3)
         selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
         logger.info(
-            f"{call_id}: Selected papers based on semantic relevance: {selected_paper_ids}"
+            "%s: Selected papers based on semantic relevance: %s",
+            call_id,
+            selected_paper_ids,
         )
 
     if not selected_paper_ids:
         # Fallback to all papers if selection failed
         selected_paper_ids = list(article_data.keys())
-        logger.info(f"{call_id}: Falling back to all {len(selected_paper_ids)} papers")
+        logger.info(
+            "%s: Falling back to all %d papers", call_id, len(selected_paper_ids)
+        )
 
     # Load selected papers if needed
     for paper_id in selected_paper_ids:
@@ -580,12 +585,14 @@ def question_and_answer_tool(
                 try:
                     document_store.add_paper(paper_id, pdf_url, article_data[paper_id])
                 except Exception as e:
-                    logger.warning(f"{call_id}: Error loading paper {paper_id}: {e}")
+                    logger.warning(
+                        "%s: Error loading paper %s: %s", call_id, paper_id, e
+                    )
 
     # Store the document store in state if it was created in this call
     if doc_store_created:
         # Use direct assignment to prevent recursive issues
-        logger.info(f"{call_id}: Storing new document_store in state")
+        logger.info("%s: Storing new document_store in state", call_id)
         state["document_store"] = document_store
 
     try:
@@ -600,7 +607,7 @@ def question_and_answer_tool(
 
         if not relevant_chunks:
             error_msg = "No relevant chunks found in the papers."
-            logger.warning(f"{call_id}: {error_msg}")
+            logger.warning("%s: %s", call_id, error_msg)
 
             if tool_call_id:
                 raise RuntimeError(
@@ -632,7 +639,10 @@ def question_and_answer_tool(
         # Prepare the final response
         response_text = f"{answer_text}{sources_text}"
         logger.info(
-            f"{call_id}: Successfully generated answer using {len(relevant_chunks)} chunks from {len(paper_titles)} papers"
+            "%s: Successfully generated answer using %d chunks from %d papers",
+            call_id,
+            len(relevant_chunks),
+            len(paper_titles),
         )
 
         # Return as Command
@@ -653,7 +663,7 @@ def question_and_answer_tool(
 
     except Exception as e:
         error_msg = f"Error processing PDFs: {str(e)}"
-        logger.error(f"{call_id}: {error_msg}")
+        logger.error("%s: %s", call_id, error_msg)
 
         if tool_call_id:
             raise RuntimeError(
