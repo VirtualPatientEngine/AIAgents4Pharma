@@ -7,7 +7,7 @@ across agent interactions.
 """
 
 import logging
-from typing import Annotated, Any, Dict
+from typing import Annotated, Any, Dict, Optional
 from langchain_core.language_models import BaseChatModel
 from langchain_core.embeddings import Embeddings
 from langgraph.prebuilt.chat_agent_executor import AgentState
@@ -45,10 +45,8 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
 class Talk2Scholars(AgentState):
     """
     Represents the state of the Talk2Scholars agent.
-
     This class extends `AgentState` to maintain conversation history, retrieved papers,
     and interactions with the language model.
-
     Attributes:
         last_displayed_papers (Dict[str, Any]): Stores the most recently displayed papers.
         papers (Dict[str, Any]): Stores the research papers retrieved from the agent's queries.
@@ -59,6 +57,7 @@ class Talk2Scholars(AgentState):
         llm_model (BaseChatModel): The language model instance used for generating responses.
         text_embedding_model (Embeddings): The text embedding model used for
         similarity calculations.
+        document_store (DocumentStore): Stores processed document chunks and vector embeddings.
     """
 
     # Agent state fields
@@ -69,3 +68,4 @@ class Talk2Scholars(AgentState):
     zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
+    document_store: Any
