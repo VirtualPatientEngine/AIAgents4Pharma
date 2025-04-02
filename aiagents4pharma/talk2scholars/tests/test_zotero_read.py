@@ -447,13 +447,11 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that PDF attachments are processed and downloaded correctly."""
+        """Test that PDF attachments are processed and added correctly."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-
-        # Create a fake item with key "paper1"
         fake_items = [
             {
                 "data": {
@@ -486,10 +484,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         }
         fake_zot.children.return_value = [fake_pdf_child]
 
-        # Simulate file() returns valid binary content for the PDF
-        fake_binary_data = b"0123456789abcdef0123456789abcdef"
-        fake_zot.file.return_value = fake_binary_data
-
+        # (Note: file() is no longer used in the updated code.)
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
 
@@ -501,19 +496,18 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 1,
         }
         result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
-        article_data = update["article_data"]
+        filtered_papers = result.update["article_data"]
 
-        # Verify that the paper is flagged as having a PDF and the attachment data is stored
+        # Verify that PDF information is added at the top level
         self.assertIn("paper1", filtered_papers)
-        self.assertTrue(filtered_papers["paper1"]["Has_PDF"])
-        # Updated assertion: article_data is keyed by paper1, then attachment key.
-        self.assertIn("paper1", article_data)
-        self.assertIn("attachment1", article_data["paper1"])
+        self.assertIn("pdf_url", filtered_papers["paper1"])
         self.assertEqual(
-            article_data["paper1"]["attachment1"]["data"], fake_binary_data
+            filtered_papers["paper1"]["pdf_url"], "http://examplepdf.com/file1.pdf"
         )
+        self.assertIn("filename", filtered_papers["paper1"])
+        self.assertEqual(filtered_papers["paper1"]["filename"], "file1.pdf")
+        self.assertIn("attachment_key", filtered_papers["paper1"])
+        self.assertEqual(filtered_papers["paper1"]["attachment_key"], "attachment1")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -530,14 +524,11 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that when children() raises an exception,
-        PDF attachment processing fails gracefully."""
+        """Test that when children() raises an exception, PDF info is not added."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-
-        # Create a fake item with key "paper1"
         fake_items = [
             {
                 "data": {
@@ -559,7 +550,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         ]
         fake_zot.items.return_value = fake_items
 
-        # Simulate children() raising an exception (covering lines 183-186)
+        # Simulate children() raising an exception
         fake_zot.children.side_effect = Exception("Child fetch error")
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
@@ -572,91 +563,13 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 1,
         }
         result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
-        article_data = update["article_data"]
+        filtered_papers = result.update["article_data"]
 
-        # Verify that no PDF was attached and the flag is set to False
+        # Ensure no PDF-related keys are added
         self.assertIn("paper1", filtered_papers)
-        self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(article_data, {})
-
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
-    def test_pdf_attachment_file_exception(
-        self,
-        mock_hydra_init,
-        mock_hydra_compose,
-        mock_zotero_class,
-        mock_get_item_collections,
-    ):
-        """Test that when file() call raises an exception, the PDF attachment is not added."""
-        mock_hydra_compose.return_value = dummy_cfg
-        mock_hydra_init.return_value.__enter__.return_value = None
-
-        fake_zot = MagicMock()
-
-        # Create a fake item with key "paper1"
-        fake_items = [
-            {
-                "data": {
-                    "key": "paper1",
-                    "title": "Paper 1",
-                    "abstractNote": "Abstract 1",
-                    "date": "2021",
-                    "url": "http://example.com",
-                    "itemType": "journalArticle",
-                    "creators": [
-                        {
-                            "firstName": "John",
-                            "lastName": "Doe",
-                            "creatorType": "author",
-                        }
-                    ],
-                }
-            },
-        ]
-        fake_zot.items.return_value = fake_items
-
-        # Simulate children() returns a valid PDF attachment
-        fake_pdf_child = {
-            "data": {
-                "key": "attachment1",
-                "filename": "file1.pdf",
-                "contentType": "application/pdf",
-                "url": "http://examplepdf.com/file1.pdf",
-            }
-        }
-        fake_zot.children.return_value = [fake_pdf_child]
-
-        # Simulate file() raising an exception (covering lines 203-238)
-        fake_zot.file.side_effect = Exception("File download error")
-
-        mock_zotero_class.return_value = fake_zot
-        mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
-
-        tool_call_id = "test_pdf_file_exception"
-        tool_input = {
-            "query": "pdf test file exception",
-            "only_articles": True,
-            "tool_call_id": tool_call_id,
-            "limit": 1,
-        }
-        result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
-        article_data = update["article_data"]
-
-        # Verify that due to the exception, no PDF data is added and the flag remains False
-        self.assertIn("paper1", filtered_papers)
-        self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(article_data, {})
+        self.assertNotIn("pdf_url", filtered_papers["paper1"])
+        self.assertNotIn("filename", filtered_papers["paper1"])
+        self.assertNotIn("attachment_key", filtered_papers["paper1"])
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -673,13 +586,11 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that an attachment missing a key is skipped (covers line 206)."""
+        """Test that when a PDF attachment is missing its key, it is still added with an empty attachment_key."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-
-        # Create a fake item with key "paper1"
         fake_items = [
             {
                 "data": {
@@ -704,7 +615,6 @@ class TestZoteroSearchTool(unittest.TestCase):
         # Simulate a PDF child missing the 'key' field
         fake_pdf_child = {
             "data": {
-                # 'key' is intentionally missing
                 "filename": "no_key.pdf",
                 "contentType": "application/pdf",
                 "url": "http://examplepdf.com/no_key.pdf",
@@ -723,15 +633,19 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 1,
         }
         result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
-        article_data = update["article_data"]
+        filtered_papers = result.update["article_data"]
 
-        # Since the attachment has no key, it is skipped,
-        # so Has_PDF should be False and no PDF data is stored.
+        # Verify that PDF info is added even if the attachment key is missing,
+        # with attachment_key set to an empty string.
         self.assertIn("paper1", filtered_papers)
-        self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertNotIn("paper1", article_data)
+        self.assertIn("pdf_url", filtered_papers["paper1"])
+        self.assertEqual(
+            filtered_papers["paper1"]["pdf_url"], "http://examplepdf.com/no_key.pdf"
+        )
+        self.assertIn("filename", filtered_papers["paper1"])
+        self.assertEqual(filtered_papers["paper1"]["filename"], "no_key.pdf")
+        self.assertIn("attachment_key", filtered_papers["paper1"])
+        self.assertEqual(filtered_papers["paper1"]["attachment_key"], "")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -748,14 +662,12 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that an exception in the outer try block
-        (e.g. non-iterable children) is handled (covers lines 236-238)."""
+        """Test that if children() returns a non-iterable (causing an exception),
+        PDF info is not added."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-
-        # Create a fake item with key "paper1"
         fake_items = [
             {
                 "data": {
@@ -777,8 +689,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         ]
         fake_zot.items.return_value = fake_items
 
-        # Simulate children() returning a non-iterable
-        # (None) to trigger a TypeError in the list comprehension.
+        # Simulate children() returning None to trigger an exception in list comprehension.
         fake_zot.children.return_value = None
 
         mock_zotero_class.return_value = fake_zot
@@ -792,11 +703,10 @@ class TestZoteroSearchTool(unittest.TestCase):
             "limit": 1,
         }
         result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
-        article_data = update["article_data"]
+        filtered_papers = result.update["article_data"]
 
-        # When an exception occurs in _fetch_attachments, attachments is {}.
+        # Ensure no PDF-related keys are added if an exception occurs
         self.assertIn("paper1", filtered_papers)
-        self.assertFalse(filtered_papers["paper1"]["Has_PDF"])
-        self.assertEqual(article_data, {})
+        self.assertNotIn("pdf_url", filtered_papers["paper1"])
+        self.assertNotIn("filename", filtered_papers["paper1"])
+        self.assertNotIn("attachment_key", filtered_papers["paper1"])
