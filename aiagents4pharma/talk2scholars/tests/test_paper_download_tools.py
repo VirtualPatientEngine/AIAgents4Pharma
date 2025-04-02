@@ -4,11 +4,13 @@ Unit tests for arXiv paper downloading functionality, including:
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+from langchain_core.messages import ToolMessage
+
 from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input import (
     download_arxiv_paper,
 )
-from langchain_core.messages import ToolMessage
 
 
 class TestDownloadArxivPaper(unittest.TestCase):
@@ -105,7 +107,10 @@ class TestDownloadArxivPaper(unittest.TestCase):
 
         # Set up XML with no entry element.
         arxiv_id = "1234.56789"
-        dummy_xml = """<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom"></feed>"""
+        dummy_xml = (
+            """<?xml version="1.0" encoding="UTF-8"?>"""
+            """<feed xmlns="http://www.w3.org/2005/Atom"></feed>"""
+        )
         dummy_response = MagicMock()
         dummy_response.text = dummy_xml
         dummy_response.raise_for_status = MagicMock()

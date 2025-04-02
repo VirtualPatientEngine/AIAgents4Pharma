@@ -3,8 +3,8 @@ Unit tests for question_and_answer tool functionality.
 """
 
 import unittest
+from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
-
 
 from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     generate_answer,
@@ -12,71 +12,65 @@ from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
 )
 
 
-# Dummy document object for testing
+# pylint: disable=too-few-public-methods,unused-argument,invalid-name,too-many-locals
+@dataclass
 class DummyDoc:
-    """dummy document class to simulate PyPDFLoader output."""
+    """Dummy document class to simulate PyPDFLoader output."""
 
-    def __init__(self, content):
-        """initialize with content."""
-        self.page_content = content
+    page_content: str
 
 
-# Dummy configuration objects to simulate Hydra config
+@dataclass
 class DummyQAConfig:
-    """dummy configuration for question and answer tool."""
+    """Dummy configuration for question and answer tool."""
 
-    chunk_size = 50
-    chunk_overlap = 5
-    num_retrievals = 2
+    chunk_size: int = 50
+    chunk_overlap: int = 5
+    num_retrievals: int = 2
     # No prompt_template provided
 
 
+@dataclass
 class DummyQAConfigWithPrompt:
     """Dummy configuration with custom prompt template."""
 
-    chunk_size = 50
-    chunk_overlap = 5
-    num_retrievals = 2
-    prompt_template = "Custom Prompt: {context} | Q: {question}"
+    chunk_size: int = 50
+    chunk_overlap: int = 5
+    num_retrievals: int = 2
+    prompt_template: str = "Custom Prompt: {context} | Q: {question}"
 
 
 class DummyArticleData(dict):
-    """test class to simulate article_data."""
+    """Test class to simulate article_data."""
 
     def __bool__(self):
-        """test if the object is truthy."""
         return True  # Make it truthy
 
     def keys(self):
-        """test if the object has no keys."""
         return []  # Always return an empty list
 
 
-# Dummy vector store implementation
+@dataclass
 class DummyVectorStore:
-    """dummy vector store to simulate similarity search."""
+    """Dummy vector store to simulate similarity search."""
 
-    def __init__(self, documents, embedding_model):
-        """dummy vector store initialization."""
-        self.documents = documents
+    documents: list
+    embedding_model: any = None
 
     def similarity_search(self, question, k):
-        """simulate similarity search."""
-        # Simply return the first k documents
+        """Simulate similarity search by returning the first k documents."""
         return self.documents[:k]
 
 
-# Dummy LLM response and model
+@dataclass
 class DummyLLMResponse:
-    """dummy LLM response."""
+    """Dummy LLM response."""
 
-    def __init__(self, content):
-        """initialize with content."""
-        self.content = content
+    content: str
 
 
 class DummyLLMModel:
-    """dummy LLM model to simulate LLM invocation."""
+    """Dummy LLM model to simulate LLM invocation."""
 
     def invoke(self, prompt):
         """invoke the LLM with a prompt."""
@@ -84,154 +78,151 @@ class DummyLLMModel:
 
 
 class TestGenerateAnswer(unittest.TestCase):
-    """tests for the generate_answer function."""
+    """Tests for the generate_answer function."""
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
-    )
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
-    )
-    def test_generate_answer_without_splitting(
-        self, mock_vector_store, mock_PyPDFLoader, mock_hydra_init, mock_hydra_compose
-    ):
+    def test_generate_answer_without_splitting(self):
         """
         Test generate_answer when the PDF loader returns a single document whose
         content is short (no splitting occurs) and no prompt_template is provided.
         """
-        # Set up dummy config without prompt_template.
-        dummy_cfg = DummyQAConfig()
-        cfg_obj = type(
-            "DummyHydraConfig",
-            (),
-            {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
-        )
-        mock_hydra_compose.return_value = cfg_obj
-        mock_hydra_init.return_value.__enter__.return_value = None
+        with (
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose"
+            ) as mock_compose,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
+            ) as mock_hydra_init,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader"
+            ) as mock_py_pdf_loader,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
+            ) as mock_vector_store,
+        ):
 
-        # Simulate PDF loading: one document with content shorter than chunk_size.
-        dummy_doc = DummyDoc("short content")
-        loader_instance = MagicMock()
-        loader_instance.load.return_value = [dummy_doc]
-        mock_PyPDFLoader.return_value = loader_instance
+            dummy_cfg = DummyQAConfig()
+            cfg_obj = type(
+                "DummyHydraConfig",
+                (),
+                {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
+            )
+            mock_compose.return_value = cfg_obj
+            mock_hydra_init.return_value.__enter__.return_value = None
 
-        # Simulate vector store creation and similarity search.
-        fake_vector_store = DummyVectorStore([dummy_doc], None)
-        mock_vector_store.from_documents.return_value = fake_vector_store
+            # Simulate PDF loading: one document with content shorter than chunk_size.
+            dummy_doc = DummyDoc("short content")
+            loader_instance = MagicMock()
+            loader_instance.load.return_value = [dummy_doc]
+            mock_py_pdf_loader.return_value = loader_instance
 
-        dummy_llm = DummyLLMModel()
-        result = generate_answer(
-            "What is it?", "http://dummy.pdf", MagicMock(), dummy_llm
-        )
+            fake_vector_store = DummyVectorStore([dummy_doc])
+            mock_vector_store.from_documents.return_value = fake_vector_store
 
-        # Since no prompt_template is provided, default prompt format is used.
-        expected_prompt = f"Context:\n{dummy_doc.page_content}\n\nQuestion: What is it?"
-        # We expect the dummy LLM to return "LLM answer"
-        self.assertEqual(result, {"output_text": "LLM answer"})
+            dummy_llm = DummyLLMModel()
+            result = generate_answer(
+                "What is it?", "http://dummy.pdf", MagicMock(), dummy_llm
+            )
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
-    )
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.CharacterTextSplitter"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
-    )
-    def test_generate_answer_with_splitting_and_custom_prompt(
-        self,
-        mock_vector_store,
-        mock_text_splitter,
-        mock_PyPDFLoader,
-        mock_hydra_init,
-        mock_hydra_compose,
-    ):
+            # Check that the result is as expected.
+            self.assertEqual(result, {"output_text": "LLM answer"})
+
+    def test_generate_answer_with_splitting_and_custom_prompt(self):
         """
         Test generate_answer when splitting is triggered (multiple chunks) and a custom
         prompt_template is provided.
         """
-        # Set up dummy config with prompt_template.
-        dummy_cfg = DummyQAConfigWithPrompt()
-        cfg_obj = type(
-            "DummyHydraConfig",
-            (),
-            {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
-        )
-        mock_hydra_compose.return_value = cfg_obj
-        mock_hydra_init.return_value.__enter__.return_value = None
+        with (
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose"
+            ) as mock_compose,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
+            ) as mock_hydra_init,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader"
+            ) as mock_py_pdf_loader,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.CharacterTextSplitter"
+            ) as mock_text_splitter,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
+            ) as mock_vector_store,
+        ):
 
-        # Simulate PDF loading: one document with content longer than chunk_size.
-        long_content = "a" * 100  # 100 characters > chunk_size (50)
-        dummy_doc = DummyDoc(long_content)
-        loader_instance = MagicMock()
-        loader_instance.load.return_value = [dummy_doc]
-        mock_PyPDFLoader.return_value = loader_instance
+            dummy_cfg = DummyQAConfigWithPrompt()
+            cfg_obj = type(
+                "DummyHydraConfig",
+                (),
+                {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
+            )
+            mock_compose.return_value = cfg_obj
+            mock_hydra_init.return_value.__enter__.return_value = None
 
-        # Simulate text splitting: return two dummy chunks.
-        splitted_docs = [DummyDoc("chunk1"), DummyDoc("chunk2")]
-        splitter_instance = MagicMock()
-        splitter_instance.split_documents.return_value = splitted_docs
-        mock_text_splitter.return_value = splitter_instance
+            # Simulate PDF loading: one document with content longer than chunk_size.
+            long_content = "a" * 100  # 100 characters > chunk_size (50)
+            dummy_doc = DummyDoc(long_content)
+            loader_instance = MagicMock()
+            loader_instance.load.return_value = [dummy_doc]
+            mock_py_pdf_loader.return_value = loader_instance
 
-        # Simulate vector store: similarity search returns the splitted chunks.
-        fake_vector_store = DummyVectorStore(splitted_docs, None)
-        mock_vector_store.from_documents.return_value = fake_vector_store
+            # Simulate text splitting: return two dummy chunks.
+            splitted_docs = [DummyDoc("chunk1"), DummyDoc("chunk2")]
+            splitter_instance = MagicMock()
+            splitter_instance.split_documents.return_value = splitted_docs
+            mock_text_splitter.return_value = splitter_instance
 
-        dummy_llm = DummyLLMModel()
-        result = generate_answer(
-            "What is the key point?", "http://dummy.pdf", MagicMock(), dummy_llm
-        )
+            fake_vector_store = DummyVectorStore(splitted_docs)
+            mock_vector_store.from_documents.return_value = fake_vector_store
 
-        # The context should be the concatenation of the two chunks.
-        expected_context = "chunk1\n\nchunk2"
-        expected_prompt = dummy_cfg.prompt_template.format(
-            context=expected_context, question="What is the key point?"
-        )
-        self.assertEqual(result, {"output_text": "LLM answer"})
+            dummy_llm = DummyLLMModel()
+            result = generate_answer(
+                "What is the key point?", "http://dummy.pdf", MagicMock(), dummy_llm
+            )
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
-    )
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
-    )
-    def test_generate_answer_without_splitting_long_doc_no_split(
-        self, mock_vector_store, mock_PyPDFLoader, mock_hydra_init, mock_hydra_compose
-    ):
+            self.assertEqual(result, {"output_text": "LLM answer"})
+
+    def test_generate_answer_without_splitting_long_doc_no_split(self):
         """
         Test generate_answer when the document does not trigger splitting because its
         content length is within chunk_size.
         """
-        # Set up dummy config without prompt_template.
-        dummy_cfg = DummyQAConfig()
-        cfg_obj = type(
-            "DummyHydraConfig",
-            (),
-            {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
-        )
-        mock_hydra_compose.return_value = cfg_obj
-        mock_hydra_init.return_value.__enter__.return_value = None
+        with (
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.compose"
+            ) as mock_compose,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.hydra.initialize"
+            ) as mock_hydra_init,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader"
+            ) as mock_py_pdf_loader,
+            patch(
+                "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.InMemoryVectorStore"
+            ) as mock_vector_store,
+        ):
 
-        # Simulate PDF loading: one document with content shorter than chunk_size.
-        dummy_doc = DummyDoc("short content")
-        loader_instance = MagicMock()
-        loader_instance.load.return_value = [dummy_doc]
-        mock_PyPDFLoader.return_value = loader_instance
+            dummy_cfg = DummyQAConfig()
+            cfg_obj = type(
+                "DummyHydraConfig",
+                (),
+                {"tools": type("DummyTools", (), {"question_and_answer": dummy_cfg})},
+            )
+            mock_compose.return_value = cfg_obj
+            mock_hydra_init.return_value.__enter__.return_value = None
 
-        fake_vector_store = DummyVectorStore([dummy_doc], None)
-        mock_vector_store.from_documents.return_value = fake_vector_store
+            dummy_doc = DummyDoc("short content")
+            loader_instance = MagicMock()
+            loader_instance.load.return_value = [dummy_doc]
+            mock_py_pdf_loader.return_value = loader_instance
 
-        dummy_llm = DummyLLMModel()
-        result = generate_answer(
-            "What is this?", "http://dummy.pdf", MagicMock(), dummy_llm
-        )
-        self.assertEqual(result, {"output_text": "LLM answer"})
+            fake_vector_store = DummyVectorStore([dummy_doc])
+            mock_vector_store.from_documents.return_value = fake_vector_store
+
+            dummy_llm = DummyLLMModel()
+            result = generate_answer(
+                "What is this?", "http://dummy.pdf", MagicMock(), dummy_llm
+            )
+            self.assertEqual(result, {"output_text": "LLM answer"})
 
 
 class TestQuestionAndAnswerToolSelection(unittest.TestCase):
@@ -243,7 +234,6 @@ class TestQuestionAndAnswerToolSelection(unittest.TestCase):
     def test_numeric_paper_selection(self, mock_generate_answer):
         """
         Test that a numeric reference in the question selects the correct paper.
-        (Covers part of lines 174-213.)
         """
         mock_generate_answer.return_value = {"output_text": "Answer from paper2"}
         state = {

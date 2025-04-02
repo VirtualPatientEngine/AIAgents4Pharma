@@ -586,7 +586,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that when a PDF attachment is missing its key, it is still added with an empty attachment_key."""
+        """Test that when a PDF attachment is missing its key,
+        it is still added with an empty attachment_key."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
