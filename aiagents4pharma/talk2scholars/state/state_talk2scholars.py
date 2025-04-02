@@ -7,9 +7,10 @@ across agent interactions.
 """
 
 import logging
-from typing import Annotated, Any, Dict, Optional
-from langchain_core.language_models import BaseChatModel
+from typing import Annotated, Any, Dict
+
 from langchain_core.embeddings import Embeddings
+from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt.chat_agent_executor import AgentState
 
 # Configure logging
