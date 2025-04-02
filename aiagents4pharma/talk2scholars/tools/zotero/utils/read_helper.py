@@ -35,8 +35,7 @@ class ZoteroSearchData:
         self.cfg = self._load_config()
         self.zot = self._init_zotero_client()
         self.item_to_collections = get_item_collections(self.zot)
-        self.filtered_papers = {}
-        self.pdf_data = {}
+        self.article_data = {}
         self.content = ""
 
     def process_search(self) -> None:
@@ -48,8 +47,7 @@ class ZoteroSearchData:
     def get_search_results(self) -> Dict[str, Any]:
         """Get the search results and content."""
         return {
-            "filtered_papers": self.filtered_papers,
-            "pdf_data": self.pdf_data,
+            "article_data": self.article_data,
             "content": self.content,
         }
 
@@ -125,7 +123,7 @@ class ZoteroSearchData:
 
             collection_paths = self.item_to_collections.get(key, ["/Unknown"])
 
-            self.filtered_papers[key] = {
+            self.article_data[key] = {
                 "Title": data.get("title", "N/A"),
                 "Abstract": data.get("abstractNote", "N/A"),
                 "Publication Date": data.get("date", "N/A"),
@@ -142,18 +140,13 @@ class ZoteroSearchData:
                     if isinstance(creator, dict)
                     and creator.get("creatorType") == "author"
                 ],
+                "source": "zotero",  # Adding source field with value "zotero"
             }
 
-            # Fetch PDF attachments for this item
-            attachments = self._fetch_attachments(key)
-            if attachments:
-                self.pdf_data[key] = attachments
-                # Add a flag to indicate PDF availability
-                self.filtered_papers[key]["Has_PDF"] = True
-            else:
-                self.filtered_papers[key]["Has_PDF"] = False
+            # Find PDF attachment URLs for this item
+            self._find_pdf_urls(key)
 
-        if not self.filtered_papers:
+        if not self.article_data:
             logger.error(
                 "No matching papers returned from Zotero for query: '%s'", self.query
             )
@@ -161,22 +154,17 @@ class ZoteroSearchData:
                 "No matching papers returned from Zotero. Please retry the same query."
             )
 
-        logger.info("Filtered %d items", len(self.filtered_papers))
-        logger.info("Found PDFs for %d items", len(self.pdf_data))
+        logger.info("Filtered %d items", len(self.article_data))
 
-    def _fetch_attachments(self, item_key: str) -> dict:
+    def _find_pdf_urls(self, item_key: str) -> None:
         """
-        Fetch PDF attachments for a specific item.
+        Find PDF attachment URL for a specific item and add it directly to the article data.
+        Only the first PDF attachment's information will be used.
 
         Args:
-            item_key (str): The Zotero item key to fetch attachments for
-
-        Returns:
-            dict: A dictionary with binary data of PDFs if available
+            item_key (str): The Zotero item key to find PDF URLs for
         """
-        logger.info("Fetching attachments for item: %s", item_key)
-
-        result = {}
+        logger.info("Finding PDF URL for item: %s", item_key)
 
         try:
             # Get all child items (attachments) for this item
@@ -185,7 +173,7 @@ class ZoteroSearchData:
             except Exception as e:
                 # If we can't get children, the item might not support children
                 logger.debug("Cannot get children for item %s: %s", item_key, str(e))
-                return result
+                return
 
             # Filter for PDF attachments
             pdf_attachments = [
@@ -199,51 +187,32 @@ class ZoteroSearchData:
 
             if not pdf_attachments:
                 logger.info("No PDF attachments found for item: %s", item_key)
-                return result
+                return
 
-            # For each PDF attachment, download the file
-            for attachment in pdf_attachments:
-                attachment_key = attachment.get("data", {}).get("key")
-                if not attachment_key:
-                    continue
+            # Use only the first PDF attachment
+            if pdf_attachments:
+                attachment = pdf_attachments[0]
+                attachment_data = attachment.get("data", {})
+                url = attachment_data.get("url", "")
 
-                logger.info("Downloading PDF attachment: %s", attachment_key)
-
-                try:
-                    # Get the binary content of the PDF
-                    pdf_binary = self.zot.file(attachment_key)
-
-                    if pdf_binary:
-                        # Log information about the binary data to verify
-                        pdf_size = len(pdf_binary) if pdf_binary else 0
-                        pdf_prefix = pdf_binary[:20].hex() if pdf_binary else "None"
-                        logger.info(
-                            "Downloaded PDF binary data: size=%s bytes, prefix=%s",
-                            pdf_size,
-                            pdf_prefix,
-                        )
-                        result[attachment_key] = {
-                            "filename": attachment.get("data", {}).get(
-                                "filename", "unknown.pdf"
-                            ),
-                            "data": pdf_binary,
-                            "url": attachment.get("data", {}).get("url", ""),
-                        }
-                except Exception as e:
-                    logger.error(
-                        "Failed to download attachment %s: %s", attachment_key, str(e)
+                if url:
+                    # Add PDF information directly to the article entry
+                    self.article_data[item_key]["filename"] = attachment_data.get(
+                        "filename", "unknown.pdf"
+                    )
+                    self.article_data[item_key]["pdf_url"] = url
+                    self.article_data[item_key]["attachment_key"] = attachment_data.get(
+                        "key", ""
                     )
 
-            logger.info("Found %d PDF attachments for item: %s", len(result), item_key)
-            return result
+                    logger.info("Found PDF URL for item: %s", item_key)
 
         except Exception as e:
-            logger.error("Error fetching attachments for item %s: %s", item_key, e)
-            return {}
+            logger.error("Error finding PDF URLs for item %s: %s", item_key, e)
 
     def _create_content(self) -> None:
         """Create the content message for the response."""
-        top_papers = list(self.filtered_papers.values())[:2]
+        top_papers = list(self.article_data.values())[:2]
         top_papers_info = "\n".join(
             [
                 f"{i+1}. {paper['Title']} ({paper['Type']})"
@@ -253,6 +222,6 @@ class ZoteroSearchData:
 
         self.content = "Retrieval was successful. Papers are attached as an artifact."
         self.content += " And here is a summary of the retrieval results:\n"
-        self.content += f"Number of papers found: {len(self.filtered_papers)}\n"
+        self.content += f"Number of papers found: {len(self.article_data)}\n"
         self.content += f"Query: {self.query}\n"
         self.content += "Here are a few of these papers:\n" + top_papers_info

@@ -62,14 +62,13 @@ def zotero_read(
 
     return Command(
         update={
-            "zotero_read": results["filtered_papers"],
-            "pdf_data": results["pdf_data"],  # Access directly like filtered_papers
-            "last_displayed_papers": "zotero_read",
+            "article_data": results["article_data"],
+            "last_displayed_papers": "article_data",
             "messages": [
                 ToolMessage(
                     content=results["content"],
                     tool_call_id=tool_call_id,
-                    artifact=results["filtered_papers"],
+                    artifact=results["article_data"],
                 )
             ],
         }
