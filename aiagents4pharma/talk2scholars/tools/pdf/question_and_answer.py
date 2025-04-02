@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """
 Tool for performing Q&A on PDF documents using retrieval augmented generation.
-This module provides functionality to extract text from PDF binary data, split it into
+This module provides functionality to load PDFs from URLs, split them into
 chunks, retrieve relevant segments via a vector store, and generate an answer to a
 user-provided question using a language model chain.
 """
 
-import io
 import logging
-import os
 import re
-import tempfile
 from typing import Annotated, Any, Dict
 
 import hydra
-from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.embeddings import Embeddings
@@ -26,7 +22,6 @@ from langchain_core.vectorstores import InMemoryVectorStore
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
-from PyPDF2 import PdfReader
 
 # Set up logging.
 logging.basicConfig(level=logging.INFO)
@@ -50,35 +45,23 @@ class QuestionAndAnswerInput(BaseModel):
     state: Annotated[dict, InjectedState]
 
 
-def extract_text_from_pdf_data(pdf_bytes: bytes) -> str:
-    """
-    Extract text content from PDF binary data.
-
-    This function uses PyPDF2 to read the provided PDF bytes and concatenates the text
-    extracted from each page.
-
-    Args:
-        pdf_bytes (bytes): The binary data of the PDF document.
-
-    Returns:
-        str: The complete text extracted from the PDF.
-    """
-    reader = PdfReader(io.BytesIO(pdf_bytes))
-    text = ""
-    for page in reader.pages:
-        page_text = page.extract_text() or ""
-        text += page_text
-    return text
-
-
 def generate_answer(
     question: str,
-    pdf_source: Any,  # Can be bytes or URL
+    pdf_url: str,
     text_embedding_model: Embeddings,
     llm_model: BaseChatModel,
 ) -> Dict[str, Any]:
     """
     Generate an answer for a question using retrieval augmented generation on PDF content.
+
+    Args:
+        question (str): The question to answer
+        pdf_url (str): URL of the PDF to process
+        text_embedding_model (Embeddings): Model for generating embeddings
+        llm_model (BaseChatModel): Language model for generating answers
+
+    Returns:
+        Dict[str, Any]: Dictionary with the answer
     """
     # Load configuration using Hydra.
     with hydra.initialize(version_base=None, config_path="../../configs"):
@@ -87,57 +70,24 @@ def generate_answer(
         )
         cfg = cfg.tools.question_and_answer
         logger.info("Loaded Question and Answer tool configuration.")
+
     logger.info("Processing PDF with question: %s", question)
+    logger.info("Processing PDF from URL: %s", pdf_url)
 
-    # Handle different source types (binary data or URL)
-    if isinstance(pdf_source, bytes):
-        logger.info("Processing PDF from binary data")
-        try:
-            # For binary data, use PyPDF2 to extract text
-            text = extract_text_from_pdf_data(pdf_source)
+    # Use PyPDFLoader to load the PDF from URL
+    loader = PyPDFLoader(pdf_url)
+    documents = loader.load()
+    logger.info("Loaded %d pages with PyPDFLoader from URL", len(documents))
 
-            # Create Document objects from text chunks
-            text_splitter = CharacterTextSplitter(
-                separator="\n",
-                chunk_size=cfg.chunk_size,
-                chunk_overlap=cfg.chunk_overlap,
-            )
-            chunks = text_splitter.split_text(text)
-            documents = [Document(page_content=chunk) for chunk in chunks]
-            logger.info("Split PDF text into %d chunks.", len(documents))
-        except Exception as e:
-            # If binary processing fails, try saving to temp file and using PyPDFLoader
-            logger.warning(
-                "Error extracting text from binary: %s. Trying with temp file...",
-                str(e),
-            )
-            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                tmp.write(pdf_source)
-                tmp_path = tmp.name
-
-            try:
-                # Use PyPDFLoader with the temp file
-                loader = PyPDFLoader(tmp_path)
-                documents = loader.load()
-                logger.info(
-                    "Loaded %d pages with PyPDFLoader from temp file", len(documents)
-                )
-            finally:
-                # Clean up temp file
-                if os.path.exists(tmp_path):
-                    os.remove(tmp_path)
-
-    elif isinstance(pdf_source, str):
-        # For URL, use PyPDFLoader
-        logger.info("Processing PDF from URL: %s", pdf_source)
-        loader = PyPDFLoader(pdf_source)
-        documents = loader.load()
-        logger.info("Loaded %d pages with PyPDFLoader from URL", len(documents))
-
-    else:
-        raise ValueError(
-            "pdf_source must be either bytes (PDF binary) or str (PDF URL)"
+    # For longer documents, split into smaller chunks
+    if len(documents) > 1 or len(documents[0].page_content) > cfg.chunk_size:
+        text_splitter = CharacterTextSplitter(
+            separator="\n",
+            chunk_size=cfg.chunk_size,
+            chunk_overlap=cfg.chunk_overlap,
         )
+        documents = text_splitter.split_documents(documents)
+        logger.info("Split PDF text into %d chunks.", len(documents))
 
     # Create vector store and perform similarity search
     vector_store = InMemoryVectorStore.from_documents(documents, text_embedding_model)
@@ -170,16 +120,15 @@ def question_and_answer_tool(
     """
     Answer a question using PDF content stored in the state via retrieval augmented generation.
 
-    This tool extracts PDF content from the state, processes it using a retrieval-based approach,
-    and generates an answer to the user's question. It supports both arXiv downloaded PDFs and
-    Zotero library PDFs, selecting the most relevant PDF when multiple are available.
+    This tool retrieves PDF URLs from the state, loads and processes them using a
+    retrieval-based approach, and generates an answer to the user's question.
 
     Args:
         question (str): The question to answer based on PDF content.
         tool_call_id (str): Unique identifier for the current tool call.
-        state (dict): Current state dictionary containing PDF data and required models.
+        state (dict): Current state dictionary containing article data and required models.
             Expected keys:
-            - "pdf_data": Dictionary containing PDF data (either arXiv or Zotero format)
+            - "article_data": Dictionary containing article metadata including PDF URLs
             - "text_embedding_model": Model for generating embeddings
             - "llm_model": Language model for generating answers
 
@@ -190,7 +139,7 @@ def question_and_answer_tool(
     Raises:
         ValueError: If required components are missing or if PDF processing fails.
     """
-    logger.info("Starting PDF Question and Answer tool using PDF data from state.")
+    logger.info("Starting PDF Question and Answer tool")
 
     # Get required models from state
     text_embedding_model = state.get("text_embedding_model")
@@ -205,133 +154,95 @@ def question_and_answer_tool(
         logger.error(error_msg)
         raise ValueError(error_msg)
 
-    # Get PDF data from state
-    pdf_data = state.get("pdf_data", {})
-    if not pdf_data:
-        error_msg = "No pdf_data found in state."
+    # Get article data from state
+    article_data = state.get("article_data", {})
+    if not article_data:
+        error_msg = "No article_data found in state."
         logger.error(error_msg)
         raise ValueError(error_msg)
 
-    # Check if pdf_data has the arxiv_downloader format
-    if "pdf_object" in pdf_data or "pdf_url" in pdf_data:
-        # This is the arxiv_downloader format
-        logger.info("Detected arxiv_downloader PDF format")
-        pdf_bytes = pdf_data.get("pdf_object")
-        pdf_url = pdf_data.get("pdf_url", "")
-        pdf_filename = f"ArXiv paper {pdf_data.get('arxiv_id', 'unknown')}"
-    else:
-        # This is the Zotero format - navigate the nested structure
-        paper_keys = list(pdf_data.keys())
-        if not paper_keys:
-            error_msg = "No papers with PDFs found in pdf_data."
-            logger.error(error_msg)
-            raise ValueError(error_msg)
+    paper_keys = list(article_data.keys())
+    if not paper_keys:
+        error_msg = "No papers found in article_data."
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
-        selected_paper_key = None
-        if len(paper_keys) > 1:
-            logger.info("Multiple papers found, trying to select the most relevant one")
+    selected_paper_key = None
 
-            # 1. First try to match by paper number/position
-            number_match = re.search(
-                r"(?:^|\s)(?:(\d+)(?:st|nd|rd|th)?\s*(?:paper|pdf)|(?:paper|pdf)\s*(\d+))",
-                question.lower(),
+    # If multiple papers are available, try to select the most relevant one
+    if len(paper_keys) > 1:
+        logger.info("Multiple papers found, trying to select the most relevant one")
+
+        # 1. First try to match by paper number/position
+        number_match = re.search(
+            r"(?:^|\s)(?:(\d+)(?:st|nd|rd|th)?\s*(?:paper|pdf)|(?:paper|pdf)\s*(\d+))",
+            question.lower(),
+        )
+
+        if number_match:
+            # Get the number from whichever group matched (group 1 or group 2)
+            paper_num_str = (
+                number_match.group(1)
+                if number_match.group(1)
+                else number_match.group(2)
             )
+            paper_num = int(paper_num_str)
+            if 1 <= paper_num <= len(paper_keys):
+                # Use 1-based indexing for user-friendly reference
+                selected_paper_key = paper_keys[paper_num - 1]
+                logger.info("Selected paper %s based on numerical reference", paper_num)
 
-            if number_match:
-                # Get the number from whichever group matched (group 1 or group 2)
-                paper_num_str = (
-                    number_match.group(1)
-                    if number_match.group(1)
-                    else number_match.group(2)
-                )
-                paper_num = int(paper_num_str)
-                if 1 <= paper_num <= len(paper_keys):
-                    # Use 1-based indexing for user-friendly reference
-                    selected_paper_key = paper_keys[paper_num - 1]
-                    logger.info(
-                        "Selected paper %s based on numerical reference", paper_num
-                    )
-
-            # 2. If not found by number, check for title matches
-            if not selected_paper_key:
-                # Create a mapping of papers to their score for best match
-                paper_scores = {key: 0 for key in paper_keys}
-
-                for key in paper_keys:
-                    for _, att_data in pdf_data[key].items():
-                        if "filename" in att_data:
-                            filename = att_data["filename"]
-
-                            # Extract title component (after the last dash if present)
-                            if " - " in filename:
-                                title_part = filename.split(" - ")[-1].replace(
-                                    ".pdf", ""
-                                )
-                            else:
-                                title_part = filename.replace(".pdf", "")
-
-                            # Score: Length of longest common substring between title and question
-                            common_words = set(title_part.lower().split()) & set(
-                                question.lower().split()
-                            )
-                            paper_scores[key] = len(common_words)
-
-                # Select the paper with the highest score (if any match at all)
-                if max(paper_scores.values()) > 0:
-                    selected_paper_key = max(paper_scores.items(), key=lambda x: x[1])[
-                        0
-                    ]
-
-                    # Log which paper was selected and why
-                    for _, att_data in pdf_data[selected_paper_key].items():
-                        if "filename" in att_data:
-                            logger.info(
-                                "Selected paper '%s' with score %s",
-                                att_data["filename"],
-                                paper_scores[selected_paper_key],
-                            )
-
-        # If no specific paper was found, use the first one
+        # 2. If not found by number, check for title matches
         if not selected_paper_key:
-            selected_paper_key = paper_keys[0]
-            logger.info(
-                "Using first paper as no specific paper was mentioned in question"
-            )
+            # Create a mapping of papers to their score for best match
+            paper_scores = {key: 0 for key in paper_keys}
 
-        paper_key = selected_paper_key
-        attachments = pdf_data[paper_key]
+            for key in paper_keys:
+                paper = article_data[key]
+                title = paper.get("Title", "").lower()
 
-        attachment_keys = list(attachments.keys())
-        if not attachment_keys:
-            error_msg = f"No PDF attachments found for paper {paper_key}."
-            logger.error(error_msg)
-            raise ValueError(error_msg)
+                # Score: count of words from title appearing in question
+                title_words = set(title.split())
+                question_words = set(question.lower().split())
+                common_words = title_words & question_words
+                paper_scores[key] = len(common_words)
 
-        attachment_key = attachment_keys[0]  # Use the first attachment
-        pdf_attachment = attachments[attachment_key]
+            # Select the paper with the highest score (if any match at all)
+            if max(paper_scores.values()) > 0:
+                selected_paper_key = max(paper_scores.items(), key=lambda x: x[1])[0]
+                logger.info(
+                    "Selected paper '%s' with score %s",
+                    article_data[selected_paper_key].get("Title", "Unknown"),
+                    paper_scores[selected_paper_key],
+                )
 
-        # Get the binary data and optional URL
-        pdf_bytes = pdf_attachment.get("data")
-        pdf_url = pdf_attachment.get("url", "")
-        pdf_filename = pdf_attachment.get("filename", "unknown.pdf")
+    # If no specific paper was found, use the first one
+    if not selected_paper_key:
+        selected_paper_key = paper_keys[0]
+        logger.info("Using first paper as no specific paper was mentioned in question")
 
-    # Make sure we have either binary data or URL
-    if not pdf_bytes and not pdf_url:
-        error_msg = "Neither PDF binary data nor URL is available."
+    # Get the selected paper
+    paper = article_data[selected_paper_key]
+
+    # Get PDF URL from the paper
+    pdf_url = paper.get("pdf_url")
+    if not pdf_url:
+        error_msg = (
+            f"No PDF URL found for selected paper: {paper.get('Title', 'Unknown')}"
+        )
         logger.error(error_msg)
         raise ValueError(error_msg)
 
-    # Log information about the PDF
-    logger.info("Retrieved PDF: %s", pdf_filename)
-    if pdf_bytes:
-        logger.info("PDF size: %d bytes", len(pdf_bytes))
-    if pdf_url:
-        logger.info("PDF URL: %s", pdf_url)
+    # Get the title or filename for reference
+    paper_title = paper.get("Title", "Unknown")
+    pdf_filename = paper.get("filename", paper_title)
+
+    logger.info("Selected PDF: %s", pdf_filename)
+    logger.info("PDF URL: %s", pdf_url)
 
     try:
-        # Try to process the PDF (prioritize binary data if available)
-        pdf_source = pdf_bytes if pdf_bytes else pdf_url
-        result = generate_answer(question, pdf_source, text_embedding_model, llm_model)
+        # Generate answer using the PDF URL
+        result = generate_answer(question, pdf_url, text_embedding_model, llm_model)
 
         # Format the answer for return
         answer_text = result.get("output_text", "No answer generated.")
