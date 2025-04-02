@@ -67,7 +67,7 @@ class DocumentStore:
     def __init__(
         self,
         embedding_model: Embeddings,
-        metadata_fields: List[str] = None,
+        metadata_fields: Optional[List[str]] = None,
     ):
         """
         Initialize the document store.
@@ -384,18 +384,14 @@ def generate_answer(
         Dict[str, Any]: Dictionary with the answer and metadata
     """
     # Load configuration using Hydra if not provided
-    if config is None:
-        try:
-            with hydra.initialize(version_base=None, config_path="../../configs"):
-                cfg = hydra.compose(
-                    config_name="config",
-                    overrides=["tools/question_and_answer=default"],
-                )
-                config = cfg.tools.question_and_answer
-                logger.info("Loaded Question and Answer tool configuration.")
-        except Exception as e:
-            logger.warning("Failed to load Hydra config: %s. Using default values.", e)
-            config = {}
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/question_and_answer=default"],
+        )
+        config = cfg.tools.question_and_answer
+        logger.info("Loaded Question and Answer tool configuration.")
+    config = {}
 
     # Prepare context from retrieved documents with source attribution
     formatted_chunks = []
@@ -416,22 +412,10 @@ def generate_answer(
     # Get unique paper sources
     paper_sources = {doc.metadata["paper_id"] for doc in retrieved_chunks}
 
-    # Use the prompt template from config or a comprehensive default
     if hasattr(config, "prompt_template") and config.prompt_template:
         prompt = config.prompt_template.format(context=context, question=question)
     else:
-        # Enhanced default prompt
-        prompt = f"""Answer the following question based on the provided context. 
-If the context doesn't contain enough information to give a complete answer, say so.
-Cite specific sources in your answer using the document numbers (e.g., [Document 1]).
-
-Context:
-{context}
-
-Question: {question}
-
-Your answer should be comprehensive, accurate, and well-structured.
-"""
+        prompt = f"Default prompt with context: {context} and question: {question}"
 
     # Get the answer from the language model
     response = llm_model.invoke(prompt)
