@@ -59,7 +59,7 @@ class QuestionAndAnswerInput(BaseModel):
     state: Annotated[dict, InjectedState]
 
 
-class DocumentStore:
+class Vectorstore:
     """
     A class for managing document embeddings and retrieval.
     Provides unified access to documents across multiple papers.
@@ -85,7 +85,7 @@ class DocumentStore:
             "chunk_id",
         ]
         self.initialization_time = time.time()
-        logger.info("DocumentStore initialized at: %s", self.initialization_time)
+        logger.info("Vectorstore initialized at: %s", self.initialization_time)
 
         # Track loaded papers to prevent duplicate loading
         self.loaded_papers = set()
@@ -454,7 +454,7 @@ def question_and_answer_tool(
             - "article_data": Dictionary containing article metadata including PDF URLs
             - "text_embedding_model": Model for generating embeddings
             - "llm_model": Language model for generating answers
-            - "document_store": Optional DocumentStore instance
+            - "vector_store": Optional Vectorstore instance
 
     Returns:
         Dict[str, Any]: A dictionary wrapped in a Command that updates the conversation
@@ -494,18 +494,18 @@ def question_and_answer_tool(
         raise ValueError(error_msg)
 
     # Get or create document store
-    document_store = state.get("document_store")
+    vector_store = state.get("vector_store")
     doc_store_created = False
 
-    if not document_store:
+    if not vector_store:
         logger.info("%s: Creating new document store", call_id)
-        document_store = DocumentStore(embedding_model=text_embedding_model)
+        vector_store = Vectorstore(embedding_model=text_embedding_model)
         doc_store_created = True
     else:
         logger.info(
             "%s: Using existing document store created at %s",
             call_id,
-            getattr(document_store, "initialization_time", "unknown"),
+            getattr(vector_store, "initialization_time", "unknown"),
         )
 
     # Choose papers to use
@@ -535,20 +535,20 @@ def question_and_answer_tool(
         # First ensure papers are loaded
         for paper_id, paper in article_data.items():
             pdf_url = paper.get("pdf_url")
-            if pdf_url and paper_id not in document_store.loaded_papers:
+            if pdf_url and paper_id not in vector_store.loaded_papers:
                 try:
-                    document_store.add_paper(paper_id, pdf_url, paper)
+                    vector_store.add_paper(paper_id, pdf_url, paper)
                 except Exception as e:
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
 
         # Build vector store if needed
-        if not document_store.vector_store:
-            document_store.build_vector_store()
+        if not vector_store.vector_store:
+            vector_store.build_vector_store()
 
         # Now rank papers
-        ranked_papers = document_store.rank_papers_by_query(question, top_k=3)
+        ranked_papers = vector_store.rank_papers_by_query(question, top_k=3)
         selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
         logger.info(
             "%s: Selected papers based on semantic relevance: %s",
@@ -565,11 +565,11 @@ def question_and_answer_tool(
 
     # Load selected papers if needed
     for paper_id in selected_paper_ids:
-        if paper_id not in document_store.loaded_papers:
+        if paper_id not in vector_store.loaded_papers:
             pdf_url = article_data[paper_id].get("pdf_url")
             if pdf_url:
                 try:
-                    document_store.add_paper(paper_id, pdf_url, article_data[paper_id])
+                    vector_store.add_paper(paper_id, pdf_url, article_data[paper_id])
                 except Exception as e:
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
@@ -578,15 +578,15 @@ def question_and_answer_tool(
     # Store the document store in state if it was created in this call
     if doc_store_created:
         # Use direct assignment to prevent recursive issues
-        logger.info("%s: Storing new document_store in state", call_id)
-        state["document_store"] = document_store
+        logger.info("%s: Storing new vector_store in state", call_id)
+        state["vector_store"] = vector_store
 
     # Ensure vector store is built
-    if not document_store.vector_store:
-        document_store.build_vector_store()
+    if not vector_store.vector_store:
+        vector_store.build_vector_store()
 
     # Retrieve relevant chunks across selected papers
-    relevant_chunks = document_store.retrieve_relevant_chunks(
+    relevant_chunks = vector_store.retrieve_relevant_chunks(
         query=question, paper_ids=selected_paper_ids, top_k=10, use_mmr=True
     )
 
