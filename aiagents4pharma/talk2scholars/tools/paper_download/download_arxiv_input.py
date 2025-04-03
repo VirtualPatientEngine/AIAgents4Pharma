@@ -117,7 +117,6 @@ def download_arxiv_paper(
     return Command(
         update={
             "article_data": article_data,
-            "last_displayed_papers": "article_data",
             "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
         }
     )
