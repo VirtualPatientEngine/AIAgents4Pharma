@@ -52,7 +52,8 @@ class Talk2Scholars(AgentState):
         last_displayed_papers (Dict[str, Any]): Stores the most recently displayed papers.
         papers (Dict[str, Any]): Stores the research papers retrieved from the agent's queries.
         multi_papers (Dict[str, Any]): Stores multiple recommended papers from various sources.
-        article_data (Dict[str, Any]): Stores the papers retrieved from Zotero with their metadata.
+        article_data (Dict[str, Any]): Stores the papers retrieved from Zotero and the pdf
+        download agent with their metadata.
         zotero_write_approval_status (Dict[str, Any]): Stores the approval status and collection
         path for Zotero save operations.
         llm_model (BaseChatModel): The language model instance used for generating responses.

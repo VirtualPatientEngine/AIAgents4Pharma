@@ -1,5 +1,5 @@
 """
-Enhanced tool for performing Q&A on PDF documents using retrieval augmented generation.
+Tool for performing Q&A on PDF documents using retrieval augmented generation.
 This module provides functionality to load PDFs from URLs, split them into
 chunks, retrieve relevant segments via semantic search, and generate answers
 to user-provided questions using a language model chain.
