@@ -21,7 +21,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
-from langchain_core.vectorstores import InMemoryVectorStore, VectorStore
+from langchain_core.vectorstores import VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
@@ -91,8 +91,6 @@ class DocumentStore:
         self.loaded_papers = set()
         self.vector_store_class = FAISS
         logger.info("Using FAISS vector store")
-        self.vector_store_class = InMemoryVectorStore
-        logger.info("Using InMemoryVectorStore (FAISS not available)")
 
         # Store for initialized documents
         self.documents: Dict[str, Document] = {}
@@ -217,10 +215,8 @@ class DocumentStore:
             for doc_id, doc in self.documents.items():
                 paper_id = doc.metadata["paper_id"]
 
-                # Try to get embedding from vector store or recompute
                 try:
-                    # Different vector stores have different ways to access embeddings
-                    if hasattr(self.vector_store, "index_to_docstore_id"):
+                    if isinstance(self.vector_store, FAISS):
                         # FAISS pattern
                         for (
                             i,
@@ -234,7 +230,7 @@ class DocumentStore:
                         raise AttributeError(
                             "Vector store doesn't support embedding retrieval"
                         )
-                except (AttributeError, KeyError):
+                except Exception:
                     # Recompute if needed
                     doc_embedding = self.embedding_model.embed_documents(
                         [doc.page_content]
@@ -322,7 +318,7 @@ class DocumentStore:
                 # Apply MMR
                 mmr_indices = maximal_marginal_relevance(
                     query_embedding,
-                    np.array(doc_embeddings),
+                    np.array(doc_embeddings).tolist(),
                     k=top_k,
                     lambda_mult=mmr_diversity,
                 )
