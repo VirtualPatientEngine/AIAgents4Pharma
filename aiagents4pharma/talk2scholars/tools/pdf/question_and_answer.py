@@ -48,7 +48,8 @@ class QuestionAndAnswerInput(BaseModel):
     question: str = Field(description="The question to ask regarding the PDF content.")
     paper_ids: Optional[List[str]] = Field(
         default=None,
-        description="Optional list of specific paper IDs to query. If not provided, relevant papers will be selected automatically.",
+        description="Optional list of specific paper IDs to query. "
+        "If not provided, relevant papers will be selected automatically.",
     )
     use_all_papers: bool = Field(
         default=False,
@@ -403,7 +404,10 @@ def generate_answer(
         page = doc.metadata.get("page", "unknown")
 
         # Format chunk with source information
-        chunk_text = f"[Document {i+1}] From: '{title}' (ID: {paper_id}, Page: {page})\n{doc.page_content}"
+        chunk_text = (
+            f"[Document {i+1}] From: '{title}' (ID: {paper_id}, Page: {page})\n"
+            f"{doc.page_content}"
+        )
         formatted_chunks.append(chunk_text)
 
     # Join all chunks
@@ -412,8 +416,8 @@ def generate_answer(
     # Get unique paper sources
     paper_sources = {doc.metadata["paper_id"] for doc in retrieved_chunks}
 
-    if hasattr(config, "prompt_template") and config.prompt_template:
-        prompt = config.prompt_template.format(context=context, question=question)
+    if isinstance(config, dict) and "prompt_template" in config:
+        prompt = config["prompt_template"].format(context=context, question=question)
     else:
         prompt = f"Default prompt with context: {context} and question: {question}"
 
@@ -641,9 +645,6 @@ def question_and_answer_tool(
                     ]
                 }
             )
-        else:
-            # For direct calling
-            return {"output": response_text, "metadata": result}
 
     except Exception as e:
         error_msg = f"Error processing PDFs: {str(e)}"
@@ -652,6 +653,4 @@ def question_and_answer_tool(
         if tool_call_id:
             raise RuntimeError(
                 f"I encountered an error while processing your question: {error_msg}"
-            )
-        else:
-            raise ValueError(error_msg) from e
+            ) from e
