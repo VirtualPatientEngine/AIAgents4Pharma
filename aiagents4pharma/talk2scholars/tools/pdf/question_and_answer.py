@@ -436,7 +436,7 @@ def question_and_answer_tool(
     use_all_papers: bool = False,
     tool_call_id: Annotated[str, InjectedToolCallId] = "",
     state: Annotated[dict, InjectedState] = {},
-) -> Union[Command[Any], Dict[str, Any]]:
+) -> Command[Any]:
     """
     Answer a question using PDF content with advanced retrieval augmented generation.
 
@@ -629,24 +629,17 @@ def question_and_answer_tool(
             len(paper_titles),
         )
 
-        # Return as Command
-        if tool_call_id:
-            return Command(
-                update={
-                    "messages": [
-                        ToolMessage(
-                            content=response_text,
-                            tool_call_id=tool_call_id,
-                        )
-                    ]
-                }
-            )
-
-    except Exception as e:
-        error_msg = f"Error processing PDFs: {str(e)}"
-        logger.error("%s: %s", call_id, error_msg)
-
-        if tool_call_id:
-            raise RuntimeError(
-                f"I encountered an error while processing your question: {error_msg}"
-            ) from e
+        return Command(
+            update={
+                "messages": [
+                    ToolMessage(
+                        content=response_text,
+                        tool_call_id=tool_call_id,
+                    )
+                ]
+            }
+        )
+    except Exception as exc:
+        error_msg = f"Error processing PDFs: {str(exc)}"
+        logger.error("%s", error_msg)
+        raise RuntimeError(error_msg) from exc
