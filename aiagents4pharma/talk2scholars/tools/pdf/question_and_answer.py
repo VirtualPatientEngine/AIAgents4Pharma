@@ -435,7 +435,7 @@ def question_and_answer_tool(
     paper_ids: Optional[List[str]] = None,
     use_all_papers: bool = False,
     tool_call_id: Annotated[str, InjectedToolCallId] = "",
-    state: Annotated[dict, InjectedState] = {},
+    state: Optional[Annotated[dict, InjectedState]] = None,
 ) -> Command[Any]:
     """
     Answer a question using PDF content with advanced retrieval augmented generation.
@@ -463,6 +463,8 @@ def question_and_answer_tool(
     Raises:
         ValueError: If required components are missing or if PDF processing fails.
     """
+    if state is None:
+        state = {}
     # Create a unique identifier for this call to track potential infinite loops
     call_id = f"qa_call_{time.time()}"
     logger.info(
@@ -579,67 +581,60 @@ def question_and_answer_tool(
         logger.info("%s: Storing new document_store in state", call_id)
         state["document_store"] = document_store
 
-    try:
-        # Ensure vector store is built
-        if not document_store.vector_store:
-            document_store.build_vector_store()
+    # Ensure vector store is built
+    if not document_store.vector_store:
+        document_store.build_vector_store()
 
-        # Retrieve relevant chunks across selected papers
-        relevant_chunks = document_store.retrieve_relevant_chunks(
-            query=question, paper_ids=selected_paper_ids, top_k=10, use_mmr=True
+    # Retrieve relevant chunks across selected papers
+    relevant_chunks = document_store.retrieve_relevant_chunks(
+        query=question, paper_ids=selected_paper_ids, top_k=10, use_mmr=True
+    )
+
+    if not relevant_chunks:
+        error_msg = "No relevant chunks found in the papers."
+        logger.warning("%s: %s", call_id, error_msg)
+        raise RuntimeError(
+            f"I couldn't find relevant information to answer your question: '{question}'. "
+            "Please try rephrasing or asking a different question."
         )
 
-        if not relevant_chunks:
-            error_msg = "No relevant chunks found in the papers."
-            logger.warning("%s: %s", call_id, error_msg)
+    # Generate answer using retrieved chunks
+    result = generate_answer(question, relevant_chunks, llm_model)
 
-            if tool_call_id:
-                raise RuntimeError(
-                    f"I couldn't find relevant information to answer your question: '{question}'. "
-                    "Please try rephrasing or asking a different question."
-                )
+    # Format answer with attribution
+    answer_text = result.get("output_text", "No answer generated.")
 
-        # Generate answer using retrieved chunks
-        result = generate_answer(question, relevant_chunks, llm_model)
-
-        # Format answer with attribution
-        answer_text = result.get("output_text", "No answer generated.")
-
-        # Get paper titles for sources
-        paper_titles = {}
-        for paper_id in result.get("papers_used", []):
-            if paper_id in article_data:
-                paper_titles[paper_id] = article_data[paper_id].get(
-                    "Title", "Unknown paper"
-                )
-
-        # Format source information
-        sources_text = ""
-        if paper_titles:
-            sources_text = "\n\nSources:\n" + "\n".join(
-                [f"- {title}" for title in paper_titles.values()]
+    # Get paper titles for sources
+    paper_titles = {}
+    for paper_id in result.get("papers_used", []):
+        if paper_id in article_data:
+            paper_titles[paper_id] = article_data[paper_id].get(
+                "Title", "Unknown paper"
             )
 
-        # Prepare the final response
-        response_text = f"{answer_text}{sources_text}"
-        logger.info(
-            "%s: Successfully generated answer using %d chunks from %d papers",
-            call_id,
-            len(relevant_chunks),
-            len(paper_titles),
+    # Format source information
+    sources_text = ""
+    if paper_titles:
+        sources_text = "\n\nSources:\n" + "\n".join(
+            [f"- {title}" for title in paper_titles.values()]
         )
 
-        return Command(
-            update={
-                "messages": [
-                    ToolMessage(
-                        content=response_text,
-                        tool_call_id=tool_call_id,
-                    )
-                ]
-            }
-        )
-    except Exception as exc:
-        error_msg = f"Error processing PDFs: {str(exc)}"
-        logger.error("%s", error_msg)
-        raise RuntimeError(error_msg) from exc
+    # Prepare the final response
+    response_text = f"{answer_text}{sources_text}"
+    logger.info(
+        "%s: Successfully generated answer using %d chunks from %d papers",
+        call_id,
+        len(relevant_chunks),
+        len(paper_titles),
+    )
+
+    return Command(
+        update={
+            "messages": [
+                ToolMessage(
+                    content=response_text,
+                    tool_call_id=tool_call_id,
+                )
+            ]
+        }
+    )
