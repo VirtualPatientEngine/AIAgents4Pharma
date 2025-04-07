@@ -86,9 +86,20 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Check if the vector store is built
         self.assertIsNotNone(vector_store.vector_store)
 
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
+    )
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.NVIDIARerank")
-    def test_rank_papers_by_query(self, MockNVIDIARerank):
-        # Mock the re-ranker
+    def test_rank_papers_by_query(self, MockNVIDIARerank, mock_load_config):
+        # Create a mock config object with attributes
+        mock_config = MagicMock()
+        mock_config.reranker.model = "nvidia/llama-3.2-nv-rerankqa-1b-v2"
+        mock_config.reranker.api_key = "dummy_api_key"
+
+        # Patch load_hydra_config to return the mock config object
+        mock_load_config.return_value = mock_config
+
+        # Mock the re-ranker instance.
         mock_reranker = MockNVIDIARerank.return_value
         mock_reranker.compress_documents.return_value = [
             Document(
@@ -96,21 +107,21 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             )
         ]
 
-        # Mock embedding model
+        # Create a mock embedding model.
         mock_embedding_model = MagicMock(spec=Embeddings)
 
-        # Initialize Vectorstore
+        # Initialize Vectorstore.
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
 
-        # Add a mock document
+        # Add a mock document.
         vector_store.documents["test_doc"] = Document(
             page_content="Test content", metadata={"paper_id": "test_paper"}
         )
 
-        # Rank papers
+        # Rank papers.
         ranked_papers = vector_store.rank_papers_by_query(query="test query")
 
-        # Check if the ranking is correct
+        # Check if the ranking is correct.
         self.assertEqual(ranked_papers[0][0], "test_paper")
 
     @patch(
@@ -761,3 +772,30 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that an empty list is returned
         self.assertEqual(result, [])
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
+    )
+    def test_generate_answer_missing_config_fields(self, mock_load_config):
+        # Create a dummy document and dummy LLM model
+        dummy_doc = Document(
+            page_content="Test content", metadata={"paper_id": "test_paper"}
+        )
+        dummy_llm_model = MagicMock()
+
+        # Case 1: Configuration is None, expect a ValueError
+        mock_load_config.return_value = None
+        with self.assertRaises(ValueError) as context_none:
+            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
+        self.assertEqual(
+            str(context_none.exception), "Hydra config loading failed: config is None."
+        )
+
+        # Case 2: Configuration missing 'prompt_template', expect a ValueError
+        mock_load_config.return_value = {}
+        with self.assertRaises(ValueError) as context_missing:
+            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
+        self.assertEqual(
+            str(context_missing.exception),
+            "The prompt_template is missing from the configuration.",
+        )
