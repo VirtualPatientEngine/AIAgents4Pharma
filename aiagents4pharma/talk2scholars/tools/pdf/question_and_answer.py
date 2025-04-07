@@ -488,10 +488,9 @@ def question_and_answer_tool(
             if pdf_url and paper_id not in vector_store.loaded_papers:
                 try:
                     vector_store.add_paper(paper_id, pdf_url, paper)
-                except Exception as e:
-                    logger.warning(
-                        "%s: Error loading paper %s: %s", call_id, paper_id, e
-                    )
+                except (IOError, ValueError) as e:
+                    logger.error("Error loading paper %s: %s", paper_id, e)
+                    raise
 
         # Build vector store if needed
         if not vector_store.vector_store:
@@ -520,7 +519,7 @@ def question_and_answer_tool(
             if pdf_url:
                 try:
                     vector_store.add_paper(paper_id, pdf_url, article_data[paper_id])
-                except Exception as e:
+                except (IOError, ValueError) as e:
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
