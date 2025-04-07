@@ -8,7 +8,7 @@ to user-provided questions using a language model chain.
 import logging
 import os
 import time
-from typing import Annotated, Any, Dict, List, Optional, Tuple, Union
+from typing import Annotated, Any, Dict, List, Optional, Tuple
 
 import hydra
 import numpy as np
@@ -20,12 +20,12 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
+from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.vectorstores import VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
-from numpy import ndarray
 from pydantic import BaseModel, Field
 
 # Set up logging with configurable level
@@ -195,74 +195,56 @@ class Vectorstore:
         self, query: str, top_k: int = 3
     ) -> List[Tuple[str, float]]:
         """
-        Rank papers by relevance to the query using semantic similarity.
+        Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
+
+        This function aggregates all chunks per paper, ranks them using the NVIDIA model,
+        and returns the top-k papers.
 
         Args:
-            query: The query string
-            top_k: Number of top papers to return
+            query (str): The query string.
+            top_k (int): Number of top papers to return.
 
         Returns:
-            List of tuples (paper_id, score) sorted by relevance
+            List of tuples (paper_id, dummy_score) sorted by relevance.
         """
-        # Get query embedding
-        query_embedding = self.embedding_model.embed_query(query)
 
-        # Average embeddings by paper
-        paper_scores = {}
+        # Aggregate all document chunks for each paper
+        paper_texts = {}
+        for doc in self.documents.values():
+            paper_id = doc.metadata["paper_id"]
+            paper_texts.setdefault(paper_id, []).append(doc.page_content)
 
-        if self.vector_store:
-            # Get embeddings for each document
-            for doc_id, doc in self.documents.items():
-                paper_id = doc.metadata["paper_id"]
+        aggregated_documents = []
+        for paper_id, texts in paper_texts.items():
+            aggregated_text = " ".join(texts)
+            aggregated_documents.append(
+                Document(page_content=aggregated_text, metadata={"paper_id": paper_id})
+            )
 
-                try:
-                    if isinstance(self.vector_store, FAISS):
-                        # FAISS pattern
-                        for (
-                            i,
-                            stored_id,
-                        ) in self.vector_store.index_to_docstore_id.items():
-                            if stored_id == doc_id:
-                                doc_embedding = self.vector_store.index.reconstruct(i)
-                                break
-                    else:
-                        # Fall back to recomputing
-                        raise AttributeError(
-                            "Vector store doesn't support embedding retrieval"
-                        )
-                except Exception:
-                    # Recompute if needed
-                    doc_embedding = self.embedding_model.embed_documents(
-                        [doc.page_content]
-                    )[0]
-
-                    # Compute similarity score
-                    similarity = self._cosine_similarity(query_embedding, doc_embedding)
-
-                    # Update paper score
-                    if paper_id not in paper_scores:
-                        paper_scores[paper_id] = {"scores": [], "avg": 0}
-
-                    paper_scores[paper_id]["scores"].append(similarity)
-
-        # Compute average score for each paper
-        for paper_id, data in paper_scores.items():
-            data["avg"] = np.mean(data["scores"])
-
-        # Sort papers by average score
-        sorted_papers = sorted(
-            [(paper_id, data["avg"]) for paper_id, data in paper_scores.items()],
-            key=lambda x: x[1],
-            reverse=True,
+        # Instantiate the NVIDIA re-ranker client
+        reranker = NVIDIARerank(
+            model="nvidia/llama-3.2-nv-rerankqa-1b-v2",
+            api_key=os.environ.get("NVIDIA_API_KEY", ""),
         )
 
-        return sorted_papers[:top_k]
+        # Get the ranked list of documents based on the query
+        response = reranker.compress_documents(
+            query=query, documents=aggregated_documents
+        )
+
+        # Create a ranked list of (paper_id, dummy_score)
+        # Here we assign a dummy score based on rank position; the actual re-ranker sorts the documents.
+        ranked_papers = [
+            (doc.metadata["paper_id"], float(top_k - idx))
+            for idx, doc in enumerate(response[:top_k])
+        ]
+        return ranked_papers
 
     def retrieve_relevant_chunks(
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 10,
+        top_k: int = 5,
         use_mmr: bool = True,
         mmr_diversity: float = 0.3,
     ) -> List[Document]:
@@ -340,26 +322,6 @@ class Vectorstore:
             )
             logger.info("Retrieved %d chunks using similarity search", len(results))
             return results
-
-    @staticmethod
-    def _cosine_similarity(
-        a: Union[List[float], ndarray], b: Union[List[float], ndarray]
-    ) -> float:
-        """
-        Compute cosine similarity between two vectors.
-
-        Args:
-            a: First vector
-            b: Second vector
-
-        Returns:
-            Cosine similarity score
-        """
-        norm_a = np.linalg.norm(a)
-        norm_b = np.linalg.norm(b)
-        if norm_a == 0 or norm_b == 0:
-            return 0
-        return np.dot(a, b) / (norm_a * norm_b)
 
 
 def generate_answer(
