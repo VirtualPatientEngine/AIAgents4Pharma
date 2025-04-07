@@ -118,57 +118,63 @@ def _submit_feedback(user_response):
 @st.fragment
 def process_pdf_upload():
     """
-    Process the uploaded PDF file automatically:
-    Read the file as binary and store it in session state under "article_data".
+    Process the uploaded PDF files automatically:
+    Read the files as binary and store them in session state under "article_data".
+    Supports multiple PDF uploads.
     """
-    pdf_file = st.file_uploader(
-        "Upload an article",
-        help="Upload an article in PDF format.",
+    pdf_files = st.file_uploader(
+        "Upload articles",
+        help="Upload one or more articles in PDF format.",
         type=["pdf"],
         key="pdf_upload",
+        accept_multiple_files=True,
     )
 
-    if pdf_file:
+    if pdf_files:
         import tempfile
+        import time
+        from typing import cast
+        from langchain_core.runnables.config import RunnableConfig
 
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            f.write(pdf_file.read())
+        # Retrieve or initialize article_data in session_state
+        article_data = st.session_state.get("article_data", {})
 
-        # Create a unique ID for the uploaded PDF
-        pdf_id = f"uploaded_{pdf_file.name.replace(' ', '_').replace('.', '_')}"
+        for pdf_file in pdf_files:
+            # Write the uploaded file to a temporary file
+            with tempfile.NamedTemporaryFile(delete=False) as f:
+                f.write(pdf_file.read())
 
-        # Store in nested dictionary format that matches our other tools
-        pdf_data = {
-            "Title": pdf_file.name,
-            "Authors": ["Uploaded by user"],
-            "Abstract": "User uploaded PDF",
-            "Publication Date": "N/A",
-            "URL": f.name,
-            "pdf_url": f.name,  # The file path to the temp file
-            "filename": pdf_file.name,
-            "source": "upload",  # Source identifier
-        }
+            # Create a unique ID for the uploaded PDF using a timestamp
+            timestamp = int(time.time() * 1000)
+            pdf_id = f"uploaded_{pdf_file.name.replace(' ', '_').replace('.', '_')}_{timestamp}"
 
-        # Create nested dictionary with the PDF ID as key
-        article_data = {pdf_id: pdf_data}
+            # Store in nested dictionary format that matches our other tools
+            pdf_data = {
+                "Title": pdf_file.name,
+                "Authors": ["Uploaded by user"],
+                "Abstract": "User uploaded PDF",
+                "Publication Date": "N/A",
+                "URL": f.name,
+                "pdf_url": f.name,  # The file path to the temp file
+                "filename": pdf_file.name,
+                "source": "upload",  # Source identifier
+            }
 
-        # Store in session state
+            article_data[pdf_id] = pdf_data
+
+        # Save the aggregated article data back to session_state
         st.session_state.article_data = article_data
 
-        # Create config for the agent
-        config = {"configurable": {"thread_id": st.session_state.unique_id}}
+        # Create config for the agent and cast it to RunnableConfig to satisfy type requirements.
+        config = cast(
+            RunnableConfig, {"configurable": {"thread_id": st.session_state.unique_id}}
+        )
 
-        # Update the agent state with the correct format
-        # First get the current state
-        current_state = app.get_state(config)
-
-        # Update just the article_data field
+        # Update the agent state with the new article_data
         state_update = {"article_data": article_data}
-
-        # Apply the update
         app.update_state(config, state_update)
 
-        st.success(f"PDF '{pdf_file.name}' uploaded successfully!")
+        st.success(f"{len(pdf_files)} PDF(s) uploaded successfully!")
 
 
 # Main layout of the app split into two columns
@@ -374,154 +380,6 @@ with main_col2:
 
                     streamlit_utils.get_response("T2S", None, app, st, prompt)
 
-                    # # Create config for the agent
-                    # config = {"configurable": {"thread_id": st.session_state.unique_id}}
-                    # # Update the LLM model
-                    # app.update_state(
-                    #     config,
-                    #     {
-                    #         "llm_model": streamlit_utils.get_base_chat_model(
-                    #             st.session_state.llm_model
-                    #         )
-                    #     },
-                    # )
-                    # # Update the agent state with the selected LLM model
-                    # current_state = app.get_state(config)
-
-                    # with collect_runs() as cb:
-                    #     # Add Langsmith tracer
-                    #     tracer = LangChainTracer(
-                    #         project_name=st.session_state.project_name
-                    #     )
-
-                    #     # Get response from the agent with Langsmith tracing enabled
-                    #     # response = app.invoke(
-                    #     #     {"messages": [HumanMessage(content=prompt)]},
-                    #     #     config=config | {"callbacks": [tracer]},
-                    #     # )
-
-                    #     response = app.stream(
-                    #         {"messages": [HumanMessage(content=prompt)]},
-                    #         config=config|{"callbacks": [tracer]},
-                    #         stream_mode="messages"
-                    #     )
-                    #     st.write_stream(streamlit_utils.stream_response(response))
-
-                    #     # Assign the traced run ID to session state
-                    #     if cb.traced_runs:
-                    #         st.session_state.run_id = cb.traced_runs[-1].id
-
-                    # # # Get the latest agent state after the response
-                    # # current_state = app.get_state(config)
-                    # #
-                    # # response = app.invoke(
-                    # #     {"messages": [HumanMessage(content=prompt)]},
-                    # #     config=config,
-                    # # )
-
-                    # current_state = app.get_state(config)
-
-                    # # print (response["messages"])
-
-                    # # Add assistant response to chat history
-                    # assistant_msg = ChatMessage(
-                    #     response["messages"][-1].content, role="assistant"
-                    # )
-                    # st.session_state.messages.append(
-                    #     {"type": "message", "content": assistant_msg}
-                    # )
-                    # # Display the response in the chat
-                    # st.markdown(response["messages"][-1].content)
-                    # st.empty()
-                    # reversed_messages = current_state.values["messages"][::-1]
-                    # # Loop through the reversed messages until a
-                    # # HumanMessage is found i.e. the last message
-                    # # from the user. This is to display the results
-                    # # of the tool calls made by the agent since the
-                    # # last message from the user.
-                    # for msg in reversed_messages:
-                    #     # print (msg)
-                    #     # Break the loop if the message is a HumanMessage
-                    #     # i.e. the last message from the user
-                    #     if isinstance(msg, HumanMessage):
-                    #         break
-                    #     # Skip the message if it is an AIMessage
-                    #     # i.e. a message from the agent. An agent
-                    #     # may make multiple tool calls before the
-                    #     # final response to the user.
-                    #     if isinstance(msg, AIMessage):
-                    #         # print ('AIMessage', msg)
-                    #         continue
-                    #     # Work on the message if it is a ToolMessage
-                    #     # These may contain additional visuals that
-                    #     # need to be displayed to the user.
-                    #     # print("ToolMessage", msg)
-                    #     # Skip the Tool message if it is an error message
-                    #     if msg.status == "error":
-                    #         continue
-                    #     # print("ToolMessage", msg)
-                    #     uniq_msg_id = "_".join(
-                    #         [msg.name, msg.tool_call_id, str(st.session_state.run_id)]
-                    #     )
-                    # if msg.name in ['search_tool',
-                    #                 'get_single_paper_recommendations',
-                    #                 'get_multi_paper_recommendations']:
-                    # if msg.name in ["display_results"]:
-                    #     # Display the results of the tool call
-                    #     # for msg_artifact in msg.artifact:
-                    #     # dic_papers = msg.artifact[msg_artifact]
-                    #     dic_papers = msg.artifact
-                    #     if not dic_papers:
-                    #         continue
-                    #     df_papers = pd.DataFrame.from_dict(
-                    #         dic_papers, orient="index"
-                    #     )
-                    #     # Add index as a column "key"
-                    #     df_papers["Key"] = df_papers.index
-                    #     # Drop index
-                    #     df_papers.reset_index(drop=True, inplace=True)
-                    #     # Drop colum abstract
-                    #     df_papers.drop(columns=["Abstract", "Key"], inplace=True)
-
-                    #     if "Year" in df_papers.columns:
-                    #         df_papers["Year"] = df_papers["Year"].apply(
-                    #             lambda x: (
-                    #                 str(int(x))
-                    #                 if pd.notna(x) and str(x).isdigit()
-                    #                 else None
-                    #             )
-                    #         )
-
-                    #     if "Date" in df_papers.columns:
-                    #         df_papers["Date"] = df_papers["Date"].apply(
-                    #             lambda x: (
-                    #                 pd.to_datetime(x, errors="coerce").strftime(
-                    #                     "%Y-%m-%d"
-                    #                 )
-                    #                 if pd.notna(pd.to_datetime(x, errors="coerce"))
-                    #                 else None
-                    #             )
-                    #         )
-
-                    #     st.dataframe(
-                    #         df_papers,
-                    #         hide_index=True,
-                    #         column_config={
-                    #             "URL": st.column_config.LinkColumn(
-                    #                 display_text="Open",
-                    #             ),
-                    #         },
-                    #     )
-                    #     # Add data to the chat history
-                    #     st.session_state.messages.append(
-                    #         {
-                    #             "type": "dataframe",
-                    #             "content": df_papers,
-                    #             "key": "dataframe_" + uniq_msg_id,
-                    #             "tool_name": msg.name,
-                    #         }
-                    #     )
-                    #     st.empty()
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(
