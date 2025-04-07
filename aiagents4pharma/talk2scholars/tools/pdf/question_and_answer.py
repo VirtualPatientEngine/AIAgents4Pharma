@@ -244,7 +244,7 @@ class Vectorstore:
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 5,
+        top_k: int = 10,
         use_mmr: bool = True,
         mmr_diversity: float = 0.3,
     ) -> List[Document]:
