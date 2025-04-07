@@ -276,53 +276,40 @@ class Vectorstore:
             metadata_filter = {"paper_id": {"$in": paper_ids}}
             logger.info("Filtering retrieval to papers: %s", paper_ids)
 
-        # Retrieve using MMR or standard similarity
+        # Retrieve using MMR
         if use_mmr:
-            try:
-                # Get embeddings
-                query_embedding = np.array(self.embedding_model.embed_query(query))
+            # Get embeddings
+            query_embedding = np.array(self.embedding_model.embed_query(query))
 
-                # Get document embeddings
-                doc_embeddings = []
-                docs = []
+            # Get document embeddings
+            doc_embeddings = []
+            docs = []
 
-                for doc in self.documents.values():
-                    # Apply filter if needed
-                    if metadata_filter and doc.metadata["paper_id"] not in paper_ids:
-                        continue
+            for doc in self.documents.values():
+                # Apply filter if needed
+                if metadata_filter and doc.metadata["paper_id"] not in paper_ids:
+                    continue
 
-                    # Get document embedding
-                    doc_embedding = np.array(
-                        self.embedding_model.embed_documents([doc.page_content])[0]
-                    )
-                    doc_embeddings.append(doc_embedding)
-                    docs.append(doc)
-
-                # Apply MMR
-                mmr_indices = maximal_marginal_relevance(
-                    query_embedding,
-                    np.array(doc_embeddings).tolist(),
-                    k=top_k,
-                    lambda_mult=mmr_diversity,
+                # Get document embedding
+                doc_embedding = np.array(
+                    self.embedding_model.embed_documents([doc.page_content])[0]
                 )
+                doc_embeddings.append(doc_embedding)
+                docs.append(doc)
 
-                results = [docs[i] for i in mmr_indices]
-                logger.info("Retrieved %d chunks using MMR", len(results))
-                return results
-
-            except Exception as e:
-                logger.warning(
-                    "MMR retrieval failed: %s, falling back to standard similarity", e
-                )
-                use_mmr = False
-
-        if not use_mmr:
-            # Use standard similarity search
-            results = self.vector_store.similarity_search(
-                query, k=top_k, filter=metadata_filter
+            # Apply MMR
+            mmr_indices = maximal_marginal_relevance(
+                query_embedding,
+                np.array(doc_embeddings).tolist(),
+                k=top_k,
+                lambda_mult=mmr_diversity,
             )
-            logger.info("Retrieved %d chunks using similarity search", len(results))
+
+            results = [docs[i] for i in mmr_indices]
+            logger.info("Retrieved %d chunks using MMR", len(results))
             return results
+
+        return []
 
 
 def generate_answer(
