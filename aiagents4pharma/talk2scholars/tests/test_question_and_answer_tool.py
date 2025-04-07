@@ -16,11 +16,13 @@ from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
 
 
 class TestQuestionAndAnswerTool(unittest.TestCase):
+    """tests for question_and_answer tool functionality."""
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    def test_add_paper(self, MockPyPDFLoader):
+    def test_add_paper(self, mock_pypdf_loader):
+        """test adding a paper to the vector store."""
         # Mock the PDF loader
-        mock_loader = MockPyPDFLoader.return_value
+        mock_loader = mock_pypdf_loader.return_value
         mock_loader.load.return_value = [Document(page_content="Page content")]
 
         # Mock embedding model
@@ -40,9 +42,10 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertIn("test_paper_0", vector_store.documents)
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    def test_add_paper_already_loaded(self, MockPyPDFLoader):
+    def test_add_paper_already_loaded(self, mock_pypdf_loader):
+        """test adding a paper that is already loaded."""
         # Mock the PDF loader
-        mock_loader = MockPyPDFLoader.return_value
+        mock_loader = mock_pypdf_loader.return_value
         mock_loader.load.return_value = [Document(page_content="Page content")]
 
         # Mock embedding model
@@ -68,6 +71,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertIn("Paper test_paper already loaded, skipping", log.output[0])
 
     def test_build_vector_store(self):
+        """test building the vector store."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -90,7 +94,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
     )
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.NVIDIARerank")
-    def test_rank_papers_by_query(self, MockNVIDIARerank, mock_load_config):
+    def test_rank_papers_by_query(self, mock_nvidia_rerank, mock_load_config):
+        """test ranking papers by query."""
         # Create a mock config object with attributes
         mock_config = MagicMock()
         mock_config.reranker.model = "nvidia/llama-3.2-nv-rerankqa-1b-v2"
@@ -100,7 +105,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         mock_load_config.return_value = mock_config
 
         # Mock the re-ranker instance.
-        mock_reranker = MockNVIDIARerank.return_value
+        mock_reranker = mock_nvidia_rerank.return_value
         mock_reranker.compress_documents.return_value = [
             Document(
                 page_content="Aggregated content", metadata={"paper_id": "test_paper"}
@@ -128,6 +133,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
     )
     def test_retrieve_relevant_chunks(self, mock_mmr):
+        """test retrieving relevant chunks."""
         # Mock MMR
         mock_mmr.return_value = [0]
 
@@ -151,9 +157,10 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(len(chunks), 1)
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.BaseChatModel")
-    def test_generate_answer(self, MockBaseChatModel):
+    def test_generate_answer(self, mock_base_chat_model):
+        """test generating an answer."""
         # Mock the language model
-        mock_llm = MockBaseChatModel.return_value
+        mock_llm = mock_base_chat_model.return_value
         mock_llm.invoke.return_value.content = "Generated answer"
 
         # Create a mock document
@@ -172,9 +179,10 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(result["output_text"], "Generated answer")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    def test_add_paper_exception_handling(self, MockPyPDFLoader):
+    def test_add_paper_exception_handling(self, mock_pypdf_loader):
+        """test exception handling when adding a paper."""
         # Mock the PDF loader to raise an exception
-        mock_loader = MockPyPDFLoader.return_value
+        mock_loader = mock_pypdf_loader.return_value
         mock_loader.load.side_effect = Exception("Loading error")
 
         # Mock embedding model
@@ -200,6 +208,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     def test_build_vector_store_no_documents(self, mock_logger):
+        """test building vector store with no documents."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -216,6 +225,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     def test_build_vector_store_already_built(self, mock_logger):
+        """test building vector store when already built."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -239,6 +249,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     def test_retrieve_relevant_chunks_vector_store_not_built(self, mock_logger):
+        """test retrieving relevant chunks when vector store is not built."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -256,6 +267,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     def test_retrieve_relevant_chunks_with_paper_ids(self, mock_logger):
+        """test retrieving relevant chunks with specific paper_ids."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
         # Mock the embed_documents method to return embeddings of the same length as documents
@@ -281,6 +293,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
     def test_question_and_answer_tool_success(self, mock_generate_answer):
+        """test the main functionality of the question_and_answer tool."""
         # Create a dummy document to simulate a retrieved chunk
         dummy_doc = Document(
             page_content="Dummy content",
@@ -348,8 +361,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     )
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
     def test_question_and_answer_tool_semantic_branch(
-        self, mock_Vectorstore, mock_generate_answer
+        self, mock_vectorstore, mock_generate_answer
     ):
+        """test the semantic ranking branch of the question_and_answer tool."""
         # Create a dummy document to simulate a retrieved chunk from semantic ranking
         dummy_doc = Document(
             page_content="Semantic chunk",
@@ -380,7 +394,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         dummy_vs.add_paper.return_value = None
 
         # When the tool instantiates Vectorstore, return our dummy instance
-        mock_Vectorstore.return_value = dummy_vs
+        mock_vectorstore.return_value = dummy_vs
 
         # Create dummy embedding and LLM models
         dummy_embedding_model = MagicMock(spec=Embeddings)
@@ -411,7 +425,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Instead of checking that 'vector_store' was added to the original state dict,
         # verify that a new vector store was created by checking that Vectorstore was instantiated.
-        mock_Vectorstore.assert_called_once_with(embedding_model=dummy_embedding_model)
+        mock_vectorstore.assert_called_once_with(embedding_model=dummy_embedding_model)
 
         # Check that add_paper was called at least once (semantic branch should load the paper)
         self.assertTrue(dummy_vs.add_paper.call_count >= 1)
@@ -438,7 +452,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(args[0], "What is semantic content?")
         self.assertEqual(args[2], dummy_llm_model)
 
-        # Verify that the final response message is correctly formatted with answer and source attribution
+        # Verify that the final response message is correctly
+        # formatted with answer and source attribution
         response_message = result.update["messages"][0]
         expected_output = "Semantic Answer\n\nSources:\n- Paper Semantic"
         self.assertEqual(response_message.content, expected_output)
@@ -446,8 +461,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
     def test_question_and_answer_tool_fallback_no_relevant_chunks(
-        self, mock_Vectorstore
+        self, mock_vectorstore
     ):
+        """test the fallback branch of the question_and_answer tool."""
         # Create a dummy Vectorstore instance to simulate fallback and error conditions.
         dummy_vs = MagicMock()
         # Ensure no papers are loaded initially.
@@ -464,7 +480,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         )
         # Simulate retrieval returning an empty list so that a RuntimeError is raised.
         dummy_vs.retrieve_relevant_chunks.return_value = []
-        mock_Vectorstore.return_value = dummy_vs
+        mock_vectorstore.return_value = dummy_vs
 
         # Create dummy embedding and LLM models.
         dummy_embedding_model = MagicMock(spec=Embeddings)
@@ -485,7 +501,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         input_data = {
             "question": "What is fallback test?",
-            # Provide paper_ids that do not match article_data so that the fallback branch is triggered.
+            # Provide paper_ids that do not match article_data
+            # so that the fallback branch is triggered.
             "paper_ids": ["nonexistent"],
             "use_all_papers": False,
             "tool_call_id": "test_fallback_call",
@@ -527,6 +544,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
     def test_question_and_answer_tool_use_all_papers(self, mock_generate_answer):
+        """test the use_all_papers branch of the question_and_answer tool."""
         # Test the branch where use_all_papers is True.
         # Create a dummy document for retrieval.
         dummy_doc = Document(
@@ -573,8 +591,10 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         }
         result = question_and_answer_tool.run(input_data)
 
-        # Verify that the use_all_papers branch was taken by checking that all article keys were selected.
-        # (This is logged; here we indirectly verify that generate_answer was called with the dummy_llm_model.)
+        # Verify that the use_all_papers branch was
+        # taken by checking that all article keys were selected.
+        # (This is logged; here we indirectly verify
+        # that generate_answer was called with the dummy_llm_model.)
         mock_generate_answer.assert_called_once()
         args, _ = mock_generate_answer.call_args
         self.assertEqual(args[0], "What is the content from all papers?")
@@ -587,7 +607,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(response_message.tool_call_id, "test_use_all_papers")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_tool_add_paper_exception(self, mock_Vectorstore):
+    def test_question_and_answer_tool_add_paper_exception(self, mock_vectorstore):
+        """test exception handling when add_paper fails."""
         # Test that in the semantic ranking branch, if add_paper raises an exception,
         # the error is logged and then re-raised.
         dummy_vs = MagicMock()
@@ -597,13 +618,14 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         dummy_vs.vector_store = None
         # In the semantic branch, when trying to load the paper, add_paper will raise an exception.
         dummy_vs.add_paper.side_effect = IOError("Add paper failure")
-        # Simulate that build_vector_store would set the store (if reached, but it won't in this test).
+        # Simulate that build_vector_store would set the store
+        # (if reached, but it won't in this test).
         dummy_vs.build_vector_store.side_effect = lambda: setattr(
             dummy_vs, "vector_store", True
         )
         # Ensure retrieval is never reached because add_paper fails.
         dummy_vs.retrieve_relevant_chunks.return_value = []
-        mock_Vectorstore.return_value = dummy_vs
+        mock_vectorstore.return_value = dummy_vs
 
         dummy_embedding_model = MagicMock(spec=Embeddings)
         dummy_llm_model = MagicMock()
@@ -631,6 +653,95 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         with self.assertRaises(IOError) as context:
             question_and_answer_tool.run(input_data)
         self.assertIn("Add paper failure", str(context.exception))
+
+    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
+    def test_additional_metadata_field_added(self, mock_pypdf_loader):
+        """test that additional metadata fields are added correctly."""
+        # Setup the PDF loader to return a single document with empty metadata
+        mock_loader = mock_pypdf_loader.return_value
+        mock_loader.load.return_value = [
+            Document(page_content="Test content", metadata={})
+        ]
+
+        # Create a dummy embedding model
+        dummy_embedding_model = MagicMock(spec=Embeddings)
+
+        # Define custom metadata fields including an additional field "custom_field"
+        custom_fields = ["title", "paper_id", "page", "chunk_id", "custom_field"]
+        vector_store = Vectorstore(
+            embedding_model=dummy_embedding_model, metadata_fields=custom_fields
+        )
+
+        # Paper metadata includes "Title" (for default title) and the additional "custom_field"
+        paper_metadata = {"Title": "Test Paper", "custom_field": "custom_value"}
+
+        # Call add_paper to process the document and add metadata
+        vector_store.add_paper(
+            paper_id="test_paper",
+            pdf_url="http://example.com/test.pdf",
+            paper_metadata=paper_metadata,
+        )
+
+        # Verify that the document was added with the custom field included in its metadata
+        self.assertIn("test_paper_0", vector_store.documents)
+        added_doc = vector_store.documents["test_paper_0"]
+        self.assertEqual(added_doc.metadata.get("custom_field"), "custom_value")
+
+    def test_retrieve_relevant_chunks_use_mmr_false_returns_empty(self):
+        """test that retrieve_relevant_chunks returns empty when use_mmr is False."""
+        # Mock embedding model
+        mock_embedding_model = MagicMock(spec=Embeddings)
+        mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
+        mock_embedding_model.embed_documents.return_value = [[0.1, 0.2, 0.3]]
+
+        # Initialize Vectorstore and simulate that the vector store is built
+        vector_store = Vectorstore(embedding_model=mock_embedding_model)
+        vector_store.vector_store = True  # Simulate a built vector store
+
+        # Add a dummy document to the document store
+        vector_store.documents["test_doc"] = Document(
+            page_content="Test content", metadata={"paper_id": "test_paper"}
+        )
+
+        # Call retrieve_relevant_chunks with use_mmr set to False to hit the final return []
+        result = vector_store.retrieve_relevant_chunks(
+            query="test query", use_mmr=False
+        )
+
+        # Verify that an empty list is returned
+        self.assertEqual(result, [])
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
+    )
+    def test_generate_answer_missing_config_fields(self, mock_load_config):
+        """test that generate_answer raises ValueError for missing config fields."""
+        # Create a dummy document and dummy LLM model
+        dummy_doc = Document(
+            page_content="Test content", metadata={"paper_id": "test_paper"}
+        )
+        dummy_llm_model = MagicMock()
+
+        # Case 1: Configuration is None, expect a ValueError
+        mock_load_config.return_value = None
+        with self.assertRaises(ValueError) as context_none:
+            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
+        self.assertEqual(
+            str(context_none.exception), "Hydra config loading failed: config is None."
+        )
+
+        # Case 2: Configuration missing 'prompt_template', expect a ValueError
+        mock_load_config.return_value = {}
+        with self.assertRaises(ValueError) as context_missing:
+            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
+        self.assertEqual(
+            str(context_missing.exception),
+            "The prompt_template is missing from the configuration.",
+        )
+
+
+class TestMissingState(unittest.TestCase):
+    """Test error when missing from state."""
 
     def test_missing_text_embedding_model(self):
         """Test error when text_embedding_model is missing from state."""
@@ -717,85 +828,3 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             question_and_answer_tool.run(tool_input)
         self.assertEqual(str(context.exception), "No article_data found in state.")
-
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
-    def test_additional_metadata_field_added(self, MockPyPDFLoader):
-        # Setup the PDF loader to return a single document with empty metadata
-        mock_loader = MockPyPDFLoader.return_value
-        mock_loader.load.return_value = [
-            Document(page_content="Test content", metadata={})
-        ]
-
-        # Create a dummy embedding model
-        dummy_embedding_model = MagicMock(spec=Embeddings)
-
-        # Define custom metadata fields including an additional field "custom_field"
-        custom_fields = ["title", "paper_id", "page", "chunk_id", "custom_field"]
-        vector_store = Vectorstore(
-            embedding_model=dummy_embedding_model, metadata_fields=custom_fields
-        )
-
-        # Paper metadata includes "Title" (for default title) and the additional "custom_field"
-        paper_metadata = {"Title": "Test Paper", "custom_field": "custom_value"}
-
-        # Call add_paper to process the document and add metadata
-        vector_store.add_paper(
-            paper_id="test_paper",
-            pdf_url="http://example.com/test.pdf",
-            paper_metadata=paper_metadata,
-        )
-
-        # Verify that the document was added with the custom field included in its metadata
-        self.assertIn("test_paper_0", vector_store.documents)
-        added_doc = vector_store.documents["test_paper_0"]
-        self.assertEqual(added_doc.metadata.get("custom_field"), "custom_value")
-
-    def test_retrieve_relevant_chunks_use_mmr_false_returns_empty(self):
-        # Mock embedding model
-        mock_embedding_model = MagicMock(spec=Embeddings)
-        mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
-        mock_embedding_model.embed_documents.return_value = [[0.1, 0.2, 0.3]]
-
-        # Initialize Vectorstore and simulate that the vector store is built
-        vector_store = Vectorstore(embedding_model=mock_embedding_model)
-        vector_store.vector_store = True  # Simulate a built vector store
-
-        # Add a dummy document to the document store
-        vector_store.documents["test_doc"] = Document(
-            page_content="Test content", metadata={"paper_id": "test_paper"}
-        )
-
-        # Call retrieve_relevant_chunks with use_mmr set to False to hit the final return []
-        result = vector_store.retrieve_relevant_chunks(
-            query="test query", use_mmr=False
-        )
-
-        # Verify that an empty list is returned
-        self.assertEqual(result, [])
-
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
-    )
-    def test_generate_answer_missing_config_fields(self, mock_load_config):
-        # Create a dummy document and dummy LLM model
-        dummy_doc = Document(
-            page_content="Test content", metadata={"paper_id": "test_paper"}
-        )
-        dummy_llm_model = MagicMock()
-
-        # Case 1: Configuration is None, expect a ValueError
-        mock_load_config.return_value = None
-        with self.assertRaises(ValueError) as context_none:
-            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
-        self.assertEqual(
-            str(context_none.exception), "Hydra config loading failed: config is None."
-        )
-
-        # Case 2: Configuration missing 'prompt_template', expect a ValueError
-        mock_load_config.return_value = {}
-        with self.assertRaises(ValueError) as context_missing:
-            generate_answer("What is the test?", [dummy_doc], dummy_llm_model)
-        self.assertEqual(
-            str(context_missing.exception),
-            "The prompt_template is missing from the configuration.",
-        )
