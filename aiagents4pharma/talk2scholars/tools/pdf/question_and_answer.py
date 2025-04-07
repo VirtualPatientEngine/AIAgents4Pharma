@@ -20,10 +20,10 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
-from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.vectorstores import VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
+from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
@@ -233,7 +233,8 @@ class Vectorstore:
         )
 
         # Create a ranked list of (paper_id, dummy_score)
-        # Here we assign a dummy score based on rank position; the actual re-ranker sorts the documents.
+        # Here we assign a dummy score based on rank position;
+        # the actual re-ranker sorts the documents.
         ranked_papers = [
             (doc.metadata["paper_id"], float(top_k - idx))
             for idx, doc in enumerate(response[:top_k])
