@@ -33,6 +33,21 @@ log_level = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
+# pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
+
+
+def load_hydra_config() -> Any:
+    """
+    Load the configuration using Hydra and return the configuration for the Q&A tool.
+    """
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/question_and_answer=default"],
+        )
+        config = cfg.tools.question_and_answer
+        logger.info("Loaded Question and Answer tool configuration.")
+        return config
 
 
 class QuestionAndAnswerInput(BaseModel):
@@ -222,9 +237,10 @@ class Vectorstore:
             )
 
         # Instantiate the NVIDIA re-ranker client
+        config = load_hydra_config()
         reranker = NVIDIARerank(
-            model="nvidia/llama-3.2-nv-rerankqa-1b-v2",
-            api_key=os.environ.get("NVIDIA_API_KEY", ""),
+            model=config.reranker.model,
+            api_key=config.reranker.api_key,
         )
 
         # Get the ranked list of documents based on the query
@@ -330,19 +346,17 @@ def generate_answer(
     Returns:
         Dict[str, Any]: Dictionary with the answer and metadata
     """
-    # Load configuration using Hydra if not provided
-    with hydra.initialize(version_base=None, config_path="../../configs"):
-        cfg = hydra.compose(
-            config_name="config",
-            overrides=["tools/question_and_answer=default"],
-        )
-        config = cfg.tools.question_and_answer
-        logger.info("Loaded Question and Answer tool configuration.")
-    config = {}
+    # Load configuration using the global function.
+    config = load_hydra_config()
 
-    # Prepare context from retrieved documents with source attribution
+    # Ensure the configuration is not None and has the prompt_template.
+    if config is None:
+        raise ValueError("Hydra config loading failed: config is None.")
+    if "prompt_template" not in config:
+        raise ValueError("The prompt_template is missing from the configuration.")
+
+    # Prepare context from retrieved documents with source attribution.
     formatted_chunks = []
-
     for i, doc in enumerate(retrieved_chunks):
         # Extract metadata for attribution
         paper_id = doc.metadata.get("paper_id", "unknown")
@@ -359,13 +373,11 @@ def generate_answer(
     # Join all chunks
     context = "\n\n".join(formatted_chunks)
 
-    # Get unique paper sources
+    # Get unique paper sources.
     paper_sources = {doc.metadata["paper_id"] for doc in retrieved_chunks}
 
-    if isinstance(config, dict) and "prompt_template" in config:
-        prompt = config["prompt_template"].format(context=context, question=question)
-    else:
-        prompt = f"Default prompt with context: {context} and question: {question}"
+    # Create prompt using the Hydra-provided prompt_template.
+    prompt = config["prompt_template"].format(context=context, question=question)
 
     # Get the answer from the language model
     response = llm_model.invoke(prompt)
@@ -382,10 +394,10 @@ def generate_answer(
 @tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
 def question_and_answer_tool(
     question: str,
+    state: Annotated[dict, InjectedState],
     paper_ids: Optional[List[str]] = None,
     use_all_papers: bool = False,
     tool_call_id: Annotated[str, InjectedToolCallId] = "",
-    state: Optional[Annotated[dict, InjectedState]] = None,
 ) -> Command[Any]:
     """
     Answer a question using PDF content with advanced retrieval augmented generation.
@@ -413,8 +425,6 @@ def question_and_answer_tool(
     Raises:
         ValueError: If required components are missing or if PDF processing fails.
     """
-    if state is None:
-        state = {}
     # Create a unique identifier for this call to track potential infinite loops
     call_id = f"qa_call_{time.time()}"
     logger.info(
