@@ -20,6 +20,14 @@ from langchain.callbacks.tracers import LangChainTracer
 from langsmith import Client
 from utils import streamlit_utils
 
+import logging
+
+# Set the logging level for Langsmith tracer to ERROR to suppress warnings
+logging.getLogger("langsmith").setLevel(logging.ERROR)
+logging.getLogger("langsmith.client").setLevel(logging.ERROR)
+
+# Set the logging level for httpx to ERROR to suppress info logs
+logging.getLogger("httpx").setLevel(logging.ERROR)
 sys.path.append("./")
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
@@ -118,9 +126,9 @@ def _submit_feedback(user_response):
 @st.fragment
 def process_pdf_upload():
     """
-    Process the uploaded PDF files automatically:
-    Read the files as binary and store them in session state under "article_data".
-    Supports multiple PDF uploads.
+    Upload and process multiple PDF files.
+    Saves them as a nested dictionary in session state under 'article_data',
+    and updates the LangGraph agent state accordingly.
     """
     pdf_files = st.file_uploader(
         "Upload articles",
@@ -133,48 +141,49 @@ def process_pdf_upload():
     if pdf_files:
         import tempfile
         import time
-        from typing import cast
-        from langchain_core.runnables.config import RunnableConfig
 
-        # Retrieve or initialize article_data in session_state
+        # Step 1: Initialize or get existing article_data
         article_data = st.session_state.get("article_data", {})
 
+        # Step 2: Process each uploaded file
         for pdf_file in pdf_files:
-            # Write the uploaded file to a temporary file
             with tempfile.NamedTemporaryFile(delete=False) as f:
                 f.write(pdf_file.read())
 
-            # Create a unique ID for the uploaded PDF using a timestamp
+            # Generate unique ID using filename + timestamp
             timestamp = int(time.time() * 1000)
             pdf_id = f"uploaded_{pdf_file.name.replace(' ', '_').replace('.', '_')}_{timestamp}"
 
-            # Store in nested dictionary format that matches our other tools
-            pdf_data = {
+            # Create metadata dict
+            pdf_metadata = {
                 "Title": pdf_file.name,
                 "Authors": ["Uploaded by user"],
                 "Abstract": "User uploaded PDF",
                 "Publication Date": "N/A",
-                "URL": f.name,
-                "pdf_url": f.name,  # The file path to the temp file
+                "pdf_url": f.name,
                 "filename": pdf_file.name,
-                "source": "upload",  # Source identifier
+                "source": "upload",
             }
 
-            article_data[pdf_id] = pdf_data
+            # Add to the article_data dictionary
+            article_data[pdf_id] = pdf_metadata
 
-        # Save the aggregated article data back to session_state
+        # Step 3: Save to session state
         st.session_state.article_data = article_data
 
-        # Create config for the agent and cast it to RunnableConfig to satisfy type requirements.
-        config = cast(
-            RunnableConfig, {"configurable": {"thread_id": st.session_state.unique_id}}
-        )
+        # Step 4: Update LangGraph state
+        config = {"configurable": {"thread_id": st.session_state.unique_id}}
 
-        # Update the agent state with the new article_data
-        state_update = {"article_data": article_data}
-        app.update_state(config, state_update)
+        # Optional: ensure article_data is initialized in LangGraph state
+        current_state = app.get_state(config)
+        if "article_data" not in current_state.values:
+            app.update_state(config, {"article_data": {}})
 
-        st.success(f"{len(pdf_files)} PDF(s) uploaded successfully!")
+        # Perform final update
+        app.update_state(config, {"article_data": article_data})
+
+        # Final confirmation
+        st.success(f"{len(pdf_files)} PDF(s) uploaded successfully.")
 
 
 # Main layout of the app split into two columns
