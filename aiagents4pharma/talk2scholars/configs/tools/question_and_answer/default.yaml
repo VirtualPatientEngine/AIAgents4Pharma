@@ -5,7 +5,7 @@ num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
 qa_chain_type: "stuff" # The type of QA chain to use
 reranker:
   model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
-  api_key: ${env:NVIDIA_API_KEY, ""}
+  api_key: ${env:NVIDIA_API_KEY}
 prompt_template: |
   Answer the following question based on the provided context. 
   If the context doesn't contain enough information to give a complete answer, say so.
