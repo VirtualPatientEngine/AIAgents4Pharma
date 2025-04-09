@@ -1,4 +1,3 @@
-````markdown
 # Miniconda and FAISS Installation Guide
 
 This guide provides instructions for setting up a Python environment using Miniconda and installing FAISS for similarity search and clustering.
@@ -28,7 +27,6 @@ Once Miniconda is installed, use the following command to create and activate a 
 ```bash
 conda create --name AIAgents4Pharma python=3.12 -y && conda activate AIAgents4Pharma && pip install --upgrade pip && pip install -r requirements.txt
 ```
-````
 
 This command:
 
