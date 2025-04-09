@@ -61,10 +61,6 @@ If FAISS is installed properly, it will print the version without any errors.
 
 ## Resources
 
-- Miniconda Installation Guide: https://www.anaconda.com/docs/getting-started/miniconda/install
-- FAISS GitHub Repository: https://github.com/facebookresearch/faiss
-- FAISS Installation Instructions: https://github.com/facebookresearch/faiss/blob/main/INSTALL.md
-
-```
-
-```
+- [Miniconda Installation Guide](https://www.anaconda.com/docs/getting-started/miniconda/install)
+- [FAISS GitHub Repository](https://github.com/facebookresearch/faiss)
+- [FAISS Installation Instructions](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
