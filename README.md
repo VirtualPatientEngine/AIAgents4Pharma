@@ -41,22 +41,23 @@ Check out the tutorials on each agent for detailed instructions.
 
 #### Option 2: Docker Hub
 
-_We now have `Talk2AIAgents4Pharma`, `Talk2Biomodels`, and `Talk2Scholars` available on Docker Hub._
+_We now have all the agents available on Docker Hub._
 
-##### **Run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
+##### **To run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
 
 Talk2AIAgents4Pharma and Talk2KnowledgeGraphs require Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
 
-###### **Setup Environment Variables**
+###### Navigate to the correct directory before setting up environment variables. Replace <agent> with the agent name you are interested to launch(`Talk2AIAgents4Pharma` or `Talk2KnowledgeGraphs`):
 
 1. Choose the app you want to use:
 
 ```sh
-# Navigate to the correct directory before setting up environment variables.
-# Use one of the following commands based on the agent you want to use:
-cd AIAgents4Pharma/aiagents4pharma/talk2aiagents4pharma
-cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
+
+cd AIAgents4Pharma/aiagents4pharma/<agent>
 ```
+
+###### **Setup Environment Variables**
 
 2. Copy the `.env.example` file and rename it to `.env`:
    ```sh
@@ -67,15 +68,9 @@ cd AIAgents4Pharma/aiagents4pharma/talk2knowledgegraphs
    ```plaintext
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
-   OLLAMA_HOST=http://ollama:11434
-   LANGCHAIN_TRACING_V2=true
-   LANGCHAIN_API_KEY=your_langchain_api_key_here
-   # Notes:
-   # The API endpoint for Ollama is already set in env.example.
-   # Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma.
-   # If using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed.
-   # Langsmith API for tracing is optional for both, set it in env.example if required.
    ```
+
+###### Notes: The API endpoint for Ollama is already set in env.example. Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma. If you are using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed. Langsmith API for tracing is optional for both, set it in env.example if required.
 
 4. Save the file.
 
@@ -87,11 +82,7 @@ docker compose --profile nvidia up # for GPU mode
 docker compose --profile amd up # for AMD mode
 ```
 
-This will:
-
-- Pull the latest images if they are not already available.
-- Start both Talk2AIAgents4Pharma or Talk2KnowledgeGraphs and Ollama containers in the same network.
-- Ensure Ollama is running first before launching Talk2AIAgents4Pharma or Talk2KnowledgeGraphs.
+###### This will: Pull the latest images if they are not already available. Start Talk2AIAgents4Pharma or Talk2KnowledgeGraphs with Ollama containers in the same network.
 
 To Access the web app, open your browser and go to:
 
@@ -105,7 +96,7 @@ To stop the containers, run:
 docker compose down
 ```
 
-##### **Run Talk2Biomodels and Talk2Scholars**
+##### **To Run Talk2Biomodels and Talk2Scholars**
 
 1. **Run the containers**
 
@@ -162,7 +153,7 @@ docker compose down
    pip install -r requirements.txt
    ```
 
-   ⚠️ The current version of T2KG requires additional Ollama library to be installed.
+   ⚠️ The current version of T2KG requires additional Ollama library to be installed and T2S needs [Conda](https://docs.conda.io/projects/conda/en/latest/index.html) to be installed for environment management to enable [Faiss](https://github.com/facebookresearch/faiss) support please follow this [install.md](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars)
 
    Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
 
