@@ -153,7 +153,7 @@ docker compose down
    pip install -r requirements.txt
    ```
 
-   ⚠️ The current version of T2KG requires additional Ollama library to be installed and T2S needs [Conda](https://docs.conda.io/projects/conda/en/latest/index.html) to be installed for environment management to enable [Faiss](https://github.com/facebookresearch/faiss) support please follow this [install.md](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars)
+   ⚠️ The current version of T2KG requires the additional Ollama library to be installed. T2S also requires [Conda](https://docs.conda.io/projects/conda/en/latest/index.html) for environment management to enable [FAISS](https://github.com/facebookresearch/faiss) support. Please follow the instructions in this [install.md](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars) file.
 
    Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
 
