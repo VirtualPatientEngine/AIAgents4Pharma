@@ -39,7 +39,8 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
         >>> print(updated_state)
         {"papers": {"id2": "Paper 2"}}
     """
-    logger.info("Updating existing state %s with the state dict: %s", existing, new)
+    # No-op operation to use the 'existing' variable
+    _ = len(existing)
     return new
 
 
