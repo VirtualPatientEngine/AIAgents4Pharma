@@ -248,30 +248,25 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Check that the vector store remains unchanged (i.e. same object/state)
         self.assertEqual(vector_store.vector_store, first_build)
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
-    def test_retrieve_relevant_chunks_vector_store_not_built(self, mock_logger):
-        """test retrieving relevant chunks when vector store is not built."""
+    def test_retrieve_relevant_chunks_vector_store_not_built(self):
+        """Test retrieving relevant chunks when the vector store is not built."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
         # Initialize Vectorstore without adding any documents
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
 
-        # Attempt to retrieve relevant chunks
+        # Attempt to retrieve relevant chunks (vector_store.vector_store is None)
         result = vector_store.retrieve_relevant_chunks(query="test query")
 
-        # Check if the error was logged
-        mock_logger.error.assert_called_with("Failed to build vector store")
+        # Verify that an empty list is returned since the vector store is not built.
+        self.assertEqual(result, [])
 
-        # Verify that an empty list is returned
-        assert result == []
-
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
-    def test_retrieve_relevant_chunks_with_paper_ids(self, mock_logger):
-        """test retrieving relevant chunks with specific paper_ids."""
+    def test_retrieve_relevant_chunks_with_paper_ids(self):
+        """Test retrieving relevant chunks with specific paper_ids when the store is not built."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
-        # Mock the embed_documents method to return embeddings of the same length as documents
+        # Mock embed_documents method to return embeddings of fixed length
         mock_embedding_model.embed_documents.return_value = [MagicMock()] * 2
 
         # Initialize Vectorstore and add documents
@@ -281,15 +276,17 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "doc2": Document(page_content="content2", metadata={"paper_id": "paper2"}),
         }
 
-        # Leave vector_store.vector_store as None to trigger the branch that logs an error
+        # Leave vector_store.vector_store as None to trigger the branch that returns an empty list
         vector_store.vector_store = None
 
         # Call retrieve_relevant_chunks with specific paper_ids
         paper_ids = ["paper1"]
-        vector_store.retrieve_relevant_chunks(query="test query", paper_ids=paper_ids)
+        result = vector_store.retrieve_relevant_chunks(
+            query="test query", paper_ids=paper_ids
+        )
 
-        # Update expected logger call to match the error log message in the tool
-        mock_logger.error.assert_called_with("Failed to build vector store")
+        # Verify that an empty list is returned since the vector store is not built.
+        self.assertEqual(result, [])
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
