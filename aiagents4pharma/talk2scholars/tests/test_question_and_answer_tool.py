@@ -137,31 +137,21 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
     )
     def test_retrieve_relevant_chunks(self, mock_mmr):
-        """test retrieving relevant chunks."""
-        # Mock MMR
+        """Test retrieving relevant chunks without filters."""
         mock_mmr.return_value = [0]
-
-        # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
         mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
         mock_embedding_model.embed_documents.return_value = [[0.1, 0.2, 0.3]]
 
-        # Initialize Vectorstore
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
-
-        # Add a mock document
+        vector_store.vector_store = True
         vector_store.documents["test_doc"] = Document(
             page_content="Test content", metadata={"paper_id": "test_paper"}
         )
 
-        # Simulate that the vector store has been built
-        vector_store.vector_store = True
-
-        # Retrieve relevant chunks
-        chunks = vector_store.retrieve_relevant_chunks(query="test query")
-
-        # Check if the retrieval is correct
-        self.assertEqual(len(chunks), 1)
+        results = vector_store.retrieve_relevant_chunks(query="test query")
+        assert len(results) == 1
+        assert results[0].metadata["paper_id"] == "test_paper"
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.BaseChatModel")
     def test_generate_answer(self, mock_base_chat_model):
@@ -787,61 +777,40 @@ class TestMissingState(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
     )
     def test_retrieve_relevant_chunks_with_filtering(self, mock_mmr):
-        """Test that retrieval correctly filters documents based on provided paper_ids."""
-        # Setup MMR to return index 0, i.e. selecting the first matching document
+        """Test that filtering works by paper_ids."""
         mock_mmr.return_value = [0]
-
-        # Create a dummy embedding model that returns a fixed embedding
         dummy_embedding = [0.1, 0.2, 0.3]
+
         mock_embedding_model = MagicMock(spec=Embeddings)
         mock_embedding_model.embed_query.return_value = dummy_embedding
-        # For each document, embed_documents returns a list matching the embedding dimensions
         mock_embedding_model.embed_documents.return_value = [dummy_embedding]
 
-        # Initialize Vectorstore and simulate that the vector store is built
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
         vector_store.vector_store = True
-
-        # Create two dummy documents with distinct paper_ids
-        doc1 = Document(
-            page_content="Document for paper1",
-            metadata={"paper_id": "paper1", "title": "Paper One", "page": 1},
-        )
-        doc2 = Document(
-            page_content="Document for paper2",
-            metadata={"paper_id": "paper2", "title": "Paper Two", "page": 2},
-        )
+        doc1 = Document(page_content="Doc 1", metadata={"paper_id": "paper1"})
+        doc2 = Document(page_content="Doc 2", metadata={"paper_id": "paper2"})
         vector_store.documents = {"doc1": doc1, "doc2": doc2}
 
-        # Pass a filter for paper_ids (only include "paper1")
-        filter_paper_ids = ["paper1"]
         results = vector_store.retrieve_relevant_chunks(
-            query="Some query", paper_ids=filter_paper_ids
+            query="query", paper_ids=["paper1"]
         )
+        assert len(results) == 1
+        assert results[0].metadata["paper_id"] == "paper1"
 
-        # Verify that only the document from "paper1" is returned
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].metadata["paper_id"], "paper1")
-
-    def test_retrieve_relevant_chunks_no_matching_documents(self):
-        """Test that an empty list is returned when no documents match the filter."""
-
-        # Mock embedding model
-        mock_embedding_model = MagicMock()
+    def test_retrieve_relevant_chunks_no_matching_docs(self):
+        """Ensure it returns empty list and logs warning if no docs match."""
+        mock_embedding_model = MagicMock(spec=Embeddings)
         mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
         mock_embedding_model.embed_documents.return_value = []
 
-        # Initialize Vectorstore with a fake document
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
         vector_store.vector_store = True
+        # Add doc with paper_id that won't match
         vector_store.documents["doc1"] = Document(
-            page_content="Unrelated text",
-            metadata={"paper_id": "unrelated_paper"},
+            page_content="No match", metadata={"paper_id": "unmatched_paper"}
         )
 
-        # Use a paper_id that doesn't match anything
         results = vector_store.retrieve_relevant_chunks(
-            query="Some query", paper_ids=["nonexistent_paper"]
+            query="test", paper_ids=["nonexistent_id"]
         )
-
         assert results == []
