@@ -256,17 +256,15 @@ class Vectorstore:
         query: str,
         paper_ids: Optional[List[str]] = None,
         top_k: int = 10,
-        use_mmr: bool = True,
         mmr_diversity: float = 0.3,
     ) -> List[Document]:
         """
-        Retrieve the most relevant chunks for a query, optionally filtering by paper_ids.
+        Retrieve the most relevant chunks for a query using maximal marginal relevance.
 
         Args:
             query: Query string
             paper_ids: Optional list of paper IDs to filter by
             top_k: Number of chunks to retrieve
-            use_mmr: Whether to use maximal marginal relevance to ensure diversity
             mmr_diversity: Diversity parameter for MMR (higher = more diverse)
 
         Returns:
@@ -286,40 +284,36 @@ class Vectorstore:
             metadata_filter = {"paper_id": {"$in": paper_ids}}
             logger.info("Filtering retrieval to papers: %s", paper_ids)
 
-        # Retrieve using MMR
-        if use_mmr:
-            # Get embeddings
-            query_embedding = np.array(self.embedding_model.embed_query(query))
+        # Get embeddings
+        query_embedding = np.array(self.embedding_model.embed_query(query))
 
-            # Get document embeddings
-            doc_embeddings = []
-            docs = []
+        # Get document embeddings
+        doc_embeddings = []
+        docs = []
 
-            for doc in self.documents.values():
-                # Apply filter if needed
-                if metadata_filter and doc.metadata["paper_id"] not in paper_ids:
-                    continue
+        for doc in self.documents.values():
+            # Apply filter if needed
+            if metadata_filter and doc.metadata["paper_id"] not in paper_ids:
+                continue
 
-                # Get document embedding
-                doc_embedding = np.array(
-                    self.embedding_model.embed_documents([doc.page_content])[0]
-                )
-                doc_embeddings.append(doc_embedding)
-                docs.append(doc)
-
-            # Apply MMR
-            mmr_indices = maximal_marginal_relevance(
-                query_embedding,
-                np.array(doc_embeddings).tolist(),
-                k=top_k,
-                lambda_mult=mmr_diversity,
+            # Get document embedding
+            doc_embedding = np.array(
+                self.embedding_model.embed_documents([doc.page_content])[0]
             )
+            doc_embeddings.append(doc_embedding)
+            docs.append(doc)
 
-            results = [docs[i] for i in mmr_indices]
-            logger.info("Retrieved %d chunks using MMR", len(results))
-            return results
+        # Apply MMR
+        mmr_indices = maximal_marginal_relevance(
+            query_embedding,
+            np.array(doc_embeddings).tolist(),
+            k=top_k,
+            lambda_mult=mmr_diversity,
+        )
 
-        return []
+        results = [docs[i] for i in mmr_indices]
+        logger.info("Retrieved %d chunks using MMR", len(results))
+        return results
 
 
 def generate_answer(
@@ -550,7 +544,7 @@ def question_and_answer_tool(
 
     # Retrieve relevant chunks across selected papers
     relevant_chunks = vector_store.retrieve_relevant_chunks(
-        query=question, paper_ids=selected_paper_ids, top_k=10, use_mmr=True
+        query=question, paper_ids=selected_paper_ids, top_k=10
     )
 
     if not relevant_chunks:
