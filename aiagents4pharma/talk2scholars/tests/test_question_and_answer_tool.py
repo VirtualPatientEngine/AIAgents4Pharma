@@ -822,3 +822,26 @@ class TestMissingState(unittest.TestCase):
         # Verify that only the document from "paper1" is returned
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].metadata["paper_id"], "paper1")
+
+    def test_retrieve_relevant_chunks_no_matching_documents(self):
+        """Test that an empty list is returned when no documents match the filter."""
+
+        # Mock embedding model
+        mock_embedding_model = MagicMock()
+        mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
+        mock_embedding_model.embed_documents.return_value = []
+
+        # Initialize Vectorstore with a fake document
+        vector_store = Vectorstore(embedding_model=mock_embedding_model)
+        vector_store.vector_store = True
+        vector_store.documents["doc1"] = Document(
+            page_content="Unrelated text",
+            metadata={"paper_id": "unrelated_paper"},
+        )
+
+        # Use a paper_id that doesn't match anything
+        results = vector_store.retrieve_relevant_chunks(
+            query="Some query", paper_ids=["nonexistent_paper"]
+        )
+
+        assert results == []
