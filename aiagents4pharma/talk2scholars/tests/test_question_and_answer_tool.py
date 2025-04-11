@@ -209,9 +209,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Verify that the exception message is as expected.
         self.assertEqual(str(context.exception), "Loading error")
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
-    def test_build_vector_store_no_documents(self, mock_logger):
-        """test building vector store with no documents."""
+    def test_build_vector_store_no_documents(self):
+        """Test building vector store with no documents results in an unchanged vector_store."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -221,14 +220,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Attempt to build vector store
         vector_store.build_vector_store()
 
-        # Check if the warning was logged
-        mock_logger.warning.assert_called_with(
-            "No documents added to build vector store"
-        )
+        # Instead of checking log output, check that vector_store remains None (or unchanged)
+        self.assertIsNone(vector_store.vector_store)
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
-    def test_build_vector_store_already_built(self, mock_logger):
-        """test building vector store when already built."""
+    def test_build_vector_store_already_built(self):
+        """Test that calling build_vector_store when
+        it is already built does not change the store."""
         # Mock embedding model
         mock_embedding_model = MagicMock(spec=Embeddings)
 
@@ -243,12 +240,13 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Build vector store once
         vector_store.build_vector_store()
+        first_build = vector_store.vector_store
 
         # Attempt to build vector store again
         vector_store.build_vector_store()
 
-        # Check if the info was logged
-        mock_logger.info.assert_called_with("Vector store already built, skipping")
+        # Check that the vector store remains unchanged (i.e. same object/state)
+        self.assertEqual(vector_store.vector_store, first_build)
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     def test_retrieve_relevant_chunks_vector_store_not_built(self, mock_logger):
@@ -788,20 +786,19 @@ class TestMissingState(unittest.TestCase):
             question_and_answer_tool.run(tool_input)
         self.assertEqual(str(context.exception), "No article_data found in state.")
 
-    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
     )
-    def test_retrieve_relevant_chunks_with_filtering(self, mock_mmr, mock_logger):
+    def test_retrieve_relevant_chunks_with_filtering(self, mock_mmr):
         """Test that retrieval correctly filters documents based on provided paper_ids."""
-        # Setup MMR to return the index 0 (i.e. select the first matching document)
+        # Setup MMR to return index 0, i.e. selecting the first matching document
         mock_mmr.return_value = [0]
 
-        # Create a dummy embedding model that returns fixed embeddings
+        # Create a dummy embedding model that returns a fixed embedding
         dummy_embedding = [0.1, 0.2, 0.3]
         mock_embedding_model = MagicMock(spec=Embeddings)
         mock_embedding_model.embed_query.return_value = dummy_embedding
-        # For each document, embed_documents will return a list matching the embedding dimension
+        # For each document, embed_documents returns a list matching the embedding dimensions
         mock_embedding_model.embed_documents.return_value = [dummy_embedding]
 
         # Initialize Vectorstore and simulate that the vector store is built
@@ -817,7 +814,6 @@ class TestMissingState(unittest.TestCase):
             page_content="Document for paper2",
             metadata={"paper_id": "paper2", "title": "Paper Two", "page": 2},
         )
-        # Add documents to the vector store
         vector_store.documents = {"doc1": doc1, "doc2": doc2}
 
         # Pass a filter for paper_ids (only include "paper1")
@@ -826,13 +822,6 @@ class TestMissingState(unittest.TestCase):
             query="Some query", paper_ids=filter_paper_ids
         )
 
-        # Verify that the filtering branch is exercised:
-        # - logger.info should have been called with the filtering message.
-        mock_logger.info.assert_any_call(
-            "Filtering retrieval to papers: %s", filter_paper_ids
-        )
-
-        # Verify that the loop correctly skips non-matching documents:
-        # Only the document from "paper1" should remain in the retrieval.
+        # Verify that only the document from "paper1" is returned
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].metadata["paper_id"], "paper1")
