@@ -409,6 +409,8 @@ def question_and_answer_tool(
     Raises:
         ValueError: If required components are missing or if PDF processing fails.
     """
+    # Load configuration
+    config = load_hydra_config()
     # Create a unique identifier for this call to track potential infinite loops
     call_id = f"qa_call_{time.time()}"
     logger.info(
@@ -494,7 +496,9 @@ def question_and_answer_tool(
                     raise
 
         # Now rank papers
-        ranked_papers = vector_store.rank_papers_by_query(question, top_k=3)
+        ranked_papers = vector_store.rank_papers_by_query(
+            question, top_k=config.top_k_papers
+        )
         selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
         logger.info(
             "%s: Selected papers based on semantic relevance: %s",
@@ -536,7 +540,7 @@ def question_and_answer_tool(
 
     # Retrieve relevant chunks across selected papers
     relevant_chunks = vector_store.retrieve_relevant_chunks(
-        query=question, paper_ids=selected_paper_ids, top_k=10
+        query=question, paper_ids=selected_paper_ids, top_k=config.top_k_chunks
     )
 
     if not relevant_chunks:
