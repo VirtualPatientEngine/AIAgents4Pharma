@@ -271,10 +271,6 @@ class Vectorstore:
             List of document chunks
         """
         if not self.vector_store:
-            logger.warning("Vector store not built, building now...")
-            self.build_vector_store()
-
-        if not self.vector_store:
             logger.error("Failed to build vector store")
             return []
 
