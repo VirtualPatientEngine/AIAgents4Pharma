@@ -274,40 +274,42 @@ class Vectorstore:
             logger.error("Failed to build vector store")
             return []
 
-        # Filter by paper_ids if provided
-        metadata_filter = None
         if paper_ids:
-            metadata_filter = {"paper_id": {"$in": paper_ids}}
             logger.info("Filtering retrieval to papers: %s", paper_ids)
 
-        # Get embeddings
+        # Step 1: Embed the query
+        logger.info(
+            "Embedding query using model: %s", type(self.embedding_model).__name__
+        )
         query_embedding = np.array(self.embedding_model.embed_query(query))
 
-        # Get document embeddings
-        doc_embeddings = []
-        docs = []
+        # Step 2: Filter relevant documents
+        all_docs = [
+            doc
+            for doc in self.documents.values()
+            if not paper_ids or doc.metadata["paper_id"] in paper_ids
+        ]
 
-        for doc in self.documents.values():
-            # Apply filter if needed
-            if metadata_filter and doc.metadata["paper_id"] not in paper_ids:
-                continue
+        if not all_docs:
+            logger.warning("No documents found after filtering by paper_ids.")
+            return []
 
-            # Get document embedding
-            doc_embedding = np.array(
-                self.embedding_model.embed_documents([doc.page_content])[0]
-            )
-            doc_embeddings.append(doc_embedding)
-            docs.append(doc)
+        texts = [doc.page_content for doc in all_docs]
 
-        # Apply MMR
+        # Step 3: Batch embed all documents
+        logger.info("Starting batch embedding for %d chunks...", len(texts))
+        all_embeddings = self.embedding_model.embed_documents(texts)
+        logger.info("Completed embedding for %d chunks...", len(texts))
+
+        # Step 4: Apply MMR
         mmr_indices = maximal_marginal_relevance(
             query_embedding,
-            np.array(doc_embeddings).tolist(),
+            all_embeddings,
             k=top_k,
             lambda_mult=mmr_diversity,
         )
 
-        results = [docs[i] for i in mmr_indices]
+        results = [all_docs[i] for i in mmr_indices]
         logger.info("Retrieved %d chunks using MMR", len(results))
         return results
 
