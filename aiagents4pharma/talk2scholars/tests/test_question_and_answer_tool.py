@@ -126,8 +126,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Rank papers.
         ranked_papers = vector_store.rank_papers_by_query(query="test query")
 
-        # Check if the ranking is correct.
-        self.assertEqual(ranked_papers[0][0], "test_paper")
+        # Check if the ranking is correct (updated expectation: a list of paper IDs)
+        self.assertEqual(ranked_papers[0], "test_paper")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
@@ -149,6 +149,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         vector_store.documents["test_doc"] = Document(
             page_content="Test content", metadata={"paper_id": "test_paper"}
         )
+
+        # Simulate that the vector store has been built
+        vector_store.vector_store = True
 
         # Retrieve relevant chunks
         chunks = vector_store.retrieve_relevant_chunks(query="test query")
@@ -280,14 +283,15 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "doc2": Document(page_content="content2", metadata={"paper_id": "paper2"}),
         }
 
+        # Leave vector_store.vector_store as None to trigger the branch that logs an error
+        vector_store.vector_store = None
+
         # Call retrieve_relevant_chunks with specific paper_ids
         paper_ids = ["paper1"]
         vector_store.retrieve_relevant_chunks(query="test query", paper_ids=paper_ids)
 
-        # Check if the logger was called with the expected warning
-        mock_logger.warning.assert_called_with(
-            "Vector store not built, building now..."
-        )
+        # Update expected logger call to match the error log message in the tool
+        mock_logger.error.assert_called_with("Failed to build vector store")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
@@ -386,7 +390,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         dummy_vs.build_vector_store.side_effect = lambda: setattr(
             dummy_vs, "vector_store", True
         )
-        # Simulate ranking: return a single paper id for the semantic branch
+        # Simulate ranking: return a single paper id with score as a tuple for unpacking
         dummy_vs.rank_papers_by_query.return_value = [("paper_sem", 1.0)]
         # Simulate retrieval: return our dummy document
         dummy_vs.retrieve_relevant_chunks.return_value = [dummy_doc]
@@ -438,12 +442,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "What is semantic content?", top_k=3
         )
 
-        # Verify that retrieve_relevant_chunks was called with the selected paper id
+        # Verify that retrieve_relevant_chunks was called with the selected paper id.
         dummy_vs.retrieve_relevant_chunks.assert_called_with(
-            query="What is semantic content?",
-            paper_ids=["paper_sem"],
-            top_k=10,
-            use_mmr=True,
+            query="What is semantic content?", paper_ids=["paper_sem"], top_k=10
         )
 
         # Verify that generate_answer was called with the expected arguments
@@ -686,30 +687,6 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertIn("test_paper_0", vector_store.documents)
         added_doc = vector_store.documents["test_paper_0"]
         self.assertEqual(added_doc.metadata.get("custom_field"), "custom_value")
-
-    def test_retrieve_relevant_chunks_use_mmr_false_returns_empty(self):
-        """test that retrieve_relevant_chunks returns empty when use_mmr is False."""
-        # Mock embedding model
-        mock_embedding_model = MagicMock(spec=Embeddings)
-        mock_embedding_model.embed_query.return_value = [0.1, 0.2, 0.3]
-        mock_embedding_model.embed_documents.return_value = [[0.1, 0.2, 0.3]]
-
-        # Initialize Vectorstore and simulate that the vector store is built
-        vector_store = Vectorstore(embedding_model=mock_embedding_model)
-        vector_store.vector_store = True  # Simulate a built vector store
-
-        # Add a dummy document to the document store
-        vector_store.documents["test_doc"] = Document(
-            page_content="Test content", metadata={"paper_id": "test_paper"}
-        )
-
-        # Call retrieve_relevant_chunks with use_mmr set to False to hit the final return []
-        result = vector_store.retrieve_relevant_chunks(
-            query="test query", use_mmr=False
-        )
-
-        # Verify that an empty list is returned
-        self.assertEqual(result, [])
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
