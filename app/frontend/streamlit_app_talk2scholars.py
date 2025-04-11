@@ -150,9 +150,24 @@ def process_pdf_upload():
             with tempfile.NamedTemporaryFile(delete=False) as f:
                 f.write(pdf_file.read())
 
+            # Prevent duplicates before adding new entry
+            filename = pdf_file.name
+            existing_ids = [
+                id
+                for id, data in article_data.items()
+                if data.get("filename") == filename
+            ]
+
+            if existing_ids:
+                # Remove old entries with the same filename
+                for existing_id in existing_ids:
+                    article_data.pop(existing_id)
+
             # Generate unique ID using filename + timestamp
             timestamp = int(time.time() * 1000)
-            pdf_id = f"uploaded_{pdf_file.name.replace(' ', '_').replace('.', '_')}_{timestamp}"
+            pdf_id = (
+                f"uploaded_{filename.replace(' ', '_').replace('.', '_')}_{timestamp}"
+            )
 
             # Create metadata dict
             pdf_metadata = {
@@ -161,7 +176,7 @@ def process_pdf_upload():
                 "Abstract": "User uploaded PDF",
                 "Publication Date": "N/A",
                 "pdf_url": f.name,
-                "filename": pdf_file.name,
+                "filename": filename,
                 "source": "upload",
             }
 
