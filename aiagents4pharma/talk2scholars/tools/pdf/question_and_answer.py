@@ -248,13 +248,7 @@ class Vectorstore:
             query=query, documents=aggregated_documents
         )
 
-        # Create a ranked list of (paper_id, dummy_score)
-        # Here we assign a dummy score based on rank position;
-        # the actual re-ranker sorts the documents.
-        ranked_papers = [
-            (doc.metadata["paper_id"], float(top_k - idx))
-            for idx, doc in enumerate(response[:top_k])
-        ]
+        ranked_papers = [doc.metadata["paper_id"] for doc in response[:top_k]]
         return ranked_papers
 
     def retrieve_relevant_chunks(
