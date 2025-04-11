@@ -340,19 +340,33 @@ def generate_answer(
         raise ValueError("The prompt_template is missing from the configuration.")
 
     # Prepare context from retrieved documents with source attribution.
-    formatted_chunks = []
-    for i, doc in enumerate(retrieved_chunks):
-        # Extract metadata for attribution
+    # Group chunks by paper_id
+    papers = {}
+    for doc in retrieved_chunks:
         paper_id = doc.metadata.get("paper_id", "unknown")
-        title = doc.metadata.get("title", "Unknown")
-        page = doc.metadata.get("page", "unknown")
+        if paper_id not in papers:
+            papers[paper_id] = []
+        papers[paper_id].append(doc)
 
-        # Format chunk with source information
-        chunk_text = (
-            f"[Document {i+1}] From: '{title}' (ID: {paper_id}, Page: {page})\n"
-            f"{doc.page_content}"
+    # Format chunks by paper
+    formatted_chunks = []
+    doc_index = 1
+    for paper_id, chunks in papers.items():
+        # Get the title from the first chunk (should be the same for all chunks)
+        title = chunks[0].metadata.get("title", "Unknown")
+
+        # Add a document header
+        formatted_chunks.append(
+            f"[Document {doc_index}] From: '{title}' (ID: {paper_id})"
         )
-        formatted_chunks.append(chunk_text)
+
+        # Add each chunk with its page information
+        for chunk in chunks:
+            page = chunk.metadata.get("page", "unknown")
+            formatted_chunks.append(f"Page {page}: {chunk.page_content}")
+
+        # Increment document index for the next paper
+        doc_index += 1
 
     # Join all chunks
     context = "\n\n".join(formatted_chunks)
