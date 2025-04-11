@@ -237,23 +237,42 @@ def stream_response(response):
     Args:
         response: dict: The response from the agent
     """
-    agent_responded = False
+    agent_responding = False
     for chunk in response:
         # Stream only the AIMessageChunk
         if not isinstance(chunk[0], AIMessageChunk):
             continue
-        # print (chunk)
+        # print (chunk[0].content, chunk[1])
         # Exclude the tool calls that are not part of the conversation
         # if "branch:agent:should_continue:tools" not in chunk[1]["langgraph_triggers"]:
-        if "tools" in chunk[1]["langgraph_triggers"]:
-            agent_responded = True
-            if chunk[0].content == "":
-                yield "\n"
-            yield chunk[0].content
-        if "start:agent" in chunk[1]["langgraph_triggers"] and agent_responded is False:
-            if chunk[0].content == "":
-                yield "\n"
-            yield chunk[0].content
+        # if chunk[1]["checkpoint_ns"].startswith("supervisor"):
+        #     continue
+        if chunk[1]["checkpoint_ns"].startswith("supervisor") is False:
+            agent_responding = True
+            if "branch:to:agent" in chunk[1]["langgraph_triggers"]:
+                if chunk[0].content == "":
+                    yield "\n"
+                yield chunk[0].content
+        else:
+            # If no agent has responded yet
+            # and the message is from the supervisor
+            # then display the message
+            if agent_responding is False:
+                if "branch:to:agent" in chunk[1]["langgraph_triggers"]:
+                    if chunk[0].content == "":
+                        yield "\n"
+                    yield chunk[0].content
+        # if "tools" in chunk[1]["langgraph_triggers"]:
+        #     agent_responded = True
+        #     if chunk[0].content == "":
+        #         yield "\n"
+        #     yield chunk[0].content
+        # if agent_responding:
+        #     continue
+        # if "branch:to:agent" in chunk[1]["langgraph_triggers"]:
+        #     if chunk[0].content == "":
+        #         yield "\n"
+        #     yield chunk[0].content
 
 
 def update_state_t2b(st):
@@ -286,21 +305,31 @@ def update_state_t2kg(st):
 
 
 def get_ai_messages(current_state):
+    last_msg_is_human = False
     # If only supervisor answered i.e. no agent was called
     if isinstance(current_state.values["messages"][-2], HumanMessage):
-        msgs_to_consider = current_state.values["messages"]
-    else:
-        # If agent answered i.e. ignore the supervisor msg
-        msgs_to_consider = current_state.values["messages"][:-1]
+        # msgs_to_consider = current_state.values["messages"]
+        last_msg_is_human = True
+    # else:
+    #     # If agent answered i.e. ignore the supervisor msg
+    #     msgs_to_consider = current_state.values["messages"][:-1]
+    msgs_to_consider = current_state.values["messages"]
     # Get all the AI msgs in the
     # last response from the state
     assistant_content = []
     # print ('LEN:', len(current_state.values["messages"][:-1]))
     # print (current_state.values["messages"][-2])
+    # Variable to check if the last message is from the "supervisor"
+    # Supervisor message exists for agents that have sub-agents
+    # In such cases, the last message is from the supervisor
+    # and that is the message to be displayed to the user.
     # for msg in current_state.values["messages"][:-1][::-1]:
     for msg in msgs_to_consider[::-1]:
         if isinstance(msg, HumanMessage):
             break
+        if isinstance(msg, AIMessage) and msg.content != "" and msg.name == "supervisor" and last_msg_is_human is False:
+            continue
+        # Run the following code if the message is from the agent
         if isinstance(msg, AIMessage) and msg.content != "":
             assistant_content.append(msg.content)
             continue
