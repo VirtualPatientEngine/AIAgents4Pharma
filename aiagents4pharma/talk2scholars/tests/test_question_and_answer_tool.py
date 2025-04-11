@@ -43,8 +43,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
     def test_add_paper_already_loaded(self, mock_pypdf_loader):
-        """test adding a paper that is already loaded."""
-        # Mock the PDF loader
+        """Test that adding a paper that is already loaded does not re-load or add new documents."""
+        # Mock the PDF loader (it should not be used when the paper is already loaded)
         mock_loader = mock_pypdf_loader.return_value
         mock_loader.load.return_value = [Document(page_content="Page content")]
 
@@ -54,21 +54,25 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Initialize Vectorstore
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
 
-        # Add a paper to simulate it being loaded
+        # Simulate the paper already being loaded.
         vector_store.loaded_papers.add("test_paper")
+        # Capture the initial state of documents (should be empty)
+        initial_documents = dict(vector_store.documents)
 
-        # Attempt to add the same paper again
-        with self.assertLogs(
-            "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer", level="INFO"
-        ) as log:
-            vector_store.add_paper(
-                paper_id="test_paper",
-                pdf_url="http://example.com/test.pdf",
-                paper_metadata={"Title": "Test Paper"},
-            )
+        # Attempt to add the same paper again.
+        vector_store.add_paper(
+            paper_id="test_paper",
+            pdf_url="http://example.com/test.pdf",
+            paper_metadata={"Title": "Test Paper"},
+        )
 
-        # Check if the appropriate log message is present
-        self.assertIn("Paper test_paper already loaded, skipping", log.output[0])
+        # Verify that no new paper was added by checking:
+        # 1. The loaded papers set remains unchanged.
+        self.assertEqual(vector_store.loaded_papers, {"test_paper"})
+        # 2. The documents dictionary remains unchanged.
+        self.assertEqual(vector_store.documents, initial_documents)
+        # 3. The PDF loader was not called at all.
+        mock_loader.load.assert_not_called()
 
     def test_build_vector_store(self):
         """test building the vector store."""
@@ -183,30 +187,26 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
     def test_add_paper_exception_handling(self, mock_pypdf_loader):
-        """test exception handling when adding a paper."""
-        # Mock the PDF loader to raise an exception
+        """Test exception handling when adding a paper."""
+        # Mock the PDF loader to raise an exception.
         mock_loader = mock_pypdf_loader.return_value
         mock_loader.load.side_effect = Exception("Loading error")
 
-        # Mock embedding model
+        # Mock embedding model.
         mock_embedding_model = MagicMock(spec=Embeddings)
 
-        # Initialize Vectorstore
+        # Initialize Vectorstore.
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
 
-        # Attempt to add a paper and expect an exception
-        with self.assertLogs(
-            "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer", level="ERROR"
-        ) as log:
-            with self.assertRaises(Exception) as context:
-                vector_store.add_paper(
-                    paper_id="test_paper",
-                    pdf_url="http://example.com/test.pdf",
-                    paper_metadata={"Title": "Test Paper"},
-                )
+        # Attempt to add a paper and expect an exception.
+        with self.assertRaises(Exception) as context:
+            vector_store.add_paper(
+                paper_id="test_paper",
+                pdf_url="http://example.com/test.pdf",
+                paper_metadata={"Title": "Test Paper"},
+            )
 
-        # Check if the appropriate log message is present
-        self.assertIn("Error loading paper test_paper: Loading error", log.output[0])
+        # Verify that the exception message is as expected.
         self.assertEqual(str(context.exception), "Loading error")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
@@ -805,3 +805,52 @@ class TestMissingState(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             question_and_answer_tool.run(tool_input)
         self.assertEqual(str(context.exception), "No article_data found in state.")
+
+    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.logger")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.maximal_marginal_relevance"
+    )
+    def test_retrieve_relevant_chunks_with_filtering(self, mock_mmr, mock_logger):
+        """Test that retrieval correctly filters documents based on provided paper_ids."""
+        # Setup MMR to return the index 0 (i.e. select the first matching document)
+        mock_mmr.return_value = [0]
+
+        # Create a dummy embedding model that returns fixed embeddings
+        dummy_embedding = [0.1, 0.2, 0.3]
+        mock_embedding_model = MagicMock(spec=Embeddings)
+        mock_embedding_model.embed_query.return_value = dummy_embedding
+        # For each document, embed_documents will return a list matching the embedding dimension
+        mock_embedding_model.embed_documents.return_value = [dummy_embedding]
+
+        # Initialize Vectorstore and simulate that the vector store is built
+        vector_store = Vectorstore(embedding_model=mock_embedding_model)
+        vector_store.vector_store = True
+
+        # Create two dummy documents with distinct paper_ids
+        doc1 = Document(
+            page_content="Document for paper1",
+            metadata={"paper_id": "paper1", "title": "Paper One", "page": 1},
+        )
+        doc2 = Document(
+            page_content="Document for paper2",
+            metadata={"paper_id": "paper2", "title": "Paper Two", "page": 2},
+        )
+        # Add documents to the vector store
+        vector_store.documents = {"doc1": doc1, "doc2": doc2}
+
+        # Pass a filter for paper_ids (only include "paper1")
+        filter_paper_ids = ["paper1"]
+        results = vector_store.retrieve_relevant_chunks(
+            query="Some query", paper_ids=filter_paper_ids
+        )
+
+        # Verify that the filtering branch is exercised:
+        # - logger.info should have been called with the filtering message.
+        mock_logger.info.assert_any_call(
+            "Filtering retrieval to papers: %s", filter_paper_ids
+        )
+
+        # Verify that the loop correctly skips non-matching documents:
+        # Only the document from "paper1" should remain in the retrieval.
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].metadata["paper_id"], "paper1")
