@@ -493,10 +493,6 @@ def question_and_answer_tool(
                     logger.error("Error loading paper %s: %s", paper_id, e)
                     raise
 
-        # Build vector store if needed
-        if not vector_store.vector_store:
-            vector_store.build_vector_store()
-
         # Now rank papers
         ranked_papers = vector_store.rank_papers_by_query(question, top_k=3)
         selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
