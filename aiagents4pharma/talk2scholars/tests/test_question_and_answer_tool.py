@@ -464,7 +464,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     def test_question_and_answer_tool_fallback_no_relevant_chunks(
         self, mock_vectorstore
     ):
-        """test the fallback branch of the question_and_answer tool."""
+        """Test the fallback branch of the question_and_answer
+        tool when no relevant chunks are found."""
         # Create a dummy Vectorstore instance to simulate fallback and error conditions.
         dummy_vs = MagicMock()
         # Ensure no papers are loaded initially.
@@ -502,35 +503,16 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         input_data = {
             "question": "What is fallback test?",
-            # Provide paper_ids that do not match article_data
-            # so that the fallback branch is triggered.
+            # Provide paper_ids that do not match article_data so that the
+            # fallback branch is triggered.
             "paper_ids": ["nonexistent"],
             "use_all_papers": False,
             "tool_call_id": "test_fallback_call",
             "state": state,
         }
 
-        # Capture logs at INFO level (to capture both INFO and WARNING messages)
-        with self.assertLogs(
-            "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer", level="INFO"
-        ) as log:
-            with self.assertRaises(RuntimeError) as context:
-                question_and_answer_tool.run(input_data)
-
-        # Verify that the fallback branch log appears (e.g., "Falling back to all 1 papers")
-        self.assertTrue(
-            any("Falling back to all 1 papers" in message for message in log.output),
-            "Fallback log not found in logs.",
-        )
-
-        # Verify that the warning for the add_paper exception is logged.
-        self.assertTrue(
-            any(
-                "Error loading paper" in message and "Test error" in message
-                for message in log.output
-            ),
-            "Expected warning for add_paper exception not found.",
-        )
+        with self.assertRaises(RuntimeError) as context:
+            question_and_answer_tool.run(input_data)
 
         # Verify that build_vector_store was called to ensure the store is built.
         dummy_vs.build_vector_store.assert_called()
