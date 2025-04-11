@@ -468,6 +468,13 @@ def question_and_answer_tool(
             getattr(vector_store, "initialization_time", "unknown"),
         )
 
+    # Check if there are any user-uploaded papers (identified by source="upload")
+    has_uploaded_papers = any(
+        paper.get("source") == "upload"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
     # Choose papers to use
     selected_paper_ids = []
 
@@ -483,8 +490,8 @@ def question_and_answer_tool(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif use_all_papers:
-        # Use all available papers
+    elif use_all_papers or has_uploaded_papers:
+        # Use all available papers if explicitly requested or if we have uploaded papers
         selected_paper_ids = list(article_data.keys())
         logger.info(
             "%s: Using all %d available papers", call_id, len(selected_paper_ids)
@@ -534,11 +541,14 @@ def question_and_answer_tool(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
 
-    # Store the document store in state if it was created in this call
+    # Store the vector_store in state, with diagnostic information
     if doc_store_created:
-        # Use direct assignment to prevent recursive issues
         logger.info("%s: Storing new vector_store in state", call_id)
-        state["vector_store"] = vector_store
+    else:
+        logger.info("%s: Updating existing vector_store in state", call_id)
+
+    # Always store it regardless of creation status
+    state["vector_store"] = vector_store
 
     # Ensure vector store is built
     if not vector_store.vector_store:
