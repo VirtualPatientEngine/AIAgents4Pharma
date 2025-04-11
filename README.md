@@ -155,7 +155,7 @@ docker compose down
 
    ⚠️ The current version of T2KG requires the additional Ollama library to be installed. T2S also requires [Conda](https://docs.conda.io/projects/conda/en/latest/index.html) for environment management to enable [FAISS](https://github.com/facebookresearch/faiss) support. Please follow the instructions in this [install.md](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars) file.
 
-   Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
+   Ollama can be easily downloaded and installed from the following [link](https://ollama.com/download)
 
    As an alternative, use the following commands to install the library using terminal and to pull necessary model:
 
