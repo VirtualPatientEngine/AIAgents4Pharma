@@ -22,6 +22,7 @@ from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
 sys.path.append("./")
+# import get_app from main_agent
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
 # Initialize configuration
