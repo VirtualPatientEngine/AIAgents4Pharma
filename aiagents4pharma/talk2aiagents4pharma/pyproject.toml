@@ -1,7 +1,7 @@
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
- 
+
 [project]
 name = "AIAgents4Pharma"
 
@@ -10,9 +10,9 @@ description = "The main agent to interact with the other agents of AIAgents4Phar
 readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 dependencies = [
@@ -71,15 +71,16 @@ dependencies = [
   "umap-learn==0.5.7",
   "plotly-express==0.4.1",
   "seaborn==0.13.2",
-  "scanpy==1.11.0"
+  "scanpy==1.11.0",
 ]
 dynamic = ["version"]
- 
+
 # Package discovery for the submodule
 [tool.setuptools]
 packages = [
-    "talk2aiagents4pharma",
-    "talk2aiagents4pharma.configs",
-    "talk2aiagents4pharma.agents",
-    "talk2aiagents4pharma.states"
+  "talk2aiagents4pharma",
+  "talk2aiagents4pharma.configs",
+  "talk2aiagents4pharma.agents",
+  "talk2aiagents4pharma.states",
 ]
+
