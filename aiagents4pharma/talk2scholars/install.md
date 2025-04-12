@@ -42,8 +42,6 @@ This command:
 
 Follow the official FAISS installation instructions [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md)
 
-Make sure your system has a compatible CUDA toolkit version if you are using the GPU variant.
-
 ---
 
 ## Step 4: Verify Installation
