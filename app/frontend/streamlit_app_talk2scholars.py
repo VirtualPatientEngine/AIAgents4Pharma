@@ -5,19 +5,19 @@ Talk2Scholars: A Streamlit app for the Talk2Scholars graph.
 """
 
 import os
-import sys
 import random
-import streamlit as st
+import sys
+
 import hydra
 import pandas as pd
-from streamlit_feedback import streamlit_feedback
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_core.messages import ChatMessage
+import streamlit as st
+from langchain.callbacks.tracers import LangChainTracer
+from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tracers.context import collect_runs
-from langchain.callbacks.tracers import LangChainTracer
+from langchain_openai import ChatOpenAI
 from langsmith import Client
+from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
 sys.path.append("./")
