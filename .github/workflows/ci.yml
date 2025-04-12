@@ -7,6 +7,8 @@ on:
       - completed
     branches:
       - main
+  # For manual trigger(testing)
+  # workflow_dispatch:
 
 jobs:
   # Detect which modules have changed
