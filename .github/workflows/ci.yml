@@ -8,10 +8,10 @@ on:
     branches:
       - main
   # Keep existing triggers for flexibility
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  # workflow_dispatch:
 
 jobs:
   # Detect which modules have changed
