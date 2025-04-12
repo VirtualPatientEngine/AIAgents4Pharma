@@ -17,6 +17,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tracers.context import collect_runs
 from langchain_openai import ChatOpenAI
 from langsmith import Client
+from langchain.callbacks.tracers import LangChainTracer
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
