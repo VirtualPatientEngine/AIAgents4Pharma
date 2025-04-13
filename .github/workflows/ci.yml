@@ -8,10 +8,10 @@ on:
     branches:
       - main
   # Keep existing triggers for flexibility
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  # workflow_dispatch:
 
 jobs:
   # Detect which modules have changed
@@ -22,6 +22,7 @@ jobs:
       talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
       talk2aiagents4pharma: ${{ steps.filter.outputs.talk2aiagents4pharma }}
       talk2knowledgegraphs: ${{ steps.filter.outputs.talk2knowledgegraphs }}
+      app: ${{ steps.filter.outputs.app }}
 
     steps:
       - name: Checkout Repository
@@ -42,13 +43,14 @@ jobs:
               - 'aiagents4pharma/talk2aiagents4pharma/**'
             talk2knowledgegraphs:
               - 'aiagents4pharma/talk2knowledgegraphs/**'
+            app:
+              - 'app/**'
 
   # Generate version for the build
   version:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
-      short_sha: ${{ steps.get_short_sha.outputs.short_sha }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -56,39 +58,23 @@ jobs:
           fetch-depth: 0
 
       # Get the latest version from git tags
+
       - name: Get latest version tag
         id: get_version
         run: |
           # Get the latest tag from git
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
 
-          # For workflow_run triggered from RELEASE workflow, use the tag as is
-          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-            VERSION=$LATEST_TAG
-          else
-            # For other triggers (PR, push, etc.), create a development version
-            # Strip the 'v' prefix
-            VERSION=${LATEST_TAG#v}
-            # Get count of commits since latest tag
-            COMMIT_COUNT=$(git rev-list ${LATEST_TAG}..HEAD --count)
-            # Create dev version: latest tag + dev + commit count
-            VERSION="v${VERSION}-dev.${COMMIT_COUNT}"
-          fi
+          # Always use the latest tag directly (no dev builds)
+          VERSION=$LATEST_TAG
 
           echo "Using version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      # Get short SHA for tagging
-      - name: Get short SHA
-        id: get_short_sha
-        run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
-
   # Separate job for talk2aiagents4pharma
   build-talk2aiagents4pharma:
     needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2aiagents4pharma == 'true' }}
+    if: ${{ needs.changes.outputs.talk2aiagents4pharma == 'true' || needs.changes.outputs.talk2biomodels == 'true' || needs.changes.outputs.talk2knowledgegraphs == 'true' || needs.changes.outputs.app == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -107,13 +93,12 @@ jobs:
           push: true
           tags: |
             virtualpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2aiagents4pharma:latest
 
   # Separate job for talk2biomodels
   build-talk2biomodels:
     needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2biomodels == 'true' }}
+    if: ${{ needs.changes.outputs.talk2biomodels == 'true' || needs.changes.outputs.app == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -132,13 +117,12 @@ jobs:
           push: true
           tags: |
             virtualpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2biomodels:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2biomodels:latest
 
   # Separate job for talk2scholars
   build-talk2scholars:
     needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2scholars == 'true' }}
+    if: ${{ needs.changes.outputs.talk2scholars == 'true' || needs.changes.outputs.app == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -157,13 +141,12 @@ jobs:
           push: true
           tags: |
             virtualpatientengine/talk2scholars:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2scholars:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2scholars:latest
 
   # Separate job for talk2knowledgegraphs
   build-talk2knowledgegraphs:
     needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2knowledgegraphs == 'true' }}
+    if: ${{ needs.changes.outputs.talk2knowledgegraphs == 'true' || needs.changes.outputs.app == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -182,5 +165,4 @@ jobs:
           push: true
           tags: |
             virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.short_sha }}
             virtualpatientengine/talk2knowledgegraphs:latest
