@@ -5,11 +5,14 @@ Utility for zotero read tool.
 """
 
 import logging
+import tempfile
 from typing import Any, Dict, List
-import hydra
-from pyzotero import zotero
-from .zotero_path import get_item_collections
 
+import hydra
+import requests
+from pyzotero import zotero
+
+from .zotero_path import get_item_collections
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -100,7 +103,7 @@ class ZoteroSearchData:
         return items
 
     def _filter_and_format_papers(self, items: List[Dict[str, Any]]) -> None:
-        """Filter and format papers from items."""
+        """Filter and format papers from Zotero items, including standalone PDFs."""
         filter_item_types = (
             self.cfg.zotero.filter_item_types if self.only_articles else []
         )
@@ -110,41 +113,92 @@ class ZoteroSearchData:
             if not isinstance(item, dict):
                 continue
 
-            data = item.get("data")
-            if not isinstance(data, dict):
-                continue
-
+            data = item.get("data", {})
             item_type = data.get("itemType", "N/A")
-            logger.debug("Item type: %s", item_type)
-
             key = data.get("key")
             if not key:
                 continue
 
-            collection_paths = self.item_to_collections.get(key, ["/Unknown"])
+            # CASE 1: Top-level item (e.g., journalArticle)
+            if item_type != "attachment":
+                collection_paths = self.item_to_collections.get(key, ["/Unknown"])
 
-            self.article_data[key] = {
-                "Title": data.get("title", "N/A"),
-                "Abstract": data.get("abstractNote", "N/A"),
-                "Publication Date": data.get("date", "N/A"),
-                "URL": data.get("url", "N/A"),
-                "Type": item_type if isinstance(item_type, str) else "N/A",
-                "Collections": collection_paths,
-                "Citation Count": data.get("citationCount", "N/A"),
-                "Venue": data.get("venue", "N/A"),
-                "Publication Venue": data.get("publicationTitle", "N/A"),
-                "Journal Name": data.get("journalAbbreviation", "N/A"),
-                "Authors": [
-                    f"{creator.get('firstName', '')} {creator.get('lastName', '')}".strip()
-                    for creator in data.get("creators", [])
-                    if isinstance(creator, dict)
-                    and creator.get("creatorType") == "author"
-                ],
-                "source": "zotero",  # Adding source field with value "zotero"
-            }
+                self.article_data[key] = {
+                    "Title": data.get("title", "N/A"),
+                    "Abstract": data.get("abstractNote", "N/A"),
+                    "Publication Date": data.get("date", "N/A"),
+                    "URL": data.get("url", "N/A"),
+                    "Type": item_type,
+                    "Collections": collection_paths,
+                    "Citation Count": data.get("citationCount", "N/A"),
+                    "Venue": data.get("venue", "N/A"),
+                    "Publication Venue": data.get("publicationTitle", "N/A"),
+                    "Journal Name": data.get("journalAbbreviation", "N/A"),
+                    "Authors": [
+                        f"{creator.get('firstName', '')} {creator.get('lastName', '')}".strip()
+                        for creator in data.get("creators", [])
+                        if isinstance(creator, dict)
+                        and creator.get("creatorType") == "author"
+                    ],
+                    "source": "zotero",
+                }
 
-            # Find PDF attachment URLs for this item
-            self._find_pdf_urls(key)
+                # Try to fetch attached PDF via children
+                self._find_pdf_urls(key)
+
+            # CASE 2: Standalone orphaned PDF attachment
+            elif data.get("contentType") == "application/pdf" and not data.get(
+                "parentItem"
+            ):
+                filename = data.get("filename", "unknown.pdf")
+                attachment_key = key
+
+                zotero_pdf_url = (
+                    f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
+                    f"{attachment_key}/file"
+                )
+
+                # Download the PDF to a temp file
+                try:
+                    headers = {"Zotero-API-Key": self.cfg.api_key}
+                    response = requests.get(
+                        zotero_pdf_url, headers=headers, stream=True
+                    )
+                    response.raise_for_status()
+
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=".pdf"
+                    ) as temp_file:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            temp_file.write(chunk)
+                        temp_file_path = temp_file.name
+
+                    # Create a synthetic article entry
+                    self.article_data[key] = {
+                        "Title": filename,
+                        "Abstract": "No abstract available",
+                        "Publication Date": "N/A",
+                        "URL": "N/A",
+                        "Type": "orphan_attachment",
+                        "Collections": ["/(No Collection)"],
+                        "Citation Count": "N/A",
+                        "Venue": "N/A",
+                        "Publication Venue": "N/A",
+                        "Journal Name": "N/A",
+                        "Authors": ["(Unknown)"],
+                        "source": "zotero_orphan",
+                        "filename": filename,
+                        "pdf_url": temp_file_path,
+                        "attachment_key": attachment_key,
+                    }
+
+                    logger.info("Downloaded orphaned Zotero PDF to: %s", temp_file_path)
+
+                except Exception as e:
+                    logger.error(
+                        "Failed to download standalone PDF attachment %s: %s", key, e
+                    )
+                    continue
 
         if not self.article_data:
             logger.error(
@@ -154,28 +208,18 @@ class ZoteroSearchData:
                 "No matching papers returned from Zotero. Please retry the same query."
             )
 
-        logger.info("Filtered %d items", len(self.article_data))
+        logger.info(
+            "Filtered %d items (including orphaned attachments)", len(self.article_data)
+        )
 
     def _find_pdf_urls(self, item_key: str) -> None:
         """
-        Find PDF attachment URL for a specific item and add it directly to the article data.
-        Only the first PDF attachment's information will be used.
-
-        Args:
-            item_key (str): The Zotero item key to find PDF URLs for
+        Download Zotero-hosted PDF for a specific item and save it locally as temp file.
         """
-        logger.info("Finding PDF URL for item: %s", item_key)
+        logger.info("Attempting to download Zotero PDF for item: %s", item_key)
 
         try:
-            # Get all child items (attachments) for this item
-            try:
-                children = self.zot.children(item_key)
-            except Exception as e:
-                # If we can't get children, the item might not support children
-                logger.debug("Cannot get children for item %s: %s", item_key, str(e))
-                return
-
-            # Filter for PDF attachments
+            children = self.zot.children(item_key)
             pdf_attachments = [
                 child
                 for child in children
@@ -186,29 +230,40 @@ class ZoteroSearchData:
             ]
 
             if not pdf_attachments:
-                logger.info("No PDF attachments found for item: %s", item_key)
+                logger.info("No Zotero PDF attachments found for item: %s", item_key)
                 return
 
-            # Use only the first PDF attachment
-            if pdf_attachments:
-                attachment = pdf_attachments[0]
-                attachment_data = attachment.get("data", {})
-                url = attachment_data.get("url", "")
+            attachment = pdf_attachments[0]
+            attachment_data = attachment.get("data", {})
+            attachment_key = attachment_data.get("key")
+            filename = attachment_data.get("filename", "unknown.pdf")
 
-                if url:
-                    # Add PDF information directly to the article entry
-                    self.article_data[item_key]["filename"] = attachment_data.get(
-                        "filename", "unknown.pdf"
-                    )
-                    self.article_data[item_key]["pdf_url"] = url
-                    self.article_data[item_key]["attachment_key"] = attachment_data.get(
-                        "key", ""
-                    )
+            if not attachment_key:
+                logger.warning("No attachment key found for PDF in item: %s", item_key)
+                return
 
-                    logger.info("Found PDF URL for item: %s", item_key)
+            zotero_pdf_url = (
+                f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
+                f"{attachment_key}/file"
+            )
+
+            headers = {"Zotero-API-Key": self.cfg.api_key}
+            response = requests.get(zotero_pdf_url, headers=headers, stream=True)
+            response.raise_for_status()
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    temp_file.write(chunk)
+                temp_file_path = temp_file.name
+
+            self.article_data[item_key]["filename"] = filename
+            self.article_data[item_key]["pdf_url"] = temp_file_path
+            self.article_data[item_key]["attachment_key"] = attachment_key
+
+            logger.info("Downloaded Zotero PDF to: %s", temp_file_path)
 
         except Exception as e:
-            logger.error("Error finding PDF URLs for item %s: %s", item_key, e)
+            logger.error("Failed to download PDF for item %s: %s", item_key, e)
 
     def _create_content(self) -> None:
         """Create the content message for the response."""
