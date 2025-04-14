@@ -24,7 +24,7 @@ system_prompt: >
      - Use only when the user explicitly requests a paper to be fetched or downloaded from arXiv.
 
   4. question_and_answer_agent (PDF Interaction):
-     - Use to answer user questions about a specific uploaded or downloaded PDF.
+     - Use to answer user questions about a specific or multiple uploaded or downloaded PDF.
      - Capable of summarizing PDF contents or responding to complex questions.
 
   You also have access to the **question_and_answer tool**, which enables retrieval-augmented question
