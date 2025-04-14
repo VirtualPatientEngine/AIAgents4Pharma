@@ -198,17 +198,17 @@ class TestZoteroSearchTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
     )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.ZoteroSearchData._download_zotero_pdf"
+    )
     def test_filtering_no_matching_papers(
         self,
+        mock_download_pdf,
         mock_hydra_init,
         mock_hydra_compose,
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """
-        Test that when non-research items (e.g. attachments, notes) are returned,
-        they are still included since filtering is disabled.
-        """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -222,6 +222,9 @@ class TestZoteroSearchTool(unittest.TestCase):
                     "date": "2021",
                     "url": "http://example.com",
                     "itemType": "attachment",
+                    "contentType": "application/pdf",  # orphaned
+                    # no parentItem
+                    "filename": "paper1.pdf",
                 }
             },
             {
@@ -242,20 +245,24 @@ class TestZoteroSearchTool(unittest.TestCase):
             "paper2": ["/Test Collection"],
         }
 
-        tool_call_id = "test_id_4"
+        #  Mock the download call to prevent actual network request
+        mock_download_pdf.return_value = ("/tmp/fake_path.pdf", "paper1.pdf")
+
         tool_input = {
             "query": "test",
-            "only_articles": True,
-            "tool_call_id": tool_call_id,
+            "only_articles": False,
+            "tool_call_id": "test_id_4",
             "limit": 2,
         }
-        # Instead of expecting a RuntimeError, we now expect both items to be returned.
+
         result = zotero_read.run(tool_input)
-        update = result.update
-        filtered_papers = update["article_data"]
+        filtered_papers = result.update["article_data"]
+
         self.assertIn("paper1", filtered_papers)
         self.assertIn("paper2", filtered_papers)
-        self.assertEqual(len(filtered_papers), 2)
+        self.assertEqual(filtered_papers["paper1"]["filename"], "paper1.pdf")
+        self.assertEqual(filtered_papers["paper1"]["pdf_url"], "/tmp/fake_path.pdf")
+        self.assertEqual(filtered_papers["paper1"]["source"], "zotero_orphan")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -408,26 +415,23 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """
-        Test that if an item has a 'data' field that is not a dict, it is skipped.
-        """
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        # Supply one item whose "data" field is not a dict.
-        fake_items = [{"data": "this is not a dict"}]
+        # Make the item itself non-dict (not just `data`)
+        fake_items = ["this is not a dict"]
         fake_zot.items.return_value = fake_items
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {}
 
-        tool_call_id = "test_id_8"
         tool_input = {
             "query": "dummy",
             "only_articles": True,
-            "tool_call_id": tool_call_id,
+            "tool_call_id": "test_id_8",
             "limit": 2,
         }
+
         with self.assertRaises(RuntimeError) as context:
             zotero_read.run(tool_input)
         self.assertIn("No matching papers returned from Zotero", str(context.exception))
@@ -440,19 +444,20 @@ class TestZoteroSearchTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
     )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.get")
     def test_pdf_attachment_success(
         self,
+        mock_requests_get,
         mock_hydra_init,
         mock_hydra_compose,
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that PDF attachments are processed and added correctly."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        fake_items = [
+        fake_zot.items.return_value = [
             {
                 "data": {
                     "key": "paper1",
@@ -469,45 +474,43 @@ class TestZoteroSearchTool(unittest.TestCase):
                         }
                     ],
                 }
-            },
+            }
         ]
-        fake_zot.items.return_value = fake_items
 
-        # Simulate children() returns one valid PDF attachment
         fake_pdf_child = {
             "data": {
                 "key": "attachment1",
                 "filename": "file1.pdf",
                 "contentType": "application/pdf",
-                "url": "http://examplepdf.com/file1.pdf",
             }
         }
         fake_zot.children.return_value = [fake_pdf_child]
-
-        # (Note: file() is no longer used in the updated code.)
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
 
-        tool_call_id = "test_pdf_success"
+        # Mock successful PDF download
+        mock_response = MagicMock()
+        mock_response.iter_content = lambda chunk_size: [b"fake pdf content"]
+        mock_response.headers = {
+            "Content-Disposition": 'attachment; filename="file1.pdf"'
+        }
+        mock_response.raise_for_status = lambda: None
+        mock_requests_get.return_value = mock_response
+
         tool_input = {
             "query": "pdf test",
             "only_articles": True,
-            "tool_call_id": tool_call_id,
+            "tool_call_id": "test_pdf_success",
             "limit": 1,
         }
-        result = zotero_read.run(tool_input)
-        filtered_papers = result.update["article_data"]
 
-        # Verify that PDF information is added at the top level
-        self.assertIn("paper1", filtered_papers)
-        self.assertIn("pdf_url", filtered_papers["paper1"])
-        self.assertEqual(
-            filtered_papers["paper1"]["pdf_url"], "http://examplepdf.com/file1.pdf"
-        )
-        self.assertIn("filename", filtered_papers["paper1"])
-        self.assertEqual(filtered_papers["paper1"]["filename"], "file1.pdf")
-        self.assertIn("attachment_key", filtered_papers["paper1"])
-        self.assertEqual(filtered_papers["paper1"]["attachment_key"], "attachment1")
+        result = zotero_read.run(tool_input)
+        paper = result.update["article_data"]["paper1"]
+
+        self.assertIn("pdf_url", paper)
+        self.assertTrue(paper["pdf_url"].endswith(".pdf"))
+        self.assertEqual(paper["filename"], "file1.pdf")
+        self.assertEqual(paper["attachment_key"], "attachment1")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -586,13 +589,11 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
-        """Test that when a PDF attachment is missing its key,
-        it is still added with an empty attachment_key."""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
         fake_zot = MagicMock()
-        fake_items = [
+        fake_zot.items.return_value = [
             {
                 "data": {
                     "key": "paper1",
@@ -611,42 +612,29 @@ class TestZoteroSearchTool(unittest.TestCase):
                 }
             },
         ]
-        fake_zot.items.return_value = fake_items
 
-        # Simulate a PDF child missing the 'key' field
         fake_pdf_child = {
             "data": {
                 "filename": "no_key.pdf",
                 "contentType": "application/pdf",
-                "url": "http://examplepdf.com/no_key.pdf",
             }
         }
         fake_zot.children.return_value = [fake_pdf_child]
-
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
 
-        tool_call_id = "test_pdf_missing_key"
         tool_input = {
             "query": "missing key test",
             "only_articles": True,
-            "tool_call_id": tool_call_id,
+            "tool_call_id": "test_pdf_missing_key",
             "limit": 1,
         }
-        result = zotero_read.run(tool_input)
-        filtered_papers = result.update["article_data"]
 
-        # Verify that PDF info is added even if the attachment key is missing,
-        # with attachment_key set to an empty string.
-        self.assertIn("paper1", filtered_papers)
-        self.assertIn("pdf_url", filtered_papers["paper1"])
-        self.assertEqual(
-            filtered_papers["paper1"]["pdf_url"], "http://examplepdf.com/no_key.pdf"
-        )
-        self.assertIn("filename", filtered_papers["paper1"])
-        self.assertEqual(filtered_papers["paper1"]["filename"], "no_key.pdf")
-        self.assertIn("attachment_key", filtered_papers["paper1"])
-        self.assertEqual(filtered_papers["paper1"]["attachment_key"], "")
+        result = zotero_read.run(tool_input)
+        paper = result.update["article_data"]["paper1"]
+
+        self.assertNotIn("pdf_url", paper)
+        self.assertNotIn("attachment_key", paper)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
