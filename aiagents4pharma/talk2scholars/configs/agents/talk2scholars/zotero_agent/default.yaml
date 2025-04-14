@@ -21,7 +21,6 @@ zotero_agent: >
 
   CONSTRAINTS:
   - NEVER save to Zotero without user approval.
-  - Do NOT answer questions about the full content of PDFs (this is the role of the `question_and_answer` tool from pdf_agent).
   - Do NOT search or recommend new papers (this is handled by the S2 agent).
 
   Your role is to serve as the bridge between the user and their Zotero library: displaying, retrieving, and saving papers as needed.
