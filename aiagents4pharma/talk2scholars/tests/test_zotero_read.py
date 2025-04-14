@@ -7,7 +7,12 @@ import unittest
 from unittest.mock import patch, MagicMock
 from langgraph.types import Command
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
+from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
+    ZoteroSearchData,
+)
 
+# pylint: disable=protected-access
+# pylint: disable=protected-access, too-many-arguments, too-many-positional-arguments
 
 # Dummy Hydra configuration to be used in tests
 dummy_zotero_read_config = SimpleNamespace(
@@ -199,7 +204,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.ZoteroSearchData._download_zotero_pdf"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper."
+        "ZoteroSearchData._download_zotero_pdf"
     )
     def test_filtering_no_matching_papers(
         self,
@@ -209,6 +215,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """Testing filtering when no paper matching"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -415,6 +422,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """Test for no dict"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -453,6 +461,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """Test for pdf attachment success"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -589,6 +598,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class,
         mock_get_item_collections,
     ):
+        """Test for pdf attachment missing"""
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -699,3 +709,38 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertNotIn("pdf_url", filtered_papers["paper1"])
         self.assertNotIn("filename", filtered_papers["paper1"])
         self.assertNotIn("attachment_key", filtered_papers["paper1"])
+
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.get")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
+    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
+    def test_download_zotero_pdf_exception(
+        self,
+        mock_hydra_init,
+        mock_hydra_compose,
+        mock_zotero_class,
+        mock_get_item_collections,
+        mock_requests_get,
+    ):
+        """Test that _download_zotero_pdf returns None and logs error on request exception."""
+        # Setup mocks for config and Zotero client
+        mock_hydra_compose.return_value = dummy_cfg
+        mock_hydra_init.return_value.__enter__.return_value = None
+        mock_zotero_class.return_value = MagicMock()
+        mock_get_item_collections.return_value = {}
+
+        # Simulate a request exception during PDF download
+        mock_requests_get.side_effect = Exception("Simulated download failure")
+
+        zotero_search = ZoteroSearchData(
+            query="test", only_articles=False, limit=1, tool_call_id="test123"
+        )
+
+        result = zotero_search._download_zotero_pdf("FAKE_ATTACHMENT_KEY")
+
+        self.assertIsNone(result)
