@@ -6,7 +6,7 @@ Utility for zotero read tool.
 
 import logging
 import tempfile
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, Optional
 
 import hydra
 import requests
@@ -102,6 +102,40 @@ class ZoteroSearchData:
 
         return items
 
+    def _download_zotero_pdf(self, attachment_key: str) -> Optional[Tuple[str, str]]:
+        """Download a PDF from Zotero by attachment key. Returns (file_path, filename) or None."""
+        zotero_pdf_url = (
+            f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
+            f"{attachment_key}/file"
+        )
+        headers = {"Zotero-API-Key": self.cfg.api_key}
+
+        try:
+            response = requests.get(
+                zotero_pdf_url, headers=headers, stream=True, timeout=10
+            )
+            response.raise_for_status()
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    temp_file.write(chunk)
+                temp_file_path = temp_file.name
+
+            content_disp = response.headers.get("Content-Disposition", "")
+            filename = (
+                content_disp.split("filename=")[-1].strip('"')
+                if "filename=" in content_disp
+                else "downloaded.pdf"
+            )
+
+            return temp_file_path, filename
+
+        except Exception as e:
+            logger.error(
+                "Failed to download Zotero PDF for attachment %s: %s", attachment_key, e
+            )
+            return None
+
     def _filter_and_format_papers(self, items: List[Dict[str, Any]]) -> None:
         """Filter and format papers from Zotero items, including standalone PDFs."""
         filter_item_types = (
@@ -143,37 +177,19 @@ class ZoteroSearchData:
                     "source": "zotero",
                 }
 
-                # Try to fetch attached PDF via children
+                # Try to fetch attached PDF
                 self._find_pdf_urls(key)
 
             # CASE 2: Standalone orphaned PDF attachment
             elif data.get("contentType") == "application/pdf" and not data.get(
                 "parentItem"
             ):
-                filename = data.get("filename", "unknown.pdf")
                 attachment_key = key
+                filename = data.get("filename", "unknown.pdf")
 
-                zotero_pdf_url = (
-                    f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
-                    f"{attachment_key}/file"
-                )
-
-                # Download the PDF to a temp file
-                try:
-                    headers = {"Zotero-API-Key": self.cfg.api_key}
-                    response = requests.get(
-                        zotero_pdf_url, headers=headers, stream=True
-                    )
-                    response.raise_for_status()
-
-                    with tempfile.NamedTemporaryFile(
-                        delete=False, suffix=".pdf"
-                    ) as temp_file:
-                        for chunk in response.iter_content(chunk_size=8192):
-                            temp_file.write(chunk)
-                        temp_file_path = temp_file.name
-
-                    # Create a synthetic article entry
+                result = self._download_zotero_pdf(attachment_key)
+                if result:
+                    temp_file_path, resolved_filename = result
                     self.article_data[key] = {
                         "Title": filename,
                         "Abstract": "No abstract available",
@@ -187,18 +203,11 @@ class ZoteroSearchData:
                         "Journal Name": "N/A",
                         "Authors": ["(Unknown)"],
                         "source": "zotero_orphan",
-                        "filename": filename,
+                        "filename": resolved_filename,
                         "pdf_url": temp_file_path,
                         "attachment_key": attachment_key,
                     }
-
                     logger.info("Downloaded orphaned Zotero PDF to: %s", temp_file_path)
-
-                except Exception as e:
-                    logger.error(
-                        "Failed to download standalone PDF attachment %s: %s", key, e
-                    )
-                    continue
 
         if not self.article_data:
             logger.error(
@@ -213,9 +222,7 @@ class ZoteroSearchData:
         )
 
     def _find_pdf_urls(self, item_key: str) -> None:
-        """
-        Download Zotero-hosted PDF for a specific item and save it locally as temp file.
-        """
+        """Download Zotero-hosted PDF for a specific item and update article_data."""
         logger.info("Attempting to download Zotero PDF for item: %s", item_key)
 
         try:
@@ -223,10 +230,8 @@ class ZoteroSearchData:
             pdf_attachments = [
                 child
                 for child in children
-                if (
-                    isinstance(child, dict)
-                    and child.get("data", {}).get("contentType") == "application/pdf"
-                )
+                if isinstance(child, dict)
+                and child.get("data", {}).get("contentType") == "application/pdf"
             ]
 
             if not pdf_attachments:
@@ -242,25 +247,13 @@ class ZoteroSearchData:
                 logger.warning("No attachment key found for PDF in item: %s", item_key)
                 return
 
-            zotero_pdf_url = (
-                f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
-                f"{attachment_key}/file"
-            )
-
-            headers = {"Zotero-API-Key": self.cfg.api_key}
-            response = requests.get(zotero_pdf_url, headers=headers, stream=True)
-            response.raise_for_status()
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    temp_file.write(chunk)
-                temp_file_path = temp_file.name
-
-            self.article_data[item_key]["filename"] = filename
-            self.article_data[item_key]["pdf_url"] = temp_file_path
-            self.article_data[item_key]["attachment_key"] = attachment_key
-
-            logger.info("Downloaded Zotero PDF to: %s", temp_file_path)
+            result = self._download_zotero_pdf(attachment_key)
+            if result:
+                temp_file_path, resolved_filename = result
+                self.article_data[item_key]["filename"] = resolved_filename or filename
+                self.article_data[item_key]["pdf_url"] = temp_file_path
+                self.article_data[item_key]["attachment_key"] = attachment_key
+                logger.info("Downloaded Zotero PDF to: %s", temp_file_path)
 
         except Exception as e:
             logger.error("Failed to download PDF for item %s: %s", item_key, e)
