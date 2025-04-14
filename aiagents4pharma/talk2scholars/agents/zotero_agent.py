@@ -21,6 +21,9 @@ from ..tools.s2.query_results import query_results as s2_query_results
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
+from ..tools.pdf.question_and_answer import (
+    question_and_answer_tool as question_and_answer,
+)
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -94,6 +97,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             retrieve_semantic_scholar_paper_id,
             zotero_review,  # First review
             zotero_write,  # Then save with user confirmation
+            question_and_answer,
         ]
     )
 
