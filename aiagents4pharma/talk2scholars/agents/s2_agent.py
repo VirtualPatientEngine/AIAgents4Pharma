@@ -50,7 +50,6 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    # def agent_s2_node(state: Talk2Scholars) -> Command[Literal["supervisor"]]:
     def agent_s2_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers.
