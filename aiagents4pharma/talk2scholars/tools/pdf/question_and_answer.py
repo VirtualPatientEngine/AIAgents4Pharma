@@ -392,7 +392,7 @@ def generate_answer(
 
 
 @tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
-def question_and_answer_tool(
+def question_and_answer(
     question: str,
     state: Annotated[dict, InjectedState],
     tool_call_id: Annotated[str, InjectedToolCallId],

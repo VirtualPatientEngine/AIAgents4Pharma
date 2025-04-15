@@ -27,13 +27,13 @@ def mock_tools_fixture():
     """Mock PDF agent tools to prevent execution of real API calls."""
     with (
         mock.patch(
-            "aiagents4pharma.talk2scholars.agents.pdf_agent.question_and_answer_tool"
-        ) as mock_question_and_answer_tool,
+            "aiagents4pharma.talk2scholars.agents.pdf_agent.question_and_answer"
+        ) as mock_question_and_answer,
     ):
-        mock_question_and_answer_tool.return_value = {
+        mock_question_and_answer.return_value = {
             "result": "Mock Question and Answer Result"
         }
-        yield [mock_question_and_answer_tool]
+        yield [mock_question_and_answer]
 
 
 @pytest.fixture

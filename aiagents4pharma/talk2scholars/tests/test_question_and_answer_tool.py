@@ -11,7 +11,7 @@ from langchain_core.embeddings import Embeddings
 from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     Vectorstore,
     generate_answer,
-    question_and_answer_tool,
+    question_and_answer,
 )
 
 
@@ -281,7 +281,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
-    def test_question_and_answer_tool_success(self, mock_generate_answer):
+    def test_question_and_answer_success(self, mock_generate_answer):
         """test the main functionality of the question_and_answer tool."""
         # Create a dummy document to simulate a retrieved chunk
         dummy_doc = Document(
@@ -331,7 +331,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "tool_call_id": "test_tool_call",
             "state": state,
         }
-        result = question_and_answer_tool.run(input_data)
+        result = question_and_answer.run(input_data)
 
         # Verify that generate_answer was called with expected arguments
         mock_generate_answer.assert_called_once()
@@ -349,7 +349,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_tool_semantic_branch(
+    def test_question_and_answer_semantic_branch(
         self, mock_vectorstore, mock_generate_answer
     ):
         """test the semantic ranking branch of the question_and_answer tool."""
@@ -410,7 +410,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "tool_call_id": "test_semantic_tool_call",
             "state": state,
         }
-        result = question_and_answer_tool.run(input_data)
+        result = question_and_answer.run(input_data)
 
         # Instead of checking that 'vector_store' was added to the original state dict,
         # verify that a new vector store was created by checking that Vectorstore was instantiated.
@@ -446,7 +446,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(response_message.tool_call_id, "test_semantic_tool_call")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_tool_fallback_no_relevant_chunks(
+    def test_question_and_answer_fallback_no_relevant_chunks(
         self, mock_vectorstore
     ):
         """Test the fallback branch of the question_and_answer
@@ -497,7 +497,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         }
 
         with self.assertRaises(RuntimeError) as context:
-            question_and_answer_tool.run(input_data)
+            question_and_answer.run(input_data)
 
         # Verify that build_vector_store was called to ensure the store is built.
         dummy_vs.build_vector_store.assert_called()
@@ -511,7 +511,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
-    def test_question_and_answer_tool_use_all_papers(self, mock_generate_answer):
+    def test_question_and_answer_use_all_papers(self, mock_generate_answer):
         """test the use_all_papers branch of the question_and_answer tool."""
         # Test the branch where use_all_papers is True.
         # Create a dummy document for retrieval.
@@ -557,7 +557,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "tool_call_id": "test_use_all_papers",
             "state": state,
         }
-        result = question_and_answer_tool.run(input_data)
+        result = question_and_answer.run(input_data)
 
         # Verify that the use_all_papers branch was
         # taken by checking that all article keys were selected.
@@ -575,7 +575,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(response_message.tool_call_id, "test_use_all_papers")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_tool_add_paper_exception(self, mock_vectorstore):
+    def test_question_and_answer_add_paper_exception(self, mock_vectorstore):
         """test exception handling when add_paper fails."""
         # Test that in the semantic ranking branch, if add_paper raises an exception,
         # the error is logged and then re-raised.
@@ -619,7 +619,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "state": state,
         }
         with self.assertRaises(IOError) as context:
-            question_and_answer_tool.run(input_data)
+            question_and_answer.run(input_data)
         self.assertIn("Add paper failure", str(context.exception))
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.PyPDFLoader")
@@ -707,7 +707,7 @@ class TestMissingState(unittest.TestCase):
             "state": state,
         }
         with self.assertRaises(ValueError) as context:
-            question_and_answer_tool.run(tool_input)
+            question_and_answer.run(tool_input)
         self.assertEqual(
             str(context.exception), "No text embedding model found in state."
         )
@@ -732,7 +732,7 @@ class TestMissingState(unittest.TestCase):
             "state": state,
         }
         with self.assertRaises(ValueError) as context:
-            question_and_answer_tool.run(tool_input)
+            question_and_answer.run(tool_input)
         self.assertEqual(str(context.exception), "No LLM model found in state.")
 
     def test_missing_article_data(self):
@@ -750,7 +750,7 @@ class TestMissingState(unittest.TestCase):
             "state": state,
         }
         with self.assertRaises(ValueError) as context:
-            question_and_answer_tool.run(tool_input)
+            question_and_answer.run(tool_input)
         self.assertEqual(str(context.exception), "No article_data found in state.")
 
     def test_empty_article_data(self):
@@ -770,7 +770,7 @@ class TestMissingState(unittest.TestCase):
             "state": state,
         }
         with self.assertRaises(ValueError) as context:
-            question_and_answer_tool.run(tool_input)
+            question_and_answer.run(tool_input)
         self.assertEqual(str(context.exception), "No article_data found in state.")
 
     @patch(

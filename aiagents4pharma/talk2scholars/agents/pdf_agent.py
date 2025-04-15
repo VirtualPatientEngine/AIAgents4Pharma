@@ -18,7 +18,7 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.pdf.question_and_answer import question_and_answer_tool
+from ..tools.pdf.question_and_answer import question_and_answer
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -71,7 +71,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         return response
 
     # Define the tool node that includes the PDF QnA tool.
-    tools = ToolNode([question_and_answer_tool])
+    tools = ToolNode([question_and_answer])
 
     logger.info("Using OpenAI model %s", llm_model)
 
