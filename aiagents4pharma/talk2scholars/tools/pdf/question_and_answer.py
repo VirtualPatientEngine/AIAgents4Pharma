@@ -207,7 +207,7 @@ class Vectorstore:
         logger.info("Built vector store with %d documents", len(documents_list))
 
     def rank_papers_by_query(
-        self, query: str, top_k: int = 3
+        self, query: str, top_k: int = 6
     ) -> List[Tuple[str, float]]:
         """
         Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
@@ -255,7 +255,7 @@ class Vectorstore:
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 10,
+        top_k: int = 30,
         mmr_diversity: float = 0.3,
     ) -> List[Document]:
         """

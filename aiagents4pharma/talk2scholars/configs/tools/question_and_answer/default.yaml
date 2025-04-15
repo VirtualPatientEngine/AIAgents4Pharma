@@ -2,8 +2,8 @@
 chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
 num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
-top_k_papers: 3 # Number of papers to rank and retrieve
-top_k_chunks: 10 # Number of chunks to retrieve
+top_k_papers: 6 # Number of papers to rank and retrieve
+top_k_chunks: 30 # Number of chunks to retrieve
 qa_chain_type: "stuff" # The type of QA chain to use
 reranker:
   model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
