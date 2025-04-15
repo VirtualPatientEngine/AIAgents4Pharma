@@ -23,8 +23,8 @@ class NoPapersFoundError(Exception):
 @tool("query_results", parse_docstring=True)
 def query_results(question: str, state: Annotated[dict, InjectedState]) -> str:
     """
-    Query the last displayed papers from the state. If no papers are found,
-    raises an exception.
+    Query the last displayed papers from the state by reading the dataframe
+    and querying it. If no papers are found, raises an exception.
 
     Use this also to get the last displayed papers from the state,
     and then use the papers to get recommendations for a single paper or
