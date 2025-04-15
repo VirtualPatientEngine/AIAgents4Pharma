@@ -16,8 +16,8 @@ from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_read
 from ..tools.zotero.zotero_review import zotero_review
 from ..tools.zotero.zotero_write import zotero_write
-from ..tools.s2.display_results import display_results as s2_display
-from ..tools.s2.query_results import query_results as s2_query_results
+from ..tools.s2.display_results import display_results as display_dataframe
+from ..tools.s2.query_results import query_results as query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
@@ -92,11 +92,11 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     tools = ToolNode(
         [
             zotero_read,
-            s2_display,
-            s2_query_results,
+            display_dataframe,
+            query_dataframe,
             retrieve_semantic_scholar_paper_id,
-            zotero_review,  # First review
-            zotero_write,  # Then save with user confirmation
+            zotero_review,
+            zotero_write,
             question_and_answer,
         ]
     )

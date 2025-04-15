@@ -13,8 +13,8 @@ from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.s2.search import search_tool as s2_search
-from ..tools.s2.display_results import display_results as s2_display
-from ..tools.s2.query_results import query_results as s2_query_results
+from ..tools.s2.display_results import display_results as display_dataframe
+from ..tools.s2.query_results import query_results as query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id as s2_retrieve_id,
 )
@@ -90,8 +90,8 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     tools = ToolNode(
         [
             s2_search,
-            s2_display,
-            s2_query_results,
+            display_dataframe,
+            query_dataframe,
             s2_retrieve_id,
             s2_single_rec,
             s2_multi_rec,
