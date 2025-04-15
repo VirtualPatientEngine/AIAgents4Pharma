@@ -395,9 +395,9 @@ def generate_answer(
 def question_and_answer_tool(
     question: str,
     state: Annotated[dict, InjectedState],
+    tool_call_id: Annotated[str, InjectedToolCallId],
     paper_ids: Optional[List[str]] = None,
     use_all_papers: bool = False,
-    tool_call_id: Annotated[str, InjectedToolCallId] = "",
 ) -> Command[Any]:
     """
     Answer a question using PDF content with advanced retrieval augmented generation.

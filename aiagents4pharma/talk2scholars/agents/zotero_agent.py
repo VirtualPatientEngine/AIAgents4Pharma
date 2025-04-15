@@ -16,8 +16,8 @@ from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_read
 from ..tools.zotero.zotero_review import zotero_review
 from ..tools.zotero.zotero_write import zotero_write
-from ..tools.s2.display_results import display_results as display_dataframe
-from ..tools.s2.query_results import query_results as query_dataframe
+from ..tools.s2.display_dataframe import display_dataframe
+from ..tools.s2.query_dataframe import query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )

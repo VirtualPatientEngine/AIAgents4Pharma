@@ -38,8 +38,8 @@ class NoPapersFoundError(Exception):
     """
 
 
-@tool("display_results", parse_docstring=True)
-def display_results(
+@tool("display_dataframe", parse_docstring=True)
+def display_dataframe(
     tool_call_id: Annotated[str, InjectedToolCallId],
     state: Annotated[dict, InjectedState],
 ) -> Command:
@@ -63,7 +63,7 @@ def display_results(
 
     Example:
         >>> state = {"last_displayed_papers": {"paper1": "Title 1", "paper2": "Title 2"}}
-        >>> result = display_results(tool_call_id="123", state=state)
+        >>> result = display_dataframe(tool_call_id="123", state=state)
         >>> print(result.update["messages"][0].content)
         "2 papers found. Papers are attached as an artifact."
     """

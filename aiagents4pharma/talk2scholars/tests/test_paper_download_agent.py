@@ -84,7 +84,7 @@ def test_paper_download_agent_invocation():
 
 
 def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
-    """Checks correct tool assignment (download_arxiv_paper, query_results)."""
+    """Checks correct tool assignment (download_arxiv_paper, query_dataframe)."""
     thread_id = "test_thread_paper_dl"
     mock_tools = request.getfixturevalue("mock_tools_fixture")
     llm_mock = mock.Mock(spec=BaseChatModel)

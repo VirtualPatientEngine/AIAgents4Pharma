@@ -107,12 +107,12 @@ nav:
           - Search papers: talk2scholars/tools/search.md
           - Single paper recommendation: talk2scholars/tools/single_paper_rec.md
           - Multi paper recommendation: talk2scholars/tools/multi_paper_rec.md
-          - Display results: talk2scholars/tools/display_results.md
-          - Query results: talk2scholars/tools/query_results.md
+          - Display dataframe: talk2scholars/tools/display_dataframe.md
+          - Query dataframe: talk2scholars/tools/query_dataframe.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
           - Arxiv Downloader: talk2scholars/tools/arxiv_downloader.md
-          - Abstract Downloader: talk2scholars/tools/abstract_downloader.md          
+          - Abstract Downloader: talk2scholars/tools/abstract_downloader.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
           - Question and answer: talk2scholars/tools/question_and_answer.md
 

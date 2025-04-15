@@ -272,7 +272,7 @@ with main_col2:
             elif message["type"] == "dataframe":
                 if "tool_name" in message:
                     if message["tool_name"] in [
-                        "display_results",
+                        "display_dataframe",
                     ]:
                         df_papers = message["content"]
                         st.dataframe(

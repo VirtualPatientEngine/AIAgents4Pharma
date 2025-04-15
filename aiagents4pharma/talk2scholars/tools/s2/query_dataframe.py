@@ -20,8 +20,8 @@ class NoPapersFoundError(Exception):
     """Exception raised when no papers are found in the state."""
 
 
-@tool("query_results", parse_docstring=True)
-def query_results(question: str, state: Annotated[dict, InjectedState]) -> str:
+@tool("query_dataframe", parse_docstring=True)
+def query_dataframe(question: str, state: Annotated[dict, InjectedState]) -> str:
     """
     Query the last displayed papers from the state by reading the dataframe
     and querying it. If no papers are found, raises an exception.
