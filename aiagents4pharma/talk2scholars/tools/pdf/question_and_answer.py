@@ -470,9 +470,21 @@ def question_and_answer_tool(
             getattr(vector_store, "initialization_time", "unknown"),
         )
 
-    # Check if there are any user-uploaded papers (identified by source="upload")
+    # Check if there are papers from different sources
     has_uploaded_papers = any(
         paper.get("source") == "upload"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
+    has_zotero_papers = any(
+        paper.get("source") == "zotero"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
+    has_arxiv_papers = any(
+        paper.get("source") == "arxiv"
         for paper in article_data.values()
         if isinstance(paper, dict)
     )
@@ -492,8 +504,8 @@ def question_and_answer_tool(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif use_all_papers or has_uploaded_papers:
-        # Use all available papers if explicitly requested or if we have uploaded papers
+    elif use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers:
+        # Use all available papers if explicitly requested or if we have papers from any source
         selected_paper_ids = list(article_data.keys())
         logger.info(
             "%s: Using all %d available papers", call_id, len(selected_paper_ids)
