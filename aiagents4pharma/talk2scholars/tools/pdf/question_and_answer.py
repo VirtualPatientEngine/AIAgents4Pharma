@@ -147,8 +147,8 @@ class Vectorstore:
             # Use default splitter if none provided
             if splitter is None:
                 splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=1000,
-                    chunk_overlap=200,
+                    chunk_size=2000,
+                    chunk_overlap=400,
                     separators=["\n\n", "\n", ". ", " ", ""],
                 )
 
@@ -256,7 +256,7 @@ class Vectorstore:
         query: str,
         paper_ids: Optional[List[str]] = None,
         top_k: int = 30,
-        mmr_diversity: float = 0.3,
+        mmr_diversity: float = 0.1,
     ) -> List[Document]:
         """
         Retrieve the most relevant chunks for a query using maximal marginal relevance.
