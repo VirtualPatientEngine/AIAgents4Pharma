@@ -7,6 +7,7 @@ Utility for zotero read tool.
 import logging
 import tempfile
 from typing import Any, Dict, List, Tuple, Optional
+import concurrent.futures
 
 import hydra
 import requests
@@ -40,6 +41,8 @@ class ZoteroSearchData:
         self.item_to_collections = get_item_collections(self.zot)
         self.article_data = {}
         self.content = ""
+        # Create a session for connection pooling
+        self.session = requests.Session()
 
     def process_search(self) -> None:
         """Process the search request and prepare results."""
@@ -111,13 +114,15 @@ class ZoteroSearchData:
         headers = {"Zotero-API-Key": self.cfg.api_key}
 
         try:
-            response = requests.get(
+            # Use session for connection pooling
+            response = self.session.get(
                 zotero_pdf_url, headers=headers, stream=True, timeout=10
             )
             response.raise_for_status()
 
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                for chunk in response.iter_content(chunk_size=8192):
+                # Increased chunk size for better performance
+                for chunk in response.iter_content(chunk_size=16384):
                     temp_file.write(chunk)
                 temp_file_path = temp_file.name
 
@@ -136,6 +141,53 @@ class ZoteroSearchData:
             )
             return None
 
+    def _download_pdfs_in_parallel(
+        self, attachment_item_map: Dict[str, str]
+    ) -> Dict[str, Tuple[str, str, str]]:
+        """
+        Download multiple PDFs in parallel using ThreadPoolExecutor.
+
+        Args:
+            attachment_item_map: Dictionary mapping attachment keys to parent item keys
+
+        Returns:
+            Dictionary mapping parent item keys to (file_path, filename, attachment_key)
+        """
+        results = {}
+        max_workers = min(10, len(attachment_item_map))  # Set reasonable limit
+
+        if not attachment_item_map:
+            return results
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Create a dictionary mapping Future objects to attachment keys
+            future_to_key = {
+                executor.submit(self._download_zotero_pdf, attachment_key): (
+                    attachment_key,
+                    item_key,
+                )
+                for attachment_key, item_key in attachment_item_map.items()
+            }
+
+            for future in concurrent.futures.as_completed(future_to_key):
+                attachment_key, item_key = future_to_key[future]
+                try:
+                    result = future.result()
+                    if result:
+                        temp_file_path, resolved_filename = result
+                        results[item_key] = (
+                            temp_file_path,
+                            resolved_filename,
+                            attachment_key,
+                        )
+                except Exception as e:
+                    logger.error(
+                        "Failed to download PDF for key %s: %s", attachment_key, e
+                    )
+
+        return results
+
+    # pylint: disable=too-many-locals, too-many-branches
     def _filter_and_format_papers(self, items: List[Dict[str, Any]]) -> None:
         """Filter and format papers from Zotero items, including standalone PDFs."""
         filter_item_types = (
@@ -143,6 +195,11 @@ class ZoteroSearchData:
         )
         logger.debug("Filtering item types: %s", filter_item_types)
 
+        # Maps to track attachments for batch processing
+        orphaned_pdfs = {}  # attachment_key -> item key (same for orphans)
+        item_attachments = {}  # item_key -> [attachment_keys]
+
+        # First pass: process all items without downloading PDFs
         for item in items:
             if not isinstance(item, dict):
                 continue
@@ -176,9 +233,7 @@ class ZoteroSearchData:
                     ],
                     "source": "zotero",
                 }
-
-                # Try to fetch attached PDF
-                self._find_pdf_urls(key)
+                # We'll collect attachment info in second pass
 
             # CASE 2: Standalone orphaned PDF attachment
             elif data.get("contentType") == "application/pdf" and not data.get(
@@ -187,27 +242,79 @@ class ZoteroSearchData:
                 attachment_key = key
                 filename = data.get("filename", "unknown.pdf")
 
-                result = self._download_zotero_pdf(attachment_key)
-                if result:
-                    temp_file_path, resolved_filename = result
-                    self.article_data[key] = {
-                        "Title": filename,
-                        "Abstract": "No abstract available",
-                        "Publication Date": "N/A",
-                        "URL": "N/A",
-                        "Type": "orphan_attachment",
-                        "Collections": ["/(No Collection)"],
-                        "Citation Count": "N/A",
-                        "Venue": "N/A",
-                        "Publication Venue": "N/A",
-                        "Journal Name": "N/A",
-                        "Authors": ["(Unknown)"],
-                        "source": "zotero_orphan",
-                        "filename": resolved_filename,
-                        "pdf_url": temp_file_path,
-                        "attachment_key": attachment_key,
-                    }
-                    logger.info("Downloaded orphaned Zotero PDF to: %s", temp_file_path)
+                # Add to orphaned PDFs for batch processing
+                orphaned_pdfs[attachment_key] = (
+                    attachment_key  # Same key as both attachment and "item"
+                )
+
+                # Create the entry without PDF info yet
+                self.article_data[key] = {
+                    "Title": filename,
+                    "Abstract": "No abstract available",
+                    "Publication Date": "N/A",
+                    "URL": "N/A",
+                    "Type": "orphan_attachment",
+                    "Collections": ["/(No Collection)"],
+                    "Citation Count": "N/A",
+                    "Venue": "N/A",
+                    "Publication Venue": "N/A",
+                    "Journal Name": "N/A",
+                    "Authors": ["(Unknown)"],
+                    "source": "zotero",
+                }
+
+        # Second pass: collect attachment info for all items
+        for item_key, item_data in self.article_data.items():
+            if item_data["Type"] != "orphan_attachment":
+                try:
+                    children = self.zot.children(item_key)
+                    pdf_attachments = [
+                        child
+                        for child in children
+                        if isinstance(child, dict)
+                        and child.get("data", {}).get("contentType")
+                        == "application/pdf"
+                    ]
+
+                    if pdf_attachments:
+                        attachment = pdf_attachments[0]
+                        attachment_data = attachment.get("data", {})
+                        attachment_key = attachment_data.get("key")
+                        filename = attachment_data.get("filename", "unknown.pdf")
+
+                        if attachment_key:
+                            # Add to item attachments map
+                            item_attachments[attachment_key] = item_key
+                            # Add basic info
+                            self.article_data[item_key]["filename"] = filename
+                except Exception as e:
+                    logger.error(
+                        "Failed to get attachments for item %s: %s", item_key, e
+                    )
+
+        # Now download all PDFs in parallel - first orphaned PDFs
+        logger.info("Downloading %d orphaned PDFs in parallel", len(orphaned_pdfs))
+        orphan_results = self._download_pdfs_in_parallel(orphaned_pdfs)
+
+        # Update orphan data
+        for item_key, (file_path, filename, attachment_key) in orphan_results.items():
+            self.article_data[item_key]["filename"] = filename
+            self.article_data[item_key]["pdf_url"] = file_path
+            self.article_data[item_key]["attachment_key"] = attachment_key
+            logger.info("Downloaded orphaned Zotero PDF to: %s", file_path)
+
+        # Download regular item attachments
+        logger.info(
+            "Downloading %d regular item PDFs in parallel", len(item_attachments)
+        )
+        item_results = self._download_pdfs_in_parallel(item_attachments)
+
+        # Update item data
+        for item_key, (file_path, filename, attachment_key) in item_results.items():
+            self.article_data[item_key]["filename"] = filename
+            self.article_data[item_key]["pdf_url"] = file_path
+            self.article_data[item_key]["attachment_key"] = attachment_key
+            logger.info("Downloaded Zotero PDF to: %s", file_path)
 
         if not self.article_data:
             logger.error(
@@ -220,43 +327,6 @@ class ZoteroSearchData:
         logger.info(
             "Filtered %d items (including orphaned attachments)", len(self.article_data)
         )
-
-    def _find_pdf_urls(self, item_key: str) -> None:
-        """Download Zotero-hosted PDF for a specific item and update article_data."""
-        logger.info("Attempting to download Zotero PDF for item: %s", item_key)
-
-        try:
-            children = self.zot.children(item_key)
-            pdf_attachments = [
-                child
-                for child in children
-                if isinstance(child, dict)
-                and child.get("data", {}).get("contentType") == "application/pdf"
-            ]
-
-            if not pdf_attachments:
-                logger.info("No Zotero PDF attachments found for item: %s", item_key)
-                return
-
-            attachment = pdf_attachments[0]
-            attachment_data = attachment.get("data", {})
-            attachment_key = attachment_data.get("key")
-            filename = attachment_data.get("filename", "unknown.pdf")
-
-            if not attachment_key:
-                logger.warning("No attachment key found for PDF in item: %s", item_key)
-                return
-
-            result = self._download_zotero_pdf(attachment_key)
-            if result:
-                temp_file_path, resolved_filename = result
-                self.article_data[item_key]["filename"] = resolved_filename or filename
-                self.article_data[item_key]["pdf_url"] = temp_file_path
-                self.article_data[item_key]["attachment_key"] = attachment_key
-                logger.info("Downloaded Zotero PDF to: %s", temp_file_path)
-
-        except Exception as e:
-            logger.error("Failed to download PDF for item %s: %s", item_key, e)
 
     def _create_content(self) -> None:
         """Create the content message for the response."""
