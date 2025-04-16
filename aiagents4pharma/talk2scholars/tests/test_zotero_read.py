@@ -205,11 +205,11 @@ class TestZoteroSearchTool(unittest.TestCase):
     )
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper."
-        "ZoteroSearchData._download_zotero_pdf"
+        "ZoteroSearchData._download_pdfs_in_parallel"
     )
     def test_filtering_no_matching_papers(
         self,
-        mock_download_pdf,
+        mock_batch_download,
         mock_hydra_init,
         mock_hydra_compose,
         mock_zotero_class,
@@ -230,7 +230,6 @@ class TestZoteroSearchTool(unittest.TestCase):
                     "url": "http://example.com",
                     "itemType": "attachment",
                     "contentType": "application/pdf",  # orphaned
-                    # no parentItem
                     "filename": "paper1.pdf",
                 }
             },
@@ -252,8 +251,9 @@ class TestZoteroSearchTool(unittest.TestCase):
             "paper2": ["/Test Collection"],
         }
 
-        #  Mock the download call to prevent actual network request
-        mock_download_pdf.return_value = ("/tmp/fake_path.pdf", "paper1.pdf")
+        mock_batch_download.return_value = {
+            "paper1": ("/tmp/fake_path.pdf", "paper1.pdf", "paper1")
+        }
 
         tool_input = {
             "query": "test",
@@ -269,7 +269,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("paper2", filtered_papers)
         self.assertEqual(filtered_papers["paper1"]["filename"], "paper1.pdf")
         self.assertEqual(filtered_papers["paper1"]["pdf_url"], "/tmp/fake_path.pdf")
-        self.assertEqual(filtered_papers["paper1"]["source"], "zotero_orphan")
+        self.assertEqual(filtered_papers["paper1"]["source"], "zotero")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
@@ -452,10 +452,12 @@ class TestZoteroSearchTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.get")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.Session.get"
+    )
     def test_pdf_attachment_success(
         self,
-        mock_requests_get,
+        mock_session_get,
         mock_hydra_init,
         mock_hydra_compose,
         mock_zotero_class,
@@ -497,14 +499,15 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Test Collection"]}
 
-        # Mock successful PDF download
+        # Mock successful PDF download via session
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.iter_content = lambda chunk_size: [b"fake pdf content"]
         mock_response.headers = {
             "Content-Disposition": 'attachment; filename="file1.pdf"'
         }
         mock_response.raise_for_status = lambda: None
-        mock_requests_get.return_value = mock_response
+        mock_session_get.return_value = mock_response
 
         tool_input = {
             "query": "pdf test",
