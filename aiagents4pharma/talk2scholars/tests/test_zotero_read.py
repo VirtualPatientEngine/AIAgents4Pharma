@@ -747,3 +747,65 @@ class TestZoteroSearchTool(unittest.TestCase):
         result = zotero_search._download_zotero_pdf("FAKE_ATTACHMENT_KEY")
 
         self.assertIsNone(result)
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
+    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
+    )
+    def test_download_pdf_exception_logging(
+        self,
+        mock_hydra_init,
+        mock_hydra_compose,
+        mock_zotero_class,
+        mock_get_item_collections,
+    ):
+        """Test that a failed download logs the error and does not break the pipeline."""
+        mock_hydra_compose.return_value = dummy_cfg
+        mock_hydra_init.return_value.__enter__.return_value = None
+
+        fake_zot = MagicMock()
+        fake_zot.items.return_value = [
+            {
+                "data": {
+                    "key": "paper1",
+                    "title": "Fake Title",
+                    "itemType": "journalArticle",
+                }
+            }
+        ]
+        # Simulate an attachment
+        fake_zot.children.return_value = [
+            {
+                "data": {
+                    "key": "attachment1",
+                    "filename": "file1.pdf",
+                    "contentType": "application/pdf",
+                }
+            }
+        ]
+
+        mock_zotero_class.return_value = fake_zot
+        mock_get_item_collections.return_value = {"paper1": ["/Fake Collection"]}
+
+        # Patch just the internal _download_zotero_pdf to raise an exception
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper."
+            "ZoteroSearchData._download_zotero_pdf"
+        ) as mock_download_pdf:
+            mock_download_pdf.side_effect = Exception("Simulated download error")
+
+            search = ZoteroSearchData(
+                query="failure test",
+                only_articles=True,
+                limit=1,
+                tool_call_id="fail_test",
+            )
+            search.process_search()
+
+            article_data = search.get_search_results()["article_data"]
+            assert "paper1" in article_data
+            assert "pdf_url" not in article_data["paper1"]  # download failed, no URL
