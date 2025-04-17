@@ -6,22 +6,26 @@ Agent for interacting with Semantic Scholar
 
 import logging
 from typing import Any, Dict
+
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
-from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import create_react_agent, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import START, StateGraph
+from langgraph.prebuilt import ToolNode, create_react_agent
+
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.s2.search import search_tool as s2_search
-from ..tools.s2.display_results import display_results as s2_display
-from ..tools.s2.query_results import query_results as s2_query_results
+from ..tools.s2.display_dataframe import display_dataframe
+from ..tools.s2.multi_paper_rec import (
+    get_multi_paper_recommendations,
+)
+from ..tools.s2.query_dataframe import query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
-    retrieve_semantic_scholar_paper_id as s2_retrieve_id,
+    retrieve_semantic_scholar_paper_id,
 )
+from ..tools.s2.search import search_tool
 from ..tools.s2.single_paper_rec import (
-    get_single_paper_recommendations as s2_single_rec,
+    get_single_paper_recommendations,
 )
-from ..tools.s2.multi_paper_rec import get_multi_paper_recommendations as s2_multi_rec
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -50,7 +54,6 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    # def agent_s2_node(state: Talk2Scholars) -> Command[Literal["supervisor"]]:
     def agent_s2_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers.
@@ -89,12 +92,12 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # Define the tools
     tools = ToolNode(
         [
-            s2_search,
-            s2_display,
-            s2_query_results,
-            s2_retrieve_id,
-            s2_single_rec,
-            s2_multi_rec,
+            search_tool,
+            display_dataframe,
+            query_dataframe,
+            retrieve_semantic_scholar_paper_id,
+            get_single_paper_recommendations,
+            get_multi_paper_recommendations,
         ]
     )
 

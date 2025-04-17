@@ -29,11 +29,11 @@ def mock_tools_fixture():
     """Mock tools to prevent execution of real API calls."""
     with (
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.s2.display_results.display_results"
+            "aiagents4pharma.talk2scholars.tools.s2.display_dataframe.display_dataframe"
         ) as mock_s2_display,
         mock.patch(
-            "aiagents4pharma.talk2scholars.tools.s2.query_results.query_results"
-        ) as mock_s2_query_results,
+            "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.query_dataframe"
+        ) as mock_s2_query_dataframe,
         mock.patch(
             "aiagents4pharma.talk2scholars.tools.s2."
             "retrieve_semantic_scholar_paper_id."
@@ -41,18 +41,18 @@ def mock_tools_fixture():
         ) as mock_s2_retrieve_id,
         mock.patch(
             "aiagents4pharma.talk2scholars.tools.zotero.zotero_read.zotero_read"
-        ) as mock_zotero_query_results,
+        ) as mock_zotero_query_dataframe,
     ):
         mock_s2_display.return_value = {"result": "Mock Display Result"}
-        mock_s2_query_results.return_value = {"result": "Mock Query Result"}
+        mock_s2_query_dataframe.return_value = {"result": "Mock Query Result"}
         mock_s2_retrieve_id.return_value = {"paper_id": "MockPaper123"}
-        mock_zotero_query_results.return_value = {"result": "Mock Search Result"}
+        mock_zotero_query_dataframe.return_value = {"result": "Mock Search Result"}
 
         yield [
             mock_s2_display,
-            mock_s2_query_results,
+            mock_s2_query_dataframe,
             mock_s2_retrieve_id,
-            mock_zotero_query_results,
+            mock_zotero_query_dataframe,
         ]
 
 
@@ -120,8 +120,8 @@ def test_zotero_agent_tools_assignment(request):
         assert len(mock_tool_instance.tools) == 4
 
 
-def test_s2_query_results_tool():
-    """Test if the query_results tool is correctly utilized by the agent."""
+def test_s2_query_dataframe_tool():
+    """Test if the query_dataframe tool is correctly utilized by the agent."""
     thread_id = "test_thread"
     mock_state = Talk2Scholars(
         messages=[HumanMessage(content="Query results for AI papers")]
@@ -135,7 +135,7 @@ def test_s2_query_results_tool():
             "messages": [HumanMessage(content="Query results for AI papers")],
             "last_displayed_papers": {},
             "papers": {
-                "query_results": "Mock Query Result"
+                "query_dataframe": "Mock Query Result"
             },  # Ensure the expected key is inside 'papers'
             "multi_papers": {},
         }
@@ -150,7 +150,7 @@ def test_s2_query_results_tool():
                 }
             },
         )
-        assert "query_results" in result["papers"]
+        assert "query_dataframe" in result["papers"]
         assert mock_agent.invoke.called
 
 

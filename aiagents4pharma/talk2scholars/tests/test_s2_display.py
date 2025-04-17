@@ -5,8 +5,8 @@ Unit tests for S2 tools functionality.
 # pylint: disable=redefined-outer-name
 import pytest
 from langgraph.types import Command
-from ..tools.s2.display_results import (
-    display_results,
+from ..tools.s2.display_dataframe import (
+    display_dataframe,
     NoPapersFoundError as raised_error,
 )
 
@@ -46,21 +46,21 @@ MOCK_STATE_PAPER = {
 class TestS2Tools:
     """Unit tests for individual S2 tools"""
 
-    def test_display_results_empty_state(self, initial_state):
-        """Verifies display_results tool behavior when state is empty and raises an exception"""
+    def test_display_dataframe_empty_state(self, initial_state):
+        """Verifies display_dataframe tool behavior when state is empty and raises an exception"""
         with pytest.raises(
             raised_error,
             match="No papers found. A search/rec needs to be performed first.",
         ):
-            display_results.invoke({"state": initial_state, "tool_call_id": "test123"})
+            display_dataframe.invoke({"state": initial_state, "tool_call_id": "test123"})
 
-    def test_display_results_shows_papers(self, initial_state):
-        """Verifies display_results tool correctly returns papers from state"""
+    def test_display_dataframe_shows_papers(self, initial_state):
+        """Verifies display_dataframe tool correctly returns papers from state"""
         state = initial_state.copy()
         state["last_displayed_papers"] = "papers"
         state["papers"] = MOCK_STATE_PAPER
 
-        result = display_results.invoke(
+        result = display_dataframe.invoke(
             input={"state": state, "tool_call_id": "test123"}
         )
 

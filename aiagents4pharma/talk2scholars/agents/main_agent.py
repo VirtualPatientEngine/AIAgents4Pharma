@@ -17,10 +17,10 @@ from langgraph_supervisor import create_supervisor
 from langchain_openai import ChatOpenAI
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
-from ..agents.s2_agent import get_app as get_app_s2
-from ..agents.zotero_agent import get_app as get_app_zotero
-from ..agents.pdf_agent import get_app as get_app_pdf
-from ..agents.paper_download_agent import get_app as get_app_paper_download
+from ..agents.s2_agent import get_app as s2_agent
+from ..agents.zotero_agent import get_app as zotero_agent
+from ..agents.pdf_agent import get_app as question_and_answer_agent
+from ..agents.paper_download_agent import get_app as paper_download_agent
 from ..state.state_talk2scholars import Talk2Scholars
 
 # Initialize logger
@@ -66,10 +66,10 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # Create supervisor workflow
     workflow = create_supervisor(
         [
-            get_app_s2(uniq_id, llm_model),  # semantic scholar
-            get_app_zotero(uniq_id, llm_model),  # zotero
-            get_app_pdf(uniq_id, llm_model),  # pdf
-            get_app_paper_download(uniq_id, llm_model),  # paper download
+            s2_agent(uniq_id, llm_model),  # semantic scholar
+            zotero_agent(uniq_id, llm_model),  # zotero
+            question_and_answer_agent(uniq_id, llm_model),  # pdf
+            paper_download_agent(uniq_id, llm_model),  # paper download
         ],
         model=llm_model,
         state_schema=Talk2Scholars,

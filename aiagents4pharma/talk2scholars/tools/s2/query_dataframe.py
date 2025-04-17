@@ -20,11 +20,11 @@ class NoPapersFoundError(Exception):
     """Exception raised when no papers are found in the state."""
 
 
-@tool("query_results", parse_docstring=True)
-def query_results(question: str, state: Annotated[dict, InjectedState]) -> str:
+@tool("query_dataframe", parse_docstring=True)
+def query_dataframe(question: str, state: Annotated[dict, InjectedState]) -> str:
     """
-    Query the last displayed papers from the state. If no papers are found,
-    raises an exception.
+    Query the last displayed papers from the state by reading the dataframe
+    and querying it. If no papers are found, raises an exception.
 
     Use this also to get the last displayed papers from the state,
     and then use the papers to get recommendations for a single paper or
@@ -44,7 +44,7 @@ def query_results(question: str, state: Annotated[dict, InjectedState]) -> str:
         raise NoPapersFoundError(
             "No papers found. A search needs to be performed first."
         )
-    context_key = state.get("last_displayed_papers", "pdf_data")
+    context_key = state.get("last_displayed_papers")
     dic_papers = state.get(context_key)
     df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
     df_agent = create_pandas_dataframe_agent(

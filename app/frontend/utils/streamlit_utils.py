@@ -668,7 +668,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                         "key": "subgraph_" + uniq_msg_id,
                     }
                 )
-        elif msg.name in ["display_results"]:
+        elif msg.name in ["display_dataframe"]:
             # This is a tool of T2S agent's sub-agent S2
             dic_papers = msg.artifact
             if not dic_papers:

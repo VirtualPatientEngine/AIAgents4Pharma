@@ -1,1 +1,0 @@
-::: aiagents4pharma.talk2scholars.tools.paper_download.abstract_downloader
