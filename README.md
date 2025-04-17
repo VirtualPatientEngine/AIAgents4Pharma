@@ -68,7 +68,7 @@ cd AIAgents4Pharma/aiagents4pharma/<agent>
    ```
 3. Open the `.env` file and add your API keys:
 
-   ```plaintext
+   ```bash
    OPENAI_API_KEY=your_openai_api_key
    NVIDIA_API_KEY=your_nvidia_api_key
    ```
