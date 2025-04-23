@@ -1,6 +1,8 @@
 # Example Use Case #2
 ## Predicting effectiveness of contact inhibition during SARS-CoV-2 virus pandemic
 
+### Video showcase
+<video src="../videos/t2b_case_2.mp4" width="600" height="400" controls></video>
 
 **Paper:**
 > Tang B, Wang X, Li Q, Bragazzi NL, Tang S, Xiao Y, Wu J. Estimation of the Transmission Risk of the 2019-nCoV and Its Implication for Public Health Interventions. J Clin Med. 2020 Feb 7;9(2):462. doi: 10.3390/jcm9020462. [PMID: 32046137](https://pubmed.ncbi.nlm.nih.gov/32046137/)

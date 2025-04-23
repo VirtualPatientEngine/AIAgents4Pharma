@@ -1,6 +1,10 @@
 # Example Use Case #1
 ## Crohn's Disease model
 
+### Video showcase
+
+<video src="../videos/t2b_case_1.mp4" width="600" height="400" controls></video>
+
 **Paper:**
 > Dwivedi G, Fitz L, Hegen M, Martin SW, Harrold J, Heatherington A, Li C. (2014). A multiscale model of interleukin-6-mediated immune regulation in Crohn's disease and its application in drug discovery and development. *CPT Pharmacometrics Syst Pharmacol*, 3(1):e89. doi: 10.1038/psp.2013.64. [PMID: 24402116](https://pubmed.ncbi.nlm.nih.gov/24402116/)
 

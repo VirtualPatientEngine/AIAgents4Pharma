@@ -1,7 +1,9 @@
 # Example Use Case #3
 ## Exploring multiple steady states of MAPK phosphotlyation cascade
 
+### Video showcase
 
+<video src="../videos/t2b_case_3.mp4" width="600" height="400" controls></video>
 
 
 **Paper:**
