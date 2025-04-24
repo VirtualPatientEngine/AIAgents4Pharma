@@ -1,0 +1,30 @@
+output_dir: ~/experiments/
+
+dataset:
+  class: FB15k-237
+  root: ~/datasets/knowledge_graphs/
+
+model:
+  class: NBFNet
+  input_dim: 32
+  hidden_dims: [32, 32, 32, 32, 32, 32]
+  message_func: distmult
+  aggregate_func: pna
+  short_cut: yes
+  layer_norm: yes
+  dependent: yes
+  remove_one_hop: yes
+
+task:
+  num_negative: 32
+  strict_negative: yes
+  adversarial_temperature: 0.5
+
+optimizer:
+  class: Adam
+  lr: 5.0e-3
+
+train:
+  gpus: [0]
+
+checkpoint: {{ checkpoint }}

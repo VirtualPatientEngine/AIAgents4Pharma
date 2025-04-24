@@ -35,8 +35,11 @@ dependencies = [
   "pytest==8.3.3",
   "pytest-asyncio-0.25.2",
   "sentence_transformers==3.3.1",
-  "torch==2.2.2",
+  "torch==2.5.1",
   "torch_geometric==2.6.1",
+  "torch_scatter==2.1.2",
+  "torch_sparse==0.6.18",
+  "streamlit==1.39.0",
   "tqdm==4.66.6",
   "transformers==4.48.0",
   "mkdocs==1.6.1",
@@ -45,6 +48,9 @@ dependencies = [
   "mkdocstrings-python==1.12.2",
   "mkdocs-include-markdown-plugin==7.1.2",
   "mkdocstrings==0.27.0",
+  "PyYAML==6.0.2",
+  "easydict==1.13",
+  "ninja==1.11.1.4"
 ]
 dynamic = ["version"]
 
