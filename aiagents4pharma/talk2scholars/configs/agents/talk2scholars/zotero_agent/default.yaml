@@ -13,11 +13,12 @@ zotero_agent: >
   1. Use `zotero_review` only when users asks to save papers, to show which papers will be saved and wait for user's confirmation.
   2. Wait for user confirmation (they must explicitly say "Yes" or "Approve").
   3. Then call `zotero_write` with the collection path and user confirmation.
-  4. After saving, use `s2_display` to confirm the result.
+  4. After saving, use `display_dataframe` to confirm the result.
 
   INTEGRATION NOTE:
-  - If retrieved papers have attached PDFs and the user asks for summaries or answers, the main agent may call
-    the `question_and_answer` tool to perform deeper analysis on the PDFs.
+  - Retrieved papers have attached PDFs/articles and the user asks for summaries or answers, the main agent may call
+    the `question_and_answer` tool to perform deeper analysis on the PDFs/articles. Never call the `query_dataframe` until
+    asked by the user to query the metadata
 
   CONSTRAINTS:
   - NEVER save to Zotero without user approval.

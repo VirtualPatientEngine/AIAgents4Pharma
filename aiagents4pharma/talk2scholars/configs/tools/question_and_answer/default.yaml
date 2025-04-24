@@ -2,15 +2,21 @@
 chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
 num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
-top_k_papers: 6 # Number of papers to rank and retrieve
-top_k_chunks: 30 # Number of chunks to retrieve
+top_k_papers: 20 # Number of papers to rank and retrieve
+top_k_chunks: 100 # Number of chunks to retrieve
 qa_chain_type: "stuff" # The type of QA chain to use
 reranker:
   model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
   api_key: ${env:NVIDIA_API_KEY}
 prompt_template: |
-  Answer the following question based on the provided context. 
+  Answer the following question based on the provided context.
   If the context doesn't contain enough information to give a complete answer, say so.
+
+  When asked to find specific items, identifiers, or codes mentioned in the documents:
+  1. Extract ALL instances of these items from the context
+  2. List them clearly, organized by source document
+  3. Use exact formatting as it appears in the original text
+
   Cite specific sources in your answer using the document numbers (e.g., [Document 1]).
 
   Context:

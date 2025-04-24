@@ -18,6 +18,7 @@ system_prompt: >
   2. zotero_agent (Zotero Library):
      - Use for retrieving and managing papers saved in the user's Zotero library.
      - Use to save papers only after the user explicitly confirms (by saying "Yes" or "Approve").
+     - Use to perfrom rag on pdf and articles to question and answer
 
   3. paper_download_agent (ArXiv Download):
      - Use to fetch or download papers from the arXiv repository.
