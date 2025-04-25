@@ -60,8 +60,11 @@ cp .env.example .env
 Then edit `.env` and add your API keys:
 
 ```env
-OPENAI_API_KEY=...      # Required for all agents
-NVIDIA_API_KEY=...      # Required for all agents
+OPENAI_API_KEY=...                  # Required for both agents
+NVIDIA_API_KEY=...                  # Required for both agents
+OLLAMA_HOST=http://ollama:11434     # Required for AA4P / T2KG
+LANGCHAIN_TRACING_V2=true           # Optional for both agents
+LANGCHAIN_API_KEY=...               # Optional for both agents
 ```
 
 _To use **Talk2AIAgents4Pharma**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
