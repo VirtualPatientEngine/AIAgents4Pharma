@@ -1,88 +1,20 @@
-#talk2knowledgegraphs
 services:
-  # CPU variant – start with: docker compose --profile cpu up
   ollama:
-    image: ollama/ollama:latest
-    container_name: ollama-server
+    image: "${OLLAMA_IMAGE:-ollama/ollama:latest}"
+    container_name: ollama
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      "ollama serve &
-      sleep 10 &&
-      ollama pull nomic-embed-text &&
-      tail -f /dev/null"
+      "ollama serve"
     networks:
       - app-network
-    profiles: ["cpu"]
-
-  # NVIDIA GPU variant – start with: docker compose --profile nvidia up
-  ollama-nvidia:
-    image: ollama/ollama:latest
-    container_name: ollama-server-nvidia
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      "ollama serve &
-      sleep 10 &&
-      ollama pull nomic-embed-text &&
-      tail -f /dev/null"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    networks:
-      - app-network
-    profiles: ["nvidia"]
-
-  # AMD GPU variant – start with: docker compose --profile amd up
-  ollama-amd:
-    image: ollama/ollama:rocm
-    container_name: ollama-server-amd
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      "ollama serve &
-      sleep 10 &&
-      ollama pull nomic-embed-text &&
-      tail -f /dev/null"
-    devices:
-      - /dev/kfd
-      - /dev/dri
-    networks:
-      - app-network
-    profiles: ["amd"]
 
   talk2aiagents4pharma:
+    platform: linux/amd64
     image: virtualpatientengine/talk2knowledgegraphs:latest
     container_name: talk2knowledgegraphs
     ports:
@@ -95,10 +27,8 @@ services:
 
 volumes:
   ollama_data:
-    name: ollama_data
-    # Uncomment the line below if you want to use an existing volume:
-    # external: true
 
 networks:
   app-network:
+    external: true
     name: app-network
