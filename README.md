@@ -222,31 +222,21 @@ docker run -d \
    ⚠️ `pcst_fast 1.0.10` library requires `Microsoft Visual C++ 14.0` or greater to be installed.
    You can download `Microsoft C++ Build Tools` from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
-3. **Initialize OPENAI_API_KEY and NVIDIA_API_KEY**
+3. **Initialize API Keys**
 
    ```bash
    export OPENAI_API_KEY=....
    export NVIDIA_API_KEY=....
-   ```
-
-   _You can create a free account at NVIDIA and apply for their
-   free credits [here](https://build.nvidia.com/explore/discover)._
-
-4. **Initialize ZOTERO_API_KEY and ZOTERO_USER_ID**
-
-   ```bash
    export ZOTERO_API_KEY=....
    export ZOTERO_USER_ID=....
-   ```
-
-   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._
-
-5. **[Optional] Initialize LANGSMITH_API_KEY**
-
-   ```bash
    export LANGCHAIN_TRACING_V2=true
-   export LANGCHAIN_API_KEY=<your-api-key>
+   export LANGCHAIN_API_KEY=...
    ```
+
+   _You can create a free NVIDIA account and apply for free API credits [here](https://build.nvidia.com/explore/discover)._  
+   _You can generate your Zotero API keys [here](https://www.zotero.org/user/login#applications)._  
+   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._  
+   _LangSmith support is optional, you can get the api keys [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key$0)_
 
    _Please note that this will create a new tracing project in your Langsmith
    account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
@@ -254,7 +244,7 @@ docker run -d \
    If you skip the previous step, it will default to the name `default`.
    `xxxx` will be the 4-digit ID created for the session._
 
-6. **Launch the app:**
+4. **Launch the app:**
    ```bash
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
