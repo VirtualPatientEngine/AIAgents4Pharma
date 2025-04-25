@@ -252,8 +252,8 @@ docker run -d \
    _Replace `<agent>` with the agent name you are interested to launch:_
 
 - `talk2aiagents4pharma`
-- `talk2knowledgegraphs`
 - `talk2biomodels`
+- `talk2knowledgegraphs`
 - `talk2scholars`
 - `talk2cells`
 
