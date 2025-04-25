@@ -207,10 +207,10 @@ docker run -d \
    _For all other agents, these keys are not required._  
    _To use **Talk2KnowledgeGraphs (T2KG)**, you'll need:_  
    _**Ollama installed** on your machine. Follow the instructions based on your OS from [here](https://ollama.com/download)._  
-   _After installing Ollama, **pull the `nomic-embed-text` model** by running:_
+   _After installing Ollama, **pull the `nomic-embed-text` model** and start the server by running:_
 
    ```sh
-   ollama pull nomic-embed-text
+   ollama pull nomic-embed-text && ollama serve
    ```
 
    _More details about the model are available [here](https://ollama.com/library/nomic-embed-text)._
