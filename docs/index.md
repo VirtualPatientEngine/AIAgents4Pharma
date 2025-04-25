@@ -85,7 +85,7 @@ NVIDIA_API_KEY=your_nvidia_api_key
 _Notes:_
 
 - `OPENAI_API_KEY` is required for both agents.
-- `NVIDIA_API_KEY` is needed only for Talk2AIAgents4Pharma.
+- `NVIDIA_API_KEY` is needed only for Talk2AIAgents4Pharma. ([Click here for free credits](https://build.nvidia.com/explore/discover))
 - `OLLAMA_HOST` is already preconfigured.
 - LangSmith support is optional and can be enabled in `.env`.
 
