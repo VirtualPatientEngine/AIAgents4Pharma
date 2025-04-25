@@ -46,8 +46,8 @@ cd AIAgents4Pharma/aiagents4pharma/<agent>
 
 Replace `<agent>` with either:
 
-- `Talk2AIAgents4Pharma`
-- `Talk2KnowledgeGraphs`
+- `talk2aiagents4pharma`
+- `talk2knowledgegraphs`
 
 ##### **2. Setup environment variables**
 
@@ -258,7 +258,13 @@ docker run -d \
    ```bash
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
-   _Replace <agent> with the agent name you are interested to launch._
+   _Replace `<agent>` with the agent name you are interested to launch:_
+
+- `talk2aiagents4pharma`
+- `talk2knowledgegraphs`
+- `talk2biomodels`
+- `talk2scholars`
+- `talk2cells`
 
 For detailed instructions on each agent, please refer to their respective modules.
 
