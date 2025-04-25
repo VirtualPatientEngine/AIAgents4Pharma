@@ -1,9 +1,7 @@
 # Example Use Case #3
-## Exploring multiple steady states of MAPK phosphotlyation cascade
+## Exploring multiple steady states of MAPK phosphorylation cascade
 
-### Video showcase
-
-<video src="../videos/t2b_case_3.mp4" width="600" height="400" controls></video>
+[![AI agent Talk2Biomodels: example use case in emergent system properties](https://img.youtube.com/vi/T5OjgjRSFno/0.jpg)](https://www.youtube.com/watch?v=T5OjgjRSFno)
 
 
 **Paper:**
