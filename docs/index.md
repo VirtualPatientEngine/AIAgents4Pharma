@@ -225,12 +225,12 @@ docker run -d \
 3. **Initialize API Keys**
 
    ```bash
-   export OPENAI_API_KEY=....
-   export NVIDIA_API_KEY=....
-   export ZOTERO_API_KEY=....
-   export ZOTERO_USER_ID=....
-   export LANGCHAIN_TRACING_V2=true
-   export LANGCHAIN_API_KEY=...
+   export OPENAI_API_KEY=....          # Required for all agents
+   export NVIDIA_API_KEY=....          # Required for all agents
+   export ZOTERO_API_KEY=....          # Required for T2S
+   export ZOTERO_USER_ID=....          # Required for T2S
+   export LANGCHAIN_TRACING_V2=true    # Optional for all agents
+   export LANGCHAIN_API_KEY=...        # Optional for all agents
    ```
 
    _To use **Talk2AIAgents4Pharma** or **Talk2BioModels**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
