@@ -60,16 +60,17 @@ cp .env.example .env
 Then edit `.env` and add your API keys:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key
-NVIDIA_API_KEY=your_nvidia_api_key
+OPENAI_API_KEY=...      # Required for all agents
+NVIDIA_API_KEY=...      # Required for all agents
 ```
 
 _Notes:_
 
-- `OPENAI_API_KEY` is required for both agents.
-- `NVIDIA_API_KEY` is needed only for Talk2AIAgents4Pharma. ([Click here for free credits](https://build.nvidia.com/explore/discover))
-- `OLLAMA_HOST` is already preconfigured.
-- LangSmith support is optional and can be enabled in `.env`.
+_`OPENAI_API_KEY` is required for both agents._  
+_`OLLAMA_HOST` is already preconfigured._  
+_To use **Talk2AIAgents4Pharma**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
+ _For all other agents, these keys are not required._  
+ _LangSmith support is optional and can be enabled in `.env`. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
 
 ##### **3. Start the application**
 
@@ -144,9 +145,10 @@ docker run -d \
    http://localhost:8501
    ```
 
-   _You can create a free NVIDIA account and apply for free API credits [here](https://build.nvidia.com/explore/discover)._  
-    _You can generate your Zotero API keys [here](https://www.zotero.org/user/login#applications)._
-   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._
+   _To use **Talk2BioModels**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
+   _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications)._  
+   _For all other agents, these keys are not required._  
+   _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
 
 #### Notes
 
@@ -224,7 +226,7 @@ docker run -d \
 
 3. **Initialize API Keys**
 
-   ```bash
+   ```env
    export OPENAI_API_KEY=....          # Required for all agents
    export NVIDIA_API_KEY=....          # Required for all agents
    export ZOTERO_API_KEY=....          # Required for T2S
