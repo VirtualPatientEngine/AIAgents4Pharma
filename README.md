@@ -233,10 +233,10 @@ docker run -d \
    export LANGCHAIN_API_KEY=...
    ```
 
-   _You can create a free NVIDIA account and apply for free API credits [here](https://build.nvidia.com/explore/discover)._  
-   _You can generate your Zotero API keys [here](https://www.zotero.org/user/login#applications)._  
-   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._  
-   _LangSmith support is optional, you can get the api keys [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key$0)_
+   _To use **Talk2AIAgents4Pharma** or **Talk2BioModels**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
+   _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications)._  
+   _For all other agents, these keys are not required._  
+   _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
 
    _Please note that this will create a new tracing project in your Langsmith
    account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
