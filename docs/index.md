@@ -64,11 +64,9 @@ OPENAI_API_KEY=...      # Required for all agents
 NVIDIA_API_KEY=...      # Required for all agents
 ```
 
-_OPENAI_API_KEY is required for both agents._  
-_OLLAMA_HOST is already preconfigured in the .env file._  
 _To use **Talk2AIAgents4Pharma**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
  _For all other agents, these keys are not required._  
- _LangSmith support is optional and can be enabled in `.env`. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+ _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
 
 ##### **3. Start the application**
 
