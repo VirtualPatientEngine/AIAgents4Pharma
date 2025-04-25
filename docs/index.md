@@ -191,38 +191,6 @@ docker run -d \
    pip install -r requirements.txt
    ```
 
-   ⚠️ The current version of T2KG requires additional Ollama library to be installed.
-
-   Ollama can be easily downloaded and installed from the following [link](https://ollama.com/download)
-
-   As an alternative, use the following commands to install the library using terminal and to pull necessary model:
-
-   - Ubuntu:
-     ```sh
-     curl -fsSL https://ollama.com/install.sh | sh
-     ollama pull nomic-embed-text
-     ```
-   - Windows:
-     ```sh
-     curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-     tar -xzf .\ollama-windows-amd64.zip
-     start ollama serve
-     ollama pull nomic-embed-text
-     ```
-   - macOS:
-     ```sh
-     brew install ollama
-     ollama pull nomic-embed-text
-     ```
-     A list of pulled Ollama models can be checked using the following command:
-
-   ```sh
-   ollama list
-   ```
-
-   ⚠️ `pcst_fast 1.0.10` library requires `Microsoft Visual C++ 14.0` or greater to be installed.
-   You can download `Microsoft C++ Build Tools` from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-
 3. **Initialize API Keys**
 
    ```env
@@ -237,13 +205,25 @@ docker run -d \
    _To use **Talk2AIAgents4Pharma** or **Talk2BioModels**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
    _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications)._  
    _For all other agents, these keys are not required._  
-   _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+   _To use **Talk2KnowledgeGraphs (T2KG)**, you'll need:_  
+   _**Ollama installed** on your machine. Follow the instructions based on your OS from [here](https://ollama.com/download)._  
+   _After installing Ollama, **pull the `nomic-embed-text` model** by running:_
 
-   _Please note that this will create a new tracing project in your Langsmith
-   account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
-   `B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
-   If you skip the previous step, it will default to the name `default`.
-   `xxxx` will be the 4-digit ID created for the session._
+   ```sh
+   ollama pull nomic-embed-text
+   ```
+
+   _More details about the model are available [here](https://ollama.com/library/nomic-embed-text)._
+
+_Additionally on Windows, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**._  
+ _You can download the Microsoft C++ Build Tools [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/)._  
+ _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+
+_Please note that this will create a new tracing project in your Langsmith
+account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+`B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+If you skip the previous step, it will default to the name `default`.
+`xxxx` will be the 4-digit ID created for the session._
 
 4. **Launch the app:**
    ```sh
