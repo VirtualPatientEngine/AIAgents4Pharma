@@ -192,7 +192,7 @@ docker run -d \
 
    ⚠️ The current version of T2KG requires additional Ollama library to be installed.
 
-   Ollama can be easily downloaded and installed from the following link: [https://ollama.com/download](https://ollama.com/download)
+   Ollama can be easily downloaded and installed from the following [link](https://ollama.com/download)
 
    As an alternative, use the following commands to install the library using terminal and to pull necessary model:
 
