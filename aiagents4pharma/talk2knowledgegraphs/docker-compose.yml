@@ -13,7 +13,7 @@ services:
     networks:
       - app-network
 
-  talk2aiagents4pharma:
+  talk2knowledgegraphs:
     platform: linux/amd64
     image: virtualpatientengine/talk2knowledgegraphs:latest
     container_name: talk2knowledgegraphs
