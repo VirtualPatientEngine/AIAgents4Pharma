@@ -46,13 +46,13 @@ Check out the tutorials on each agent for detailed instructions.
 
 _We now have all the agents available on Docker Hub._
 
-##### **To run Talk2AIAgents4Pharma and Talk2KnowledgeGraphs**
+##### **To run Talk2AIAgents4Pharma or Talk2KnowledgeGraphs**
 
-Talk2AIAgents4Pharma and Talk2KnowledgeGraphs require Ollama for embedding models, so Docker Compose is used to run both containers in the same network.
+Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
 
-###### Navigate to the correct directory before setting up environment variables. Replace <agent> with the agent name you are interested to launch(`Talk2AIAgents4Pharma` or `Talk2KnowledgeGraphs`):
+---
 
-1. Choose the app you want to use:
+##### **1. Clone the repository and navigate to the agent directory**
 
 ```sh
 git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
@@ -60,43 +60,76 @@ git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
 cd AIAgents4Pharma/aiagents4pharma/<agent>
 ```
 
-###### **Setup Environment Variables**
+Replace `<agent>` with either:
 
-2. Copy the `.env.example` file and rename it to `.env`:
-   ```sh
-   cp .env.example .env
-   ```
-3. Open the `.env` file and add your API keys:
+- `Talk2AIAgents4Pharma`
+- `Talk2KnowledgeGraphs`
 
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key
-   NVIDIA_API_KEY=your_nvidia_api_key
-   ```
+---
 
-###### Notes: The API endpoint for Ollama is already set in env.example. Both API keys (OPENAI_API_KEY and NVIDIA_API_KEY) are required for Talk2AIAgents4Pharma. If you are using Talk2KnowledgeGraphs separately, only the OPENAI_API_KEY is needed. Langsmith API for tracing is optional for both, set it in env.example if required.
+##### **2. Setup environment variables**
 
-4. Save the file.
-
-To start the containers, run the following command:
+Copy and configure your `.env` file:
 
 ```sh
-docker compose --profile cpu up # for CPU mode
-docker compose --profile nvidia up # for GPU mode
-docker compose --profile amd up # for AMD mode
+cp .env.example .env
 ```
 
-###### This will: Pull the latest images if they are not already available. Start Talk2AIAgents4Pharma or Talk2KnowledgeGraphs with Ollama containers in the same network.
+Then edit `.env` and add your API keys:
 
-To Access the web app, open your browser and go to:
+```env
+OPENAI_API_KEY=your_openai_api_key
+NVIDIA_API_KEY=your_nvidia_api_key
+```
+
+_Notes:_
+
+- `OPENAI_API_KEY` is required for both agents.
+- `NVIDIA_API_KEY` is needed only for Talk2AIAgents4Pharma.
+- `OLLAMA_HOST` is already preconfigured.
+- LangSmith support is optional and can be enabled in `.env`.
+
+---
+
+##### **3. Start the application**
+
+Run the startup script. It will:
+
+- Detect your GPU (NVIDIA, AMD, or CPU)
+- Choose the correct Ollama image (`latest` or `rocm`)
+- Launch the Ollama container with appropriate runtime settings
+- Pull the required embedding model (`nomic-embed-text`)
+- Start the agent **after the model is available**
+
+```sh
+chmod +x startup.sh
+./startup.sh
+```
+
+---
+
+##### **4. Access the Web UI**
+
+Once started, the agent is available at:
 
 ```
 http://localhost:8501
 ```
 
-To stop the containers, run:
+---
+
+##### **5. Stop or reset containers**
+
+To stop all services:
 
 ```sh
 docker compose down
+```
+
+To stop and delete volumes (e.g., model cache):
+
+```sh
+docker compose down -v
 ```
 
 ##### **To Run Talk2Biomodels and Talk2Scholars**
