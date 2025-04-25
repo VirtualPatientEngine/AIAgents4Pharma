@@ -98,13 +98,13 @@ http://localhost:8501
 
 To stop all services:
 
-```sh
+```docker
 docker compose down
 ```
 
 To stop and delete volumes (e.g., model cache):
 
-```sh
+```docker
 docker compose down -v
 ```
 
@@ -116,7 +116,7 @@ docker compose down -v
 
 ###### talk2biomodels
 
-```bash
+```docker
 docker run -d \
   --name talk2biomodels \
   -e OPENAI_API_KEY=<your_openai_api_key> \
@@ -127,7 +127,7 @@ docker run -d \
 
 ###### talk2scholars
 
-```bash
+```docker
 docker run -d \
   --name talk2scholars \
   -e OPENAI_API_KEY=<your_openai_api_key> \
@@ -162,7 +162,7 @@ docker run -d \
 
   Example (Talk2Scholars on port `8502`):
 
-  ```bash
+  ```docker
   docker run -d \
     --name talk2scholars \
     -e OPENAI_API_KEY=<your_openai_api_key> \
@@ -181,13 +181,13 @@ docker run -d \
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 1. **Clone the repository:**
-   ```bash
+   ```sh
    git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
    cd AIAgents4Pharma
    ```
 2. **Install dependencies:**
 
-   ```bash
+   ```python
    pip install -r requirements.txt
    ```
 
@@ -198,25 +198,25 @@ docker run -d \
    As an alternative, use the following commands to install the library using terminal and to pull necessary model:
 
    - Ubuntu:
-     ```
+     ```sh
      curl -fsSL https://ollama.com/install.sh | sh
      ollama pull nomic-embed-text
      ```
    - Windows:
-     ```
+     ```sh
      curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
      tar -xzf .\ollama-windows-amd64.zip
      start ollama serve
      ollama pull nomic-embed-text
      ```
    - macOS:
-     ```
+     ```sh
      brew install ollama
      ollama pull nomic-embed-text
      ```
      A list of pulled Ollama models can be checked using the following command:
 
-   ```
+   ```sh
    ollama list
    ```
 
@@ -246,7 +246,7 @@ docker run -d \
    `xxxx` will be the 4-digit ID created for the session._
 
 4. **Launch the app:**
-   ```bash
+   ```sh
    streamlit run app/frontend/streamlit_app_<agent>.py
    ```
    _Replace `<agent>` with the agent name you are interested to launch:_
@@ -265,7 +265,7 @@ For detailed instructions on each agent, please refer to their respective module
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
-```bash
+```python
 pip install aiagents4pharma
 ```
 
