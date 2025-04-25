@@ -129,7 +129,7 @@ docker run -d \
    http://localhost:8501
    ```
 
-   _To use **Talk2BioModels**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
+   _To use **Talk2BioModels** / **Talk2Scholars**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
    _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications). For all other agents, these keys are not required._  
    _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
 
@@ -186,7 +186,7 @@ docker run -d \
    export LANGCHAIN_API_KEY=...        # Optional for all agents
    ```
 
-   _To use **Talk2AIAgents4Pharma** / **Talk2BioModels** / **Talk2KnowledgeGraphs**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
+   _To use **Talk2AIAgents4Pharma** / **Talk2BioModels** / **Talk2KnowledgeGraphs** / **Talk2Scholars**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
    _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications). For all other agents, these keys are not required._  
    _To use **Talk2KnowledgeGraphs (T2KG)**, you'll need:_  
    _**Ollama installed** on your machine. Follow the instructions based on your OS from [here](https://ollama.com/download)._  
