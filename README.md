@@ -94,20 +94,6 @@ Once started, the agent is available at:
 http://localhost:8501
 ```
 
-##### **5. Stop or reset containers**
-
-To stop all services:
-
-```docker
-docker compose down
-```
-
-To stop and delete volumes (e.g., model cache):
-
-```docker
-docker compose down -v
-```
-
 ---
 
 ##### **To Run Talk2Biomodels / Talk2Scholars**
