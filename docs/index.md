@@ -118,6 +118,7 @@ docker run -d \
   -e OPENAI_API_KEY=<your_openai_api_key> \
   -e ZOTERO_API_KEY=<your_zotero_api_key> \
   -e ZOTERO_USER_ID=<your_zotero_user_id> \
+  -e NVIDIA_API_KEY=<your_nvidia_api_key> \
   -p 8501:8501 \
   virtualpatientengine/talk2scholars
 ```
@@ -152,6 +153,7 @@ docker run -d \
     -e OPENAI_API_KEY=<your_openai_api_key> \
     -e ZOTERO_API_KEY=<your_zotero_api_key> \
     -e ZOTERO_USER_ID=<your_zotero_user_id> \
+    -e NVIDIA_API_KEY=<your_nvidia_api_key> \
     -p 8502:8501 \
     virtualpatientengine/talk2scholars
   ```
