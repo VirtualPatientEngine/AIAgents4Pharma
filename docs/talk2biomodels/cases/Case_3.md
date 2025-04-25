@@ -1,7 +1,7 @@
 # Example Use Case #3
 ## Exploring multiple steady states of MAPK phosphorylation cascade
 
-[![AI agent Talk2Biomodels: example use case in emergent system properties](https://img.youtube.com/vi/T5OjgjRSFno/0.jpg)](https://www.youtube.com/watch?v=T5OjgjRSFno)
+<iframe width="672" height="378" src="https://www.youtube.com/embed/T5OjgjRSFno" frameborder="0" allowfullscreen></iframe>
 
 
 **Paper:**
@@ -248,3 +248,5 @@ How will the concentration of Mpp change, if the initial value of MAPKK were to 
 <summary>Answer</summary>
 <img src="../figures/C3_q6.png" width="600"/>
 </details>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
