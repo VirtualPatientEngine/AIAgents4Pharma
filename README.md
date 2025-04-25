@@ -26,31 +26,15 @@ Our toolkit currently consists of the following agents:
 
 ## Getting Started
 
-![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
-
 ### Installation
 
-_Please use version 1.26.2 or later for better support with NVIDIA NIM models._
-
-#### Option 1: PyPI
-
-![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
-
-```bash
-pip install aiagents4pharma
-```
-
-Check out the tutorials on each agent for detailed instructions.
-
-#### Option 2: Docker Hub
+#### Option 1: Docker (stable-release)
 
 _We now have all the agents available on Docker Hub._
 
-##### **To run Talk2AIAgents4Pharma or Talk2KnowledgeGraphs**
+##### **To run Talk2AIAgents4Pharma / Talk2KnowledgeGraphs**
 
 Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
-
----
 
 ##### **1. Clone the repository and navigate to the agent directory**
 
@@ -64,8 +48,6 @@ Replace `<agent>` with either:
 
 - `Talk2AIAgents4Pharma`
 - `Talk2KnowledgeGraphs`
-
----
 
 ##### **2. Setup environment variables**
 
@@ -89,8 +71,6 @@ _Notes:_
 - `OLLAMA_HOST` is already preconfigured.
 - LangSmith support is optional and can be enabled in `.env`.
 
----
-
 ##### **3. Start the application**
 
 Run the startup script. It will:
@@ -106,8 +86,6 @@ chmod +x startup.sh
 ./startup.sh
 ```
 
----
-
 ##### **4. Access the Web UI**
 
 Once started, the agent is available at:
@@ -115,8 +93,6 @@ Once started, the agent is available at:
 ```
 http://localhost:8501
 ```
-
----
 
 ##### **5. Stop or reset containers**
 
@@ -132,28 +108,34 @@ To stop and delete volumes (e.g., model cache):
 docker compose down -v
 ```
 
-##### **To Run Talk2Biomodels and Talk2Scholars**
+---
+
+##### **To Run Talk2Biomodels / Talk2Scholars**
 
 1. **Run the containers**
 
-   ```bash
-   docker run -d \
-     --name talk2biomodels \
-     -e OPENAI_API_KEY=<your_openai_api_key> \
-     -e NVIDIA_API_KEY=<your_nvidia_api_key> \
-     -p 8501:8501 \
-     virtualpatientengine/talk2biomodels
-   ```
+###### talk2biomodels
 
-   ```bash
-   docker run -d \
-     --name talk2scholars \
-     -e OPENAI_API_KEY=<your_openai_api_key> \
-     -e ZOTERO_API_KEY=<your_zotero_api_key> \
-     -e ZOTERO_USER_ID=<your_zotero_user_id> \
-     -p 8501:8501 \
-     virtualpatientengine/talk2scholars
-   ```
+```bash
+docker run -d \
+  --name talk2biomodels \
+  -e OPENAI_API_KEY=<your_openai_api_key> \
+  -e NVIDIA_API_KEY=<your_nvidia_api_key> \
+  -p 8501:8501 \
+  virtualpatientengine/talk2biomodels
+```
+
+###### talk2scholars
+
+```bash
+docker run -d \
+  --name talk2scholars \
+  -e OPENAI_API_KEY=<your_openai_api_key> \
+  -e ZOTERO_API_KEY=<your_zotero_api_key> \
+  -e ZOTERO_USER_ID=<your_zotero_user_id> \
+  -p 8501:8501 \
+  virtualpatientengine/talk2scholars
+```
 
 2. **Access the Web App**
    Open your browser and go to:
@@ -162,19 +144,38 @@ docker compose down -v
    http://localhost:8501
    ```
 
-   _You can create a free account at NVIDIA and apply for their
-   free credits [here](https://build.nvidia.com/explore/discover)._
+   _You can create a free NVIDIA account and apply for free API credits [here](https://build.nvidia.com/explore/discover)._  
+    _You can generate your Zotero API keys [here](https://www.zotero.org/user/login#applications)._
+   _Please note that ZOTERO keys are requried only if you want to launch Talk2Scholars. For all the other agents, please ignore this step._
 
-#### **Notes**
+#### Notes
 
-- Ensure you **replace `<your_openai_api_key>`, `<your_nvidia_api_key>`, `<your_zotero_api_key>`, and `<your_zotero_user_id>`** with your actual credentials.
-- Both applications use **port `8501`**, so run them on different ports if needed:
+- Be sure to **replace the placeholder values** with your actual credentials before running any container:
+
+  - `<your_openai_api_key>`
+  - `<your_nvidia_api_key>`
+  - `<your_zotero_api_key>`
+  - `<your_zotero_user_id>`
+
+- All agents default to **port `8501`**. If you plan to run multiple agents simultaneously, make sure to assign **different ports** to avoid conflicts.
+
+  Example (Talk2Scholars on port `8502`):
+
   ```bash
-  docker run -d -e OPENAI_API_KEY=<your_openai_api_key> -p 8501:8501 virtualpatientengine/talk2scholars
+  docker run -d \
+    --name talk2scholars \
+    -e OPENAI_API_KEY=<your_openai_api_key> \
+    -e ZOTERO_API_KEY=<your_zotero_api_key> \
+    -e ZOTERO_USER_ID=<your_zotero_user_id> \
+    -p 8502:8501 \
+    virtualpatientengine/talk2scholars
   ```
-  Then, access it via `http://localhost:8501`.
 
-#### Option 3: git
+  Then access the app at: [http://localhost:8502](http://localhost:8502)
+
+---
+
+#### Option 2: git (for developers and contributors)
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
@@ -260,6 +261,18 @@ docker compose down -v
    _Replace <agent> with the agent name you are interested to launch._
 
 For detailed instructions on each agent, please refer to their respective modules.
+
+---
+
+#### Option 3: pip (beta-release)
+
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
+
+```bash
+pip install aiagents4pharma
+```
+
+Check out the tutorials on each agent for detailed instructions.
 
 ---
 
