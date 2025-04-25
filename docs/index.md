@@ -158,7 +158,7 @@ docker run -d \
     virtualpatientengine/talk2scholars
   ```
 
-  Then access the app at: [http://localhost:8502](http://localhost:8502)
+  Then access the app using this [link](http://localhost:8502)
 
 ---
 
