@@ -1,7 +1,7 @@
 # Example Use Case #3
-## Exploring multiple steady states of MAPK phosphotlyation cascade
+## Exploring multiple steady states of MAPK phosphorylation cascade
 
-
+<iframe width="672" height="378" src="https://www.youtube.com/embed/T5OjgjRSFno" frameborder="0" allowfullscreen></iframe>
 
 
 **Paper:**
