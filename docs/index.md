@@ -74,7 +74,7 @@ _To use **Talk2AIAgents4Pharma** / **Talk2KnowledgeGraphs**, you'll need a free 
 
 Run the startup script. It will:
 
-- Detect your GPU (NVIDIA, AMD, or CPU)
+- Detect your hardware configuration (NVIDIA GPU, AMD GPU, or CPU). Apple Metal is unavailable inside Docker, and Intel SIMD optimizations are automatically handled without special configuration.
 - Choose the correct Ollama image (`latest` or `rocm`)
 - Launch the Ollama container with appropriate runtime settings
 - Pull the required embedding model (`nomic-embed-text`)
@@ -82,7 +82,7 @@ Run the startup script. It will:
 
 ```sh
 chmod +x startup.sh
-./startup.sh
+./startup.sh        # use --cpu flag if you want to run on CPU
 ```
 
 ##### **4. Access the Web UI**
