@@ -82,7 +82,7 @@ Run the startup script. It will:
 
 ```sh
 chmod +x startup.sh
-./startup.sh        # use --cpu flag if you want to run on CPU
+./startup.sh        # Add --cpu flag to force CPU mode if needed
 ```
 
 ##### **4. Access the Web UI**
