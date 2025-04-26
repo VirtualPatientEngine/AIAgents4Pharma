@@ -74,7 +74,7 @@ _To use **Talk2AIAgents4Pharma** / **Talk2KnowledgeGraphs**, you'll need a free 
 
 Run the startup script. It will:
 
-- Detect your GPU (NVIDIA, AMD, or CPU)
+- Detect your hardware configuration. Currently NVIDIA GPU, AMD GPU, and CPU are supported. Apple Metal and Intel MLK are not enabled by default.
 - Choose the correct Ollama image (`latest` or `rocm`)
 - Launch the Ollama container with appropriate runtime settings
 - Pull the required embedding model (`nomic-embed-text`)
