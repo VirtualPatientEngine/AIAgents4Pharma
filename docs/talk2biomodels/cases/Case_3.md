@@ -248,5 +248,3 @@ How will the concentration of Mpp change, if the initial value of MAPKK were to 
 <summary>Answer</summary>
 <img src="../figures/C3_q6.png" width="600"/>
 </details>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
