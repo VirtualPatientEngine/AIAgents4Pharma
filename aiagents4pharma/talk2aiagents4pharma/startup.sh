@@ -1,18 +1,45 @@
 #!/bin/bash
 set -e
 
-echo "[STARTUP] Detecting GPU type..."
+FORCE_CPU=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--cpu)
+		FORCE_CPU=true
+		shift
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+echo "[STARTUP] Detecting hardware configuration..."
 
 GPU_TYPE="cpu"
+ARCH=$(uname -m)
 
-if command -v nvidia-smi >/dev/null 2>&1; then
-	echo "[STARTUP] NVIDIA GPU detected."
+if [ "$FORCE_CPU" = true ]; then
+	echo "[STARTUP] --cpu flag detected. Forcing CPU mode."
+	GPU_TYPE="cpu"
+
+elif command -v nvidia-smi >/dev/null 2>&1; then
+	echo "[STARTUP] Hardware configuration: NVIDIA GPU detected."
 	GPU_TYPE="nvidia"
+
 elif command -v lspci >/dev/null 2>&1 && lspci | grep -i amd | grep -iq vga; then
-	echo "[STARTUP] AMD GPU detected."
+	echo "[STARTUP] Hardware configuration: AMD GPU detected."
 	GPU_TYPE="amd"
+
+elif [[ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+	echo "[STARTUP] Hardware configuration: Apple Silicon (arm64) detected. Metal acceleration is not available inside Docker. Running in CPU mode."
+	GPU_TYPE="cpu"
+
 else
-	echo "[STARTUP] No GPU detected. Running in CPU mode."
+	echo "[STARTUP] Hardware configuration: No supported GPU detected. Running in CPU mode."
+	GPU_TYPE="cpu"
 fi
 
 # Select correct Ollama image
@@ -82,7 +109,7 @@ until docker exec ollama ollama list | grep -q "nomic-embed-text"; do
 	sleep 5
 done
 
-echo "[STARTUP]  Model is ready. Starting talk2aiagents4pharma agent..."
+echo "[STARTUP] Model is ready. Starting talk2aiagents4pharma agent..."
 docker compose up -d talk2aiagents4pharma
 
-echo "[STARTUP]  System fully running at: http://localhost:8501"
+echo "[STARTUP] System fully running at: http://localhost:8501"
