@@ -67,8 +67,9 @@ LANGCHAIN_TRACING_V2=true           # Optional for both agents
 LANGCHAIN_API_KEY=...               # Optional for both agents
 ```
 
-_To use **Talk2AIAgents4Pharma** / **Talk2KnowledgeGraphs**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
- _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
+
+**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
 ##### **3. Start the application**
 
@@ -99,7 +100,7 @@ http://localhost:8501
 
 1. **Run the containers**
 
-###### talk2biomodels
+###### Talk2Biomodels
 
 ```docker
 docker run -d \
@@ -110,7 +111,7 @@ docker run -d \
   virtualpatientengine/talk2biomodels
 ```
 
-###### talk2scholars
+###### Talk2Scholars
 
 ```docker
 docker run -d \
@@ -130,9 +131,11 @@ docker run -d \
    http://localhost:8501
    ```
 
-   _To use **Talk2BioModels** / **Talk2Scholars**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
-   _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications). For all other agents, these keys are not required._  
-   _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+To use **Talk2BioModels** or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
+
+Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
+
+**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
 #### Notes
 
@@ -188,21 +191,24 @@ docker run -d \
    export LANGCHAIN_API_KEY=...        # Optional for all agents
    ```
 
-   _To use **Talk2AIAgents4Pharma** / **Talk2BioModels** / **Talk2KnowledgeGraphs** / **Talk2Scholars**, you'll need a free NVIDIA API key. You can create an NVIDIA account and apply for free credits [here](https://build.nvidia.com/explore/discover)._  
-   _To use **Talk2Scholars**, you'll need a Zotero API key. You can generate one [here](https://www.zotero.org/user/login#applications). For all other agents, these keys are not required._  
-   _To use **Talk2KnowledgeGraphs (T2KG)**, you'll need:_  
-   _**Ollama installed** on your machine. Follow the instructions based on your OS from [here](https://ollama.com/download)._  
-   _After installing Ollama, **pull the `nomic-embed-text` model** and start the server by running:_
+To use **Talk2AIAgents4Pharma**, **Talk2BioModels**, **Talk2KnowledgeGraphs**, or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
-   ```sh
-   ollama pull nomic-embed-text && ollama serve
-   ```
+Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
 
-   _More details about the model are available [here](https://ollama.com/library/nomic-embed-text)._
+To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you must have **Ollama** installed. Follow installation instructions for your OS [here](https://ollama.com/download).
 
-_Additionally on Windows, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**._  
- _You can download the Microsoft C++ Build Tools [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/)._  
- _LangSmith support is optional. If you'd like to enable it, you can get your API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key)._
+After installing, pull the `nomic-embed-text` model and start the server by running:
+
+```sh
+ollama pull nomic-embed-text && ollama serve
+```
+
+More details about the model are available [here](https://ollama.com/library/nomic-embed-text).
+
+Additionally on **Windows**, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**.  
+You can download the **Microsoft C++ Build Tools** [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
+**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
 _Please note that this will create a new tracing project in your Langsmith
 account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
