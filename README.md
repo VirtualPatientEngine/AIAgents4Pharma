@@ -236,7 +236,7 @@ For detailed instructions on each agent, please refer to their respective module
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
-```python
+```sh
 pip install aiagents4pharma
 ```
 
@@ -246,31 +246,43 @@ Check out the tutorials on each agent for detailed instructions.
 
 ## Contributing
 
-We welcome contributions to AIAgents4Pharma! Here’s how you can help:
+We welcome your support to make **AIAgents4Pharma** even better.  
+All types of contributions are appreciated — whether you're fixing bugs, adding features, improving documentation, or helping with testing, every contribution is valuable.
 
-1. **Fork the repository**
-2. **Create a new branch** for your feature (`git checkout -b feat/feature-name`)
-3. **Commit your changes** (`git commit -m 'feat: Add new feature'`)
-4. **Push to the branch** (`git push origin feat/feature-name`)
-5. **Open a pull request** and reach out to any one of us below via Discussions:
+#### How to contribute
 
-   _Note: We welcome all contributions, not just programming-related ones. Feel free to open bug reports, suggest new features, or participate as a beta tester. Your support is greatly appreciated!_
+1. Star this repository to show your support.
+2. Fork the repository.
+3. Create a new branch for your work:
+   ```sh
+   git checkout -b feat/your-feature-name
+   ```
+4. Make your changes and commit them:
+   ```sh
+   git commit -m "feat: add a brief description of your change"
+   ```
+5. Push your branch:
+   ```sh
+   git push origin feat/your-feature-name
+   ```
+6. Open a Pull Request.
 
-- **Talk2Biomodels/Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330) [@lilijap](https://github.com/lilijap) [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi) [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info) [@gurdeep330](https://github.com/gurdeep330) [@dmccloskey](https://github.com/dmccloskey)
+#### Areas where you can help
 
-### Current Needs
+- Beta testing for Talk2BioModels and Talk2Scholars.
+- Development work related to Python, bioinformatics, or knowledge graphs.
 
-- **Beta testers** for Talk2BioModels and Talk2Scholars.
-- **Developers** with experience in Python and Bioinformatics and/or knowledge graphs for contributions to AIAgents4Pharma.
+#### Contacts for contributions
 
-Feel free to reach out to us via Discussions.
+- **Talk2Biomodels / Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330), [@lilijap](https://github.com/lilijap), [@dmccloskey](https://github.com/dmccloskey)
+- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi), [@dmccloskey](https://github.com/dmccloskey)
+- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330), [@dmccloskey](https://github.com/dmccloskey)
 
-Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for more detailed contribution guidelines.
 
 ---
 
 ## Feedback
 
-Questions/Bug reports/Feature requests/Comments/Suggestions? We welcome all. Please use `Issues` or `Discussions` 😀
+If you have questions, bug reports, feature requests, comments, or suggestions, we would love to hear from you.  
+Please open an `issue` or start a `discussion`
