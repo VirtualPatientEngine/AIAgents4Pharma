@@ -94,8 +94,6 @@ Once started, the agent is available at:
 http://localhost:8501
 ```
 
----
-
 ##### **To Run Talk2Biomodels / Talk2Scholars**
 
 1. **Run the containers**
@@ -163,8 +161,6 @@ Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can ge
 
   Then access the app at: [http://localhost:8502](http://localhost:8502)
 
----
-
 #### Option 2: git (for developers and contributors)
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
@@ -230,8 +226,6 @@ If you skip the previous step, it will default to the name `default`.
 
 For detailed instructions on each agent, please refer to their respective modules.
 
----
-
 #### Option 3: pip (beta-release)
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
@@ -241,8 +235,6 @@ pip install aiagents4pharma
 ```
 
 Check out the tutorials on each agent for detailed instructions.
-
----
 
 ## Contributing
 
@@ -279,8 +271,6 @@ All types of contributions are appreciated — whether you're fixing bugs, addin
 - **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330), [@dmccloskey](https://github.com/dmccloskey)
 
 Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for more detailed contribution guidelines.
-
----
 
 ## Feedback
 
