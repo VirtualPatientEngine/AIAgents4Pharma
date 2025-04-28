@@ -156,18 +156,18 @@ def dummy_paper_download_agent(uniq_id, llm_model):
 def patch_sub_agents_and_supervisor(monkeypatch):
     """Patch the sub-agents and supervisor creation functions."""
     monkeypatch.setattr(
-        "aiagents4pharma.talk2scholars.agents.main_agent.s2_agent", dummy_s2_agent
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_s2_agent
     )
     monkeypatch.setattr(
-        "aiagents4pharma.talk2scholars.agents.main_agent.zotero_agent",
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_zotero",
         dummy_zotero_agent,
     )
     monkeypatch.setattr(
-        "aiagents4pharma.talk2scholars.agents.main_agent.question_and_answer_agent",
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_pdf",
         dummy_question_and_answer_agent,
     )
     monkeypatch.setattr(
-        "aiagents4pharma.talk2scholars.agents.main_agent.paper_download_agent",
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_paper_download",
         dummy_paper_download_agent,
     )
     monkeypatch.setattr(
