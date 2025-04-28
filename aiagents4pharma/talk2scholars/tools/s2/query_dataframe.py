@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 """
-This tool is used to display the table of studies.
+Tool for querying the metadata table of the last displayed papers.
+
+This tool loads the most recently displayed papers into a pandas DataFrame and uses an
+LLM-driven pandas agent to answer metadata-level questions (e.g., filter by author, list titles).
+It is intended for metadata exploration only, and does not perform content-based retrieval
+or summarization. For PDF-level question answering, use the 'question_and_answer_agent'.
 """
 
 import logging
@@ -23,19 +28,24 @@ class NoPapersFoundError(Exception):
 @tool("query_dataframe", parse_docstring=True)
 def query_dataframe(question: str, state: Annotated[dict, InjectedState]) -> str:
     """
-    Query the last displayed papers from the state by reading the dataframe
-    and querying it. If no papers are found, raises an exception.
+    Perform a tabular query on the most recently displayed papers.
 
-    Use this also to get the last displayed papers from the state,
-    and then use the papers to get recommendations for a single paper or
-    multiple papers.
+    This function loads the last displayed papers into a pandas DataFrame and uses a
+    pandas DataFrame agent to answer metadata-level questions (e.g., "Which papers have
+    'Transformer' in the title?", "List authors of paper X"). It does not perform PDF
+    content analysis or summarization; for content-level question answering, use the
+    'question_and_answer_agent'.
 
     Args:
-        question (str): The question to ask the agent.
-        state (dict): The state of the agent containing the papers.
+        question (str): The metadata query to ask over the papers table.
+        state (dict): The agent's state containing 'last_displayed_papers'
+            key referencing the metadata table in state.
 
     Returns:
-        str: A message with the last displayed papers.
+        str: The LLM's response to the metadata query.
+
+    Raises:
+        NoPapersFoundError: If no papers have been displayed yet.
     """
     logger.info("Querying last displayed papers with question: %s", question)
     llm_model = state.get("llm_model")
