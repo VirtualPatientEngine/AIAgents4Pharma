@@ -76,7 +76,8 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         # Full history is needed to extract
         # the tool artifacts
         output_mode="full_history",
-        add_handoff_back_messages=False,
+        # Allow supervisor to resume control and chain multiple sub-agent calls
+        add_handoff_back_messages=True,
         prompt=cfg.system_prompt,
     )
 
