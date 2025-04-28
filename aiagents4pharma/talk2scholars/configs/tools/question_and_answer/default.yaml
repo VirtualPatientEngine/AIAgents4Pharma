@@ -12,12 +12,7 @@ prompt_template: |
   Answer the following question based on the provided context.
   If the context doesn't contain enough information to give a complete answer, say so.
 
-  When asked to find specific items, identifiers, or codes mentioned in the documents:
-  1. Extract ALL instances of these items from the context
-  2. List them clearly, organized by source document
-  3. Use exact formatting as it appears in the original text
-
-  Cite specific sources in your answer using the document numbers (e.g., [Document 1]).
+  Cite specific sources in your answer using the title of the paper.
 
   Context:
   {context}
