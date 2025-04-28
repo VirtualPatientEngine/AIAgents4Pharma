@@ -21,7 +21,6 @@ from ..tools.s2.query_dataframe import query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
-from ..tools.pdf.question_and_answer import question_and_answer
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -95,7 +94,6 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             retrieve_semantic_scholar_paper_id,
             zotero_review,
             zotero_write,
-            question_and_answer,
         ]
     )
 
