@@ -49,7 +49,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    def agent_zotero_node(state: Talk2Scholars) -> Dict[str, Any]:
+    def zotero_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers from Zotero.
 
@@ -65,7 +65,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             Dict[str, Any]: A dictionary containing the updated conversation state.
 
         Example:
-            >>> result = agent_zotero_node(current_state)
+            >>> result = zotero_agent_node(current_state)
             >>> papers = result.get("papers", [])
         """
         logger.log(
@@ -110,14 +110,14 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     )
 
     workflow = StateGraph(Talk2Scholars)
-    workflow.add_node("agent_zotero", agent_zotero_node)
-    workflow.add_edge(START, "agent_zotero")
+    workflow.add_node("zotero_agent", zotero_agent_node)
+    workflow.add_edge(START, "zotero_agent")
 
     # Initialize memory to persist state between graph runs
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer, name="agent_zotero")
+    app = workflow.compile(checkpointer=checkpointer, name="zotero_agent")
     logger.log(
         logging.INFO,
         "Compiled the graph with thread_id %s and llm_model %s",

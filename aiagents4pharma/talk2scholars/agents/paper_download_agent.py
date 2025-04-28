@@ -77,7 +77,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer, name="agent_paper_download")
+    app = workflow.compile(checkpointer=checkpointer, name="paper_download_agent")
 
     # Logging the information and returning the app
     logger.info("Compiled the graph")

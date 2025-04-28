@@ -55,7 +55,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         cfg = cfg.agents.talk2scholars.pdf_agent
         logger.info("Loaded pdf_agent configuration.")
 
-    def agent_pdf_node(state: Talk2Scholars):
+    def pdf_agent_node(state: Talk2Scholars):
         """
         Processes the current state by invoking the language model for PDF question and answer.
 
@@ -86,14 +86,14 @@ def get_app(uniq_id, llm_model: BaseChatModel):
 
     # Define a new workflow graph with the state schema.
     workflow = StateGraph(Talk2Scholars)
-    workflow.add_node("agent_pdf", agent_pdf_node)
-    workflow.add_edge(START, "agent_pdf")
+    workflow.add_node("pdf_agent", pdf_agent_node)
+    workflow.add_edge(START, "pdf_agent")
 
     # Initialize memory to persist state between runs.
     checkpointer = MemorySaver()
 
     # Compile the graph into a runnable app.
-    app = workflow.compile(checkpointer=checkpointer, name="agent_pdf")
+    app = workflow.compile(checkpointer=checkpointer, name="pdf_agent")
     logger.info("Compiled the PDF agent graph.")
 
     return app

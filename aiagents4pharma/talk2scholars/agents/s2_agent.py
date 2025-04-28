@@ -54,7 +54,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    def agent_s2_node(state: Talk2Scholars) -> Dict[str, Any]:
+    def s2_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers.
 
@@ -70,7 +70,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             Dict[str, Any]: A dictionary containing the updated conversation state.
 
         Example:
-            >>> result = agent_s2_node(current_state)
+            >>> result = s2_agent_node(current_state)
             >>> papers = result.get("papers", [])
         """
         logger.log(logging.INFO, "Creating Agent_S2 node with thread_id %s", uniq_id)
@@ -114,8 +114,8 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     )
 
     workflow = StateGraph(Talk2Scholars)
-    workflow.add_node("agent_s2", agent_s2_node)
-    workflow.add_edge(START, "agent_s2")
+    workflow.add_node("s2_agent", s2_agent_node)
+    workflow.add_edge(START, "s2_agent")
 
     # Initialize memory to persist state between graph runs
     checkpointer = MemorySaver()
@@ -124,7 +124,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # This compiles it into a LangChain Runnable,
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer, name="agent_s2")
+    app = workflow.compile(checkpointer=checkpointer, name="s2_agent")
     logger.log(
         logging.INFO,
         "Compiled the graph with thread_id %s and llm_model %s",
