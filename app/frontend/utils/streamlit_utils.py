@@ -209,10 +209,10 @@ def sample_questions_t2s():
     """
     questions = [
         'Search articles on "Role of DNA damage response (DDR) in Cancer"',
-        "Save these articles in my Zotero library under the collection 'Curiosity'",
         "Tell me more about the first article in the last search results",
-        "Download the article 'Attention is All You Need'",
-        "Describe the methods of the downloaded paper",
+        "Save these articles in my Zotero library under the collection 'Curiosity'",
+        "Download the article 'BioBridge' with arxiv_id '2310.03320' and summarize it",
+        "First, show all the papers in my Zotero library. Then, for each paper, list the PDB IDs of the 3D structures of the GPCRs used in the PDFs.",
     ]
     return questions
 
@@ -327,7 +327,12 @@ def get_ai_messages(current_state):
     for msg in msgs_to_consider[::-1]:
         if isinstance(msg, HumanMessage):
             break
-        if isinstance(msg, AIMessage) and msg.content != "" and msg.name == "supervisor" and last_msg_is_human is False:
+        if (
+            isinstance(msg, AIMessage)
+            and msg.content != ""
+            and msg.name == "supervisor"
+            and last_msg_is_human is False
+        ):
             continue
         # Run the following code if the message is from the agent
         if isinstance(msg, AIMessage) and msg.content != "":
