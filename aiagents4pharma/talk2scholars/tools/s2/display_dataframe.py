@@ -7,7 +7,8 @@ Tool for rendering the most recently displayed papers as a DataFrame artifact fo
 This module defines a tool that retrieves the paper metadata stored under the state key
 'last_displayed_papers' and returns it as an artifact (dictionary of papers). The front-end
 can then render this artifact as a pandas DataFrame for display. If no papers are found,
-a NoPapersFoundError is raised to indicate that a search or recommendation should be performed first.
+a NoPapersFoundError is raised to indicate that a search or recommendation should be
+performed first.
 """
 
 

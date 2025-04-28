@@ -424,12 +424,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that rank_papers_by_query was called with the expected question and top_k=3
         dummy_vs.rank_papers_by_query.assert_called_with(
-            "What is semantic content?", top_k=6
+            "What is semantic content?", top_k=20
         )
 
         # Verify that retrieve_relevant_chunks was called with the selected paper id.
         dummy_vs.retrieve_relevant_chunks.assert_called_with(
-            query="What is semantic content?", paper_ids=["paper_sem"], top_k=30
+            query="What is semantic content?", paper_ids=["paper_sem"], top_k=100
         )
 
         # Verify that generate_answer was called with the expected arguments
@@ -446,9 +446,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(response_message.tool_call_id, "test_semantic_tool_call")
 
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_fallback_no_relevant_chunks(
-        self, mock_vectorstore
-    ):
+    def test_question_and_answer_fallback_no_relevant_chunks(self, mock_vectorstore):
         """Test the fallback branch of the question_and_answer
         tool when no relevant chunks are found."""
         # Create a dummy Vectorstore instance to simulate fallback and error conditions.
