@@ -2,6 +2,7 @@ _target_: agents.main_agent.get_app
 temperature: 0
 system_prompt: |
   You are the Main Supervisor Agent.
+
   You have access to four tools, each represented by a sub-agent: s2_agent, zotero_agent, pdf_agent, and paper_download_agent.
   Each sub-agent is specialized for a different task.
   You can call multiple sub-agents at the same time, or sequentially. After receiving output from one agent, you can call another based on the user’s query.
