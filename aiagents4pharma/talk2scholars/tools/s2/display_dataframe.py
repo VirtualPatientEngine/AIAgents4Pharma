@@ -2,11 +2,12 @@
 
 
 """
-Tool for displaying search or recommendation results.
+Tool for rendering the most recently displayed papers as a DataFrame artifact for the front-end.
 
-This module defines a tool that retrieves and displays a table of research papers
-found during searches or recommendations. If no papers are found, an exception is raised
-to signal the need for a new search.
+This module defines a tool that retrieves the paper metadata stored under the state key
+'last_displayed_papers' and returns it as an artifact (dictionary of papers). The front-end
+can then render this artifact as a pandas DataFrame for display. If no papers are found,
+a NoPapersFoundError is raised to indicate that a search or recommendation should be performed first.
 """
 
 
@@ -44,28 +45,24 @@ def display_dataframe(
     state: Annotated[dict, InjectedState],
 ) -> Command:
     """
-    Displays retrieved research papers after a search or recommendation.
+    Render the last set of retrieved papers as a DataFrame in the front-end.
 
-    This function retrieves the last displayed research papers from the state and
-    returns them as an artifact for further processing. If no papers are found,
-    it raises a `NoPapersFoundError` to indicate that a new search is needed.
+    This function reads the 'last_displayed_papers' key from state, fetches the
+    corresponding metadata dictionary, and returns a Command with a ToolMessage
+    containing the artifact (dictionary) for the front-end to render as a DataFrame.
+    If no papers are found in state, it raises a NoPapersFoundError to indicate
+    that a search or recommendation must be performed first.
 
     Args:
-        tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID for tracking.
-        state (dict): The agent's state containing retrieved papers.
+        tool_call_id (InjectedToolCallId): Unique ID of this tool invocation.
+        state (dict): The agent's state containing the 'last_displayed_papers' reference.
 
     Returns:
-        Command: A command containing a message with the number of displayed papers
-                 and an attached artifact for further reference.
+        Command: A command whose update contains a ToolMessage with the artifact
+                 (papers dict) for DataFrame rendering in the UI.
 
     Raises:
-        NoPapersFoundError: If no research papers are found in the agent's state.
-
-    Example:
-        >>> state = {"last_displayed_papers": {"paper1": "Title 1", "paper2": "Title 2"}}
-        >>> result = display_dataframe(tool_call_id="123", state=state)
-        >>> print(result.update["messages"][0].content)
-        "2 papers found. Papers are attached as an artifact."
+        NoPapersFoundError: If no entries exist under 'last_displayed_papers' in state.
     """
     logger.info("Displaying papers")
     context_key = state.get("last_displayed_papers")
