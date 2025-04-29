@@ -181,6 +181,14 @@ jobs:
         path: |
           ${{ github.workspace }}/venv/*
         key: ${{ runner.os }}-venv
+    - name: Install dependencies
+      if: steps.cache_venv.outputs.cache-hit != 'true'
+      working-directory: ${{ github.workspace }}
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip3 install --break-system-packages -r requirements.txt
 
     - name: Cache Ollama models
       uses: actions/cache@v4
@@ -256,6 +264,13 @@ jobs:
         path: |
           ${{ github.workspace }}/venv/*
         key: ${{ runner.os }}-venv
+    - name: Install dependencies
+      if: steps.cache_venv.outputs.cache-hit != 'true'
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip3 install --break-system-packages -r requirements.txt
 
     - name: Cache Ollama models
       uses: actions/cache@v4
@@ -340,6 +355,14 @@ jobs:
         path: |
           ${{ github.workspace }}\venv\*
         key: ${{ runner.os }}-venv
+    - name: Install dependencies
+      if: steps.cache_venv.outputs.cache-hit != 'true'
+      working-directory: ${{ github.workspace }}
+      run: |
+        python3 -m venv venv
+        venv\Scripts\activate
+        pip install --upgrade pip
+        pip3 install --break-system-packages -r requirements.txt
 
     - name: Cache Ollama models
       uses: actions/cache@v4
