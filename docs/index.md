@@ -69,6 +69,22 @@ LANGCHAIN_API_KEY=...               # Optional for both agents
 
 To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
+###### Notes for Windows Users
+
+If you are using Windows, it is recommended to install **Git Bash** for a smoother experience when running the bash commands in this guide.
+
+- For applications that use **Docker Compose**, Git Bash is **required**.
+- For applications that use **docker run** manually, Git Bash is **optional**, but recommended for consistency.
+
+You can download Git Bash here: [Git for Windows](https://git-scm.com/downloads).
+
+When using Docker on Windows, make sure you **run Docker with administrative privileges** if you face permission issues.
+
+To resolve for permission issues, you can:
+
+- Review the official Docker documentation on [Windows permission requirements](https://docs.docker.com/desktop/setup/install/windows-permission-requirements/).
+- Alternatively, follow the community discussion and solutions on [Docker Community Forums](https://forums.docker.com/t/error-when-trying-to-run-windows-containers-docker-client-must-be-run-with-elevated-privileges/136619).
+
 **LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
 ##### **3. Start the application**
@@ -132,6 +148,8 @@ docker run -d \
 To use **Talk2BioModels** or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
 Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
+
+If you are using docker on Windows, please follow these [Windows Setup Notes](#notes-for-windows-users).
 
 **LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
