@@ -135,6 +135,7 @@ jobs:
       with:
         path: |
           ${{ github.workspace }}/venv/*
+          ${{ github.workspace }}\venv\*
         key: ${{ runner.os }}-venv
 
     - name: Install dependencies
