@@ -5,3 +5,4 @@ from . import dataset
 from . import primekg
 from . import starkqa_primekg
 from . import biobridge_primekg
+from . import biobridge_datamodule

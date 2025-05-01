@@ -70,8 +70,9 @@ dependencies = [
   "seaborn==0.13.2",
   "scanpy==1.11.0",
   "PyYAML==6.0.2",
-  "easydict==1.13", 
-  "ninja==1.11.1.4"
+  "easydict==1.13",
+  "ninja==1.11.1.4",
+  "lightning==2.5.1",
 ]
 dynamic = ["version"]
 

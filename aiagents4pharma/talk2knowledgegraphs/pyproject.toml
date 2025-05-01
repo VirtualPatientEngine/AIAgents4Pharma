@@ -50,7 +50,8 @@ dependencies = [
   "mkdocstrings==0.27.0",
   "PyYAML==6.0.2",
   "easydict==1.13",
-  "ninja==1.11.1.4"
+  "ninja==1.11.1.4",
+  "lightning==2.5.1"
 ]
 dynamic = ["version"]
 

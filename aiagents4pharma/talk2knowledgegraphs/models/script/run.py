@@ -184,41 +184,45 @@ def test(cfg, model, test_data, filtered_data=None):
 
 if __name__ == "__main__":
     args, vars = util.parse_args()
+    print("args", args)
+    print("vars", vars)
     cfg = util.load_config(args.config, context=vars)
+    print("cfg", cfg)
     working_dir = util.create_working_directory(cfg)
+    print("working_dir", working_dir)
 
-    torch.manual_seed(args.seed + util.get_rank())
+    # torch.manual_seed(args.seed + util.get_rank())
 
-    logger = util.get_root_logger()
-    if util.get_rank() == 0:
-        logger.warning("Random seed: %d" % args.seed)
-        logger.warning("Config file: %s" % args.config)
-        logger.warning(pprint.pformat(cfg))
-    is_inductive = cfg.dataset["class"].startswith("Ind")
-    dataset = util.build_dataset(cfg)
-    cfg.model.num_relation = dataset.num_relations
-    model = util.build_model(cfg)
+    # logger = util.get_root_logger()
+    # if util.get_rank() == 0:
+    #     logger.warning("Random seed: %d" % args.seed)
+    #     logger.warning("Config file: %s" % args.config)
+    #     logger.warning(pprint.pformat(cfg))
+    # is_inductive = cfg.dataset["class"].startswith("Ind")
+    # dataset = util.build_dataset(cfg)
+    # cfg.model.num_relation = dataset.num_relations
+    # model = util.build_model(cfg)
 
-    device = util.get_device(cfg)
-    model = model.to(device)
-    train_data, valid_data, test_data = dataset[0], dataset[1], dataset[2]
-    train_data = train_data.to(device)
-    valid_data = valid_data.to(device)
-    test_data = test_data.to(device)
-    if is_inductive:
-        # for inductive setting, use only the test fact graph for filtered ranking
-        filtered_data = None
-    else:
-        # for transductive setting, use the whole graph for filtered ranking
-        filtered_data = Data(edge_index=dataset.data.target_edge_index, edge_type=dataset.data.target_edge_type)
-        filtered_data = filtered_data.to(device)
+    # device = util.get_device(cfg)
+    # model = model.to(device)
+    # train_data, valid_data, test_data = dataset[0], dataset[1], dataset[2]
+    # train_data = train_data.to(device)
+    # valid_data = valid_data.to(device)
+    # test_data = test_data.to(device)
+    # if is_inductive:
+    #     # for inductive setting, use only the test fact graph for filtered ranking
+    #     filtered_data = None
+    # else:
+    #     # for transductive setting, use the whole graph for filtered ranking
+    #     filtered_data = Data(edge_index=dataset.data.target_edge_index, edge_type=dataset.data.target_edge_type)
+    #     filtered_data = filtered_data.to(device)
 
-    train_and_validate(cfg, model, train_data, valid_data, filtered_data=filtered_data)
-    if util.get_rank() == 0:
-        logger.warning(separator)
-        logger.warning("Evaluate on valid")
-    test(cfg, model, valid_data, filtered_data=filtered_data)
-    if util.get_rank() == 0:
-        logger.warning(separator)
-        logger.warning("Evaluate on test")
-    test(cfg, model, test_data, filtered_data=filtered_data)
+    # train_and_validate(cfg, model, train_data, valid_data, filtered_data=filtered_data)
+    # if util.get_rank() == 0:
+    #     logger.warning(separator)
+    #     logger.warning("Evaluate on valid")
+    # test(cfg, model, valid_data, filtered_data=filtered_data)
+    # if util.get_rank() == 0:
+    #     logger.warning(separator)
+    #     logger.warning("Evaluate on test")
+    # test(cfg, model, test_data, filtered_data=filtered_data)

@@ -3,7 +3,7 @@ output_dir: ~/scratch/experiments/
 dataset:
   class: IndWN18RR
   root: ~/datasets/knowledge_graphs/
-  version: {{ version }}
+  version: "{{ version }}"
 
 model:
   class: NBFNet
@@ -26,7 +26,7 @@ optimizer:
   lr: 5.0e-3
 
 train:
-  gpus: {{ gpus }}
+  gpus: "{{ gpus }}"
   batch_size: 64
   num_epoch: 20
   log_interval: 100

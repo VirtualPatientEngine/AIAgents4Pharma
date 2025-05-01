@@ -12,7 +12,7 @@ class NBFNet(nn.Module):
 
     def __init__(self, input_dim, hidden_dims, num_relation, message_func="distmult", aggregate_func="pna",
                  short_cut=False, layer_norm=False, activation="relu", concat_hidden=False, num_mlp_layer=2,
-                 dependent=True, remove_one_hop=False, num_beam=10, path_topk=10):
+                 dependent=True, remove_one_hop=False, num_beam=10, path_topk=10, biobridge=None):
         super(NBFNet, self).__init__()
 
         if not isinstance(hidden_dims, Sequence):
@@ -25,6 +25,14 @@ class NBFNet(nn.Module):
         self.remove_one_hop = remove_one_hop  # whether to dynamically remove one-hop edges from edge_index
         self.num_beam = num_beam
         self.path_topk = path_topk
+        self.biobridge = biobridge
+
+        # Initialize projection layers for each node type
+        # Added to account for the different node types in the heterogeneous knowledge graph
+        self.project = nn.ModuleDict()
+        self.mapper_ntid2dim = {k: v for k, v in biobridge["mapper_ntid2dim"].values}
+        for k, v in self.mapper_ntid2dim.items():
+            self.project[f"node_type_{k}"] = nn.Sequential(nn.Linear(v, self.dims[0]), nn.ReLU())
 
         self.layers = nn.ModuleList()
         for i in range(len(self.dims) - 1):

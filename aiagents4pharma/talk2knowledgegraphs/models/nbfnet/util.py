@@ -15,7 +15,7 @@ from torch import distributed as dist
 from torch_geometric.data import Data
 from torch_geometric.datasets import RelLinkPredDataset, WordNet18RR
 
-from nbfnet import models, datasets
+from . import models, datasets
 
 
 logger = logging.getLogger(__file__)
