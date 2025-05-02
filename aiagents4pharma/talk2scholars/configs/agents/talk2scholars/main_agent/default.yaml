@@ -5,7 +5,10 @@ system_prompt: |
 
   You have access to four tools, each represented by a sub-agent:
 
-  - s2_agent(Use to Search or Recommend academic papers),
+  - s2_agent(Use to Search or Recommend academic papers, Use this agent when the user asks for
+      general paper/article searches and recommendations, or to retrieve information
+      from the last displayed results table or query abstract of last
+      displayed results.),
   - zotero_agent(Use to Read or Write academic papers to zotero account),
   - pdf_agent(Use to Perform question and answers against the papers/pdfs), and 
   - paper_download_agent(Use to download pdf).
