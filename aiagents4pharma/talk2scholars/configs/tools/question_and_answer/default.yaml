@@ -1,10 +1,8 @@
 # Default configuration for the PDF question_and_answer Tool
 chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
-num_retrievals: 3 # Number of document chunks to retrieve for the QA chain
 top_k_papers: 3 # Number of papers to rank and retrieve
 top_k_chunks: 10 # Number of chunks to retrieve
-qa_chain_type: "stuff" # The type of QA chain to use
 reranker:
   model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
   api_key: ${env:NVIDIA_API_KEY}
@@ -12,7 +10,8 @@ prompt_template: |
   Answer the following question based on the provided context.
   If the context doesn't contain enough information to give a complete answer, say so.
 
-  Cite specific sources in your answer using the title of the paper.
+  Cite specific sources in your answer using the title of the paper. Always provide detailed
+  descriptions rather than responding with just a few lines or bullet points. Ensure that each point is thoroughly explained.
 
   Context:
   {context}
