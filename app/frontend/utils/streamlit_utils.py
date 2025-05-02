@@ -208,7 +208,8 @@ def sample_questions_t2s():
     Function to get the sample questions for Talk2Scholars.
     """
     questions = [
-        'Search articles on "Role of DNA damage response (DDR) in Cancer"',
+        "Search articles on 'Role of DNA damage response (DDR) in Cancer'",
+        "Tell me more about the first article in the last search results",
         "Save these articles in my Zotero library under the collection 'Curiosity'",
         "Download the article 'BioBridge' with arxiv_id '2310.03320' and summarize it",
         "First, show all the papers in my Zotero library. Then, for each paper, list the PDB IDs of the 3D structures of the GPCRs used in the PDFs.",
