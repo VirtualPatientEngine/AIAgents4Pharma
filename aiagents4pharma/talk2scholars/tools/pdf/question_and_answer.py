@@ -147,8 +147,8 @@ class Vectorstore:
             # Use default splitter if none provided
             if splitter is None:
                 splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=2000,
-                    chunk_overlap=400,
+                    chunk_size=1000,
+                    chunk_overlap=200,
                     separators=["\n\n", "\n", ". ", " ", ""],
                 )
 
@@ -207,7 +207,7 @@ class Vectorstore:
         logger.info("Built vector store with %d documents", len(documents_list))
 
     def rank_papers_by_query(
-        self, query: str, top_k: int = 20
+        self, query: str, top_k: int = 3
     ) -> List[Tuple[str, float]]:
         """
         Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
@@ -255,8 +255,8 @@ class Vectorstore:
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 100,
-        mmr_diversity: float = 0.05,
+        top_k: int = 10,
+        mmr_diversity: float = 1.00,
     ) -> List[Document]:
         """
         Retrieve the most relevant chunks for a query using maximal marginal relevance.
@@ -616,6 +616,6 @@ def question_and_answer(
                     content=response_text,
                     tool_call_id=tool_call_id,
                 )
-            ]
+            ],
         }
     )
