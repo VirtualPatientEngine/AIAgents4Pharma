@@ -424,12 +424,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that rank_papers_by_query was called with the expected question and top_k=3
         dummy_vs.rank_papers_by_query.assert_called_with(
-            "What is semantic content?", top_k=20
+            "What is semantic content?", top_k=3
         )
 
         # Verify that retrieve_relevant_chunks was called with the selected paper id.
         dummy_vs.retrieve_relevant_chunks.assert_called_with(
-            query="What is semantic content?", paper_ids=["paper_sem"], top_k=100
+            query="What is semantic content?", paper_ids=["paper_sem"], top_k=10
         )
 
         # Verify that generate_answer was called with the expected arguments
