@@ -690,6 +690,10 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                 "Key",
                 "arxiv_id",
                 "semantic_scholar_paper_id",
+                "source",
+                "filename",
+                "pdf_url",
+                "attachment_key",
             ]
 
             # Check if columns exist before dropping
