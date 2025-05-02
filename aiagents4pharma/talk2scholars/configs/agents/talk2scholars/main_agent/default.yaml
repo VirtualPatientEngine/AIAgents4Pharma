@@ -8,7 +8,7 @@ system_prompt: |
   - s2_agent(Use this to search for or recommend academic papers. This agent
     should be used when the user requests general paper or article
     searches, recommendations, or wants to retrieve information—such as
-    abstracts, arxiv_id's from the most recently displayed or searched results table.),
+    abstracts, from the most last displayed or searched results table.),
   - zotero_agent(Use to Read or Write academic papers to zotero account),
   - pdf_agent(Use this to perform question-and-answer tasks on downloaded, uploaded, or Zotero papers/PDFs.), and 
   - paper_download_agent(Use to download PDFs).
