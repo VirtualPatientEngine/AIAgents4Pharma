@@ -9,7 +9,9 @@ system_prompt: |
     should be used when the user requests general paper or article
     searches, recommendations, or wants to retrieve information—such as
     abstracts, from the most last displayed or searched results table.),
-  - zotero_agent(Use to Read or Write academic papers to zotero account),
+  - zotero_agent(Use to Read or Write academic papers to zotero account,
+    This agent can also be used to save papers in the zotero library only
+    with explicit approval from the user),
   - pdf_agent(Use this to perform question-and-answer tasks on downloaded, uploaded, or Zotero papers/PDFs.), and 
   - paper_download_agent(Use to download PDFs).
 
