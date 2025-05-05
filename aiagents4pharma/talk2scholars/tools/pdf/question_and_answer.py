@@ -117,7 +117,6 @@ class Vectorstore:
         paper_id: str,
         pdf_url: str,
         paper_metadata: Dict[str, Any],
-        splitter: Optional[RecursiveCharacterTextSplitter] = None,
     ) -> None:
         """
         Add a paper to the document store.
@@ -126,7 +125,6 @@ class Vectorstore:
             paper_id: Unique identifier for the paper
             pdf_url: URL to the PDF
             paper_metadata: Metadata about the paper
-            splitter: Text splitter to use (optional)
         """
         # Skip if already loaded
         if paper_id in self.loaded_papers:
@@ -138,55 +136,48 @@ class Vectorstore:
         # Store paper metadata
         self.paper_metadata[paper_id] = paper_metadata
 
-        try:
-            # Use PyPDFLoader to load the PDF
-            loader = PyPDFLoader(pdf_url)
-            documents = loader.load()
-            logger.info("Loaded %d pages from %s", len(documents), paper_id)
+        # Load the PDF and split into chunks according to Hydra config
+        loader = PyPDFLoader(pdf_url)
+        documents = loader.load()
+        logger.info("Loaded %d pages from %s", len(documents), paper_id)
 
-            # Use default splitter (configurable via Hydra) if none provided
-            if splitter is None:
-                # Load chunking parameters from config
-                cfg = load_hydra_config()
-                splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=cfg.chunk_size,
-                    chunk_overlap=cfg.chunk_overlap,
-                    separators=["\n\n", "\n", ". ", " ", ""],
-                )
+        # Create text splitter according to Hydra config
+        cfg = load_hydra_config()
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=cfg.chunk_size,
+            chunk_overlap=cfg.chunk_overlap,
+            separators=["\n\n", "\n", ". ", " ", ""],
+        )
 
-            # Split documents and add metadata
-            chunks = splitter.split_documents(documents)
-            logger.info("Split %s into %d chunks", paper_id, len(chunks))
+        # Split documents and add metadata for each chunk
+        chunks = splitter.split_documents(documents)
+        logger.info("Split %s into %d chunks", paper_id, len(chunks))
 
-            # Enhance document metadata
-            for i, chunk in enumerate(chunks):
-                # Add paper metadata to each chunk
-                chunk.metadata.update(
-                    {
-                        "paper_id": paper_id,
-                        "title": paper_metadata.get("Title", "Unknown"),
-                        "chunk_id": i,
-                        # Keep existing page number if available
-                        "page": chunk.metadata.get("page", 0),
-                    }
-                )
+        # Enhance document metadata
+        for i, chunk in enumerate(chunks):
+            # Add paper metadata to each chunk
+            chunk.metadata.update(
+                {
+                    "paper_id": paper_id,
+                    "title": paper_metadata.get("Title", "Unknown"),
+                    "chunk_id": i,
+                    # Keep existing page number if available
+                    "page": chunk.metadata.get("page", 0),
+                }
+            )
 
-                # Add any additional metadata fields
-                for field in self.metadata_fields:
-                    if field in paper_metadata and field not in chunk.metadata:
-                        chunk.metadata[field] = paper_metadata[field]
+            # Add any additional metadata fields
+            for field in self.metadata_fields:
+                if field in paper_metadata and field not in chunk.metadata:
+                    chunk.metadata[field] = paper_metadata[field]
 
-                # Store document
-                doc_id = f"{paper_id}_{i}"
-                self.documents[doc_id] = chunk
+            # Store chunk
+            doc_id = f"{paper_id}_{i}"
+            self.documents[doc_id] = chunk
 
-            # Mark as loaded to prevent duplicate loading
-            self.loaded_papers.add(paper_id)
-            logger.info("Added %d chunks from paper %s", len(chunks), paper_id)
-
-        except Exception as e:
-            logger.error("Error loading paper %s: %s", paper_id, e)
-            raise
+        # Mark as loaded to prevent duplicate loading
+        self.loaded_papers.add(paper_id)
+        logger.info("Added %d chunks from paper %s", len(chunks), paper_id)
 
     def build_vector_store(self) -> None:
         """
