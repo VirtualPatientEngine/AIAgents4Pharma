@@ -281,7 +281,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
-    def test_question_and_answer_success(self, mock_generate_answer):
+    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
+    def test_question_and_answer_success(self, mock_vectorstore, mock_generate_answer):
         """test the main functionality of the question_and_answer tool."""
         # Create a dummy document to simulate a retrieved chunk
         dummy_doc = Document(
@@ -307,6 +308,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         dummy_vector_store.retrieve_relevant_chunks = MagicMock(
             return_value=[dummy_doc]
         )
+        # Return our dummy vector store when Vectorstore() is instantiated
+        mock_vectorstore.return_value = dummy_vector_store
 
         # Create a dummy LLM model
         dummy_llm_model = MagicMock()
@@ -424,12 +427,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that rank_papers_by_query was called with the expected question and top_k=3
         dummy_vs.rank_papers_by_query.assert_called_with(
-            "What is semantic content?", top_k=3
+            "What is semantic content?", top_k=25
         )
 
         # Verify that retrieve_relevant_chunks was called with the selected paper id.
         dummy_vs.retrieve_relevant_chunks.assert_called_with(
-            query="What is semantic content?", paper_ids=["paper_sem"], top_k=10
+            query="What is semantic content?", paper_ids=["paper_sem"], top_k=150
         )
 
         # Verify that generate_answer was called with the expected arguments
@@ -509,7 +512,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
-    def test_question_and_answer_use_all_papers(self, mock_generate_answer):
+    @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
+    def test_question_and_answer_use_all_papers(self, mock_vectorstore, mock_generate_answer):
         """test the use_all_papers branch of the question_and_answer tool."""
         # Test the branch where use_all_papers is True.
         # Create a dummy document for retrieval.
@@ -532,6 +536,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         dummy_vs.retrieve_relevant_chunks.return_value = [dummy_doc]
         # No add_paper call should be needed.
         dummy_vs.add_paper.return_value = None
+        # Return our dummy vector store when Vectorstore() is instantiated
+        mock_vectorstore.return_value = dummy_vs
 
         # Construct state with article_data containing one paper and an existing vector_store.
         dummy_embedding_model = MagicMock(spec=Embeddings)
