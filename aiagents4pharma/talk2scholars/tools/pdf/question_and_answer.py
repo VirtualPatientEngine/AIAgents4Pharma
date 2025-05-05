@@ -144,11 +144,13 @@ class Vectorstore:
             documents = loader.load()
             logger.info("Loaded %d pages from %s", len(documents), paper_id)
 
-            # Use default splitter if none provided
+            # Use default splitter (configurable via Hydra) if none provided
             if splitter is None:
+                # Load chunking parameters from config
+                cfg = load_hydra_config()
                 splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=1000,
-                    chunk_overlap=200,
+                    chunk_size=cfg.chunk_size,
+                    chunk_overlap=cfg.chunk_overlap,
                     separators=["\n\n", "\n", ". ", " ", ""],
                 )
 
@@ -207,7 +209,7 @@ class Vectorstore:
         logger.info("Built vector store with %d documents", len(documents_list))
 
     def rank_papers_by_query(
-        self, query: str, top_k: int = 10
+        self, query: str, top_k: int = 25
     ) -> List[Tuple[str, float]]:
         """
         Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
@@ -255,7 +257,7 @@ class Vectorstore:
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 50,
+        top_k: int = 150,
         mmr_diversity: float = 1.00,
     ) -> List[Document]:
         """
