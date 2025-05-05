@@ -1,8 +1,8 @@
 # Default configuration for the PDF question_and_answer Tool
 chunk_size: 1000 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
-top_k_papers: 3 # Number of papers to rank and retrieve
-top_k_chunks: 10 # Number of chunks to retrieve
+top_k_papers: 10 # Number of papers to rank and retrieve
+top_k_chunks: 50 # Number of chunks to retrieve
 reranker:
   model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
   api_key: ${env:NVIDIA_API_KEY}

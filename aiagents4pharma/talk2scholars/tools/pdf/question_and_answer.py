@@ -207,7 +207,7 @@ class Vectorstore:
         logger.info("Built vector store with %d documents", len(documents_list))
 
     def rank_papers_by_query(
-        self, query: str, top_k: int = 3
+        self, query: str, top_k: int = 10
     ) -> List[Tuple[str, float]]:
         """
         Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
@@ -255,7 +255,7 @@ class Vectorstore:
         self,
         query: str,
         paper_ids: Optional[List[str]] = None,
-        top_k: int = 10,
+        top_k: int = 50,
         mmr_diversity: float = 1.00,
     ) -> List[Document]:
         """
@@ -455,20 +455,8 @@ def question_and_answer(
         logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
-    # Get or create document store
-    vector_store = state.get("vector_store")
-    doc_store_created = False
-
-    if not vector_store:
-        logger.info("%s: Creating new document store", call_id)
-        vector_store = Vectorstore(embedding_model=text_embedding_model)
-        doc_store_created = True
-    else:
-        logger.info(
-            "%s: Using existing document store created at %s",
-            call_id,
-            getattr(vector_store, "initialization_time", "unknown"),
-        )
+    # Always use a fresh in-memory document store for this Q&A call
+    vector_store = Vectorstore(embedding_model=text_embedding_model)
 
     # Check if there are papers from different sources
     has_uploaded_papers = any(
@@ -552,15 +540,6 @@ def question_and_answer(
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
-
-    # Store the vector_store in state, with diagnostic information
-    if doc_store_created:
-        logger.info("%s: Storing new vector_store in state", call_id)
-    else:
-        logger.info("%s: Updating existing vector_store in state", call_id)
-
-    # Always store it regardless of creation status
-    state["vector_store"] = vector_store
 
     # Ensure vector store is built
     if not vector_store.vector_store:
