@@ -118,23 +118,17 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
+      shell: bash -l {0}
+      run: |
+        conda run -n test-env coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
     - name: Check coverage
+      shell: bash -l {0}
       run: |
-        coverage report -m
-        # $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1) -replace "[^\d]"  # Extract the last line and remove non-numeric characters
-        $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1)
-        # split and extract the last element
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -split " ")[-1]
-        # remove non-numeric characters
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -replace "[^\d]")
-        # convert to int
-        $TOTAL_COVERAGE=[int]$TOTAL_COVERAGE
-        echo "Total coverage: $TOTAL_COVERAGE"
-        if ($TOTAL_COVERAGE -ne 100) {
-          Write-Host "Code coverage is not 100%. Please check the coverage report."
+        TOTAL_COVERAGE=$(conda run -n test-env coverage report -m | awk 'END {print int($NF)}')
+        if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+          echo "Code coverage is not 100%. Please check the coverage report."
           exit 1
-        }
+        fi
       env:
         COVERAGE_FILE: './.coverage'
