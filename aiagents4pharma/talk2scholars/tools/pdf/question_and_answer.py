@@ -54,10 +54,17 @@ class QuestionAndAnswerInput(BaseModel):
     """
     Input schema for the PDF Question and Answer tool.
 
+    This schema defines the inputs required for querying academic or research-related
+    PDFs to answer a specific question using a language model and document retrieval.
+
     Attributes:
         question (str): The question to ask regarding the PDF content.
         paper_ids (Optional[List[str]]): Optional list of specific paper IDs to query.
+            If not provided, the system will determine relevant papers automatically.
+        use_all_papers (bool): Whether to use all available papers for answering the question.
+            If True, the system will include all loaded papers regardless of relevance filtering.
         tool_call_id (str): Unique identifier for the tool call, injected automatically.
+        state (dict): Shared application state, injected automatically.
     """
 
     question: str = Field(description="The question to ask regarding the PDF content.")
@@ -68,7 +75,8 @@ class QuestionAndAnswerInput(BaseModel):
     )
     use_all_papers: bool = Field(
         default=False,
-        description="Whether to use all available papers for answering the question.",
+        description="Whether to use all available papers for answering the question. "
+        "Set to True to bypass relevance filtering and include all loaded papers.",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
