@@ -23,7 +23,7 @@ RUN conda update -n base -c defaults conda -y \
     && conda install -n base python=3.12 -y -c conda-forge \
     && pip install --upgrade pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt \
-    && conda install -n base -c conda-forge faiss-cpu -y \
+    && conda install -n base -c pytorch -c conda-forge faiss-cpu -y \
     && conda clean -afy
 
 # Expose the default Streamlit port
