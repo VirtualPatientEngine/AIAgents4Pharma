@@ -104,15 +104,25 @@ nav:
       - States:
           - Talk2Scholars state: talk2scholars/states/state_talk2scholars.md
       - Tools:
-          - Search papers: talk2scholars/tools/search.md
-          - Single paper recommendation: talk2scholars/tools/single_paper_rec.md
-          - Multi paper recommendation: talk2scholars/tools/multi_paper_rec.md
-          - Display dataframe: talk2scholars/tools/display_dataframe.md
-          - Query dataframe: talk2scholars/tools/query_dataframe.md
+          - Search Papers: talk2scholars/tools/search.md
+          - Single Paper Recommendation: talk2scholars/tools/single_paper_rec.md
+          - Multi Paper Recommendation: talk2scholars/tools/multi_paper_rec.md
+          - Display Dataframe: talk2scholars/tools/display_dataframe.md
+          - Query Dataframe: talk2scholars/tools/query_dataframe.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
+          - Zotero Write: talk2scholars/tools/zotero_write.md
+          - Zotero Review: talk2scholars/tools/zotero_review.md
           - Question and answer: talk2scholars/tools/question_and_answer.md
+      - Utils:
+          - Search Helper: talk2scholars/utils/search_helper.md
+          - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
+          - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
+          - Zotero Write Helper: talk2scholars/utils/write_helper.md
+          - Zotero Read Helper: talk2scholars/utils/read_helper.md
+          - Zotero Review Helper: talk2scholars/utils/review_helper.md
+          - Zotero Path: talk2scholars/utils/zotero_path.md
 
   - Documentation:
       - Ops:
