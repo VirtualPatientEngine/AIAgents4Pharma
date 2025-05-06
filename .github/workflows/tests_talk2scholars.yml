@@ -66,7 +66,9 @@ jobs:
         python-version: 3.12
 
     - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
+      run: |
+        pip3 install -r requirements.txt  # Adjust this according to your project
+        pip3 install faiss-cpu
 
     - name: Run tests with coverage
       run: coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
@@ -101,7 +103,9 @@ jobs:
         python-version: 3.12
 
     - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
+      run: |
+        pip3 install -r requirements.txt  # Adjust this according to your project
+        pip3 install faiss-cpu
 
     - name: Run tests with coverage
       run: coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
