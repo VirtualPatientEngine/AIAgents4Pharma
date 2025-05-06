@@ -427,12 +427,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that rank_papers_by_query was called with the expected question and top_k=3
         dummy_vs.rank_papers_by_query.assert_called_with(
-            "What is semantic content?", top_k=25
+            "What is semantic content?", top_k=40
         )
 
         # Verify that retrieve_relevant_chunks was called with the selected paper id.
         dummy_vs.retrieve_relevant_chunks.assert_called_with(
-            query="What is semantic content?", paper_ids=["paper_sem"], top_k=150
+            query="What is semantic content?", paper_ids=["paper_sem"], top_k=25
         )
 
         # Verify that generate_answer was called with the expected arguments
@@ -513,7 +513,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
     @patch("aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.Vectorstore")
-    def test_question_and_answer_use_all_papers(self, mock_vectorstore, mock_generate_answer):
+    def test_question_and_answer_use_all_papers(
+        self, mock_vectorstore, mock_generate_answer
+    ):
         """test the use_all_papers branch of the question_and_answer tool."""
         # Test the branch where use_all_papers is True.
         # Create a dummy document for retrieval.
