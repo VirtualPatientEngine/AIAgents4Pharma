@@ -65,7 +65,7 @@ jobs:
         python-version: 3.12
 
     - name: Install dependencies
-      shell: bash -lc
+      shell: bash -l {0}
       run: |
         conda update -n base -c defaults conda -y
         conda create -n test-env -y python=3.12 faiss-cpu pytest coverage pip -c conda-forge
@@ -73,13 +73,13 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests with coverage
-      shell: bash -lc
+      shell: bash -l {0}
       run: |
         conda activate test-env
         coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
     - name: Check coverage
-      shell: bash -lc
+      shell: bash -l {0}
       run: |
         conda activate test-env
         coverage report -m
