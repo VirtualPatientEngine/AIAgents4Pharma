@@ -125,10 +125,4 @@ jobs:
     - name: Check coverage
       shell: bash -l {0}
       run: |
-        TOTAL_COVERAGE=$(conda run -n test-env coverage report -m | awk 'END {print int($NF)}')
-        if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-          echo "Code coverage is not 100%. Please check the coverage report."
-          exit 1
-        fi
-      env:
-        COVERAGE_FILE: './.coverage'
+        conda run -n test-env coverage report -m --fail-under=100
