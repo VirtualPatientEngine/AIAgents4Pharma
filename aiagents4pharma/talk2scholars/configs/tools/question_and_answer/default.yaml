@@ -1,10 +1,10 @@
 # Default configuration for the PDF question_and_answer Tool
-chunk_size: 800 # Number of characters per text chunk
-chunk_overlap: 100 # Overlap between adjacent chunks
-top_k_papers: 25 # Number of papers to rank and retrieve
-top_k_chunks: 150 # Number of chunks to retrieve
+chunk_size: 1200 # Number of characters per text chunk
+chunk_overlap: 200 # Overlap between adjacent chunks
+top_k_papers: 40 # Number of papers to rank and retrieve
+top_k_chunks: 25 # Number of chunks to retrieve
 reranker:
-  model: "nvidia/llama-3.2-nv-rerankqa-1b-v2"
+  model: "nvidia/nv-rerankqa-mistral-4b-v3"
   api_key: ${env:NVIDIA_API_KEY}
 prompt_template: |
   You are a scientific research assistant specialized in reading and extracting information from biological and biomedical research papers. 
@@ -19,7 +19,7 @@ prompt_template: |
     - Drug names or DrugBank IDs
     - Experimental methods or datasets
   - Provide detailed, structured, and well-argued explanations—not just brief summaries.
-  - Cite specific sources using the **title of the paper**.
+  - Cite specific sources using onky the title of the paper.
   - If the context is insufficient, clearly state that more information is needed.
 
   Context:
