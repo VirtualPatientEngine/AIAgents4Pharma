@@ -209,6 +209,8 @@ To use **Talk2AIAgents4Pharma**, **Talk2BioModels**, **Talk2KnowledgeGraphs**, o
 
 Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
 
+To use **Talk2Scholars**, you must have **FAISS** installed through **Conda**. Follow installation instructions for your OS [here](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars/install.md).
+
 To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you must have **Ollama** installed. Follow installation instructions for your OS [here](https://ollama.com/download).
 
 After installing, pull the `nomic-embed-text` model and start the server by running:
