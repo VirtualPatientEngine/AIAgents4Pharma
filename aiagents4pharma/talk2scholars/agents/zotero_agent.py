@@ -16,8 +16,8 @@ from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.zotero.zotero_read import zotero_read
 from ..tools.zotero.zotero_review import zotero_review
 from ..tools.zotero.zotero_write import zotero_write
-from ..tools.s2.display_results import display_results as s2_display
-from ..tools.s2.query_results import query_results as s2_query_results
+from ..tools.s2.display_dataframe import display_dataframe
+from ..tools.s2.query_dataframe import query_dataframe
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
@@ -49,7 +49,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    def agent_zotero_node(state: Talk2Scholars) -> Dict[str, Any]:
+    def zotero_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers from Zotero.
 
@@ -65,7 +65,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             Dict[str, Any]: A dictionary containing the updated conversation state.
 
         Example:
-            >>> result = agent_zotero_node(current_state)
+            >>> result = zotero_agent_node(current_state)
             >>> papers = result.get("papers", [])
         """
         logger.log(
@@ -89,11 +89,11 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     tools = ToolNode(
         [
             zotero_read,
-            s2_display,
-            s2_query_results,
+            display_dataframe,
+            query_dataframe,
             retrieve_semantic_scholar_paper_id,
-            zotero_review,  # First review
-            zotero_write,  # Then save with user confirmation
+            zotero_review,
+            zotero_write,
         ]
     )
 
@@ -110,14 +110,14 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     )
 
     workflow = StateGraph(Talk2Scholars)
-    workflow.add_node("agent_zotero", agent_zotero_node)
-    workflow.add_edge(START, "agent_zotero")
+    workflow.add_node("zotero_agent", zotero_agent_node)
+    workflow.add_edge(START, "zotero_agent")
 
     # Initialize memory to persist state between graph runs
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer, name="agent_zotero")
+    app = workflow.compile(checkpointer=checkpointer, name="zotero_agent")
     logger.log(
         logging.INFO,
         "Compiled the graph with thread_id %s and llm_model %s",

@@ -68,15 +68,16 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         [
             get_app_s2(uniq_id, llm_model),  # semantic scholar
             get_app_zotero(uniq_id, llm_model),  # zotero
-            get_app_pdf(uniq_id, llm_model),  # pdf
-            get_app_paper_download(uniq_id, llm_model),  # paper download
+            get_app_paper_download(uniq_id, llm_model),  # pdf
+            get_app_pdf(uniq_id, llm_model),  # paper download
         ],
         model=llm_model,
         state_schema=Talk2Scholars,
         # Full history is needed to extract
         # the tool artifacts
         output_mode="full_history",
-        add_handoff_back_messages=False,
+        # Allow supervisor to resume control and chain multiple sub-agent calls
+        add_handoff_back_messages=True,
         prompt=cfg.system_prompt,
     )
 

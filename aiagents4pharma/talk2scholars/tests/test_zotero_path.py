@@ -344,9 +344,7 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection"
     )
-    def test_zotero_write_invalid_collection(
-        self, mock_find, mock_fetch, mock_zotero
-    ):
+    def test_zotero_write_invalid_collection(self, mock_find, mock_fetch, mock_zotero):
         """Saving to a nonexistent Zotero collection returns an error Command."""
         sample = {"paper1": {"Title": "Test Paper"}}
         mock_fetch.return_value = sample
@@ -383,9 +381,7 @@ class TestZoteroWrite:
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.find_or_create_collection"
     )
-    def test_zotero_write_success(
-        self, mock_find, mock_fetch, mock_hydra, mock_zotero
-    ):
+    def test_zotero_write_success(self, mock_find, mock_fetch, mock_hydra, mock_zotero):
         """A valid approved save returns a success Command with summary."""
         sample = {"paper1": {"Title": "Test Paper", "Authors": ["Test Author"]}}
         mock_fetch.return_value = sample
@@ -426,11 +422,14 @@ class TestZoteroRead:
     @pytest.fixture
     def mock_hydra(self):
         """Fixture to mock hydra configuration."""
-        with patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.initialize"
-        ), patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.compose"
-        ) as mock_compose:
+        with (
+            patch(
+                "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.initialize"
+            ),
+            patch(
+                "aiagents4pharma.talk2scholars.tools.zotero.utils.write_helper.hydra.compose"
+            ) as mock_compose,
+        ):
             cfg = MagicMock()
             cfg.tools.zotero_read.user_id = "test_user"
             cfg.tools.zotero_read.library_type = "user"
@@ -486,4 +485,4 @@ class TestZoteroRead:
 
         assert result is not None
         assert isinstance(result.update, dict)
-        assert "zotero_read" in result.update
+        assert "article_data" in result.update
