@@ -65,9 +65,19 @@ jobs:
       with:
         python-version: 3.12
 
+    - name: Install SWIG (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y swig
+
+    - name: Install SWIG (macOS)
+      if: matrix.os == 'macos-13'
+      run: brew install swig
+
     - name: Install dependencies
       run: |
-        pip3 install -r requirements.txt  # Adjust this according to your project
+        pip3 install -r requirements.txt
         pip3 install faiss-cpu
 
     - name: Run tests with coverage
@@ -102,9 +112,12 @@ jobs:
       with:
         python-version: 3.12
 
+    - name: Install SWIG (Windows)
+      run: choco install swig -y
+
     - name: Install dependencies
       run: |
-        pip3 install -r requirements.txt  # Adjust this according to your project
+        pip3 install -r requirements.txt
         pip3 install faiss-cpu
 
     - name: Run tests with coverage
