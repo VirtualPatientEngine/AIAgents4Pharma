@@ -50,7 +50,7 @@ jobs:
 
   # code coverage job for ubuntu and macos
   code-cov-ubuntu-macos:
-    name: code-coverage-ubuntu-macos
+    name: code-coverage
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -71,12 +71,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y swig
 
-    - name: Install SWIG (macOS)
+    - name: Install SWIG and FAISS (macOS)
       if: matrix.os == 'macos-13'
-      run: brew install swig
+      run: brew install swig faiss
 
-    - name: Install dependencies
+    - name: Install dependencies and faiss-cpu
       run: |
+        if [ "${{ matrix.os }}" == "macos-13" ]; then
+          export CPLUS_INCLUDE_PATH="$(brew --prefix)/include"
+          export LIBRARY_PATH="$(brew --prefix)/lib"
+        fi
         pip3 install -r requirements.txt
         pip3 install faiss-cpu
 
