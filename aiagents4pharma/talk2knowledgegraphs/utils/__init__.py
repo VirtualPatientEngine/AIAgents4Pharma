@@ -6,3 +6,4 @@ from . import enrichments
 from . import extractions
 from . import kg_utils
 from . import pubchem_utils
+from . import uniprot_utils
