@@ -1,0 +1,6 @@
+_target_: talk2knowledgegraphs.utils.enrichments.uniprot_proteins
+uniprot_url: https://www.ebi.ac.uk/proteins/api/proteins
+reviewed: true
+isoform: 0
+organism: Homo sapiens
+timeout: 10

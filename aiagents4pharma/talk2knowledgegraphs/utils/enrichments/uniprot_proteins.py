@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 
 """
-Enrichment class for enriching PubChem IDs with their STRINGS representation.
+Enrichment class for enriching Gene names with their function and sequence using UniProt.
 """
 
 from typing import List
+import logging
 import json
+import hydra
 import requests
 from .enrichments import Enrichments
 
-# def remove_pubmed_references(text):
-#     # Remove full parentheses that contain only PubMed references
-#     text = re.sub(r'\((?:\s*PubMed:\d{7,8}\s*,?)*\)', '', text)
-#     # Clean up any leftover individual PubMed references not in parentheses (just in case)
-#     text = re.sub(r'PubMed:\d{7,8}', '', text)
-#     # Normalize spacing
-#     text = re.sub(r'\s{2,}', ' ', text).strip()
-#     return text
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class EnrichmentWithUniProt(Enrichments):
     """
@@ -35,26 +32,29 @@ class EnrichmentWithUniProt(Enrichments):
 
         enriched_gene_names = texts
 
-        request_url = "https://www.ebi.ac.uk/proteins/api/proteins"
+        logger.log(logging.INFO,
+                   "Load Hydra configuration for Gene enrichment with description and sequence.")
+        with hydra.initialize(version_base=None, config_path="../../configs"):
+            cfg = hydra.compose(config_name='config',
+                                overrides=['utils/enrichments/uniprot_proteins=default'])
+            cfg = cfg.utils.enrichments.uniprot_proteins
 
         descriptions = []
         sequences = []
         for gene in enriched_gene_names:
             params = {
-                "offset": 0,
-                "size": 100,
-                "reviewed": "true",
-                "isoform": 0,
+                "reviewed": cfg.reviewed,
+                "isoform": cfg.isoform,
                 "exact_gene": gene,
-                "organism": "Homo sapiens"
+                "organism": cfg.organism,
             }
 
-            r = requests.get(request_url,
+            r = requests.get(cfg.uniprot_url,
                              headers={ "Accept" : "application/json"},
                              params=params,
-                             timeout=5)
+                             timeout=cfg.timeout)
+            # if the response is not ok
             if not r.ok:
-                # r.raise_for_status()
                 descriptions.append(None)
                 sequences.append(None)
                 continue
