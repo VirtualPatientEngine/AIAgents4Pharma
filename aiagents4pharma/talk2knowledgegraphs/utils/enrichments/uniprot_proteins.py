@@ -21,7 +21,7 @@ class EnrichmentWithUniProt(Enrichments):
     """
     def enrich_documents(self, texts: List[str]) -> List[str]:
         """
-        Enrich a list of input UniProt IDs with their function and sequence.
+        Enrich a list of input UniProt gene names with their function and sequence.
 
         Args:
             texts: The list of gene names to be enriched.
@@ -39,6 +39,7 @@ class EnrichmentWithUniProt(Enrichments):
                                 overrides=['utils/enrichments/uniprot_proteins=default'])
             cfg = cfg.utils.enrichments.uniprot_proteins
 
+
         descriptions = []
         sequences = []
         for gene in enriched_gene_names:
@@ -47,6 +48,8 @@ class EnrichmentWithUniProt(Enrichments):
                 "isoform": cfg.isoform,
                 "exact_gene": gene,
                 "organism": cfg.organism,
+                # You can get the list of all available organisms here:
+                # https://www.uniprot.org/help/taxonomy
             }
 
             r = requests.get(cfg.uniprot_url,
@@ -76,13 +79,12 @@ class EnrichmentWithUniProt(Enrichments):
 
     def enrich_documents_with_rag(self, texts, docs):
         """
-        Enrich a list of input PubChem IDs with their STRINGS representation.
+        Enrich a list of input UniProt gene names with their function and sequence.
 
         Args:
-            texts: The list of pubchem IDs to be enriched.
-            docs: None
+            texts: The list of gene names to be enriched.
 
         Returns:
-            The list of enriched STRINGS
+            The list of enriched functions and sequences
         """
         return self.enrich_documents(texts)

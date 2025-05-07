@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Test cases for utils/enrichments/pubchem_strings.py
+Test cases for utils/enrichments/uniprot_proteins.py
 """
 
 import pytest
@@ -13,19 +13,18 @@ from ..utils.enrichments.uniprot_proteins import EnrichmentWithUniProt
 # 2. Gene Name: XZ (Shorter than 3 characters; must return empty results)
 # The expected description of TP53 startswith:
 START_DESCP = "Multifunctional transcription factor"
-# The expected description of TP53 startswith:
+# The expected amino acid sequence of TP53 startswith:
 START_SEQ = "MEEPQSDPSV"
-# The expected SMILES representation for the second PubChem ID is None.
 
 @pytest.fixture(name="enrich_obj")
-def fixture_pubchem_config():
+def fixture_uniprot_config():
     """Return a dictionary with the configuration for UniProt enrichment."""
     return EnrichmentWithUniProt()
 
 def test_enrich_documents(enrich_obj):
     """Test the enrich_documents method."""
-    pubchem_ids = ["TP53", "TP5", "XZ"]
-    descriptions, sequences = enrich_obj.enrich_documents(pubchem_ids)
+    gene_names = ["TP53", "TP5", "XZ"]
+    descriptions, sequences = enrich_obj.enrich_documents(gene_names)
     assert descriptions[0].startswith(START_DESCP)
     assert sequences[0].startswith(START_SEQ)
     assert descriptions[1] is None
@@ -35,8 +34,8 @@ def test_enrich_documents(enrich_obj):
 
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""
-    pubchem_ids = ["TP53", "TP5", "XZ"]
-    descriptions, sequences = enrich_obj.enrich_documents_with_rag(pubchem_ids, None)
+    gene_names = ["TP53", "TP5", "XZ"]
+    descriptions, sequences = enrich_obj.enrich_documents_with_rag(gene_names, None)
     assert descriptions[0].startswith(START_DESCP)
     assert sequences[0].startswith(START_SEQ)
     assert descriptions[1] is None
