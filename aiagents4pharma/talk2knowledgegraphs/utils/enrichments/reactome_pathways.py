@@ -8,7 +8,7 @@ from typing import List
 import logging
 import hydra
 import requests
-from enrichments import Enrichments
+from .enrichments import Enrichments
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
