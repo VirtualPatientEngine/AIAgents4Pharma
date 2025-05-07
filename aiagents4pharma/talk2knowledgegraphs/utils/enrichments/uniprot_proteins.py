@@ -5,7 +5,6 @@ Enrichment class for enriching PubChem IDs with their STRINGS representation.
 """
 
 from typing import List
-# import re
 import json
 import requests
 from .enrichments import Enrichments
@@ -55,7 +54,7 @@ class EnrichmentWithUniProt(Enrichments):
                              params=params,
                              timeout=5)
             if not r.ok:
-                r.raise_for_status()
+                # r.raise_for_status()
                 descriptions.append(None)
                 sequences.append(None)
                 continue
@@ -69,14 +68,10 @@ class EnrichmentWithUniProt(Enrichments):
             for comment in response_body[0]['comments']:
                 if comment['type'] == 'FUNCTION':
                     for value in comment['text']:
-                        # print (value['value'])
                         description += value['value']
             sequence = response_body[0]['sequence']['sequence']
             descriptions.append(description)
             sequences.append(sequence)
-            # print (gene)
-            # print (sequence)
-            # print (description)
         return descriptions, sequences
 
     def enrich_documents_with_rag(self, texts, docs):
@@ -91,6 +86,3 @@ class EnrichmentWithUniProt(Enrichments):
             The list of enriched STRINGS
         """
         return self.enrich_documents(texts)
-
-# test = EnrichmentWithUniProt()
-# print (test.enrich_documents(["P534", "NOD2"]))
