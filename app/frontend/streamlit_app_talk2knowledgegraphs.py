@@ -71,6 +71,14 @@ if "messages" not in st.session_state:
 # if "sbml_key" not in st.session_state:
 #     st.session_state.sbml_key = 0
 
+# Initialize session state for gene selections
+if "selected_genes" not in st.session_state:
+    st.session_state.selected_genes = []
+
+# Initialize session state for drug selections
+if "selected_drugs" not in st.session_state:
+    st.session_state.selected_drugs = []
+
 # Initialize session state for pre-clinical data package uploader
 if "data_package_key" not in st.session_state:
     st.session_state.data_package_key = 0
@@ -179,6 +187,12 @@ with main_col1:
             key="llm_model",
             on_change=streamlit_utils.update_llm_model,
         )
+
+        # Multiple selections for genes
+        streamlit_utils.get_gene_selections(cfg)
+
+        # Multiple selections for drugs
+        streamlit_utils.get_drug_selections(cfg)
 
         # Upload files
         streamlit_utils.get_uploaded_files(cfg)
@@ -289,6 +303,8 @@ with main_col2:
                         {
                             "llm_model": llm_model,
                             "embedding_model": emb_model,
+                            "selected_genes": st.session_state.selected_genes,
+                            "selected_drugs": st.session_state.selected_drugs,
                             "uploaded_files": st.session_state.uploaded_files,
                             "topk_nodes": st.session_state.topk_nodes,
                             "topk_edges": st.session_state.topk_edges,

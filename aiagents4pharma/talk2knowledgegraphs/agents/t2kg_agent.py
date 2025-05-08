@@ -9,7 +9,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import create_react_agent, ToolNode, InjectedState
-from ..tools.subgraph_extraction import SubgraphExtractionTool
+from ..tools.multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
 from ..tools.subgraph_summarization import SubgraphSummarizationTool
 from ..tools.graphrag_reasoning import GraphRAGReasoningTool
 from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
@@ -39,7 +39,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         cfg = cfg.agents.t2kg_agent
 
     # Define the tools
-    subgraph_extraction = SubgraphExtractionTool()
+    subgraph_extraction = MultimodalSubgraphExtractionTool()
     subgraph_summarization = SubgraphSummarizationTool()
     graphrag_reasoning = GraphRAGReasoningTool()
     tools = ToolNode([
