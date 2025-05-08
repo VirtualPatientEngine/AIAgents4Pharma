@@ -33,6 +33,7 @@ class EnrichmentWithPubChem(Enrichments):
                 c = pcp.Compound.from_cid(pubchem_cid)
             except pcp.BadRequestError:
                 enriched_pubchem_ids_smiles.append(None)
+                enriched_pubchem_ids_descriptions.append(None)
                 continue
             enriched_pubchem_ids_smiles.append(c.isomeric_smiles)
             enriched_pubchem_ids_descriptions.append(pubchem_cid_description(pubchem_cid))
