@@ -35,14 +35,12 @@ class EnrichmentWithReactome(Enrichments):
                    "Load Hydra configuration for reactome enrichment")
         with hydra.initialize(version_base=None, config_path="../../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['utils/enrichments/uniprot_proteins=default'])
-            cfg = cfg.utils.enrichments.uniprot_proteins
-
+                                overrides=['utils/enrichments/reactome_pathways=default'])
+            cfg = cfg.utils.enrichments.reactome_pathways
 
         descriptions = []
         for reactome_pathway_id in reactome_pathways_ids:
-            base_url = 'https://reactome.org/ContentService/data/query/'
-            r = requests.get(base_url + reactome_pathway_id + '/summation',
+            r = requests.get(cfg.base_url + reactome_pathway_id + '/summation',
                              headers={ "Accept" : "text/plain"},
                              timeout=cfg.timeout)
             # if the response is not ok

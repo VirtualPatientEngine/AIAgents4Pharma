@@ -36,26 +36,18 @@ class EnrichmentWithOLS(Enrichments):
                    "Load Hydra configuration for OLS enrichments.")
         with hydra.initialize(version_base=None, config_path="../../configs"):
             cfg = hydra.compose(config_name='config',
-                                overrides=['utils/enrichments/uniprot_proteins=default'])
-            cfg = cfg.utils.enrichments.uniprot_proteins
-
+                                overrides=['utils/enrichments/ols_terms=default'])
+            cfg = cfg.utils.enrichments.ols_terms
 
         descriptions = []
         for ols_id in ols_ids:
-            # https://www.ebi.ac.uk/ols4/api/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0000011&lang=en
-            base_url = 'https://www.ebi.ac.uk/ols4/api/terms'
             params = {
                 'short_form': ols_id
             }
-            r = requests.get(base_url,
+            r = requests.get(cfg.base_url,
                              headers={ "Accept" : "application/json"},
                              params=params,
                              timeout=cfg.timeout)
-            # if the response is not ok
-            print (r.ok)
-            if not r.ok:
-                descriptions.append(None)
-                continue
             response_body = json.loads(r.text)
             # if the response body is empty
             if '_embedded' not in response_body:

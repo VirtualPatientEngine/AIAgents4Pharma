@@ -1,0 +1,3 @@
+_target_: talk2knowledgegraphs.utils.reactome_pathways
+base_url: https://reactome.org/ContentService/data/query/
+timeout: 10

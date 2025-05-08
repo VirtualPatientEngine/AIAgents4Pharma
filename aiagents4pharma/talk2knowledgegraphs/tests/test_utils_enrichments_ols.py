@@ -13,13 +13,16 @@ from ..utils.enrichments.ols_terms import EnrichmentWithOLS
 # 3. UBERON_0000004: nose (Uberon)
 # 4. HP_0009739: Hypoplasia of the antihelix (Human Phenotype Ontology)
 # 5. MONDO_0005011: Crohn disease (MONDO)
+# 6. XYZ_0000000: Non-existing term (for testing error handling)
 
-# The expected description of T-helper 17 cell startswith:
+# The expected description for each term starts with:
 CL_DESC = "CD4-positive, alpha-beta T cell"
 GO_DESC = "Any process that activates or increases the frequency, rate or extent"
 UBERON_DESC = "The olfactory organ of vertebrates, consisting of nares"
 HP_DESC = "Hypoplasia of the antihelix"
 MONDO_DESC = "A gastrointestinal disorder characterized by chronic inflammation"
+
+# The expected description for the non-existing term is None
 
 @pytest.fixture(name="enrich_obj")
 def fixture_uniprot_config():
@@ -32,13 +35,15 @@ def test_enrich_documents(enrich_obj):
                  "GO_0046427",
                  "UBERON_0000004",
                  "HP_0009739",
-                 "MONDO_0005011"]
+                 "MONDO_0005011",
+                 "XYZ_0000000"]
     descriptions = enrich_obj.enrich_documents(ols_terms)
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
     assert descriptions[3].startswith(HP_DESC)
     assert descriptions[4].startswith(MONDO_DESC)
+    assert descriptions[5] is None
 
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""
@@ -46,10 +51,12 @@ def test_enrich_documents_with_rag(enrich_obj):
                  "GO_0046427",
                  "UBERON_0000004",
                  "HP_0009739",
-                 "MONDO_0005011"]
+                 "MONDO_0005011",
+                 "XYZ_0000000"]
     descriptions = enrich_obj.enrich_documents_with_rag(ols_terms, None)
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
     assert descriptions[3].startswith(HP_DESC)
     assert descriptions[4].startswith(MONDO_DESC)
+    assert descriptions[5] is None

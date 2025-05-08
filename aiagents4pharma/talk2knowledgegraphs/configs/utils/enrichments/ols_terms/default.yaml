@@ -1,0 +1,3 @@
+_target_: talk2knowledgegraphs.utils.ols_terms
+base_url: https://www.ebi.ac.uk/ols4/api/terms/
+timeout: 10
