@@ -54,11 +54,9 @@ class EnrichmentWithOLS(Enrichments):
                 descriptions.append(None)
                 continue
             description = response_body['_embedded']['terms'][0]['description']
-            label = response_body['_embedded']['terms'][0]['label']
-            if not description:
-                descriptions.append(label)
-            else:
-                descriptions.append('\n'.join(description))
+            description += response_body['_embedded']['terms'][0]['synonyms']
+            description += response_body['_embedded']['terms'][0]['label']
+            descriptions.append('\n'.join(description))
         return descriptions
 
     def enrich_documents_with_rag(self, texts, docs):
