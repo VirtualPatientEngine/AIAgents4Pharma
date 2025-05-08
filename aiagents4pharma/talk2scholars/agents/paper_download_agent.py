@@ -13,8 +13,7 @@ from langgraph.prebuilt.chat_agent_executor import create_react_agent
 from langgraph.prebuilt.tool_node import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
-from ..tools.paper_download import download_arxiv_paper
-from ..tools.s2.query_results import query_results
+from ..tools.paper_download.download_arxiv_input import download_arxiv_paper
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -45,7 +44,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         cfg = cfg.agents.talk2scholars.paper_download_agent
 
     # Define tools properly
-    tools = ToolNode([download_arxiv_paper, query_results])
+    tools = ToolNode([download_arxiv_paper])
 
     # Define the model
     logger.info("Using OpenAI model %s", llm_model)
@@ -78,7 +77,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     checkpointer = MemorySaver()
 
     # Compile the graph
-    app = workflow.compile(checkpointer=checkpointer, name="agent_paper_download")
+    app = workflow.compile(checkpointer=checkpointer, name="paper_download_agent")
 
     # Logging the information and returning the app
     logger.info("Compiled the graph")

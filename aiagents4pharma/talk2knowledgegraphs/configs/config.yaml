@@ -5,4 +5,7 @@ defaults:
   - tools/subgraph_summarization: default
   - tools/graphrag_reasoning: default
   - utils/pubchem_utils: default
+  - utils/enrichments/uniprot_proteins: default
+  - utils/enrichments/ols_terms: default
+  - utils/enrichments/reactome_pathways: default
   - app/frontend: default

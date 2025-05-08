@@ -21,6 +21,14 @@ from langchain.callbacks.tracers import LangChainTracer
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
+import logging
+
+# Set the logging level for Langsmith tracer to ERROR to suppress warnings
+logging.getLogger("langsmith").setLevel(logging.ERROR)
+logging.getLogger("langsmith.client").setLevel(logging.ERROR)
+
+# Set the logging level for httpx to ERROR to suppress info logs
+logging.getLogger("httpx").setLevel(logging.ERROR)
 sys.path.append("./")
 # import get_app from main_agent
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
@@ -120,32 +128,79 @@ def _submit_feedback(user_response):
 @st.fragment
 def process_pdf_upload():
     """
-    Process the uploaded PDF file automatically:
-    Read the file as binary and store it in session state under "pdf_data".
+    Upload and process multiple PDF files.
+    Saves them as a nested dictionary in session state under 'article_data',
+    and updates the LangGraph agent state accordingly.
     """
-    pdf_file = st.file_uploader(
-        "Upload an article",
-        help="Upload an article in PDF format.",
+    pdf_files = st.file_uploader(
+        "Upload articles",
+        help="Upload one or more articles in PDF format.",
         type=["pdf"],
         key="pdf_upload",
+        accept_multiple_files=True,
     )
 
-    if pdf_file:
+    if pdf_files:
         import tempfile
+        import time
 
-        # print (pdf_file.name)
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            f.write(pdf_file.read())
-            # print (f.name)
-        st.session_state.pdf_data = {
-            "pdf_object": f.name,  # binary formatted PDF
-            "pdf_url": f.name,  # placeholder for URL if needed later
-            "arxiv_id": None,  # placeholder for an arXiv id if applicable
-        }
-        # Create config for the agent
+        # Step 1: Initialize or get existing article_data
+        article_data = st.session_state.get("article_data", {})
+
+        # Step 2: Process each uploaded file
+        for pdf_file in pdf_files:
+            with tempfile.NamedTemporaryFile(delete=False) as f:
+                f.write(pdf_file.read())
+
+            # Prevent duplicates before adding new entry
+            filename = pdf_file.name
+            existing_ids = [
+                id
+                for id, data in article_data.items()
+                if data.get("filename") == filename
+            ]
+
+            if existing_ids:
+                # Remove old entries with the same filename
+                for existing_id in existing_ids:
+                    article_data.pop(existing_id)
+
+            # Generate unique ID using filename + timestamp
+            timestamp = int(time.time() * 1000)
+            pdf_id = (
+                f"uploaded_{filename.replace(' ', '_').replace('.', '_')}_{timestamp}"
+            )
+
+            # Create metadata dict
+            pdf_metadata = {
+                "Title": pdf_file.name,
+                "Authors": ["Uploaded by user"],
+                "Abstract": "User uploaded PDF",
+                "Publication Date": "N/A",
+                "pdf_url": f.name,
+                "filename": filename,
+                "source": "upload",
+            }
+
+            # Add to the article_data dictionary
+            article_data[pdf_id] = pdf_metadata
+
+        # Step 3: Save to session state
+        st.session_state.article_data = article_data
+
+        # Step 4: Update LangGraph state
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
-        # Update the agent state with the selected LLM model
-        app.update_state(config, {"pdf_data": st.session_state.pdf_data})
+
+        # Optional: ensure article_data is initialized in LangGraph state
+        current_state = app.get_state(config)
+        if "article_data" not in current_state.values:
+            app.update_state(config, {"article_data": {}})
+
+        # Perform final update
+        app.update_state(config, {"article_data": article_data})
+
+        # Final confirmation
+        st.success(f"{len(pdf_files)} PDF(s) uploaded successfully.")
 
 
 # Main layout of the app split into two columns
@@ -217,7 +272,7 @@ with main_col2:
             elif message["type"] == "dataframe":
                 if "tool_name" in message:
                     if message["tool_name"] in [
-                        "display_results",
+                        "display_dataframe",
                     ]:
                         df_papers = message["content"]
                         st.dataframe(
@@ -347,158 +402,10 @@ with main_col2:
                         },
                     )
                     current_state = app.get_state(config)
-                    print("PDF_DATA", len(current_state.values["pdf_data"]))
+                    print("ARTICLE_DATA", len(current_state.values["article_data"]))
 
                     streamlit_utils.get_response("T2S", None, app, st, prompt)
 
-                    # # Create config for the agent
-                    # config = {"configurable": {"thread_id": st.session_state.unique_id}}
-                    # # Update the LLM model
-                    # app.update_state(
-                    #     config,
-                    #     {
-                    #         "llm_model": streamlit_utils.get_base_chat_model(
-                    #             st.session_state.llm_model
-                    #         )
-                    #     },
-                    # )
-                    # # Update the agent state with the selected LLM model
-                    # current_state = app.get_state(config)
-
-                    # with collect_runs() as cb:
-                    #     # Add Langsmith tracer
-                    #     tracer = LangChainTracer(
-                    #         project_name=st.session_state.project_name
-                    #     )
-
-                    #     # Get response from the agent with Langsmith tracing enabled
-                    #     # response = app.invoke(
-                    #     #     {"messages": [HumanMessage(content=prompt)]},
-                    #     #     config=config | {"callbacks": [tracer]},
-                    #     # )
-
-                    #     response = app.stream(
-                    #         {"messages": [HumanMessage(content=prompt)]},
-                    #         config=config|{"callbacks": [tracer]},
-                    #         stream_mode="messages"
-                    #     )
-                    #     st.write_stream(streamlit_utils.stream_response(response))
-
-                    #     # Assign the traced run ID to session state
-                    #     if cb.traced_runs:
-                    #         st.session_state.run_id = cb.traced_runs[-1].id
-
-                    # # # Get the latest agent state after the response
-                    # # current_state = app.get_state(config)
-                    # #
-                    # # response = app.invoke(
-                    # #     {"messages": [HumanMessage(content=prompt)]},
-                    # #     config=config,
-                    # # )
-
-                    # current_state = app.get_state(config)
-
-                    # # print (response["messages"])
-
-                    # # Add assistant response to chat history
-                    # assistant_msg = ChatMessage(
-                    #     response["messages"][-1].content, role="assistant"
-                    # )
-                    # st.session_state.messages.append(
-                    #     {"type": "message", "content": assistant_msg}
-                    # )
-                    # # Display the response in the chat
-                    # st.markdown(response["messages"][-1].content)
-                    # st.empty()
-                    # reversed_messages = current_state.values["messages"][::-1]
-                    # # Loop through the reversed messages until a
-                    # # HumanMessage is found i.e. the last message
-                    # # from the user. This is to display the results
-                    # # of the tool calls made by the agent since the
-                    # # last message from the user.
-                    # for msg in reversed_messages:
-                    #     # print (msg)
-                    #     # Break the loop if the message is a HumanMessage
-                    #     # i.e. the last message from the user
-                    #     if isinstance(msg, HumanMessage):
-                    #         break
-                    #     # Skip the message if it is an AIMessage
-                    #     # i.e. a message from the agent. An agent
-                    #     # may make multiple tool calls before the
-                    #     # final response to the user.
-                    #     if isinstance(msg, AIMessage):
-                    #         # print ('AIMessage', msg)
-                    #         continue
-                    #     # Work on the message if it is a ToolMessage
-                    #     # These may contain additional visuals that
-                    #     # need to be displayed to the user.
-                    #     # print("ToolMessage", msg)
-                    #     # Skip the Tool message if it is an error message
-                    #     if msg.status == "error":
-                    #         continue
-                    #     # print("ToolMessage", msg)
-                    #     uniq_msg_id = "_".join(
-                    #         [msg.name, msg.tool_call_id, str(st.session_state.run_id)]
-                    #     )
-                    # if msg.name in ['search_tool',
-                    #                 'get_single_paper_recommendations',
-                    #                 'get_multi_paper_recommendations']:
-                    # if msg.name in ["display_results"]:
-                    #     # Display the results of the tool call
-                    #     # for msg_artifact in msg.artifact:
-                    #     # dic_papers = msg.artifact[msg_artifact]
-                    #     dic_papers = msg.artifact
-                    #     if not dic_papers:
-                    #         continue
-                    #     df_papers = pd.DataFrame.from_dict(
-                    #         dic_papers, orient="index"
-                    #     )
-                    #     # Add index as a column "key"
-                    #     df_papers["Key"] = df_papers.index
-                    #     # Drop index
-                    #     df_papers.reset_index(drop=True, inplace=True)
-                    #     # Drop colum abstract
-                    #     df_papers.drop(columns=["Abstract", "Key"], inplace=True)
-
-                    #     if "Year" in df_papers.columns:
-                    #         df_papers["Year"] = df_papers["Year"].apply(
-                    #             lambda x: (
-                    #                 str(int(x))
-                    #                 if pd.notna(x) and str(x).isdigit()
-                    #                 else None
-                    #             )
-                    #         )
-
-                    #     if "Date" in df_papers.columns:
-                    #         df_papers["Date"] = df_papers["Date"].apply(
-                    #             lambda x: (
-                    #                 pd.to_datetime(x, errors="coerce").strftime(
-                    #                     "%Y-%m-%d"
-                    #                 )
-                    #                 if pd.notna(pd.to_datetime(x, errors="coerce"))
-                    #                 else None
-                    #             )
-                    #         )
-
-                    #     st.dataframe(
-                    #         df_papers,
-                    #         hide_index=True,
-                    #         column_config={
-                    #             "URL": st.column_config.LinkColumn(
-                    #                 display_text="Open",
-                    #             ),
-                    #         },
-                    #     )
-                    #     # Add data to the chat history
-                    #     st.session_state.messages.append(
-                    #         {
-                    #             "type": "dataframe",
-                    #             "content": df_papers,
-                    #             "key": "dataframe_" + uniq_msg_id,
-                    #             "tool_name": msg.name,
-                    #         }
-                    #     )
-                    #     st.empty()
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
             feedback = streamlit_feedback(

@@ -51,24 +51,24 @@ class DummyWorkflow:
         return self
 
 
-def dummy_get_app_s2(uniq_id, llm_model):
+def dummy_s2_agent(uniq_id, llm_model):
     """Return a DummyWorkflow for the S2 agent."""
-    dummy_get_app_s2.called_uniq_id = uniq_id
-    dummy_get_app_s2.called_llm_model = llm_model
+    dummy_s2_agent.called_uniq_id = uniq_id
+    dummy_s2_agent.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "s2", "uniq_id": uniq_id})
 
 
-def dummy_get_app_zotero(uniq_id, llm_model):
+def dummy_zotero_agent(uniq_id, llm_model):
     """Return a DummyWorkflow for the Zotero agent."""
-    dummy_get_app_zotero.called_uniq_id = uniq_id
-    dummy_get_app_zotero.called_llm_model = llm_model
+    dummy_zotero_agent.called_uniq_id = uniq_id
+    dummy_zotero_agent.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "zotero", "uniq_id": uniq_id})
 
 
-def dummy_get_app_pdf(uniq_id, llm_model):
+def dummy_question_and_answer_agent(uniq_id, llm_model):
     """Return a DummyWorkflow for the PDF agent."""
-    dummy_get_app_pdf.called_uniq_id = uniq_id
-    dummy_get_app_pdf.called_llm_model = llm_model
+    dummy_question_and_answer_agent.called_uniq_id = uniq_id
+    dummy_question_and_answer_agent.called_llm_model = llm_model
     return DummyWorkflow(supervisor_args={"agent": "pdf", "uniq_id": uniq_id})
 
 
@@ -143,10 +143,10 @@ def patch_hydra(monkeypatch):
     )
 
 
-def dummy_get_app_paper_download(uniq_id, llm_model):
+def dummy_paper_download_agent(uniq_id, llm_model):
     """Return a DummyWorkflow for the paper download agent."""
-    dummy_get_app_paper_download.called_uniq_id = uniq_id
-    dummy_get_app_paper_download.called_llm_model = llm_model
+    dummy_paper_download_agent.called_uniq_id = uniq_id
+    dummy_paper_download_agent.called_llm_model = llm_model
     return DummyWorkflow(
         supervisor_args={"agent": "paper_download", "uniq_id": uniq_id}
     )
@@ -156,19 +156,19 @@ def dummy_get_app_paper_download(uniq_id, llm_model):
 def patch_sub_agents_and_supervisor(monkeypatch):
     """Patch the sub-agents and supervisor creation functions."""
     monkeypatch.setattr(
-        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_get_app_s2
+        "aiagents4pharma.talk2scholars.agents.main_agent.get_app_s2", dummy_s2_agent
     )
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_zotero",
-        dummy_get_app_zotero,
+        dummy_zotero_agent,
     )
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_pdf",
-        dummy_get_app_pdf,
+        dummy_question_and_answer_agent,
     )
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.get_app_paper_download",
-        dummy_get_app_paper_download,
+        dummy_paper_download_agent,
     )
     monkeypatch.setattr(
         "aiagents4pharma.talk2scholars.agents.main_agent.create_supervisor",

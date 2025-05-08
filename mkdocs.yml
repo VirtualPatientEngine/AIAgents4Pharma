@@ -60,6 +60,7 @@ nav:
           - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
           - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
           - Drug Enrichments/Embeddings (SMILES/molmim): ./notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed.ipynb
+          - PrimeKG enrichments/embeddings : ./notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment.ipynb
           - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
@@ -82,6 +83,9 @@ nav:
               - Enrichments: talk2knowledgegraphs/utils/enrichments/enrichments.md
               - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
               - EnrichmentWithPubChem: talk2knowledgegraphs/utils/enrichments/pubchem_strings.md
+              - EnrichmentWithUniProt: talk2knowledgegraphs/utils/enrichments/uniprot_proteins.md
+              - EnrichmentWithReactome: talk2knowledgegraphs/utils/enrichments/reactome_pathways.md
+              - EnrichmentWithOLS: talk2knowledgegraphs/utils/enrichments/ols_terms.md
       - Agents:
           - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
       - States:
@@ -104,17 +108,25 @@ nav:
       - States:
           - Talk2Scholars state: talk2scholars/states/state_talk2scholars.md
       - Tools:
-          - Search papers: talk2scholars/tools/search.md
-          - Single paper recommendation: talk2scholars/tools/single_paper_rec.md
-          - Multi paper recommendation: talk2scholars/tools/multi_paper_rec.md
-          - Display results: talk2scholars/tools/display_results.md
-          - Query results: talk2scholars/tools/query_results.md
+          - Search Papers: talk2scholars/tools/search.md
+          - Single Paper Recommendation: talk2scholars/tools/single_paper_rec.md
+          - Multi Paper Recommendation: talk2scholars/tools/multi_paper_rec.md
+          - Display Dataframe: talk2scholars/tools/display_dataframe.md
+          - Query Dataframe: talk2scholars/tools/query_dataframe.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
-          - Arxiv Downloader: talk2scholars/tools/arxiv_downloader.md
-          - Abstract Downloader: talk2scholars/tools/abstract_downloader.md          
           - Zotero Read: talk2scholars/tools/zotero_read.md
+          - Zotero Write: talk2scholars/tools/zotero_write.md
+          - Zotero Review: talk2scholars/tools/zotero_review.md
           - Question and answer: talk2scholars/tools/question_and_answer.md
+      - Utils:
+          - Search Helper: talk2scholars/utils/search_helper.md
+          - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
+          - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
+          - Zotero Write Helper: talk2scholars/utils/write_helper.md
+          - Zotero Read Helper: talk2scholars/utils/read_helper.md
+          - Zotero Review Helper: talk2scholars/utils/review_helper.md
+          - Zotero Path: talk2scholars/utils/zotero_path.md
 
   - Documentation:
       - Ops:

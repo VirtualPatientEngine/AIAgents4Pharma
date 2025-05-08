@@ -209,7 +209,7 @@ with main_col1:
 # Second column
 with main_col2:
     # Chat history panel
-    with st.container(border=True, height=600):
+    with st.container(border=True, height=1200):
         st.write("#### 💬 Chat History")
 
         # Display history of messages
