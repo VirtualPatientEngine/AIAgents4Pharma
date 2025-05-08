@@ -33,7 +33,8 @@ def test_enrich_documents(enrich_obj):
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""
     pubchem_ids = ["5311000", "1X"]
-    enriched_descriptions, enriched_strings = enrich_obj.enrich_documents_with_rag(pubchem_ids, None)
+    enriched_descriptions, enriched_strings = enrich_obj.enrich_documents_with_rag(pubchem_ids,
+                                                                                   None)
     assert enriched_strings == [SMILES_FIRST, None]
     assert enriched_descriptions[0].startswith(DESCRIPTION_FIRST)
     assert enriched_descriptions[1] is None

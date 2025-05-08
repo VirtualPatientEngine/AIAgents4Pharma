@@ -65,6 +65,3 @@ class EnrichmentWithReactome(Enrichments):
             The list of enriched descriptions
         """
         return self.enrich_documents(texts)
-
-test = EnrichmentWithReactome()
-print (test.enrich_documents(['R-HSA-5673001']))
