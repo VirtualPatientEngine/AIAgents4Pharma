@@ -53,9 +53,13 @@ class EnrichmentWithOLS(Enrichments):
             if '_embedded' not in response_body:
                 descriptions.append(None)
                 continue
+            # Add the description to the list
             description = response_body['_embedded']['terms'][0]['description']
+            # Add synonyms to the description
             description += response_body['_embedded']['terms'][0]['synonyms']
-            description += response_body['_embedded']['terms'][0]['label']
+            # Add the label to the description
+            # Label is not provided as list, so we need to convert it to a list
+            description += [response_body['_embedded']['terms'][0]['label']]
             descriptions.append('\n'.join(description))
         return descriptions
 
