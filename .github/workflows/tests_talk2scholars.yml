@@ -33,7 +33,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            Linux-conda-
+            Linux-conda-talk2aiagents4pharma-
 
       - name: Create conda environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -70,7 +70,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            macOS-conda-
+            macOS-conda-talk2aiagents4pharma-
 
       - name: Create conda environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -107,7 +107,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            Windows-conda-
+            Windows-conda-talk2aiagents4pharma-
 
       - name: Create conda environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -145,7 +145,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            Linux-conda-
+            Linux-conda-talk2aiagents4pharma-
 
       - name: Install test dependencies
         shell: bash -l {0}
@@ -199,7 +199,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            macOS-conda-
+            macOS-conda-talk2aiagents4pharma-
 
       - name: Install test dependencies
         shell: bash -l {0}
@@ -253,7 +253,7 @@ jobs:
           path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
           key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            Windows-conda-
+            Windows-conda-talk2aiagents4pharma-
 
       - name: Install test dependencies
         shell: bash -l {0}
