@@ -1,15 +1,10 @@
-# This is a basic workflow to help you get started with GitHub Actions
 name: TESTS Talk2Scholars
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events
   pull_request:
     branches: [main]
     paths:
       - "aiagents4pharma/talk2scholars/**"
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 env:
@@ -17,71 +12,107 @@ env:
   ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
   ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 
-# This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  pylint-windows-ubuntu-macos:
-    # The type of runner that the job will run on
-    name: pylint-windows-ubuntu-macos
+  pylint:
+    name: pylint-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
-      # install requirements
-      - name: Install the requirements
-        run: |
-          pip3 install --break-system-packages -r requirements.txt
-
-      # pylint
-      - name: Run pylint
-        run: |
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
-
-  # code coverage job for ubuntu and macos
-  code-cov-ubuntu-macos:
-    name: code-coverage
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: "latest"
           python-version: 3.12
 
-      - name: Install dependencies
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2scholars-env
+          key: ${{ runner.os }}-conda-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n test-env -y python=3.12 faiss-cpu pytest coverage pip -c conda-forge
-          conda activate test-env
+          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2scholars-env
           pip install -r requirements.txt
 
-      - name: Run tests with coverage
+      - name: Run pylint
         shell: bash -l {0}
         run: |
-          conda activate test-env
+          conda activate talk2scholars-env
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
+
+  code-coverage:
+    name: code-coverage-${{ matrix.os }}
+    needs: pylint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2scholars-env
+          key: ${{ runner.os }}-conda-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
+
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2scholars-env" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2scholars-env -y python=3.12 pip -c conda-forge
+            conda activate talk2scholars-env
+            pip install -r requirements.txt
+          fi
+          conda activate talk2scholars-env
+          conda install -n talk2scholars-env -y pytest coverage faiss-cpu -c conda-forge
+
+      - name: Run tests with coverage (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash -l {0}
+        run: |
+          conda run -n talk2scholars-env coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
+
+      - name: Run tests with coverage (Ubuntu/macOS)
+        if: matrix.os != 'windows-latest'
+        shell: bash -l {0}
+        run: |
+          conda activate talk2scholars-env
           coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
-      - name: Check coverage
+      - name: Check coverage (Windows)
+        if: matrix.os == 'windows-latest'
         shell: bash -l {0}
         run: |
-          conda activate test-env
+          conda run -n talk2scholars-env coverage report -m --fail-under=100
+
+      - name: Check coverage (Ubuntu/macOS)
+        if: matrix.os != 'windows-latest'
+        shell: bash -l {0}
+        run: |
+          conda activate talk2scholars-env
           coverage report -m
           TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
           if [[ $TOTAL_COVERAGE -ne 100 ]]; then
@@ -91,38 +122,8 @@ jobs:
         env:
           COVERAGE_FILE: "./.coverage"
 
-  # code coverage job for windows
-  code-cov-windows:
-    name: code-coverage-windows
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [windows-latest]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
         with:
-          miniforge-version: "latest"
-          python-version: 3.12
-
-      - name: Install dependencies
-        run: |
-          conda update -n base -c defaults conda -y
-          conda create -n test-env -y python=3.12 faiss-cpu pytest coverage pip -c conda-forge
-          conda activate test-env
-          pip install -r requirements.txt
-
-      - name: Run tests with coverage
-        shell: bash -l {0}
-        run: |
-          conda run -n test-env coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
-
-      - name: Check coverage
-        shell: bash -l {0}
-        run: |
-          conda run -n test-env coverage report -m --fail-under=100
+          name: coverage-report-${{ matrix.os }}
+          path: .coverage
