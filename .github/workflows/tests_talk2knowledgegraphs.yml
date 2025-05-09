@@ -352,7 +352,14 @@ jobs:
         run: |
           conda activate talk2aiagents4pharma
           curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-          tar -xzf ./ollama-windows-amd64.zip
+
+          # Use PowerShell to extract the zip file
+          powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ."
+
+          # Make sure ollama is in the PATH
+          echo "$PWD" >> $GITHUB_PATH
+
+          # Start ollama service
           start ollama serve
           sleep 10
           ollama pull llama3.2:1b
@@ -363,8 +370,14 @@ jobs:
         run: |
           echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
           conda activate talk2aiagents4pharma
-          curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-          tar -xzf ./ollama-windows-amd64.zip
+
+          # Only download if we don't have it
+          if [ ! -f "ollama.exe" ]; then
+            curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
+            powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ."
+            echo "$PWD" >> $GITHUB_PATH
+          fi
+
           start ollama serve
           sleep 10
           ollama list
