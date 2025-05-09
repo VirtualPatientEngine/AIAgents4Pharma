@@ -30,8 +30,8 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: Linux-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             Linux-conda-
 
@@ -40,14 +40,14 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
-          conda activate talk2scholars-env
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
       - name: Run pylint
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
 
   # pylint job for macos
@@ -67,8 +67,8 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: macOS-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             macOS-conda-
 
@@ -77,14 +77,14 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
-          conda activate talk2scholars-env
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
       - name: Run pylint
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
 
   # pylint job for windows
@@ -104,8 +104,8 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: Windows-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             Windows-conda-
 
@@ -114,14 +114,14 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
-          conda activate talk2scholars-env
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
       - name: Run pylint
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
 
   # code coverage job for ubuntu
@@ -142,33 +142,33 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: Linux-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             Linux-conda-
 
       - name: Install test dependencies
         shell: bash -l {0}
         run: |
-          if [ ! -d "$CONDA/envs/talk2scholars-env" ]; then
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2scholars-env -y python=3.12 pip -c conda-forge
-            conda activate talk2scholars-env
+            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
-          conda activate talk2scholars-env
-          conda install -n talk2scholars-env -y pytest coverage faiss-cpu -c conda-forge
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu -c conda-forge
 
       - name: Run tests with coverage
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
       - name: Check coverage
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           coverage report -m
           TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
           if [[ $TOTAL_COVERAGE -ne 100 ]]; then
@@ -196,33 +196,33 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: macOS-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             macOS-conda-
 
       - name: Install test dependencies
         shell: bash -l {0}
         run: |
-          if [ ! -d "$CONDA/envs/talk2scholars-env" ]; then
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2scholars-env -y python=3.12 pip -c conda-forge
-            conda activate talk2scholars-env
+            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
-          conda activate talk2scholars-env
-          conda install -n talk2scholars-env -y pytest coverage faiss-cpu -c conda-forge
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu -c conda-forge
 
       - name: Run tests with coverage
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
       - name: Check coverage
         shell: bash -l {0}
         run: |
-          conda activate talk2scholars-env
+          conda activate talk2aiagents4pharma
           coverage report -m
           TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
           if [[ $TOTAL_COVERAGE -ne 100 ]]; then
@@ -250,29 +250,29 @@ jobs:
         id: cache-conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: Windows-conda-${{ hashFiles('requirements.txt') }}
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             Windows-conda-
 
       - name: Install test dependencies
         shell: bash -l {0}
         run: |
-          if [ ! -d "$CONDA/envs/talk2scholars-env" ]; then
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2scholars-env -y python=3.12 pip -c conda-forge
-            conda activate talk2scholars-env
+            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
-          conda activate talk2scholars-env
-          conda install -n talk2scholars-env -y pytest coverage faiss-cpu -c conda-forge
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu -c conda-forge
 
       - name: Run tests with coverage
         shell: bash -l {0}
         run: |
-          conda run -n talk2scholars-env coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
+          conda run -n talk2aiagents4pharma coverage run --include=aiagents4pharma/talk2scholars/* -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/
 
       - name: Check coverage
         shell: bash -l {0}
         run: |
-          conda run -n talk2scholars-env coverage report -m --fail-under=100
+          conda run -n talk2aiagents4pharma coverage report -m --fail-under=100
