@@ -17,79 +17,79 @@ env:
 
 # This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  # # pylint job for ubuntu
-  # pylint-ubuntu:
-  #   name: pylint-ubuntu
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Setup Miniforge
-  #       uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniforge-version: "latest"
-  #         python-version: 3.12
-  #
-  #     - name: Cache conda environment
-  #       id: cache-conda
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-  #         key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: |
-  #           Linux-conda-talk2aiagents4pharma-
-  #
-  #     - name: Create conda environment
-  #       if: steps.cache-conda.outputs.cache-hit != 'true'
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda update -n base -c defaults conda -y
-  #         conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
-  #         conda activate talk2aiagents4pharma
-  #         pip install -r requirements.txt
-  #
-  #     - name: Run pylint
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
-  #
-  # # pylint job for macos
-  # pylint-macos:
-  #   name: pylint-macos
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Setup Miniforge
-  #       uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniforge-version: "latest"
-  #         python-version: 3.12
-  #
-  #     - name: Cache conda environment
-  #       id: cache-conda
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-  #         key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: |
-  #           macOS-conda-talk2aiagents4pharma-
-  #
-  #     - name: Create conda environment
-  #       if: steps.cache-conda.outputs.cache-hit != 'true'
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda update -n base -c defaults conda -y
-  #         conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
-  #         conda activate talk2aiagents4pharma
-  #         pip install -r requirements.txt
-  #
-  #     - name: Run pylint
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+  # pylint job for ubuntu
+  pylint-ubuntu:
+    name: pylint-ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Linux-conda-talk2aiagents4pharma-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2aiagents4pharma
+          pip install -r requirements.txt
+
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+
+  # pylint job for macos
+  pylint-macos:
+    name: pylint-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            macOS-conda-talk2aiagents4pharma-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2aiagents4pharma
+          pip install -r requirements.txt
+
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
 
   # pylint job for windows
   pylint-windows:
@@ -127,181 +127,180 @@ jobs:
         run: |
           conda activate talk2aiagents4pharma
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
-  #
-  # # code coverage job for ubuntu
-  # code-cov-ubuntu:
-  #   name: code-coverage-ubuntu
-  #   needs: pylint-ubuntu
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Setup Miniforge
-  #       uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniforge-version: "latest"
-  #         python-version: 3.12
-  #
-  #     - name: Restore conda environment cache
-  #       id: cache-conda
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-  #         key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: |
-  #           Linux-conda-talk2aiagents4pharma-
-  #
-  #     - name: Install test dependencies
-  #       shell: bash -l {0}
-  #       run: |
-  #         if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
-  #           conda update -n base -c defaults conda -y
-  #           conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
-  #           conda activate talk2aiagents4pharma
-  #           pip install -r requirements.txt
-  #         fi
-  #         conda activate talk2aiagents4pharma
-  #         conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
-  #
-  #     - name: Cache Ollama models
-  #       uses: actions/cache@v4
-  #       id: cache_ollama
-  #       with:
-  #         path: |
-  #           /usr/share/ollama/.ollama/models/*
-  #           test
-  #         key: ${{ runner.os }}-ollama
-  #
-  #     - name: Install and Pull Ollama models
-  #       if: steps.cache_ollama.outputs.cache-hit != 'true'
-  #       run: |
-  #         mkdir -p test
-  #         echo "Hello, World!" > test/hello.txt
-  #         conda activate talk2aiagents4pharma
-  #         curl -fsSL https://ollama.com/install.sh | sh
-  #         ollama serve &
-  #         sleep 10
-  #         ollama pull llama3.2:1b
-  #         ls -l ~/.ollama/
-  #         ls -l /usr/share/ollama/.ollama/
-  #       shell: bash -l {0}
-  #
-  #     - name: Reading cached Ollama models
-  #       run: |
-  #         cat test/hello.txt
-  #         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-  #         conda activate talk2aiagents4pharma
-  #         curl -fsSL https://ollama.com/install.sh | sh
-  #         ollama serve &
-  #         sleep 10
-  #         mkdir -p ~/.ollama/models/
-  #         cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
-  #         ollama list
-  #         du -sh ~/.ollama/
-  #         du -sh /usr/share/ollama/.ollama/
-  #       shell: bash -l {0}
-  #
-  #     - name: Run tests with coverage
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
-  #
-  #     - name: Check coverage
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         coverage report -m
-  #         TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-  #         if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-  #           echo "Code coverage is not 100%. Please check the coverage report."
-  #           exit 1
-  #         fi
-  #       env:
-  #         COVERAGE_FILE: "./.coverage"
-  #
-  # # code coverage job for macos
-  # code-cov-macos:
-  #   name: code-coverage-macos
-  #   needs: pylint-macos
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Setup Miniforge
-  #       uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniforge-version: "latest"
-  #         python-version: 3.12
-  #
-  #     - name: Restore conda environment cache
-  #       id: cache-conda
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-  #         key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: |
-  #           macOS-conda-talk2aiagents4pharma-
-  #
-  #     - name: Install test dependencies
-  #       shell: bash -l {0}
-  #       run: |
-  #         if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
-  #           conda update -n base -c defaults conda -y
-  #           conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
-  #           conda activate talk2aiagents4pharma
-  #           pip install -r requirements.txt
-  #         fi
-  #         conda activate talk2aiagents4pharma
-  #         conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
-  #
-  #     - name: Cache Ollama models
-  #       uses: actions/cache@v4
-  #       id: cache_ollama
-  #       with:
-  #         path: |
-  #           /Users/runner/.ollama/models/*
-  #         key: ${{ runner.os }}-ollama
-  #
-  #     - name: Install and Pull Ollama models
-  #       if: steps.cache_ollama.outputs.cache-hit != 'true'
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         brew install ollama
-  #         ollama serve &
-  #         sleep 10
-  #         ollama pull llama3.2:1b
-  #         ollama list
-  #
-  #     - name: Reading cached Ollama models
-  #       shell: bash -l {0}
-  #       run: |
-  #         echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-  #         conda activate talk2aiagents4pharma
-  #         brew install ollama
-  #         ollama serve &
-  #         sleep 10
-  #         ollama list
-  #
-  #     - name: Run tests with coverage
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
-  #
-  #     - name: Check coverage
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda activate talk2aiagents4pharma
-  #         coverage report -m
-  #         TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-  #         if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-  #           echo "Code coverage is not 100%. Please check the coverage report."
-  #           exit 1
-  #         fi
-  #       env:
-  #         COVERAGE_FILE: "./.coverage"
+  # code coverage job for ubuntu
+  code-cov-ubuntu:
+    name: code-coverage-ubuntu
+    needs: pylint-ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Linux-conda-talk2aiagents4pharma-
+
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda activate talk2aiagents4pharma
+            pip install -r requirements.txt
+          fi
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
+
+      - name: Cache Ollama models
+        uses: actions/cache@v4
+        id: cache_ollama
+        with:
+          path: |
+            /usr/share/ollama/.ollama/models/*
+            test
+          key: ${{ runner.os }}-ollama
+
+      - name: Install and Pull Ollama models
+        if: steps.cache_ollama.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p test
+          echo "Hello, World!" > test/hello.txt
+          conda activate talk2aiagents4pharma
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 10
+          ollama pull llama3.2:1b
+          ls -l ~/.ollama/
+          ls -l /usr/share/ollama/.ollama/
+        shell: bash -l {0}
+
+      - name: Reading cached Ollama models
+        run: |
+          cat test/hello.txt
+          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
+          conda activate talk2aiagents4pharma
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 10
+          mkdir -p ~/.ollama/models/
+          cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
+          ollama list
+          du -sh ~/.ollama/
+          du -sh /usr/share/ollama/.ollama/
+        shell: bash -l {0}
+
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
+
+      - name: Check coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage report -m
+          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
+        env:
+          COVERAGE_FILE: "./.coverage"
+
+  # code coverage job for macos
+  code-cov-macos:
+    name: code-coverage-macos
+    needs: pylint-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            macOS-conda-talk2aiagents4pharma-
+
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda activate talk2aiagents4pharma
+            pip install -r requirements.txt
+          fi
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
+
+      - name: Cache Ollama models
+        uses: actions/cache@v4
+        id: cache_ollama
+        with:
+          path: |
+            /Users/runner/.ollama/models/*
+          key: ${{ runner.os }}-ollama
+
+      - name: Install and Pull Ollama models
+        if: steps.cache_ollama.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          brew install ollama
+          ollama serve &
+          sleep 10
+          ollama pull llama3.2:1b
+          ollama list
+
+      - name: Reading cached Ollama models
+        shell: bash -l {0}
+        run: |
+          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
+          conda activate talk2aiagents4pharma
+          brew install ollama
+          ollama serve &
+          sleep 10
+          ollama list
+
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage run --include=aiagents4pharma/talk2knowledgegraphs/* -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/
+
+      - name: Check coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage report -m
+          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
+        env:
+          COVERAGE_FILE: "./.coverage"
 
   # code coverage job for windows
   code-cov-windows:
