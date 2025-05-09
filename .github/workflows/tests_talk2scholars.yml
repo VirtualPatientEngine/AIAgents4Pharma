@@ -178,13 +178,6 @@ jobs:
         env:
           COVERAGE_FILE: "./.coverage"
 
-      # Using upload-artifact@v4 to avoid the error
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-ubuntu
-          path: .coverage
-
   # code coverage job for macos
   code-cov-macos:
     name: code-coverage-macos
@@ -239,13 +232,6 @@ jobs:
         env:
           COVERAGE_FILE: "./.coverage"
 
-      # Using upload-artifact@v4 to avoid the error
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-macos
-          path: .coverage
-
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage-windows
@@ -290,10 +276,3 @@ jobs:
         shell: bash -l {0}
         run: |
           conda run -n talk2scholars-env coverage report -m --fail-under=100
-
-      # Using upload-artifact@v4 to avoid the error
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-windows
-          path: .coverage
