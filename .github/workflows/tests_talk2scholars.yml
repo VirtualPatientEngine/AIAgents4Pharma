@@ -13,17 +13,10 @@ env:
   ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 
 jobs:
-  pylint:
-    name: pylint-${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-    outputs:
-      windows_result: ${{ steps.set_result.outputs.windows_result }}
-      ubuntu_result: ${{ steps.set_result.outputs.ubuntu_result }}
-      macos_result: ${{ steps.set_result.outputs.macos_result }}
+  # pylint job for ubuntu
+  pylint-ubuntu:
+    name: pylint-ubuntu
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -33,27 +26,14 @@ jobs:
           miniforge-version: "latest"
           python-version: 3.12
 
-      # Save the cache key as an output for reuse
-      - name: Set cache key
-        id: cache_key
-        run: |
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            echo "key=Windows-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            echo "key=Linux-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-            echo "key=macOS-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
-
       - name: Cache conda environment
         id: cache-conda
         uses: actions/cache@v3
         with:
           path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: ${{ steps.cache_key.outputs.key }}
+          key: Linux-conda-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-conda-
+            Linux-conda-
 
       - name: Create conda environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -70,23 +50,84 @@ jobs:
           conda activate talk2scholars-env
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
 
-      # Set output for each OS result
-      - name: Set result output
-        id: set_result
-        run: |
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            echo "windows_result=success" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            echo "ubuntu_result=success" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-            echo "macos_result=success" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
+  # pylint job for macos
+  pylint-macos:
+    name: pylint-macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  code-coverage-ubuntu:
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2scholars-env
+          key: macOS-conda-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            macOS-conda-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2scholars-env
+          pip install -r requirements.txt
+
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2scholars-env
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
+
+  # pylint job for windows
+  pylint-windows:
+    name: pylint-windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: "latest"
+          python-version: 3.12
+
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2scholars-env
+          key: Windows-conda-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Windows-conda-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2scholars-env -y python=3.12 pip pylint -c conda-forge
+          conda activate talk2scholars-env
+          pip install -r requirements.txt
+
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2scholars-env
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2scholars
+
+  # code coverage job for ubuntu
+  code-cov-ubuntu:
     name: code-coverage-ubuntu
-    needs: pylint
-    if: needs.pylint.outputs.ubuntu_result == 'success'
+    needs: pylint-ubuntu
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -137,16 +178,17 @@ jobs:
         env:
           COVERAGE_FILE: "./.coverage"
 
+      # Using upload-artifact@v4 to avoid the error
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-ubuntu
           path: .coverage
 
-  code-coverage-macos:
+  # code coverage job for macos
+  code-cov-macos:
     name: code-coverage-macos
-    needs: pylint
-    if: needs.pylint.outputs.macos_result == 'success'
+    needs: pylint-macos
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -197,16 +239,17 @@ jobs:
         env:
           COVERAGE_FILE: "./.coverage"
 
+      # Using upload-artifact@v4 to avoid the error
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-macos
           path: .coverage
 
-  code-coverage-windows:
+  # code coverage job for windows
+  code-cov-windows:
     name: code-coverage-windows
-    needs: pylint
-    if: needs.pylint.outputs.windows_result == 'success'
+    needs: pylint-windows
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -248,8 +291,9 @@ jobs:
         run: |
           conda run -n talk2scholars-env coverage report -m --fail-under=100
 
+      # Using upload-artifact@v4 to avoid the error
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-windows
           path: .coverage
