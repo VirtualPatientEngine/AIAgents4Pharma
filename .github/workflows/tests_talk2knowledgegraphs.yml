@@ -351,19 +351,35 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate talk2aiagents4pharma
+
+          # Download Ollama
           curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
 
-          # Use PowerShell to extract the zip file
-          powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ."
+          # Create a directory for Ollama
+          mkdir -p ollama_dir
 
-          # Make sure ollama is in the PATH
-          echo "$PWD" >> $GITHUB_PATH
+          # Extract using PowerShell
+          powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ollama_dir -Force"
+
+          # Make the ollama directory executable and add to PATH
+          chmod +x ollama_dir/*
+          export PATH="$PWD/ollama_dir:$PATH"
+          echo "$PWD/ollama_dir" >> $GITHUB_PATH
+
+          # Verify extraction was successful
+          ls -la ollama_dir/
 
           # Start ollama service
-          start ollama serve
-          sleep 10
-          ollama pull llama3.2:1b
-          ollama list
+          ./ollama_dir/ollama.exe serve &
+
+          # Wait for it to start
+          sleep 15
+
+          # Pull the model
+          ./ollama_dir/ollama.exe pull llama3.2:1b
+
+          # List available models
+          ./ollama_dir/ollama.exe list
 
       - name: Reading cached Ollama models
         shell: bash -l {0}
@@ -371,16 +387,27 @@ jobs:
           echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
           conda activate talk2aiagents4pharma
 
-          # Only download if we don't have it
-          if [ ! -f "ollama.exe" ]; then
+          # Create ollama directory if it doesn't exist
+          mkdir -p ollama_dir
+
+          # If we need to download Ollama
+          if [ ! -f "ollama_dir/ollama.exe" ]; then
             curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-            powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ."
-            echo "$PWD" >> $GITHUB_PATH
+            powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ollama_dir -Force"
           fi
 
-          start ollama serve
-          sleep 10
-          ollama list
+          # Add to PATH
+          export PATH="$PWD/ollama_dir:$PATH"
+          echo "$PWD/ollama_dir" >> $GITHUB_PATH
+
+          # Start ollama service
+          ./ollama_dir/ollama.exe serve &
+
+          # Wait for service to start
+          sleep 15
+
+          # List available models
+          ./ollama_dir/ollama.exe list
 
       - name: Run tests with coverage
         shell: bash -l {0}
