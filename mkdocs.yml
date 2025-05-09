@@ -84,6 +84,8 @@ nav:
               - EnrichmentWithOllama: talk2knowledgegraphs/utils/enrichments/ollama.md
               - EnrichmentWithPubChem: talk2knowledgegraphs/utils/enrichments/pubchem_strings.md
               - EnrichmentWithUniProt: talk2knowledgegraphs/utils/enrichments/uniprot_proteins.md
+              - EnrichmentWithReactome: talk2knowledgegraphs/utils/enrichments/reactome_pathways.md
+              - EnrichmentWithOLS: talk2knowledgegraphs/utils/enrichments/ols_terms.md
       - Agents:
           - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
       - States:

@@ -13,7 +13,9 @@ from ..utils.enrichments.pubchem_strings import EnrichmentWithPubChem
 # The expected SMILES representation for the first PubChem ID is:
 SMILES_FIRST = 'C[C@@H]1C[C@H]2[C@@H]3[C@@H](CC4=CC(=O)C=C[C@@]'
 SMILES_FIRST += '4([C@H]3[C@H](C[C@@]2([C@]1(C(=O)CO)O)C)O)C)Cl'
-# The expected SMILES representation for the second PubChem ID is None.
+# The expected description for the first PubChem ID starts with:
+DESCRIPTION_FIRST = "Alclometasone is a prednisolone compound having an alpha-chloro substituent"
+# The expected SMILES representation and description for the second PubChem ID is None.
 
 @pytest.fixture(name="enrich_obj")
 def fixture_pubchem_config():
@@ -23,11 +25,16 @@ def fixture_pubchem_config():
 def test_enrich_documents(enrich_obj):
     """Test the enrich_documents method."""
     pubchem_ids = ["5311000", "1X"]
-    enriched_strings = enrich_obj.enrich_documents(pubchem_ids)
+    enriched_descriptions, enriched_strings = enrich_obj.enrich_documents(pubchem_ids)
     assert enriched_strings == [SMILES_FIRST, None]
+    assert enriched_descriptions[0].startswith(DESCRIPTION_FIRST)
+    assert enriched_descriptions[1] is None
 
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""
     pubchem_ids = ["5311000", "1X"]
-    enriched_strings = enrich_obj.enrich_documents_with_rag(pubchem_ids, None)
+    enriched_descriptions, enriched_strings = enrich_obj.enrich_documents_with_rag(pubchem_ids,
+                                                                                   None)
     assert enriched_strings == [SMILES_FIRST, None]
+    assert enriched_descriptions[0].startswith(DESCRIPTION_FIRST)
+    assert enriched_descriptions[1] is None
