@@ -17,7 +17,7 @@ jobs:
     name: pylint-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false # Prevent all jobs from stopping if one fails
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     outputs:
@@ -33,12 +33,25 @@ jobs:
           miniforge-version: "latest"
           python-version: 3.12
 
+      # Save the cache key as an output for reuse
+      - name: Set cache key
+        id: cache_key
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            echo "key=Windows-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            echo "key=Linux-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+            echo "key=macOS-conda-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
       - name: Cache conda environment
         id: cache-conda
         uses: actions/cache@v3
         with:
           path: ${{ env.CONDA }}/envs/talk2scholars-env
-          key: ${{ runner.os }}-conda-${{ hashFiles('requirements.txt') }}
+          key: ${{ steps.cache_key.outputs.key }}
           restore-keys: |
             ${{ runner.os }}-conda-
 
