@@ -24,10 +24,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Cache conda environment
@@ -61,10 +61,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Cache conda environment
@@ -98,10 +98,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Cache conda environment
@@ -135,10 +135,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Restore conda environment cache
@@ -227,10 +227,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Restore conda environment cache
@@ -310,10 +310,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: "latest"
+          miniconda-version: "latest"
           python-version: 3.12
 
       - name: Restore conda environment cache
