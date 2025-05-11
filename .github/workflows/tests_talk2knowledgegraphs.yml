@@ -44,7 +44,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
           conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
@@ -81,7 +81,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
           conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
@@ -118,7 +118,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint -c conda-forge
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
           conda activate talk2aiagents4pharma
           pip install -r requirements.txt
 
@@ -155,12 +155,12 @@ jobs:
         run: |
           if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
             conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
+          conda install -n talk2aiagents4pharma -y pytest coverage
 
       - name: Cache Ollama models
         uses: actions/cache@v4
@@ -247,12 +247,12 @@ jobs:
         run: |
           if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
             conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
+          conda install -n talk2aiagents4pharma -y pytest coverage
 
       - name: Cache Ollama models
         uses: actions/cache@v4
@@ -330,12 +330,12 @@ jobs:
         run: |
           if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
             conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip -c conda-forge
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
             conda activate talk2aiagents4pharma
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage -c conda-forge
+          conda install -n talk2aiagents4pharma -y pytest coverage
 
       - name: Cache Ollama models
         uses: actions/cache@v4
