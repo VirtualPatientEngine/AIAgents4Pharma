@@ -893,7 +893,7 @@ Search models on Crohns disease
 name and descriptions.
 
 ```
-Briefly describe model 537 and 
+Briefly describe model 537 and
 its parameters related to drug dosage
 ```
 
@@ -946,7 +946,7 @@ for more examples, and the [FAQs](https://virtualpatientengine.github.io/AIAgent
 for common questions.
 
 9. Provide feedback to the developers by clicking on the feedback button.
-                
+
 """
     )
 
@@ -1110,18 +1110,18 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
         key=f"uploader_{st.session_state.data_package_key}",
     )
 
-    endotype_files = st.file_uploader(
-        "🧬 Upload endotype data",
-        help="Free-form text. List of differentially expressed genes",
-        accept_multiple_files=True,
-        type=cfg.endotype_allowed_file_types,
-        key=f"uploader_endotype_{st.session_state.endotype_key}",
-    )
+    # endotype_files = st.file_uploader(
+    #     "🧬 Upload endotype data",
+    #     help="Free-form text. List of differentially expressed genes",
+    #     accept_multiple_files=True,
+    #     type=cfg.endotype_allowed_file_types,
+    #     key=f"uploader_endotype_{st.session_state.endotype_key}",
+    # )
 
     # Merge the uploaded files
     uploaded_files = data_package_files.copy()
-    if endotype_files:
-        uploaded_files += endotype_files.copy()
+    # if endotype_files:
+    #     uploaded_files += endotype_files.copy()
     # if sbml_file:
     #     uploaded_files += [sbml_file]
 
@@ -1142,8 +1142,8 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                 uploaded_file.timestamp = current_timestamp
                 if uploaded_file.name in [uf.name for uf in data_package_files]:
                     uploaded_file.file_type = "drug_data"
-                elif uploaded_file.name in [uf.name for uf in endotype_files]:
-                    uploaded_file.file_type = "endotype"
+                # elif uploaded_file.name in [uf.name for uf in endotype_files]:
+                #     uploaded_file.file_type = "endotype"
                 else:
                     uploaded_file.file_type = "sbml_file"
                 st.session_state.uploaded_files.append(
@@ -1179,5 +1179,5 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.session_state.uploaded_files.remove(uploaded_file)
                     st.cache_data.clear()
                     st.session_state.data_package_key += 1
-                    st.session_state.endotype_key += 1
+                    # st.session_state.endotype_key += 1
                     st.rerun(scope="fragment")

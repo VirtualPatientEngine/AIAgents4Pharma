@@ -44,60 +44,34 @@ class MultimodalPCSTPruning(NamedTuple):
         "disease": "text",
     }
 
-    def _minmax(self, x: torch.Tensor) -> torch.Tensor:
+    def _compute_node_prizes(self,
+                             graph: Data,
+                             query_emb: torch.Tensor,
+                             modality: str) :
         """
-        Normalize the input tensor to the range [0, 1].
-
-        Args:
-            x: The input tensor.
-        
-        Returns:
-            The normalized tensor.
-        """
-        x_min = x.min()
-        x_max = x.max()
-        return (x - x_min) / (x_max - x_min + 1e-8)
-
-    def compute_prizes(self,
-                       graph: Data,
-                       prompt_emb: torch.Tensor,
-                       query_emb: torch.Tensor,
-                       modality: str) -> np.ndarray:
-        """
-        Compute the node prizes based on the cosine similarity between the query and nodes,
-        as well as the edge prizes based on the cosine similarity between the query and edges.
-        Note that the node and edge embeddings shall use the same embedding model and dimensions
-        with the query.
+        Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
             graph: The knowledge graph in PyTorch Geometric Data format.
-            prompt_emb: The prompt embedding in PyTorch Tensor format. 
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction
                 (e.g., "text", "sequence", "smiles").
 
         Returns:
-            The prizes of the nodes and edges.
+            The prizes of the nodes.
         """
         # Convert PyG graph to a DataFrame
         graph_df = pd.DataFrame({
             "node_type": graph.node_type,
             "modality": [
-                self.modalities_dict[graph.node_type[i]] 
+                self.modalities_dict[graph.node_type[i]]
                 for i in range(len(graph.node_type))
             ],
             "x": [list(x) for x in graph.x],
             "score": [0.0 for _ in range(len(graph.node_id))],
         })
 
-        # Calculate cosine similarity for text features and update the score
-        # graph_df.loc[graph_df["modality"] == modality, "score"] = self._minmax(
-        #     torch.nn.CosineSimilarity(dim=-1)(
-        #         query_emb,
-        #         torch.tensor(list(graph_df[graph_df["modality"]== modality].x.values))
-        #     )
-        # ).tolist()
         # Calculate cosine similarity for text features and update the score
         graph_df.loc[graph_df["modality"] == modality, "score"] = torch.nn.CosineSimilarity(dim=-1)(
                 query_emb,
@@ -112,6 +86,21 @@ class MultimodalPCSTPruning(NamedTuple):
         n_prizes = torch.zeros_like(n_prizes)
         n_prizes[topk_n_indices] = torch.arange(topk, 0, -1).float()
 
+        return n_prizes
+
+    def _compute_edge_prizes(self,
+                             graph: Data,
+                             prompt_emb: torch.Tensor) :
+        """
+        Compute the node prizes based on the cosine similarity between the query and nodes.
+
+        Args:
+            graph: The knowledge graph in PyTorch Geometric Data format.
+            prompt_emb: The prompt embedding in PyTorch Tensor format.
+
+        Returns:
+            The prizes of the nodes.
+        """
         # Note that as of now, the edge features are based on textual features
         # Compute prizes for edges
         e_prizes = torch.nn.CosineSimilarity(dim=-1)(prompt_emb, graph.edge_attr)
@@ -128,11 +117,41 @@ class MultimodalPCSTPruning(NamedTuple):
             e_prizes[indices] = value
             last_topk_e_value = value * (1 - self.c_const)
 
+        return e_prizes
+
+    def compute_prizes(self,
+                       graph: Data,
+                       prompt_emb: torch.Tensor,
+                       query_emb: torch.Tensor,
+                       modality: str):
+        """
+        Compute the node prizes based on the cosine similarity between the query and nodes,
+        as well as the edge prizes based on the cosine similarity between the query and edges.
+        Note that the node and edge embeddings shall use the same embedding model and dimensions
+        with the query.
+
+        Args:
+            graph: The knowledge graph in PyTorch Geometric Data format.
+            prompt_emb: The prompt embedding in PyTorch Tensor format.
+            query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
+                a prompt, sequence, or any other feature to be used for the subgraph extraction.
+            modality: The modality to use for the subgraph extraction
+                (e.g., "text", "sequence", "smiles").
+
+        Returns:
+            The prizes of the nodes and edges.
+        """
+        # Compute prizes for nodes
+        n_prizes = self._compute_node_prizes(graph, query_emb, modality)
+
+        # Compute prizes for edges
+        e_prizes = self._compute_edge_prizes(graph, prompt_emb)
+
         return {"nodes": n_prizes, "edges": e_prizes}
 
-    def compute_subgraph_costs(
-        self, graph: Data, prizes: dict
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def compute_subgraph_costs(self,
+                               graph: Data,
+                               prizes: dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
@@ -237,7 +256,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         Args:
             graph: The knowledge graph in PyTorch Geometric Data format.
-            prompt_emb: The prompt embedding in PyTorch Tensor format. 
+            prompt_emb: The prompt embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction

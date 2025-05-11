@@ -19,18 +19,13 @@ def input_dict_fixture():
     input_dict = {
         "llm_model": None,  # TBA for each test case
         "embedding_model": None,  # TBA for each test case
+        "selected_genes": [],
+        "selected_drugs": [],
         "uploaded_files": [
             {
                 "file_name": "adalimumab.pdf",
                 "file_path": f"{DATA_PATH}/adalimumab.pdf",
                 "file_type": "drug_data",
-                "uploaded_by": "VPEUser",
-                "uploaded_timestamp": "2024-11-05 00:00:00",
-            },
-            {
-                "file_name": "DGE_human_Colon_UC-vs-Colon_Control.pdf",
-                "file_path": f"{DATA_PATH}/DGE_human_Colon_UC-vs-Colon_Control.pdf",
-                "file_type": "endotype",
                 "uploaded_by": "VPEUser",
                 "uploaded_timestamp": "2024-11-05 00:00:00",
             },
@@ -40,8 +35,8 @@ def input_dict_fixture():
         "dic_source_graph": [
             {
                 "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
+                "kg_pyg_path": f"{DATA_PATH}/biobridge_multimodal_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/biobridge_multimodal_text_graph.pkl",
             }
         ],
         "dic_extracted_graph": []

@@ -10,22 +10,15 @@ import pandas as pd
 import hydra
 import networkx as nx
 from pydantic import BaseModel, Field
-from langchain.chains.retrieval import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 import torch
 from torch_geometric.data import Data
 from ..utils.extractions.multimodal_pcst import MultimodalPCSTPruning
 from ..utils.embeddings.ollama import EmbeddingWithOllama
-# from ..utils.embeddings.sentence_transformer import EmbeddingWithSentenceTransformer
 from .load_arguments import ArgumentData
 
 # Initialize logger
@@ -35,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 class MultimodalSubgraphExtractionInput(BaseModel):
     """
-    MultimodalSubgraphExtractionInput is a Pydantic model representing an input for extracting a subgraph.
+    MultimodalSubgraphExtractionInput is a Pydantic model representing an input
+    for extracting a subgraph.
 
     Args:
         prompt: Prompt to interact with the backend.
@@ -70,69 +64,112 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
 
-    # def perform_endotype_filtering(
-    #     self,
-    #     prompt: str,
-    #     state: Annotated[dict, InjectedState],
-    #     cfg: hydra.core.config_store.ConfigStore,
-    # ) -> str:
-    #     """
-    #     Perform endotype filtering based on the uploaded files and prepare the prompt.
+    def _prepare_query_modalities(self,
+                                  prompt: str,
+                                  state: Annotated[dict, InjectedState],
+                                  pyg_graph: Data,
+                                  emb_model_name: str) :
+        """
+        Prepare the modality-specific query for subgraph extraction.
 
-    #     Args:
-    #         prompt: The prompt to interact with the backend.
-    #         state: Injected state for the tool.
-    #         cfg: Hydra configuration object.
-    #     """
-    #     # Loop through the uploaded files
-    #     all_genes = []
-    #     for uploaded_file in state["uploaded_files"]:
-    #         if uploaded_file["file_type"] == "endotype":
-    #             # Load the PDF file
-    #             docs = PyPDFLoader(file_path=uploaded_file["file_path"]).load()
+        Args:
+            prompt: The prompt to interact with the backend.
+            state: The injected state for the tool.
+            pyg_graph: The PyTorch Geometric graph Data.
+            emb_model_name: The name of the embedding model to be used.
 
-    #             # Split the text into chunks
-    #             splits = RecursiveCharacterTextSplitter(
-    #                 chunk_size=cfg.splitter_chunk_size,
-    #                 chunk_overlap=cfg.splitter_chunk_overlap,
-    #             ).split_documents(docs)
+        Returns:
+            query_embs: A list of query embeddings for each modality.
+            modalities: A list of modalities corresponding to the query embeddings.
+        """
 
-    #             # Create a chat prompt template
-    #             prompt_template = ChatPromptTemplate.from_messages(
-    #                 [
-    #                     ("system", cfg.prompt_endotype_filtering),
-    #                     ("human", "{input}"),
-    #                 ]
-    #             )
+        # Prepare embeddings and modalities
+        query_embs = []
+        modalities = []
 
-    #             qa_chain = create_stuff_documents_chain(
-    #                 state["llm_model"], prompt_template
-    #             )
-    #             rag_chain = create_retrieval_chain(
-    #                 InMemoryVectorStore.from_documents(
-    #                     documents=splits, embedding=state["embedding_model"]
-    #                 ).as_retriever(
-    #                     search_type=cfg.retriever_search_type,
-    #                     search_kwargs={
-    #                         "k": cfg.retriever_k,
-    #                         "fetch_k": cfg.retriever_fetch_k,
-    #                         "lambda_mult": cfg.retriever_lambda_mult,
-    #                     },
-    #                 ),
-    #                 qa_chain,
-    #             )
-    #             results = rag_chain.invoke({"input": prompt})
-    #             all_genes.append(results["answer"])
+        # Text-based embeddings
+        query_embs.append(
+            torch.tensor(
+                EmbeddingWithOllama(model_name=emb_model_name).embed_query(prompt)
+            ).float()
+        )
+        modalities.append("text")
+        # Obtain another features from the selected genes
+        for gene in state["selected_genes"]:
+            query_embs.append(torch.tensor(
+                pyg_graph.x[
+                    np.where(np.array(pyg_graph.node_id) == gene)[0][0]
+                ]
+            ))
+            modalities.append("sequence")
+        # Obtain another features from the selected drugs
+        for drug in state["selected_drugs"]:
+            query_embs.append(torch.tensor(
+                pyg_graph.x[
+                    np.where(np.array(pyg_graph.node_id) == drug)[0][0]
+                ]
+            ))
+            modalities.append("smiles")
 
-    #     # Prepare the prompt
-    #     if len(all_genes) > 0:
-    #         prompt = " ".join(
-    #             [prompt, cfg.prompt_endotype_addition, ", ".join(all_genes)]
-    #         )
+        return {"embs": query_embs, "modality": modalities}
 
-    #     return prompt
+    def _perform_subgraph_extraction(self,
+                                     state: Annotated[dict, InjectedState],
+                                     cfg: dict,
+                                     pyg_graph: Data,
+                                     modal_specific_embs: dict) -> dict:
+        """
+        Perform multimodal subgraph extraction based on modal-specific embeddings.
 
-    def prepare_final_subgraph(self,
+        Args:
+            state: The injected state for the tool.
+            cfg: The configuration dictionary.
+            pyg_graph: The PyTorch Geometric graph Data.
+            modal_specific_embs: The modal-specific embeddings (modalities and embeddings).
+
+        Returns:
+            A dictionary containing the extracted subgraph with nodes and edges.
+        """
+
+        # Initialize the subgraph dictionary
+        subgraphs = {}
+        subgraphs["nodes"] = []
+        subgraphs["edges"] = []
+
+        # Loop over query embeddings and modalities
+        for query_emb, modality in zip(modal_specific_embs["embs"],
+                                       modal_specific_embs["modality"]):
+            # Prepare the PCSTPruning object and extract the subgraph
+            # Parameters were set in the configuration file obtained from Hydra
+            subgraph = MultimodalPCSTPruning(
+                state["topk_nodes"],
+                state["topk_edges"],
+                cfg.cost_e,
+                cfg.c_const,
+                cfg.root,
+                cfg.num_clusters,
+                cfg.pruning,
+                cfg.verbosity_level,
+            ).extract_subgraph(pyg_graph,
+                               modal_specific_embs["embs"][0], # the prompt embedding
+                               query_emb,
+                               modality)
+
+            # Append the extracted subgraph to the dictionary
+            subgraphs["nodes"].append(subgraph["nodes"].tolist())
+            subgraphs["edges"].append(subgraph["edges"].tolist())
+
+        # Concatenate and get unique node and edge indices
+        subgraphs["nodes"] = np.unique(
+            np.concatenate([np.array(list_) for list_ in subgraphs["nodes"]])
+        )
+        subgraphs["edges"] = np.unique(
+            np.concatenate([np.array(list_) for list_ in subgraphs["edges"]])
+        )
+
+        return subgraphs
+
+    def _prepare_final_subgraph(self,
                                state:Annotated[dict, InjectedState],
                                subgraph: dict,
                                pyg_graph: Data,
@@ -255,81 +292,20 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         with open(initial_graph["source"]["kg_text_path"], "rb") as f:
             initial_graph["text"] = pickle.load(f)
 
-        # Prepare prompt construction along with a list of endotypes
-        # if len(state["uploaded_files"]) != 0 and "endotype" in [
-        #     f["file_type"] for f in state["uploaded_files"]
-        # ]:
-        #     prompt = self.perform_endotype_filtering(prompt, state, cfg)
+        # Prepare the query embeddings and modalities
+        modal_specific_embs = self._prepare_query_modalities(prompt,
+                                                             state,
+                                                             initial_graph["pyg"],
+                                                             cfg.ollama_embeddings[0])
 
-        # Prepare embeddings and modalities
-        query_embs = []
-        modalities = []
-
-        # Text-based embeddings
-        query_embs.append(
-            torch.tensor(
-                EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
-                # EmbeddingWithSentenceTransformer(
-                #     model_name='nomic-ai/nomic-embed-text-v1.5',
-                #     model_cache_dir="../../../../data/nomic-ai/nomic-embed-text-v1.5/",
-                #     trust_remote_code=True).embed_query("search_query:" + prompt)
-            ).float()
-        )
-        modalities.append("text")
-        # Obtain another features from the selected genes
-        for gene in state["selected_genes"]:
-            query_embs.append(torch.tensor(
-                initial_graph["pyg"].x[
-                    np.where(np.array(initial_graph["pyg"].node_id) == gene)[0][0]
-                ]
-            ))
-            modalities.append("sequence")
-        # Obtain another features from the selected drugs
-        for drug in state["selected_drugs"]:
-            query_embs.append(torch.tensor(
-                initial_graph["pyg"].x[
-                    np.where(np.array(initial_graph["pyg"].node_id) == drug)[0][0]
-                ]
-            ))
-            modalities.append("smiles")
-
-        # Initialize the subgraph dictionary
-        subgraphs = {}
-        subgraphs["nodes"] = []
-        subgraphs["edges"] = []
-
-        # Loop over modalities and query embeddings
-        for modality, query_emb in zip(modalities, query_embs):
-            # Prepare the PCSTPruning object and extract the subgraph
-            # Parameters were set in the configuration file obtained from Hydra
-            subgraph = MultimodalPCSTPruning(                                         
-                state["topk_nodes"],
-                state["topk_edges"],
-                cfg.cost_e,
-                cfg.c_const,
-                cfg.root,
-                cfg.num_clusters,
-                cfg.pruning,
-                cfg.verbosity_level,
-            ).extract_subgraph(initial_graph["pyg"],
-                               query_embs[0], # use the first query embedding as the prompt
-                               query_emb, 
-                               modality)
-
-            # Append the extracted subgraph to the dictionary
-            subgraphs["nodes"].append(subgraph["nodes"].tolist())
-            subgraphs["edges"].append(subgraph["edges"].tolist())
-
-        # Concatenate and get unique node and edge indices
-        subgraphs["nodes"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["nodes"]])
-        )
-        subgraphs["edges"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["edges"]])
-        )
+        # Perform subgraph extraction
+        subgraphs = self._perform_subgraph_extraction(state,
+                                                      cfg,
+                                                      initial_graph["pyg"],
+                                                      modal_specific_embs)
 
         # Prepare subgraph as a NetworkX graph and textualized graph
-        final_subgraph = self.prepare_final_subgraph(
+        final_subgraph = self._prepare_final_subgraph(
             state, subgraphs, initial_graph["pyg"], initial_graph["text"]
         )
 

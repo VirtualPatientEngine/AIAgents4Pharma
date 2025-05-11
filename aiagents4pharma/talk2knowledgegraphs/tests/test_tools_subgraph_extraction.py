@@ -55,8 +55,8 @@ def test_extract_subgraph_wo_docs(input_dict):
         input_dict,
     )
     prompt = """
-    Please directly invoke `subgraph_extraction` tool without calling any other tools 
-    to respond to the following prompt:
+    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
+    After calling the tool, restrain yourself to call any other tool.
 
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
     (IBD) that existed in the knowledge graph.
@@ -101,8 +101,8 @@ def test_extract_subgraph_wo_docs(input_dict):
 
 def test_extract_subgraph_w_docs(input_dict):
     """
-    Test the subgraph extraction tool with a document as reference (i.e., endotype document)
-    using OpenAI model.
+    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
+    After calling the tool, restrain yourself to call any other tool.
 
     Args:
         input_dict: Input dictionary.
@@ -130,9 +130,9 @@ def test_extract_subgraph_w_docs(input_dict):
         input_dict,
     )
     prompt = """
-    Please ONLY invoke `subgraph_extraction` tool without calling any other tools 
-    to respond to the following prompt:
-
+    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
+    After calling the tool, restrain yourself to call any other tool.
+    
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.

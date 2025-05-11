@@ -84,8 +84,8 @@ if "data_package_key" not in st.session_state:
     st.session_state.data_package_key = 0
 
 # Initialize session state for patient gene expression data uploader
-if "endotype_key" not in st.session_state:
-    st.session_state.endotype_key = 0
+# if "endotype_key" not in st.session_state:
+    # st.session_state.endotype_key = 0
 
 # Initialize session state for uploaded files
 if "uploaded_files" not in st.session_state:
