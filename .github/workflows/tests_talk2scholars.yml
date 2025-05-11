@@ -25,6 +25,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Cache conda environment
         id: cache-conda
@@ -62,6 +63,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Cache conda environment
         id: cache-conda
@@ -99,6 +101,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Cache conda environment
         id: cache-conda
@@ -137,6 +140,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Restore conda environment cache
         id: cache-conda
@@ -191,6 +195,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Restore conda environment cache
         id: cache-conda
@@ -245,6 +250,7 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
       - name: Restore conda environment cache
         id: cache-conda
