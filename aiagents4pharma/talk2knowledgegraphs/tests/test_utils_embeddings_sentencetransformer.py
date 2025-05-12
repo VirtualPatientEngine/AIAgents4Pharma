@@ -2,19 +2,10 @@
 Test cases for utils/embeddings/sentence_transformer.py
 """
 
-
 import numpy as np
 import pytest
-import torch
 
 from ..utils.embeddings.sentence_transformer import EmbeddingWithSentenceTransformer
-
-
-def get_device():
-    """
-    Determine the device to use for testing: always CPU.
-    """
-    return torch.device("cpu")
 
 
 @pytest.fixture(name="embedding_model")
@@ -24,8 +15,8 @@ def embedding_model_fixture():
     """
     model_name = "sentence-transformers/all-MiniLM-L6-v1"  # Small model for testing
     embedding_model = EmbeddingWithSentenceTransformer(model_name=model_name)
-    # Move underlying model to the correct device before testing
-    embedding_model.model.to(get_device())
+    # Move underlying model to CPU for testing
+    embedding_model.model.to("cpu")
     return embedding_model
 
 
@@ -54,8 +45,3 @@ def test_embed_query(embedding_model):
     assert len(embedding) > 0
     assert len(embedding) == 384
     assert embedding.dtype == np.float32
-
-
-def test_get_device_cpu_only():
-    """Ensure get_device() always returns CPU."""
-    assert get_device() == torch.device("cpu")
