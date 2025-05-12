@@ -57,6 +57,7 @@ nav:
           - StarkQA-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader.ipynb
           - BioBridge-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_loader.ipynb
           - PrimeKG Subgraph Extraction: ./notebooks/talk2knowledgegraphs/tutorial_primekg_subgraph.ipynb
+          - BioBridge-PrimeKG Multimodal: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_multimodal.ipynb
           - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
           - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
           - Drug Enrichments/Embeddings (SMILES/molmim): ./notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed.ipynb
