@@ -478,6 +478,12 @@ def question_and_answer(
         if isinstance(paper, dict)
     )
 
+    has_biorxiv_papers = any(
+        paper.get("source") == "biorxiv"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
     # Choose papers to use
     selected_paper_ids = []
 
@@ -498,6 +504,17 @@ def question_and_answer(
         selected_paper_ids = list(article_data.keys())
         logger.info(
             "%s: Using all %d available papers", call_id, len(selected_paper_ids)
+        )
+    
+    elif has_biorxiv_papers:
+        # Use only bioRxiv papers
+        selected_paper_ids = [
+            pid
+            for pid, paper in article_data.items()
+            if paper.get("source") == "biorxiv"
+        ]
+        logger.info(
+            "%s: Using %d bioRxiv papers", call_id, len(selected_paper_ids)
         )
 
     else:

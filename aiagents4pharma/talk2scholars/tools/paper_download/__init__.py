@@ -4,8 +4,8 @@ This package provides modules for fetching and downloading academic papers from 
 """
 
 # Import modules
-from . import download_arxiv_input
+from . import download_biorxiv_input
 
 __all__ = [
-    "download_arxiv_input",
+    "download_biorxiv_input",
 ]
