@@ -24,39 +24,48 @@ MONDO_DESC = "A gastrointestinal disorder characterized by chronic inflammation"
 
 # The expected description for the non-existing term is None
 
+
 @pytest.fixture(name="enrich_obj")
 def fixture_uniprot_config():
     """Return a dictionary with the configuration for OLS enrichment."""
     return EnrichmentWithOLS()
 
+
 def test_enrich_documents(enrich_obj):
     """Test the enrich_documents method."""
-    ols_terms = ["CL_0000899",
-                 "GO_0046427",
-                 "UBERON_0000004",
-                 "HP_0009739",
-                 "MONDO_0005011",
-                 "XYZ_0000000"]
+    ols_terms = [
+        "CL_0000899",
+        "GO_0046427",
+        "UBERON_0000004",
+        "HP_0009739",
+        "MONDO_0005011",
+        "XYZ_0000000",
+    ]
     descriptions = enrich_obj.enrich_documents(ols_terms)
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
-    assert descriptions[3].startswith(HP_DESC)
+    # OLS may prepend modifiers (e.g. "Developmental ..."), so check substring
+    assert HP_DESC in descriptions[3]
     assert descriptions[4].startswith(MONDO_DESC)
     assert descriptions[5] is None
 
+
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""
-    ols_terms = ["CL_0000899",
-                 "GO_0046427",
-                 "UBERON_0000004",
-                 "HP_0009739",
-                 "MONDO_0005011",
-                 "XYZ_0000000"]
+    ols_terms = [
+        "CL_0000899",
+        "GO_0046427",
+        "UBERON_0000004",
+        "HP_0009739",
+        "MONDO_0005011",
+        "XYZ_0000000",
+    ]
     descriptions = enrich_obj.enrich_documents_with_rag(ols_terms, None)
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
-    assert descriptions[3].startswith(HP_DESC)
+    # OLS may prepend modifiers (e.g. "Developmental ..."), so check substring
+    assert HP_DESC in descriptions[3]
     assert descriptions[4].startswith(MONDO_DESC)
     assert descriptions[5] is None
