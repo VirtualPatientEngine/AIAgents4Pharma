@@ -13,7 +13,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  "copasi_basico==0.78",
+  "copasi_basico==0.84",
   "coverage==7.6.4",
   "einops==0.8.0",
   "gdown==5.2.0",
