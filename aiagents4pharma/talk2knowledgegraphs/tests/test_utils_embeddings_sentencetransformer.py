@@ -13,10 +13,17 @@ import pytest
 # Local application imports
 from ..utils.embeddings.sentence_transformer import EmbeddingWithSentenceTransformer
 
-# Force CPU by disabling MPS backend on CI to avoid segmentation fault on macOS runners
-if os.getenv("CI") and hasattr(torch.backends, "mps"):
-    torch.backends.mps.is_available = lambda: False
-    torch.backends.mps.is_built = lambda: False
+
+def get_device():
+    """
+    Determine the device to use: CPU on CI or if MPS isn't available,
+    otherwise MPS.
+    """
+    if os.getenv("CI") == "true":
+        return torch.device("cpu")
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
 
 
 @pytest.fixture(name="embedding_model")
@@ -25,7 +32,10 @@ def embedding_model_fixture():
     Fixture for creating an instance of EmbeddingWithSentenceTransformer.
     """
     model_name = "sentence-transformers/all-MiniLM-L6-v1"  # Small model for testing
-    return EmbeddingWithSentenceTransformer(model_name=model_name)
+    embedding_model = EmbeddingWithSentenceTransformer(model_name=model_name)
+    # Move underlying model to the correct device before testing
+    embedding_model.model.to(get_device())
+    return embedding_model
 
 
 def test_embed_documents(embedding_model):
