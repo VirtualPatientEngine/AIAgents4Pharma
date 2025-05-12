@@ -67,6 +67,7 @@ dependencies = [
   "plotly-express==0.4.1",
   "seaborn==0.13.2",
   "scanpy==1.11.0",
+  "openpyxl==3.1.5",
 ]
 dynamic = ["version"]
 
