@@ -74,12 +74,12 @@ def test_get_device_branches(monkeypatch):
     assert get_device() == torch.device("cpu")
     # MPS branch: CI not set, MPS available
     monkeypatch.delenv("CI", raising=False)
-    # Ensure torch.backends.mps exists and returns True
-    if not hasattr(torch.backends, "mps"):
-        m = type("mps", (), {})()
-        monkeypatch.setattr(torch.backends, "mps", m)
-    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True)
+    # Remove and stub torch.backends.mps attribute to test stub creation
+    monkeypatch.delattr(torch.backends, "mps", raising=False)
+    m = type("mps", (), {})()
+    monkeypatch.setattr(torch.backends, "mps", m, raising=False)
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True, raising=False)
     assert get_device() == torch.device("mps")
     # Fallback branch: CI not set, MPS unavailable
-    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False, raising=False)
     assert get_device() == torch.device("cpu")
