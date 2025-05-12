@@ -228,9 +228,6 @@ jobs:
     name: code-coverage-macos
     needs: pylint-macos
     runs-on: macos-latest
-    # Explicitly set CI=true to ensure tests detect CI environment
-    env:
-      CI: true
     steps:
       - uses: actions/checkout@v4
 
