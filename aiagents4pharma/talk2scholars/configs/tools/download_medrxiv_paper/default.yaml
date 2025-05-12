@@ -1,0 +1,6 @@
+# configs/tools/download_medrxiv_paper/default.yaml
+
+tools:
+  download_medrxiv_paper:
+    api_url: "https://api.biorxiv.org/details/medrxiv"
+    request_timeout: 10

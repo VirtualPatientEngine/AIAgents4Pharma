@@ -79,7 +79,6 @@ def extract_biorxiv_metadata(biorxiv_suffix: str, api_url: str) -> dict:
         "pdf_url": f"https://www.biorxiv.org/content/{biorxiv_suffix}.full.pdf",
         "source": "biorxiv",
         "biorxiv_suffix": biorxiv_suffix
-
     }
     print("Metadata: ", metadata)
     return metadata
@@ -113,11 +112,15 @@ def download_biorxiv_paper(
         )
         api_url = cfg.tools.download_biorxiv_paper.api_url
         pdf_url = cfg.tools.download_biorxiv_paper.pdf_base_url
+        api_url = api_url + biorxiv_suffix
         pdf_url = pdf_url + biorxiv_suffix + ".full.pdf"
         print("Hydra loaded successfully!")
+        print("API URL: ", api_url)
         print(f"Hydra PDF URL: {pdf_url}")
+        
 
     response = requests.get(pdf_url, headers=headers)
+    
     print("Hydra Response: ", response)
     if response.status_code != 200:
         print("Response code is not 200")
@@ -125,10 +128,13 @@ def download_biorxiv_paper(
 
     filename = f"{biorxiv_suffix}.pdf"
     print("Filename: ", filename)
+
     metadata = extract_biorxiv_metadata(biorxiv_suffix, api_url)
     metadata["filename"] = filename
+
     article_data = {biorxiv_suffix: metadata}
     print("Article data: ", article_data)
+    
     content = f"Successfully downloaded PDF for bioRxiv ID {biorxiv_suffix}"
     logger.info(content)
     return Command(

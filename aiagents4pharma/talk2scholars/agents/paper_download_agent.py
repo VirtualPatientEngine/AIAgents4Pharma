@@ -15,6 +15,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.paper_download.download_arxiv_input import download_arxiv_paper
 from ..tools.paper_download.download_biorxiv_input import download_biorxiv_paper
+from ..tools.paper_download.download_medrxiv_input import download_medrxiv_paper
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -45,7 +46,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         cfg = cfg.agents.talk2scholars.paper_download_agent
 
     # Define tools properly
-    tools = ToolNode([download_arxiv_paper, download_biorxiv_paper])
+    tools = ToolNode([download_arxiv_paper, download_biorxiv_paper,download_medrxiv_paper])
 
     # Define the model
     logger.info("Using OpenAI model %s", llm_model)
