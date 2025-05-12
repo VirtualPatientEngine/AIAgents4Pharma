@@ -2,15 +2,13 @@
 Test cases for utils/embeddings/sentence_transformer.py
 """
 
-# Standard library imports
 import os
+import platform
 
-# Third-party imports
-import torch
 import numpy as np
 import pytest
+import torch
 
-# Local application imports
 from ..utils.embeddings.sentence_transformer import EmbeddingWithSentenceTransformer
 
 
@@ -63,3 +61,25 @@ def test_embed_query(embedding_model):
     assert len(embedding) > 0
     assert len(embedding) == 384
     assert embedding.dtype == np.float32
+
+
+def test_get_device_branches(monkeypatch):
+    """
+    Test get_device for CI, MPS, and fallback branches.
+    """
+    # Simulate non-macOS platform
+    monkeypatch.setattr(platform, "system", lambda: "Linux")
+    # CI branch
+    monkeypatch.setenv("CI", "true")
+    assert get_device() == torch.device("cpu")
+    # MPS branch: CI not set, MPS available
+    monkeypatch.delenv("CI", raising=False)
+    # Ensure torch.backends.mps exists and returns True
+    if not hasattr(torch.backends, "mps"):
+        m = type("mps", (), {})()
+        monkeypatch.setattr(torch.backends, "mps", m)
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True)
+    assert get_device() == torch.device("mps")
+    # Fallback branch: CI not set, MPS unavailable
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+    assert get_device() == torch.device("cpu")
