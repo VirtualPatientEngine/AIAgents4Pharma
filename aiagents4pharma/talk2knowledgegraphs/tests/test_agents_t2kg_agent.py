@@ -19,8 +19,14 @@ def input_dict_fixture():
     input_dict = {
         "llm_model": None,  # TBA for each test case
         "embedding_model": None,  # TBA for each test case
-        "selected_genes": [],
-        "selected_drugs": [],
+        "selections": {
+            "gene/protein": [],
+            "molecular_function": [],
+            "cellular_component": [],
+            "biological_process": [],
+            "drug": [],
+            "disease": []
+        },
         "uploaded_files": [
             {
                 "file_name": "adalimumab.pdf",

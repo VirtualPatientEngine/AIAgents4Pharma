@@ -31,8 +31,7 @@ class Talk2KnowledgeGraphs(AgentState):
 
     llm_model: BaseChatModel
     embedding_model: Embeddings
-    selected_genes: list
-    selected_drugs: list
+    selections: dict
     uploaded_files: list
     topk_nodes: int
     topk_edges: int

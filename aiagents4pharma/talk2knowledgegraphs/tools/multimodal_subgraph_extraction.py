@@ -43,12 +43,6 @@ class MultimodalSubgraphExtractionInput(BaseModel):
     )
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
-    # list_of_genes: list = Field(
-    #     description="List of genes to be used for subgraph extraction.", default=None
-    # )
-    # list_of_drugs: list = Field(
-    #     description="List of drugs to be used for subgraph extraction.", default=None
-    # )
     arg_data: ArgumentData = Field(
         description="Experiment over graph data.", default=None
     )
@@ -67,7 +61,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     def _search_modality_embedding(self,
                                    modality_df : pd.DataFrame,
                                    pyg_graph : Data,
-                                   cfg: dict,
                                    node_type: str) -> tuple:
         """
         Search for the modality embedding in the PyG graph.
@@ -75,7 +68,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         Args:
             modality_df: The DataFrame containing the modality information (uploaded by the user).
             pyg_graph: The PyTorch Geometric graph Data.
-            cfg: The configuration dictionary.
             node_type: The type of node to search for in the graph.
         
         Returns:
@@ -107,7 +99,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             df_ = graph_df.query(f"node_name.str.contains('{gene}', case=False)")
             node_ids += df_.node_id.to_list()
             q_dict["embs"] += [torch.tensor(q) for q in [list(x) for x in df_.x.values]]
-            q_dict["modality"] += [cfg.modalities_dict[node_type]] * df_.shape[0]
+            q_dict["modality"] += [node_type] * df_.shape[0]
             q_dict["aux_embs"] += [torch.tensor(q) for q in [list(x) for x in df_.desc_x.values]]
             q_dict["aux_modality"] += ["text"] * df_.shape[0]
 
@@ -133,8 +125,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         """
         # Initialize the dictionary to store the multimodal dataframes
         multimodal_dfs = {}
-        multimodal_dfs["genes"] = pd.DataFrame({"name": []})
-        multimodal_dfs["drugs"] = pd.DataFrame({"name": []})
 
         # Loop over the uploaded files and find multimodal files
         for i in range(len(state["uploaded_files"])):
@@ -144,13 +134,14 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 df = pd.read_excel(state["uploaded_files"][i]["file_path"], sheet_name=None)
                 # Store the dataframes in the dictionary
                 for sheet_name, sheet_df in df.items():
-                    if "genes" in sheet_name.lower():
-                        multimodal_dfs["genes"] = pd.concat(
-                            [multimodal_dfs["genes"], sheet_df], ignore_index=True
-                        )
-                    elif "drugs" in sheet_name.lower():
-                        multimodal_dfs["drugs"] = pd.concat(
-                            [multimodal_dfs["drugs"], sheet_df], ignore_index=True
+                    if sheet_df.shape[0] > 0:
+                        if sheet_name not in multimodal_dfs:
+                            multimodal_dfs[sheet_name.replace('-', '/')] = pd.DataFrame(
+                                {"name": []}
+                            )
+                        multimodal_dfs[sheet_name.replace('-', '/')] = pd.concat(
+                            [multimodal_dfs[sheet_name.replace('-', '/')], sheet_df],
+                            ignore_index=True
                         )
 
         # Prepare embeddings and modalities
@@ -160,37 +151,17 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         queries_dict["aux_embs"] = []
         queries_dict["aux_modality"] = []
 
-        # Gene/protein embeddings
-        if not multimodal_dfs["genes"].empty:
-            q_dict, node_ids = self._search_modality_embedding(
-                multimodal_dfs["genes"],
-                pyg_graph,
-                cfg,
-                "gene/protein",
-            )
+        # Loop over the multimodal dataframes and prepare embeddings
+        for mk, mk_df in multimodal_dfs.items():
+            q_dict, node_ids = self._search_modality_embedding(mk_df, pyg_graph, mk)
             # Add the query embeddings and modalities to the dictionary
             queries_dict["embs"] += q_dict["embs"]
             queries_dict["modality"] += q_dict["modality"]
             queries_dict["aux_embs"] += q_dict["aux_embs"]
             queries_dict["aux_modality"] += q_dict["aux_modality"]
-            # Add the node IDs to the state
-            state["selected_genes"] = node_ids
 
-        # Drug embeddings
-        if not multimodal_dfs["drugs"].empty:
-            q_dict, node_ids = self._search_modality_embedding(
-                multimodal_dfs["drugs"],
-                pyg_graph,
-                cfg,
-                "drug",
-            )
-            # Add the query embeddings and modalities to the dictionary
-            queries_dict["embs"] += q_dict["embs"]
-            queries_dict["modality"] += q_dict["modality"]
-            queries_dict["aux_embs"] += q_dict["aux_embs"]
-            queries_dict["aux_modality"] += q_dict["aux_modality"]
             # Add the node IDs to the state
-            state["selected_drugs"] = node_ids
+            state["selections"][mk] = node_ids
 
         # Text-based embeddings
         queries_dict["aux_embs"].append(
@@ -219,12 +190,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         Returns:
             A dictionary containing the extracted subgraph with nodes and edges.
         """
-        logger.log(logging.INFO, "Performing subgraph extraction")
-        logger.log(logging.INFO, "Modal-specific embeddings: %s", 
-                   modal_specific_embs["aux_modality"])
-        logger.log(logging.INFO, "Modal-specific embeddings: %s", 
-                   modal_specific_embs["modality"])
-        
         # Initialize the subgraph dictionary
         subgraphs = {}
         subgraphs["nodes"] = []
@@ -244,7 +209,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 num_clusters=cfg.num_clusters,
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
-                modalities_dict=cfg.modalities_dict,
                 use_description=False,
             ).extract_subgraph(pyg_graph,
                                modal_specific_embs["aux_embs"][0], # the prompt embedding
@@ -269,7 +233,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 num_clusters=cfg.num_clusters,
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
-                modalities_dict=cfg.modalities_dict,
                 use_description=True, # Set to True for auxiliary embeddings (using description)
             ).extract_subgraph(pyg_graph,
                                modal_specific_embs["aux_embs"][0], # the prompt embedding
@@ -293,16 +256,16 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     def _prepare_final_subgraph(self,
                                state:Annotated[dict, InjectedState],
                                subgraph: dict,
-                               pyg_graph: Data,
-                               textualized_graph: pd.DataFrame) -> dict:
+                               graph: dict,
+                               cfg) -> dict:
         """
         Prepare the subgraph based on the extracted subgraph.
 
         Args:
             state: The injected state for the tool.
             subgraph: The extracted subgraph.
-            pyg_graph: The PyTorch Geometric graph.
-            textualized_graph: The textualized graph.
+            graph: The initial graph containing PyG and textualized graph.
+            cfg: The configuration dictionary.
 
         Returns:
             A dictionary containing the PyG graph, NetworkX graph, and textualized graph.
@@ -313,58 +276,58 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         pyg_graph = Data(
             # Node features
             # x=pyg_graph.x[subgraph["nodes"]],
-            x=[pyg_graph.x[i] for i in subgraph["nodes"]],
-            node_id=np.array(pyg_graph.node_id)[subgraph["nodes"]].tolist(),
-            node_name=np.array(pyg_graph.node_id)[subgraph["nodes"]].tolist(),
-            enriched_node=np.array(pyg_graph.enriched_node)[subgraph["nodes"]].tolist(),
+            x=[graph["pyg"].x[i] for i in subgraph["nodes"]],
+            node_id=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
+            node_name=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
+            enriched_node=np.array(graph["pyg"].enriched_node)[subgraph["nodes"]].tolist(),
             num_nodes=len(subgraph["nodes"]),
             # Edge features
             edge_index=torch.LongTensor(
                 [
                     [
                         mapping[i]
-                        for i in pyg_graph.edge_index[:, subgraph["edges"]][0].tolist()
+                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][0].tolist()
                     ],
                     [
                         mapping[i]
-                        for i in pyg_graph.edge_index[:, subgraph["edges"]][1].tolist()
+                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][1].tolist()
                     ],
                 ]
             ),
-            edge_attr=pyg_graph.edge_attr[subgraph["edges"]],
-            edge_type=np.array(pyg_graph.edge_type)[subgraph["edges"]].tolist(),
-            relation=np.array(pyg_graph.edge_type)[subgraph["edges"]].tolist(),
-            label=np.array(pyg_graph.edge_type)[subgraph["edges"]].tolist(),
-            enriched_edge=np.array(pyg_graph.enriched_edge)[subgraph["edges"]].tolist(),
+            edge_attr=graph["pyg"].edge_attr[subgraph["edges"]],
+            edge_type=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
+            relation=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
+            label=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
+            enriched_edge=np.array(graph["pyg"].enriched_edge)[subgraph["edges"]].tolist(),
         )
 
         # Networkx DiGraph construction to be visualized in the frontend
         nx_graph = nx.DiGraph()
+        # Add nodes with attributes
+        node_colors = {n: cfg.node_colors_dict[k]
+                       for k, v in state["selections"].items() for n in v}
         for n in pyg_graph.node_name:
-            if n in state["selected_genes"]:
-                nx_graph.add_node(n, color='#6a79f7')
-            elif n in state["selected_drugs"]:
-                nx_graph.add_node(n, color='#c4a661')
-            else:
-                nx_graph.add_node(n)
-        for i, e in enumerate(
-            [
-                [pyg_graph.node_name[i], pyg_graph.node_name[j]]
-                for (i, j) in pyg_graph.edge_index.transpose(1, 0)
-            ]
-        ):
+            nx_graph.add_node(n, color=node_colors.get(n, None))
+
+        # Add edges with attributes
+        edges = zip(
+            pyg_graph.edge_index[0].tolist(),
+            pyg_graph.edge_index[1].tolist(),
+            pyg_graph.edge_type
+        )
+        for src, dst, edge_type in edges:
             nx_graph.add_edge(
-                e[0],
-                e[1],
-                relation=pyg_graph.edge_type[i],
-                label=pyg_graph.edge_type[i],
+                pyg_graph.node_name[src],
+                pyg_graph.node_name[dst],
+                relation=edge_type,
+                label=edge_type,
             )
 
         # Prepare the textualized subgraph
         textualized_graph = (
-            textualized_graph["nodes"].iloc[subgraph["nodes"]].to_csv(index=False)
+            graph["text"]["nodes"].iloc[subgraph["nodes"]].to_csv(index=False)
             + "\n"
-            + textualized_graph["edges"].iloc[subgraph["edges"]].to_csv(index=False)
+            + graph["text"]["edges"].iloc[subgraph["edges"]].to_csv(index=False)
         )
 
         return {
@@ -426,9 +389,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                                                       modal_specific_embs)
 
         # Prepare subgraph as a NetworkX graph and textualized graph
-        final_subgraph = self._prepare_final_subgraph(
-            state, subgraphs, initial_graph["pyg"], initial_graph["text"]
-        )
+        final_subgraph = self._prepare_final_subgraph(state,
+                                                      subgraphs,
+                                                      initial_graph,
+                                                      cfg)
 
         # Prepare the dictionary of extracted graph
         dic_extracted_graph = {

@@ -35,7 +35,6 @@ class MultimodalPCSTPruning(NamedTuple):
     num_clusters: int = 1
     pruning: str = "gw"
     verbosity_level: int = 0
-    modalities_dict: dict = {}
     use_description: bool = False
 
     def _compute_node_prizes(self,
@@ -49,8 +48,7 @@ class MultimodalPCSTPruning(NamedTuple):
             graph: The knowledge graph in PyTorch Geometric Data format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
-            modality: The modality to use for the subgraph extraction
-                (e.g., "text", "sequence", "smiles").
+            modality: The modality to use for the subgraph extraction based on the node type.
 
         Returns:
             The prizes of the nodes.
@@ -58,10 +56,6 @@ class MultimodalPCSTPruning(NamedTuple):
         # Convert PyG graph to a DataFrame
         graph_df = pd.DataFrame({
             "node_type": graph.node_type,
-            "modality": [
-                self.modalities_dict[graph.node_type[i]]
-                for i in range(len(graph.node_type))
-            ],
             "desc_x": [x.tolist() for x in graph.desc_x],
             "x": [list(x) for x in graph.x],
             "score": [0.0 for _ in range(len(graph.node_id))],
@@ -74,10 +68,10 @@ class MultimodalPCSTPruning(NamedTuple):
                     torch.tensor(list(graph_df.desc_x.values)) # Using textual description features
                 ).tolist()
         else:
-            graph_df.loc[graph_df["modality"] == modality,
+            graph_df.loc[graph_df["node_type"] == modality,
                          "score"] = torch.nn.CosineSimilarity(dim=-1)(
                     query_emb,
-                    torch.tensor(list(graph_df[graph_df["modality"]== modality].x.values))
+                    torch.tensor(list(graph_df[graph_df["node_type"]== modality].x.values))
                 ).tolist()
 
         # Set the prizes for nodes based on the similarity scores
@@ -137,8 +131,7 @@ class MultimodalPCSTPruning(NamedTuple):
             prompt_emb: The prompt embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
-            modality: The modality to use for the subgraph extraction
-                (e.g., "text", "sequence", "smiles").
+            modality: The modality to use for the subgraph extraction based on node type.
 
         Returns:
             The prizes of the nodes and edges.

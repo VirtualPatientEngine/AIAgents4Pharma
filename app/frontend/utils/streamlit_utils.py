@@ -1015,78 +1015,22 @@ def get_t2b_uploaded_files(app):
 
 
 @st.fragment
-def get_gene_selections(cfg: hydra.core.config_store.ConfigStore) -> None:
+def initialize_selections() -> None:
     """
-    Get the gene selections from the user.
+    Initialize the selections.
 
     Args:
         cfg: The configuration object.
     """
-    # Load networkx graph
-    # with open(os.path.join("../../../", st.session_state.config["kg_pyg_path"]), "rb") as f:
     with open(st.session_state.config["kg_pyg_path"], "rb") as f:
         pyg_graph = pickle.load(f)
 
-    # Populate the genes from the graph
-    list_genes = []
-    for node in zip(pyg_graph.node_id, pyg_graph.node_type):
-        if node[1] == "gene/protein":
-            list_genes.append(node[0])
-    list_genes = np.sort(list_genes).tolist()
+    # Populate the selections based on the node type from the graph
+    selections = {}
+    for i in np.unique(np.array(pyg_graph.node_type)):
+        selections[i] = []
 
-    # Widget to select genes
-    st.markdown(
-        """
-    <style>
-    .st-key-gene_selections span[data-baseweb="tag"] {
-    background-color: #6a79f7 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True,)
-    st.session_state.selected_genes = st.multiselect(
-            label="📃 Gene selections",
-            options=list_genes,
-            placeholder="Select gene(s)",
-            help="Select genes to be used in the analysis.",
-            key="gene_selections",
-    )
-
-@st.fragment
-def get_drug_selections(cfg: hydra.core.config_store.ConfigStore) -> None:
-    """
-    Get the drug selections from the user.
-
-    Args:
-        cfg: The configuration object.
-    """
-    # Load networkx graph
-    # with open(os.path.join("../../../", st.session_state.config["kg_pyg_path"]), "rb") as f:
-    with open(st.session_state.config["kg_pyg_path"], "rb") as f:
-        pyg_graph = pickle.load(f)
-
-    # Populate the drugs from the graph
-    list_drugs = []
-    for node in zip(pyg_graph.node_id, pyg_graph.node_type):
-        if node[1] == "drug":
-            list_drugs.append(node[0])
-    list_drugs = np.sort(list_drugs).tolist()
-
-    # Widget to select drugs
-    st.markdown(
-        """
-    <style>
-    .st-key-drug_selections span[data-baseweb="tag"] {
-    background-color: #c4a661 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True,)
-    st.session_state.selected_drugs = st.multiselect(
-            label="📃 Drug selections",
-            options=list_drugs,
-            placeholder="Select drug(s)",
-            help="Select drug(s) to be used in the analysis.",
-            key="drug_selections",
-    )
+    return selections
 
 @st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
