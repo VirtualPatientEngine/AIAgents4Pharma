@@ -2,9 +2,22 @@
 Test cases for utils/embeddings/sentence_transformer.py
 """
 
-import pytest
+# Standard library imports
+import os
+
+# Third-party imports
+import torch
 import numpy as np
+import pytest
+
+# Local application imports
 from ..utils.embeddings.sentence_transformer import EmbeddingWithSentenceTransformer
+
+# Force CPU by disabling MPS backend on CI to avoid segmentation fault on macOS runners
+if os.getenv("CI") and hasattr(torch.backends, "mps"):
+    torch.backends.mps.is_available = lambda: False
+    torch.backends.mps.is_built = lambda: False
+
 
 @pytest.fixture(name="embedding_model")
 def embedding_model_fixture():
@@ -13,6 +26,7 @@ def embedding_model_fixture():
     """
     model_name = "sentence-transformers/all-MiniLM-L6-v1"  # Small model for testing
     return EmbeddingWithSentenceTransformer(model_name=model_name)
+
 
 def test_embed_documents(embedding_model):
     """
@@ -26,6 +40,7 @@ def test_embed_documents(embedding_model):
     assert len(embeddings[0]) > 0
     assert len(embeddings[0]) == 384
     assert embeddings.dtype == np.float32
+
 
 def test_embed_query(embedding_model):
     """
