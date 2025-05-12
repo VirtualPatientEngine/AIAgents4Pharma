@@ -2,6 +2,7 @@ defaults:
   - _self_
   - agents/t2kg_agent: default
   - tools/subgraph_extraction: default
+  - tools/multimodal_subgraph_extraction: default
   - tools/subgraph_summarization: default
   - tools/graphrag_reasoning: default
   - utils/pubchem_utils: default

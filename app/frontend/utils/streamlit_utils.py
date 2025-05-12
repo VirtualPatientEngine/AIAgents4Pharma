@@ -977,7 +977,7 @@ def get_file_type_icon(file_type: str) -> str:
     Returns:
         str: The icon for the file type.
     """
-    return {"drug_data": "💊", "endotype": "🧬", "sbml_file": "📜"}.get(file_type)
+    return {"drug_data": "💊", "multimodal": "📦"}.get(file_type)
 
 
 @st.fragment
@@ -1096,12 +1096,6 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     Args:
         cfg: The configuration object.
     """
-    # sbml_file = st.file_uploader("📜 Upload SBML file",
-    #     accept_multiple_files=False,
-    #     help='Upload an ODE model in SBML format.',
-    #     type=["xml", "sbml"],
-    #     key=f"uploader_sbml_file_{st.session_state.sbml_key}")
-
     data_package_files = st.file_uploader(
         "💊 Upload pre-clinical drug data",
         help="Free-form text. Must contain atleast drug targets and kinetic parameters",
@@ -1110,20 +1104,18 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
         key=f"uploader_{st.session_state.data_package_key}",
     )
 
-    # endotype_files = st.file_uploader(
-    #     "🧬 Upload endotype data",
-    #     help="Free-form text. List of differentially expressed genes",
-    #     accept_multiple_files=True,
-    #     type=cfg.endotype_allowed_file_types,
-    #     key=f"uploader_endotype_{st.session_state.endotype_key}",
-    # )
+    multimodal_files = st.file_uploader(
+        "📦 Upload multimodal data package",
+        help="A spread sheet containing multimodal data package (e.g., genes, drugs, etc.)",
+        accept_multiple_files=True,
+        type=cfg.multimodal_allowed_file_types,
+        key=f"uploader_multimodal_{st.session_state.multimodal_key}",
+    )
 
     # Merge the uploaded files
     uploaded_files = data_package_files.copy()
-    # if endotype_files:
-    #     uploaded_files += endotype_files.copy()
-    # if sbml_file:
-    #     uploaded_files += [sbml_file]
+    if multimodal_files:
+        uploaded_files += multimodal_files.copy()
 
     with st.spinner("Storing uploaded file(s) ..."):
         # for uploaded_file in data_package_files:
@@ -1142,10 +1134,8 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                 uploaded_file.timestamp = current_timestamp
                 if uploaded_file.name in [uf.name for uf in data_package_files]:
                     uploaded_file.file_type = "drug_data"
-                # elif uploaded_file.name in [uf.name for uf in endotype_files]:
-                #     uploaded_file.file_type = "endotype"
-                else:
-                    uploaded_file.file_type = "sbml_file"
+                elif uploaded_file.name in [uf.name for uf in multimodal_files]:
+                    uploaded_file.file_type = "multimodal"
                 st.session_state.uploaded_files.append(
                     {
                         "file_name": uploaded_file.file_name,
@@ -1179,5 +1169,5 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.session_state.uploaded_files.remove(uploaded_file)
                     st.cache_data.clear()
                     st.session_state.data_package_key += 1
-                    # st.session_state.endotype_key += 1
+                    st.session_state.multimodal_key += 1
                     st.rerun(scope="fragment")

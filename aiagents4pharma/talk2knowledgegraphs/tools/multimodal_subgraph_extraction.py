@@ -64,11 +64,60 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
 
+    def _search_modality_embedding(self,
+                                   modality_df : pd.DataFrame,
+                                   pyg_graph : Data,
+                                   cfg: dict,
+                                   node_type: str) -> tuple:
+        """
+        Search for the modality embedding in the PyG graph.
+        
+        Args:
+            modality_df: The DataFrame containing the modality information (uploaded by the user).
+            pyg_graph: The PyTorch Geometric graph Data.
+            cfg: The configuration dictionary.
+            node_type: The type of node to search for in the graph.
+        
+        Returns:
+            queries_dict: The updated dictionary containing the query embeddings and modalities.
+            node_ids: The list of node IDs corresponding to the searched modality.
+        """
+        # Convert PyG graph to a DataFrame for easier filtering
+        graph_df = pd.DataFrame({
+            "node_id": pyg_graph.node_id,
+            "node_name": pyg_graph.node_name,
+            "node_type": pyg_graph.node_type,
+            "x": pyg_graph.x,
+            "desc_x": pyg_graph.desc_x.tolist(),
+        })
+        # Filter the graph DataFrame based on the node type
+        graph_df = graph_df[graph_df["node_type"] == node_type]
+
+        # Define several variables to store node ids and dictionary of query embeddings
+        node_ids = []
+        q_dict = {}
+        q_dict["embs"] = []
+        q_dict["modality"] = []
+        q_dict["aux_embs"] = []
+        q_dict["aux_modality"] = []
+
+        # Loop over each name in the modality DataFrame
+        for gene in modality_df["name"]:
+            # Find the index of the gene mentioned in the graph_df
+            df_ = graph_df.query(f"node_name.str.contains('{gene}', case=False)")
+            node_ids += df_.node_id.to_list()
+            q_dict["embs"] += [torch.tensor(q) for q in [list(x) for x in df_.x.values]]
+            q_dict["modality"] += [cfg.modalities_dict[node_type]] * df_.shape[0]
+            q_dict["aux_embs"] += [torch.tensor(q) for q in [list(x) for x in df_.desc_x.values]]
+            q_dict["aux_modality"] += ["text"] * df_.shape[0]
+
+        return q_dict, node_ids
+
     def _prepare_query_modalities(self,
                                   prompt: str,
                                   state: Annotated[dict, InjectedState],
                                   pyg_graph: Data,
-                                  emb_model_name: str) :
+                                  cfg: dict) -> dict:
         """
         Prepare the modality-specific query for subgraph extraction.
 
@@ -76,42 +125,82 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             prompt: The prompt to interact with the backend.
             state: The injected state for the tool.
             pyg_graph: The PyTorch Geometric graph Data.
-            emb_model_name: The name of the embedding model to be used.
+            cfg: The configuration dictionary.
 
         Returns:
             query_embs: A list of query embeddings for each modality.
             modalities: A list of modalities corresponding to the query embeddings.
         """
+        # Initialize the dictionary to store the multimodal dataframes
+        multimodal_dfs = {}
+        multimodal_dfs["genes"] = pd.DataFrame({"name": []})
+        multimodal_dfs["drugs"] = pd.DataFrame({"name": []})
+
+        # Loop over the uploaded files and find multimodal files
+        for i in range(len(state["uploaded_files"])):
+            # Check if multimodal file is uploaded
+            if state["uploaded_files"][i]["file_type"] == "multimodal":
+                # Read the Excel file
+                df = pd.read_excel(state["uploaded_files"][i]["file_path"], sheet_name=None)
+                # Store the dataframes in the dictionary
+                for sheet_name, sheet_df in df.items():
+                    if "genes" in sheet_name.lower():
+                        multimodal_dfs["genes"] = pd.concat(
+                            [multimodal_dfs["genes"], sheet_df], ignore_index=True
+                        )
+                    elif "drugs" in sheet_name.lower():
+                        multimodal_dfs["drugs"] = pd.concat(
+                            [multimodal_dfs["drugs"], sheet_df], ignore_index=True
+                        )
 
         # Prepare embeddings and modalities
-        query_embs = []
-        modalities = []
+        queries_dict = {}
+        queries_dict["embs"] = []
+        queries_dict["modality"] = []
+        queries_dict["aux_embs"] = []
+        queries_dict["aux_modality"] = []
+
+        # Gene/protein embeddings
+        if not multimodal_dfs["genes"].empty:
+            q_dict, node_ids = self._search_modality_embedding(
+                multimodal_dfs["genes"],
+                pyg_graph,
+                cfg,
+                "gene/protein",
+            )
+            # Add the query embeddings and modalities to the dictionary
+            queries_dict["embs"] += q_dict["embs"]
+            queries_dict["modality"] += q_dict["modality"]
+            queries_dict["aux_embs"] += q_dict["aux_embs"]
+            queries_dict["aux_modality"] += q_dict["aux_modality"]
+            # Add the node IDs to the state
+            state["selected_genes"] = node_ids
+
+        # Drug embeddings
+        if not multimodal_dfs["drugs"].empty:
+            q_dict, node_ids = self._search_modality_embedding(
+                multimodal_dfs["drugs"],
+                pyg_graph,
+                cfg,
+                "drug",
+            )
+            # Add the query embeddings and modalities to the dictionary
+            queries_dict["embs"] += q_dict["embs"]
+            queries_dict["modality"] += q_dict["modality"]
+            queries_dict["aux_embs"] += q_dict["aux_embs"]
+            queries_dict["aux_modality"] += q_dict["aux_modality"]
+            # Add the node IDs to the state
+            state["selected_drugs"] = node_ids
 
         # Text-based embeddings
-        query_embs.append(
+        queries_dict["aux_embs"].append(
             torch.tensor(
-                EmbeddingWithOllama(model_name=emb_model_name).embed_query(prompt)
+                EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)
             ).float()
         )
-        modalities.append("text")
-        # Obtain another features from the selected genes
-        for gene in state["selected_genes"]:
-            query_embs.append(torch.tensor(
-                pyg_graph.x[
-                    np.where(np.array(pyg_graph.node_id) == gene)[0][0]
-                ]
-            ))
-            modalities.append("sequence")
-        # Obtain another features from the selected drugs
-        for drug in state["selected_drugs"]:
-            query_embs.append(torch.tensor(
-                pyg_graph.x[
-                    np.where(np.array(pyg_graph.node_id) == drug)[0][0]
-                ]
-            ))
-            modalities.append("smiles")
+        queries_dict["aux_modality"].append("text")
 
-        return {"embs": query_embs, "modality": modalities}
+        return queries_dict
 
     def _perform_subgraph_extraction(self,
                                      state: Annotated[dict, InjectedState],
@@ -130,28 +219,60 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         Returns:
             A dictionary containing the extracted subgraph with nodes and edges.
         """
-
+        logger.log(logging.INFO, "Performing subgraph extraction")
+        logger.log(logging.INFO, "Modal-specific embeddings: %s", 
+                   modal_specific_embs["aux_modality"])
+        logger.log(logging.INFO, "Modal-specific embeddings: %s", 
+                   modal_specific_embs["modality"])
+        
         # Initialize the subgraph dictionary
         subgraphs = {}
         subgraphs["nodes"] = []
         subgraphs["edges"] = []
 
-        # Loop over query embeddings and modalities
+        # Loop over query embeddings and modalities (based on modal-specific embeddings)
         for query_emb, modality in zip(modal_specific_embs["embs"],
                                        modal_specific_embs["modality"]):
             # Prepare the PCSTPruning object and extract the subgraph
             # Parameters were set in the configuration file obtained from Hydra
             subgraph = MultimodalPCSTPruning(
-                state["topk_nodes"],
-                state["topk_edges"],
-                cfg.cost_e,
-                cfg.c_const,
-                cfg.root,
-                cfg.num_clusters,
-                cfg.pruning,
-                cfg.verbosity_level,
+                topk=state["topk_nodes"],
+                topk_e=state["topk_edges"],
+                cost_e=cfg.cost_e,
+                c_const=cfg.c_const,
+                root=cfg.root,
+                num_clusters=cfg.num_clusters,
+                pruning=cfg.pruning,
+                verbosity_level=cfg.verbosity_level,
+                modalities_dict=cfg.modalities_dict,
+                use_description=False,
             ).extract_subgraph(pyg_graph,
-                               modal_specific_embs["embs"][0], # the prompt embedding
+                               modal_specific_embs["aux_embs"][0], # the prompt embedding
+                               query_emb,
+                               modality)
+
+            # Append the extracted subgraph to the dictionary
+            subgraphs["nodes"].append(subgraph["nodes"].tolist())
+            subgraphs["edges"].append(subgraph["edges"].tolist())
+
+        # Loop over the auxiliary embeddings and modalities using the textual description
+        for query_emb, modality in zip(modal_specific_embs["aux_embs"],
+                                       modal_specific_embs["aux_modality"]):
+            # Prepare the PCSTPruning object and extract the subgraph
+            # Parameters were set in the configuration file obtained from Hydra
+            subgraph = MultimodalPCSTPruning(
+                topk=state["topk_nodes"],
+                topk_e=state["topk_edges"],
+                cost_e=cfg.cost_e,
+                c_const=cfg.c_const,
+                root=cfg.root,
+                num_clusters=cfg.num_clusters,
+                pruning=cfg.pruning,
+                verbosity_level=cfg.verbosity_level,
+                modalities_dict=cfg.modalities_dict,
+                use_description=True, # Set to True for auxiliary embeddings (using description)
+            ).extract_subgraph(pyg_graph,
+                               modal_specific_embs["aux_embs"][0], # the prompt embedding
                                query_emb,
                                modality)
 
@@ -277,9 +398,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         # Load hydra configuration
         with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(
-                config_name="config", overrides=["tools/subgraph_extraction=default"]
+                config_name="config", overrides=["tools/multimodal_subgraph_extraction=default"]
             )
-            cfg = cfg.tools.subgraph_extraction
+            cfg = cfg.tools.multimodal_subgraph_extraction
 
         # Retrieve source graph from the state
         initial_graph = {}
@@ -296,7 +417,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         modal_specific_embs = self._prepare_query_modalities(prompt,
                                                              state,
                                                              initial_graph["pyg"],
-                                                             cfg.ollama_embeddings[0])
+                                                             cfg)
 
         # Perform subgraph extraction
         subgraphs = self._perform_subgraph_extraction(state,

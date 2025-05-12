@@ -35,14 +35,8 @@ class MultimodalPCSTPruning(NamedTuple):
     num_clusters: int = 1
     pruning: str = "gw"
     verbosity_level: int = 0
-    modalities_dict = {
-        "gene/protein": "sequence",
-        "molecular_function": "text",
-        "cellular_component": "text",
-        "biological_process": "text",
-        "drug": "smiles",
-        "disease": "text",
-    }
+    modalities_dict: dict = {}
+    use_description: bool = False
 
     def _compute_node_prizes(self,
                              graph: Data,
@@ -68,15 +62,23 @@ class MultimodalPCSTPruning(NamedTuple):
                 self.modalities_dict[graph.node_type[i]]
                 for i in range(len(graph.node_type))
             ],
+            "desc_x": [x.tolist() for x in graph.desc_x],
             "x": [list(x) for x in graph.x],
             "score": [0.0 for _ in range(len(graph.node_id))],
         })
 
         # Calculate cosine similarity for text features and update the score
-        graph_df.loc[graph_df["modality"] == modality, "score"] = torch.nn.CosineSimilarity(dim=-1)(
-                query_emb,
-                torch.tensor(list(graph_df[graph_df["modality"]== modality].x.values))
-            ).tolist()
+        if self.use_description:
+            graph_df.loc[:, "score"] = torch.nn.CosineSimilarity(dim=-1)(
+                    query_emb,
+                    torch.tensor(list(graph_df.desc_x.values)) # Using textual description features
+                ).tolist()
+        else:
+            graph_df.loc[graph_df["modality"] == modality,
+                         "score"] = torch.nn.CosineSimilarity(dim=-1)(
+                    query_emb,
+                    torch.tensor(list(graph_df[graph_df["modality"]== modality].x.values))
+                ).tolist()
 
         # Set the prizes for nodes based on the similarity scores
         n_prizes = torch.tensor(graph_df.score.values, dtype=torch.float32)
