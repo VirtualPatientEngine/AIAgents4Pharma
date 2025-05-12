@@ -20,12 +20,20 @@ def input_dict_fixture():
     input_dict = {
         "topk_nodes": 3,
         "topk_edges": 3,
+        "selections": {
+            "gene/protein": [],
+            "molecular_function": [],
+            "cellular_component": [],
+            "biological_process": [],
+            "drug": [],
+            "disease": []
+        },
         "uploaded_files": [],
         "dic_source_graph": [
             {
-                "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
+                "name": "BioBridge",
+                "kg_pyg_path": f"{DATA_PATH}/biobridge_multimodal_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/biobridge_multimodal_text_graph.pkl",
             }
         ],
         "dic_extracted_graph": []
@@ -70,7 +78,7 @@ def test_main_agent_invokes_t2kg(input_dict):
     current_state = app.get_state(config)
     dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
-    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["graph_source"] == "BioBridge"
     assert dic_extracted_graph["topk_nodes"] == 3
     assert dic_extracted_graph["topk_edges"] == 3
     assert isinstance(dic_extracted_graph["graph_dict"], dict)

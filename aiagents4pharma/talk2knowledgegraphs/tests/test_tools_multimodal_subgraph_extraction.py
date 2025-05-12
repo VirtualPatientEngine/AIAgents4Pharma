@@ -32,7 +32,7 @@ def input_dict_fixture():
         "topk_edges": 3,
         "dic_source_graph": [
             {
-                "name": "PrimeKG",
+                "name": "BioBridge",
                 "kg_pyg_path": f"{DATA_PATH}/biobridge_multimodal_pyg_graph.pkl",
                 "kg_text_path": f"{DATA_PATH}/biobridge_multimodal_text_graph.pkl",
             }
@@ -83,7 +83,7 @@ def test_extract_multimodal_subgraph_wo_doc(input_dict):
     dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["name"] == "subkg_12345"
-    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["graph_source"] == "BioBridge"
     assert dic_extracted_graph["topk_nodes"] == 3
     assert dic_extracted_graph["topk_edges"] == 3
     assert isinstance(dic_extracted_graph["graph_dict"], dict)
@@ -155,7 +155,7 @@ def test_extract_multimodal_subgraph_w_doc(input_dict):
     dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["name"] == "subkg_12345"
-    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["graph_source"] == "BioBridge"
     assert dic_extracted_graph["topk_nodes"] == 3
     assert dic_extracted_graph["topk_edges"] == 3
     assert isinstance(dic_extracted_graph["graph_dict"], dict)
