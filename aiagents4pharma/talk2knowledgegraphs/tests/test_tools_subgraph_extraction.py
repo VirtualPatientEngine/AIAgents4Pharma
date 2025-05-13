@@ -13,7 +13,7 @@ DATA_PATH = "aiagents4pharma/talk2knowledgegraphs/tests/files"
 @pytest.fixture(name="agent_state")
 def agent_state_fixture():
     """
-    Input dictionary fixture.
+    Agent state fixture.
     """
     agent_state = {
         "llm_model": ChatOpenAI(model="gpt-4o-mini", temperature=0.0),
@@ -41,9 +41,6 @@ def test_extract_subgraph_wo_docs(agent_state):
         agent_state: Agent state in the form of a dictionary.
     """
     prompt = """
-    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
-    After calling the tool, restrain yourself to call any other tool.
-
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
@@ -106,9 +103,6 @@ def test_extract_subgraph_w_docs(agent_state):
     ]
 
     prompt = """
-    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
-    After calling the tool, restrain yourself to call any other tool.
-    
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.

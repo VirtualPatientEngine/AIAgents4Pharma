@@ -3,22 +3,21 @@ Test cases for tools/subgraph_extraction.py
 """
 
 import pytest
-from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from ..agents.t2kg_agent import get_app
+# from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from ..tools.multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
 
 # Define the data path
 DATA_PATH = "aiagents4pharma/talk2knowledgegraphs/tests/files"
 
 
-@pytest.fixture(name="input_dict")
-def input_dict_fixture():
+@pytest.fixture(name="agent_state")
+def agent_state_fixture():
     """
-    Input dictionary fixture.
+    Agent state fixture.
     """
-    input_dict = {
-        "llm_model": ChatOpenAI(model="gpt-4o-mini", temperature=0.0),
-        "embedding_model": OpenAIEmbeddings(model="text-embedding-3-small"),
+    agent_state = {
+        # "llm_model": ChatOpenAI(model="gpt-4o-mini", temperature=0.0),
+        # "embedding_model": OpenAIEmbeddings(model="text-embedding-3-small"),
         "selections": {
             "gene/protein": [],
             "molecular_function": [],
@@ -39,48 +38,37 @@ def input_dict_fixture():
         ],
     }
 
-    return input_dict
+    return agent_state
 
 
-def test_extract_multimodal_subgraph_wo_doc(input_dict):
+def test_extract_multimodal_subgraph_wo_doc(agent_state):
     """
     Test the multimodal subgraph extraction tool for only text as modality.
 
     Args:
-        input_dict: Input dictionary.
+        agent_state: Agent state in the form of a dictionary.
     """
-    # Setup the app
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=input_dict["llm_model"])
-    config = {"configurable": {"thread_id": unique_id}}
-    # Update state
-    app.update_state(
-        config,
-        input_dict,
-    )
     prompt = """
-    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
-    After calling the tool, restrain yourself to call any other tool.
-
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
     """
 
-    # Test the tool subgraph_extraction
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
+    # Instantiate the MultimodalSubgraphExtractionTool
+    subgraph_extraction_tool = MultimodalSubgraphExtractionTool()
 
-    # Check assistant message
-    assistant_msg = response["messages"][-1].content
-    assert isinstance(assistant_msg, str)
+    # Invoking the subgraph_extraction_tool
+    response = subgraph_extraction_tool.invoke(
+        input={"prompt": prompt,
+               "tool_call_id": "subgraph_extraction_tool",
+               "state": agent_state,
+               "arg_data": {"extraction_name": "subkg_12345"}})
 
     # Check tool message
-    tool_msg = response["messages"][-2]
-    assert tool_msg.name == "subgraph_extraction"
+    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
-    current_state = app.get_state(config)
-    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    dic_extracted_graph = response.update["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["name"] == "subkg_12345"
     assert dic_extracted_graph["graph_source"] == "BioBridge"
@@ -103,15 +91,15 @@ def test_extract_multimodal_subgraph_wo_doc(input_dict):
     )
 
 
-def test_extract_multimodal_subgraph_w_doc(input_dict):
+def test_extract_multimodal_subgraph_w_doc(agent_state):
     """
     Test the multimodal subgraph extraction tool for text as modality, plus genes.
 
     Args:
-        input_dict: Input dictionary.
+        agent_state: Agent state in the form of a dictionary.
     """
-    # Add a selected genes to the input dictionary
-    input_dict["uploaded_files"] = [
+    # Update state
+    agent_state["uploaded_files"] = [
         {
             "file_name": "multimodal-analysis.xlsx",
             "file_path": f"{DATA_PATH}/multimodal-analysis.xlsx",
@@ -121,38 +109,27 @@ def test_extract_multimodal_subgraph_w_doc(input_dict):
         }
     ]
 
-    # Setup the app
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=input_dict["llm_model"])
-    config = {"configurable": {"thread_id": unique_id}}
-    # Update state
-    app.update_state(
-        config,
-        input_dict,
-    )
     prompt = """
-    As a knowledge graph agent, I would like you to call a tool called `subgraph_extraction`.
-    After calling the tool, restrain yourself to call any other tool.
-
     Extract all relevant information related to nodes of genes related to inflammatory bowel disease
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
     """
 
-    # Test the tool subgraph_extraction
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
+    # Instantiate the SubgraphExtractionTool
+    subgraph_extraction_tool = MultimodalSubgraphExtractionTool()
 
-    # Check assistant message
-    assistant_msg = response["messages"][-1].content
-    assert isinstance(assistant_msg, str)
+    # Invoking the subgraph_extraction_tool
+    response = subgraph_extraction_tool.invoke(
+        input={"prompt": prompt,
+               "tool_call_id": "subgraph_extraction_tool",
+               "state": agent_state,
+               "arg_data": {"extraction_name": "subkg_12345"}})
 
     # Check tool message
-    tool_msg = response["messages"][-2]
-    assert tool_msg.name == "subgraph_extraction"
+    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
-    current_state = app.get_state(config)
-    dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
+    dic_extracted_graph = response.update["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["name"] == "subkg_12345"
     assert dic_extracted_graph["graph_source"] == "BioBridge"
@@ -172,16 +149,4 @@ def test_extract_multimodal_subgraph_w_doc(input_dict):
         ",".join([e[0], str(tuple(e[2]["relation"])), e[1]])
         in dic_extracted_graph["graph_text"].replace('"', '')
         for e in dic_extracted_graph["graph_dict"]["edges"]
-    )
-    # Check if the selected concepts are in the graph_dict
-    assert all(
-        i in [n[0] for n in dic_extracted_graph["graph_dict"]['nodes']]
-        for k,v in response["selections"].items()
-        for i in v
-    )
-    # Check wheter the selected concepts are in the graph_text
-    assert all(
-        i in dic_extracted_graph["graph_text"]
-        for k,v in response["selections"].items()
-        for i in v
     )

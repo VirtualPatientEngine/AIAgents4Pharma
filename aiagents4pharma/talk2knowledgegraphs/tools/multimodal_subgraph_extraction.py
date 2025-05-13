@@ -75,8 +75,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         """
         # Initialize dataframes
         multimodal_df = pd.DataFrame({"name": []})
-        query_df = pd.DataFrame({"node_id": [], 
-                                 "node_type": [], 
+        query_df = pd.DataFrame({"node_id": [],
+                                 "node_type": [],
                                  "x": [],
                                  "desc_x": [],
                                  "use_description": []})
@@ -318,13 +318,12 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         with open(initial_graph["source"]["kg_text_path"], "rb") as f:
             initial_graph["text"] = pickle.load(f)
 
-        # Embed the user prompt
-        prompt_emb = [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)]
-
         # Prepare the query embeddings and modalities
-        query_df = self._prepare_query_modalities(prompt_emb,
-                                                  state,
-                                                  initial_graph["pyg"])
+        query_df = self._prepare_query_modalities(
+            [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
+            state,
+            initial_graph["pyg"]
+        )
 
         # Perform subgraph extraction
         subgraphs = self._perform_subgraph_extraction(state,
