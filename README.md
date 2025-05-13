@@ -24,6 +24,17 @@ Our toolkit currently consists of the following agents:
 
 ![AIAgents4Pharma](docs/assets/AIAgents4Pharma.png)
 
+## News
+
+- T2B and T2KG accepted at the MLGenX workshop during ICLR #2025 in Singapore. [Read More](https://openreview.net/forum?id=av4QhBNeZo)
+
+<div align="center">
+  <strong>Watch the presentation:</strong><br><br>
+  <a href="https://www.youtube.com/watch?v=3cU_OxY4HiE">
+    <img src="https://img.youtube.com/vi/3cU_OxY4HiE/0.jpg" alt="Watch the presentation" width="480">
+  </a>
+</div>
+
 ## Getting Started
 
 ### Installation
@@ -184,15 +195,19 @@ If you are using docker on Windows, please follow these [Windows Setup Notes](#n
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-   cd AIAgents4Pharma
-   ```
+
+```sh
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
+cd AIAgents4Pharma
+```
+
 2. **Install dependencies:**
 
-   ```python
-   pip install -r requirements.txt
-   ```
+We use Conda as our environment manager, Follow the official [Quickstart](https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions) install instructions provided by anaconda/miniconda.
+
+```python
+conda create --name AIAgents4Pharma python=3.12 -y && conda activate AIAgents4Pharma && pip install --upgrade pip && pip install -r requirements.txt
+```
 
 3. **Initialize API Keys**
 
