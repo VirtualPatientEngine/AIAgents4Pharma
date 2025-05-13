@@ -116,3 +116,6 @@ aiagents4pharma = [
 asyncio_default_fixture_loop_scope = "function"
 markers = ["integration: marks tests as integration tests"]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.pylint.MASTER]
+extension-pkg-allow-list = ["pcst_fast"]
