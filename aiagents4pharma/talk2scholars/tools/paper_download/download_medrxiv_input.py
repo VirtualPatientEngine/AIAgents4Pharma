@@ -41,8 +41,8 @@ def fetch_medrxiv_metadata(doi: str) -> dict:
 
     data = response.json()
     if not data.get("collection"):
+        print("did not find collection")
         raise ValueError(f"No data found for DOI {doi}")
-    
     return data["collection"][0]  # Return only the first item
 
 def extract_metadata(paper: dict, doi: str) -> dict:
@@ -61,11 +61,11 @@ def extract_metadata(paper: dict, doi: str) -> dict:
         "Authors": authors,
         "Abstract": abstract,
         "Publication Date": pub_date,
-        "DOI": doi,
-        "PDF URL": pdf_url,
+        "URL": pdf_url,
+        "pdf_url": pdf_url,
         "filename": f"{doi_suffix}.pdf",
         "source": "medrxiv",
-        "medrxiv_doi": doi
+        "medrxiv_id": doi
     }
 
 
@@ -79,10 +79,11 @@ def download_medrxiv_paper(
     """
     logger.info("Fetching metadata from medRxiv for DOI: %s", doi)
 
+    print("Inside download_medrxiv_paper")
     # Load configuration
     with hydra.initialize(version_base=None, config_path="../../configs"):
         cfg = hydra.compose(
-            config_name="default", overrides=["tools/download_medrxiv_paper=default"]
+            config_name="config", overrides=["tools/download_medrxiv_paper=default"]
         )
         api_url = cfg.tools.download_medrxiv_paper.api_url
         request_timeout = cfg.tools.download_medrxiv_paper.request_timeout
@@ -91,7 +92,8 @@ def download_medrxiv_paper(
     print(f"Request Timeout: {request_timeout}")
 
 
-    metadata = fetch_medrxiv_metadata(doi)
+    raw_data = fetch_medrxiv_metadata(doi)
+    metadata = extract_metadata(raw_data, doi)
     article_data = {doi: metadata}
 
     content = f"Successfully retrieved metadata and PDF URL for medRxiv DOI {doi}"

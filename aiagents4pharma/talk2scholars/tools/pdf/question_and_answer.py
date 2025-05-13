@@ -182,7 +182,7 @@ class Vectorstore:
             # Store chunk
             doc_id = f"{paper_id}_{i}"
             self.documents[doc_id] = chunk
-
+            print(f"Chunk ID: {doc_id}")
         # Mark as loaded to prevent duplicate loading
         self.loaded_papers.add(paper_id)
         logger.info("Added %d chunks from paper %s", len(chunks), paper_id)
@@ -271,6 +271,7 @@ class Vectorstore:
         Returns:
             List of document chunks
         """
+        print("Inside retrieve_relevant_chunks")
         if not self.vector_store:
             logger.error("Failed to build vector store")
             return []
@@ -560,15 +561,18 @@ def question_and_answer(
             if pdf_url:
                 try:
                     vector_store.add_paper(paper_id, pdf_url, article_data[paper_id])
+                    print("Paper added successfully")
                 except (IOError, ValueError) as e:
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
 
+    print("Right after adding papers")
     # Ensure vector store is built
     if not vector_store.vector_store:
+        print("vector_store is None")
         vector_store.build_vector_store()
-
+    print("Right before going into the retrieval step")
     # Retrieve relevant chunks across selected papers
     relevant_chunks = vector_store.retrieve_relevant_chunks(
         query=question, paper_ids=selected_paper_ids, top_k=config.top_k_chunks
