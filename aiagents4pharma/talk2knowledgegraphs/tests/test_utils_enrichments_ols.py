@@ -19,7 +19,7 @@ from ..utils.enrichments.ols_terms import EnrichmentWithOLS
 CL_DESC = "CD4-positive, alpha-beta T cell"
 GO_DESC = "Any process that activates or increases the frequency, rate or extent"
 UBERON_DESC = "The olfactory organ of vertebrates, consisting of nares"
-HP_DESC = "Hypoplasia of the antihelix"
+HP_DESC = "Developmental hypoplasia of the antihelix"
 MONDO_DESC = "A gastrointestinal disorder characterized by chronic inflammation"
 
 # The expected description for the non-existing term is None
@@ -45,8 +45,7 @@ def test_enrich_documents(enrich_obj):
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
-    # OLS may prepend modifiers (e.g. "Developmental ..."), so check substring
-    assert HP_DESC in descriptions[3]
+    assert descriptions[3].startswith(HP_DESC)
     assert descriptions[4].startswith(MONDO_DESC)
     assert descriptions[5] is None
 
@@ -65,7 +64,6 @@ def test_enrich_documents_with_rag(enrich_obj):
     assert descriptions[0].startswith(CL_DESC)
     assert descriptions[1].startswith(GO_DESC)
     assert descriptions[2].startswith(UBERON_DESC)
-    # OLS may prepend modifiers (e.g. "Developmental ..."), so check substring
-    assert HP_DESC in descriptions[3]
+    assert descriptions[3].startswith(HP_DESC)
     assert descriptions[4].startswith(MONDO_DESC)
     assert descriptions[5] is None
