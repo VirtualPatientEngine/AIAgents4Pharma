@@ -86,20 +86,20 @@ class MultimodalPCSTPruning(NamedTuple):
 
     def _compute_edge_prizes(self,
                              graph: Data,
-                             prompt_emb: torch.Tensor) :
+                             text_emb: torch.Tensor) :
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
             graph: The knowledge graph in PyTorch Geometric Data format.
-            prompt_emb: The prompt embedding in PyTorch Tensor format.
+            text_emb: The textual description embedding in PyTorch Tensor format.
 
         Returns:
             The prizes of the nodes.
         """
         # Note that as of now, the edge features are based on textual features
         # Compute prizes for edges
-        e_prizes = torch.nn.CosineSimilarity(dim=-1)(prompt_emb, graph.edge_attr)
+        e_prizes = torch.nn.CosineSimilarity(dim=-1)(text_emb, graph.edge_attr)
         unique_prizes, inverse_indices = e_prizes.unique(return_inverse=True)
         topk_e = min(self.topk_e, unique_prizes.size(0))
         topk_e_values, _ = torch.topk(unique_prizes, topk_e, largest=True)
@@ -117,7 +117,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
     def compute_prizes(self,
                        graph: Data,
-                       prompt_emb: torch.Tensor,
+                       text_emb: torch.Tensor,
                        query_emb: torch.Tensor,
                        modality: str):
         """
@@ -128,7 +128,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         Args:
             graph: The knowledge graph in PyTorch Geometric Data format.
-            prompt_emb: The prompt embedding in PyTorch Tensor format.
+            text_emb: The textual description embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction based on node type.
@@ -140,7 +140,7 @@ class MultimodalPCSTPruning(NamedTuple):
         n_prizes = self._compute_node_prizes(graph, query_emb, modality)
 
         # Compute prizes for edges
-        e_prizes = self._compute_edge_prizes(graph, prompt_emb)
+        e_prizes = self._compute_edge_prizes(graph, text_emb)
 
         return {"nodes": n_prizes, "edges": e_prizes}
 
@@ -243,7 +243,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
     def extract_subgraph(self,
                          graph: Data,
-                         prompt_emb: torch.Tensor,
+                         text_emb: torch.Tensor,
                          query_emb: torch.Tensor,
                          modality: str) -> dict:
         """
@@ -251,7 +251,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         Args:
             graph: The knowledge graph in PyTorch Geometric Data format.
-            prompt_emb: The prompt embedding in PyTorch Tensor format.
+            text_emb: The textual description embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction
@@ -265,7 +265,7 @@ class MultimodalPCSTPruning(NamedTuple):
         assert self.topk_e > 0, "topk_e must be greater than or equal to 0"
 
         # Retrieve the top-k nodes and edges based on the query embedding
-        prizes = self.compute_prizes(graph, prompt_emb, query_emb, modality)
+        prizes = self.compute_prizes(graph, text_emb, query_emb, modality)
 
         # Compute costs in constructing the subgraph
         edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
