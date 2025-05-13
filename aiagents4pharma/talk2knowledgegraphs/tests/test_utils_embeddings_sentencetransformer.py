@@ -12,7 +12,10 @@ def embedding_model_fixture():
     Fixture for creating an instance of EmbeddingWithSentenceTransformer.
     """
     model_name = "sentence-transformers/all-MiniLM-L6-v1"  # Small model for testing
-    return EmbeddingWithSentenceTransformer(model_name=model_name)
+    embedding_model = EmbeddingWithSentenceTransformer(model_name=model_name)
+    # Fix the model to use CPU
+    embedding_model.model.to("cpu")
+    return embedding_model
 
 def test_embed_documents(embedding_model):
     """
