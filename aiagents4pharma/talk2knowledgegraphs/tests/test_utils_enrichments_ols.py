@@ -19,7 +19,7 @@ from ..utils.enrichments.ols_terms import EnrichmentWithOLS
 CL_DESC = "CD4-positive, alpha-beta T cell"
 GO_DESC = "Any process that activates or increases the frequency, rate or extent"
 UBERON_DESC = "The olfactory organ of vertebrates, consisting of nares"
-HP_DESC = "Hypoplasia of the antihelix"
+HP_DESC = "Developmental hypoplasia of the antihelix"
 MONDO_DESC = "A gastrointestinal disorder characterized by chronic inflammation"
 
 # The expected description for the non-existing term is None
