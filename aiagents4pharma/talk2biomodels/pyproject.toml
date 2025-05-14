@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "copasi_basico==0.78",
+  "copasi_basico==0.84",
   "hydra-core==1.3.2",
   "openai==1.59.4",
   "pandas==2.2.3",

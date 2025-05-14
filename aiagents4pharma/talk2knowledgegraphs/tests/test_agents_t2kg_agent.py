@@ -19,6 +19,14 @@ def input_dict_fixture():
     input_dict = {
         "llm_model": None,  # TBA for each test case
         "embedding_model": None,  # TBA for each test case
+        "selections": {
+            "gene/protein": [],
+            "molecular_function": [],
+            "cellular_component": [],
+            "biological_process": [],
+            "drug": [],
+            "disease": []
+        },
         "uploaded_files": [
             {
                 "file_name": "adalimumab.pdf",
@@ -27,21 +35,14 @@ def input_dict_fixture():
                 "uploaded_by": "VPEUser",
                 "uploaded_timestamp": "2024-11-05 00:00:00",
             },
-            {
-                "file_name": "DGE_human_Colon_UC-vs-Colon_Control.pdf",
-                "file_path": f"{DATA_PATH}/DGE_human_Colon_UC-vs-Colon_Control.pdf",
-                "file_type": "endotype",
-                "uploaded_by": "VPEUser",
-                "uploaded_timestamp": "2024-11-05 00:00:00",
-            },
         ],
         "topk_nodes": 3,
         "topk_edges": 3,
         "dic_source_graph": [
             {
-                "name": "PrimeKG",
-                "kg_pyg_path": f"{DATA_PATH}/primekg_ibd_pyg_graph.pkl",
-                "kg_text_path": f"{DATA_PATH}/primekg_ibd_text_graph.pkl",
+                "name": "BioBridge",
+                "kg_pyg_path": f"{DATA_PATH}/biobridge_multimodal_pyg_graph.pkl",
+                "kg_text_path": f"{DATA_PATH}/biobridge_multimodal_text_graph.pkl",
             }
         ],
         "dic_extracted_graph": []
@@ -96,7 +97,7 @@ def test_t2kg_agent_openai(input_dict):
     dic_extracted_graph = current_state.values["dic_extracted_graph"][0]
     assert isinstance(dic_extracted_graph, dict)
     assert dic_extracted_graph["name"] == "subkg_12345"
-    assert dic_extracted_graph["graph_source"] == "PrimeKG"
+    assert dic_extracted_graph["graph_source"] == "BioBridge"
     assert dic_extracted_graph["topk_nodes"] == 3
     assert dic_extracted_graph["topk_edges"] == 3
     assert isinstance(dic_extracted_graph["graph_dict"], dict)

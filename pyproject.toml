@@ -13,7 +13,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  "copasi_basico==0.78",
+  "copasi_basico==0.84",
   "coverage==7.6.4",
   "einops==0.8.0",
   "gdown==5.2.0",
@@ -67,6 +67,7 @@ dependencies = [
   "plotly-express==0.4.1",
   "seaborn==0.13.2",
   "scanpy==1.11.0",
+  "openpyxl==3.1.5",
 ]
 dynamic = ["version"]
 
@@ -115,3 +116,6 @@ aiagents4pharma = [
 asyncio_default_fixture_loop_scope = "function"
 markers = ["integration: marks tests as integration tests"]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.pylint.MASTER]
+extension-pkg-allow-list = ["pcst_fast"]

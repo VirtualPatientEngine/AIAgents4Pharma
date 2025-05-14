@@ -10,6 +10,7 @@ import hydra
 import tempfile
 import streamlit as st
 import streamlit.components.v1 as components
+import numpy as np
 import pandas as pd
 import plotly.express as px
 from langsmith import Client
@@ -24,7 +25,7 @@ from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
 import networkx as nx
 import gravis
-
+import pickle
 
 def submit_feedback(user_response):
     """
@@ -761,6 +762,9 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     for source, target, attrs in graph_dict["edges"]:
         graph.add_edge(source, target, **attrs)
 
+    # print("Graph nodes:", graph.nodes(data=True))
+    # print("Graph edges:", graph.edges(data=True))
+
     # Render the graph
     fig = gravis.d3(
         graph,
@@ -889,7 +893,7 @@ Search models on Crohns disease
 name and descriptions.
 
 ```
-Briefly describe model 537 and 
+Briefly describe model 537 and
 its parameters related to drug dosage
 ```
 
@@ -942,7 +946,7 @@ for more examples, and the [FAQs](https://virtualpatientengine.github.io/AIAgent
 for common questions.
 
 9. Provide feedback to the developers by clicking on the feedback button.
-                
+
 """
     )
 
@@ -973,7 +977,7 @@ def get_file_type_icon(file_type: str) -> str:
     Returns:
         str: The icon for the file type.
     """
-    return {"drug_data": "💊", "endotype": "🧬", "sbml_file": "📜"}.get(file_type)
+    return {"drug_data": "💊", "multimodal": "📦"}.get(file_type)
 
 
 @st.fragment
@@ -1011,6 +1015,24 @@ def get_t2b_uploaded_files(app):
 
 
 @st.fragment
+def initialize_selections() -> None:
+    """
+    Initialize the selections.
+
+    Args:
+        cfg: The configuration object.
+    """
+    with open(st.session_state.config["kg_pyg_path"], "rb") as f:
+        pyg_graph = pickle.load(f)
+
+    # Populate the selections based on the node type from the graph
+    selections = {}
+    for i in np.unique(np.array(pyg_graph.node_type)):
+        selections[i] = []
+
+    return selections
+
+@st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     """
     Upload files to a directory set in cfg.upload_data_dir, and display them in the UI.
@@ -1018,12 +1040,6 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     Args:
         cfg: The configuration object.
     """
-    # sbml_file = st.file_uploader("📜 Upload SBML file",
-    #     accept_multiple_files=False,
-    #     help='Upload an ODE model in SBML format.',
-    #     type=["xml", "sbml"],
-    #     key=f"uploader_sbml_file_{st.session_state.sbml_key}")
-
     data_package_files = st.file_uploader(
         "💊 Upload pre-clinical drug data",
         help="Free-form text. Must contain atleast drug targets and kinetic parameters",
@@ -1032,20 +1048,18 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
         key=f"uploader_{st.session_state.data_package_key}",
     )
 
-    endotype_files = st.file_uploader(
-        "🧬 Upload endotype data",
-        help="Free-form text. List of differentially expressed genes",
+    multimodal_files = st.file_uploader(
+        "📦 Upload multimodal data package",
+        help="A spread sheet containing multimodal data package (e.g., genes, drugs, etc.)",
         accept_multiple_files=True,
-        type=cfg.endotype_allowed_file_types,
-        key=f"uploader_endotype_{st.session_state.endotype_key}",
+        type=cfg.multimodal_allowed_file_types,
+        key=f"uploader_multimodal_{st.session_state.multimodal_key}",
     )
 
     # Merge the uploaded files
     uploaded_files = data_package_files.copy()
-    if endotype_files:
-        uploaded_files += endotype_files.copy()
-    # if sbml_file:
-    #     uploaded_files += [sbml_file]
+    if multimodal_files:
+        uploaded_files += multimodal_files.copy()
 
     with st.spinner("Storing uploaded file(s) ..."):
         # for uploaded_file in data_package_files:
@@ -1064,10 +1078,8 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                 uploaded_file.timestamp = current_timestamp
                 if uploaded_file.name in [uf.name for uf in data_package_files]:
                     uploaded_file.file_type = "drug_data"
-                elif uploaded_file.name in [uf.name for uf in endotype_files]:
-                    uploaded_file.file_type = "endotype"
-                else:
-                    uploaded_file.file_type = "sbml_file"
+                elif uploaded_file.name in [uf.name for uf in multimodal_files]:
+                    uploaded_file.file_type = "multimodal"
                 st.session_state.uploaded_files.append(
                     {
                         "file_name": uploaded_file.file_name,
@@ -1101,5 +1113,5 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.session_state.uploaded_files.remove(uploaded_file)
                     st.cache_data.clear()
                     st.session_state.data_package_key += 1
-                    st.session_state.endotype_key += 1
+                    st.session_state.multimodal_key += 1
                     st.rerun(scope="fragment")

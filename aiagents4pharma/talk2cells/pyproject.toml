@@ -16,6 +16,10 @@ classifiers = [
 ]
 
 dependencies = [
+    "cell2sentence==1.1.0",
+    "gseapy==1.1.8",
+    "pygeneconverter==0.3",
+    "xlsxwriter==3.2.3",
     "ipykernel==6.29.5",
     "ipython==8.31.0",
     "langchain-openai==0.3.0",

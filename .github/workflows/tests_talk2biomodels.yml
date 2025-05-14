@@ -5,9 +5,9 @@ name: TESTS Talk2BioModels
 on:
   # Triggers the workflow on push or pull request events
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'aiagents4pharma/talk2biomodels/**'
+      - "aiagents4pharma/talk2biomodels/**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -18,108 +18,272 @@ env:
 
 # This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  pylint-windows-ubuntu-macos:
-    # The type of runner that the job will run on
-    name: pylint-windows-ubuntu-macos
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-        matrix:
-            os: [windows-latest, ubuntu-latest, macos-13]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  # pylint job for ubuntu
+  pylint-ubuntu:
+    name: pylint-ubuntu
+    runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
+          miniconda-version: "latest"
           python-version: 3.12
+          channels: defaults
 
-      # install requirements
-      - name: Install the requirements
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Linux-conda-talk2aiagents4pharma-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
         run: |
-          pip3 install --break-system-packages -r requirements.txt
+          conda update -n base -c defaults conda -y
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
+          conda activate talk2aiagents4pharma
+          pip install -r requirements.txt
 
-      # pylint
       - name: Run pylint
+        shell: bash -l {0}
         run: |
+          conda activate talk2aiagents4pharma
           pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2biomodels
 
-  # code coverage job for ubuntu and macos
-  code-cov-ubuntu-macos:
-    name: code-coverage-ubuntu-macos
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-        matrix:
-          os: [ubuntu-latest, macos-13]
+  # pylint job for macos
+  pylint-macos:
+    name: pylint-macos
+    runs-on: macos-15
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: 3.12
+          channels: defaults
 
-    - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            macOS-conda-talk2aiagents4pharma-
 
-    - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
+          conda activate talk2aiagents4pharma
+          pip install -r requirements.txt
 
-    - name: Check coverage
-      run: |
-        coverage report -m
-        TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-        if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-          echo "Code coverage is not 100%. Please check the coverage report."
-          exit 1
-        fi
-      env:
-        COVERAGE_FILE: './.coverage'
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2biomodels
+
+  # pylint job for windows
+  pylint-windows:
+    name: pylint-windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: 3.12
+          channels: defaults
+
+      - name: Cache conda environment
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Windows-conda-talk2aiagents4pharma-
+
+      - name: Create conda environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda update -n base -c defaults conda -y
+          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
+          conda activate talk2aiagents4pharma
+          pip install -r requirements.txt
+
+      - name: Run pylint
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2biomodels
+
+  # code coverage job for ubuntu
+  code-cov-ubuntu:
+    name: code-coverage-ubuntu
+    needs: pylint-ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: 3.12
+          channels: defaults
+
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Linux-conda-talk2aiagents4pharma-
+
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
+            conda activate talk2aiagents4pharma
+            pip install -r requirements.txt
+          fi
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage
+
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+
+      - name: Check coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage report -m
+          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
+        env:
+          COVERAGE_FILE: "./.coverage"
+
+  # code coverage job for macos
+  code-cov-macos:
+    name: code-coverage-macos
+    needs: pylint-macos
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: 3.12
+          channels: defaults
+
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            macOS-conda-talk2aiagents4pharma-
+
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
+            conda activate talk2aiagents4pharma
+            pip install -r requirements.txt
+          fi
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage
+
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+
+      - name: Check coverage
+        shell: bash -l {0}
+        run: |
+          conda activate talk2aiagents4pharma
+          coverage report -m
+          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
+        env:
+          COVERAGE_FILE: "./.coverage"
 
   # code coverage job for windows
   code-cov-windows:
     name: code-coverage-windows
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-        matrix:
-          os: [windows-latest]
-
+    needs: pylint-windows
+    runs-on: windows-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: 3.12
+          channels: defaults
 
-    - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
+      - name: Restore conda environment cache
+        id: cache-conda
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
+          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            Windows-conda-talk2aiagents4pharma-
 
-    - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+      - name: Install test dependencies
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
+            conda update -n base -c defaults conda -y
+            conda create -n talk2aiagents4pharma -y python=3.12 pip
+            conda activate talk2aiagents4pharma
+            pip install -r requirements.txt
+          fi
+          conda activate talk2aiagents4pharma
+          conda install -n talk2aiagents4pharma -y pytest coverage
 
-    - name: Check coverage
-      run: |
-        coverage report -m
-        # $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1) -replace "[^\d]"  # Extract the last line and remove non-numeric characters
-        $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1)
-        # split and extract the last element
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -split " ")[-1]
-        # remove non-numeric characters
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -replace "[^\d]")
-        # convert to int
-        $TOTAL_COVERAGE=[int]$TOTAL_COVERAGE
-        echo "Total coverage: $TOTAL_COVERAGE"
-        if ($TOTAL_COVERAGE -ne 100) {
-          Write-Host "Code coverage is not 100%. Please check the coverage report."
-          exit 1
-        }
-      env:
-        COVERAGE_FILE: './.coverage'
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          conda run -n talk2aiagents4pharma coverage run --include=aiagents4pharma/talk2biomodels/* -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/
+
+      - name: Check coverage
+        shell: bash -l {0}
+        run: |
+          conda run -n talk2aiagents4pharma coverage report -m --fail-under=100

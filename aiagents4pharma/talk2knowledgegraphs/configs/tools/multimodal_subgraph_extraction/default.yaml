@@ -1,0 +1,25 @@
+_target_: talk2knowledgegraphs.tools.multimodal_subgraph_extraction
+ollama_embeddings:
+  - "nomic-embed-text"
+temperature: 0.1
+streaming: False
+topk: 5
+topk_e: 5
+cost_e: 0.5
+c_const: 0.01
+root: -1
+num_clusters: 1
+pruning: "gw"
+verbosity_level: 0
+node_id_column: "node_id"
+node_attr_column: "node_attr"
+edge_src_column: "edge_src"
+edge_attr_column: "edge_attr"
+edge_dst_column: "edge_dst"
+node_colors_dict:
+  "gene/protein": "#6a79f7"
+  "molecular_function": "#82cafc"
+  "cellular_component": "#3f9b0b"
+  "biological_process": "#c5c9c7"
+  "drug": "#c4a661"
+  "disease": "#80013f"
