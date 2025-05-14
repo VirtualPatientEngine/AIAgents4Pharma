@@ -111,7 +111,7 @@ def download_arxiv_paper(
 
     # Create article_data entry with the paper ID as the key
     article_data = {arxiv_id: metadata}
-
+    print("Input Article Data:",article_data)
     content = f"Successfully retrieved metadata and PDF URL for arXiv ID {arxiv_id}"
 
     return Command(

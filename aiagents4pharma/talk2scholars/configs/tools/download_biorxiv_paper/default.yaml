@@ -1,3 +1,0 @@
-# configs/tools/download_biorxiv_paper/default.yaml
-api_url: "https://api.biorxiv.org/details/medrxiv/10.1101/"
-pdf_base_url: "https://www.biorxiv.org/content/10.1101/"

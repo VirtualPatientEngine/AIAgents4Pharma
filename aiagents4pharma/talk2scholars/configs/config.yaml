@@ -8,7 +8,6 @@ defaults:
   - agents/talk2scholars/pdf_agent: default
   - tools/search: default
   - tools/download_arxiv_paper: default
-  - tools/download_biorxiv_paper: default
   - tools/download_medrxiv_paper: default
   - tools/single_paper_recommendation: default
   - tools/multi_paper_recommendation: default
