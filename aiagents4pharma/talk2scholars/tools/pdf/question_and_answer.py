@@ -8,8 +8,7 @@ to user-provided questions using a language model chain.
 import logging
 import os
 import time
-from typing import Annotated, Any, Dict, List, Optional, Tuple
- 
+from typing import Annotated, Any, Dict, List, Optional, Tuple 
 import hydra
 import numpy as np
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -27,7 +26,6 @@ from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
- 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=getattr(logging, log_level))
@@ -501,7 +499,11 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
  
-    elif use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers or has_medrxiv_papers:
+    elif (use_all_papers 
+          or has_uploaded_papers 
+          or has_zotero_papers 
+          or has_arxiv_papers 
+          or has_medrxiv_papers):
         # Use all available papers if explicitly requested or if we have papers from any source
         selected_paper_ids = list(article_data.keys())
         logger.info(
@@ -572,7 +574,7 @@ def question_and_answer(
  
     # Format answer with attribution
     answer_text = result.get("output_text", "No answer generated.")
- 
+    
     # Get paper titles for sources
     paper_titles = {}
     for paper_id in result.get("papers_used", []):
@@ -587,7 +589,7 @@ def question_and_answer(
         sources_text = "\n\nSources:\n" + "\n".join(
             [f"- {title}" for title in paper_titles.values()]
         )
- 
+
     # Prepare the final response
     response_text = f"{answer_text}{sources_text}"
     logger.info(
@@ -596,7 +598,7 @@ def question_and_answer(
         len(relevant_chunks),
         len(paper_titles),
     )
- 
+
     return Command(
         update={
             "messages": [
@@ -607,5 +609,3 @@ def question_and_answer(
             ],
         }
     )
- 
- 
