@@ -61,9 +61,9 @@ def initialize_zotero_and_build_store():
             if pdf_url:
                 vector_store.add_paper(paper_id, pdf_url, meta)
         vector_store.build_vector_store()
-        # Store vector store in shared state for QA tool
-        import aiagents4pharma.talk2scholars.state.state_talk2scholars as state_module
-        state_module.vector_store = vector_store
+        # Store vector store as module global for the Question & Answer tool
+        import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
+        qa_module.prebuilt_vector_store = vector_store
     st.success("Zotero library loaded and RAG index built!")
     st.session_state.zotero_initialized = True
 
