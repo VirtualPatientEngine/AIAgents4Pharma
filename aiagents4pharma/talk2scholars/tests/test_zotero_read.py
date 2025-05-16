@@ -2,16 +2,20 @@
 Unit tests for Zotero search tool in zotero_read.py.
 """
 
-from types import SimpleNamespace
 import unittest
-from unittest.mock import patch, MagicMock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
+
+import requests
 from langgraph.types import Command
-from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
+
 from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
     ZoteroSearchData,
 )
-from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader import download_zotero_pdf
-import requests
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader import (
+    download_zotero_pdf,
+)
+from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
 
 # pylint: disable=protected-access
 # pylint: disable=protected-access, too-many-arguments, too-many-positional-arguments
@@ -24,7 +28,6 @@ dummy_zotero_read_config = SimpleNamespace(
     zotero=SimpleNamespace(
         max_limit=5,
         filter_item_types=["journalArticle", "conferencePaper"],
-        filter_excluded_types=["attachment", "note"],
     ),
 )
 dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_config))
@@ -780,7 +783,7 @@ class TestZoteroSearchTool(unittest.TestCase):
 
         # Patch the module-level download_zotero_pdf to raise an exception
         with patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader."  \
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader."
             "download_zotero_pdf"
         ) as mock_download_pdf:
             mock_download_pdf.side_effect = Exception("Simulated download error")
