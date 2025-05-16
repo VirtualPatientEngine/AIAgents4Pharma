@@ -726,7 +726,9 @@ class TestZoteroSearchTool(unittest.TestCase):
     def test_download_zotero_pdf_exception(self, mock_session_get):
         """Test that download_zotero_pdf returns None and logs error on request exception."""
         # Simulate a session.get exception during PDF download
-        mock_session_get.side_effect = Exception("Simulated download failure")
+        mock_session_get.side_effect = requests.exceptions.RequestException(
+            "Simulated download failure"
+        )
         # Create a session for testing
         session = requests.Session()
         # Call the module-level download function
@@ -787,7 +789,9 @@ class TestZoteroSearchTool(unittest.TestCase):
             "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader."
             "download_zotero_pdf"
         ) as mock_download_pdf:
-            mock_download_pdf.side_effect = Exception("Simulated download error")
+            mock_download_pdf.side_effect = requests.exceptions.RequestException(
+                "Simulated download error"
+            )
 
             search = ZoteroSearchData(
                 query="failure test",

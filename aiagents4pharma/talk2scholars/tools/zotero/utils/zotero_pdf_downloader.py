@@ -63,7 +63,7 @@ def download_zotero_pdf(
 
         return temp_file_path, filename
 
-    except Exception as e:
+    except (requests.exceptions.RequestException, OSError) as e:
         logger.error(
             "Failed to download Zotero PDF for attachment %s: %s", attachment_key, e
         )
@@ -94,8 +94,9 @@ def download_pdfs_in_parallel(
     if not attachment_item_map:
         return results
 
-    workers = min(10, len(attachment_item_map)) if max_workers is None else max_workers
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers if max_workers is not None else min(10, len(attachment_item_map))
+    ) as executor:
         future_to_keys = {
             executor.submit(
                 download_zotero_pdf, session, user_id, api_key, attachment_key
@@ -110,7 +111,7 @@ def download_pdfs_in_parallel(
                 if result:
                     temp_file_path, filename = result
                     results[item_key] = (temp_file_path, filename, attachment_key)
-            except Exception as e:
+            except (requests.exceptions.RequestException, OSError) as e:
                 logger.error("Failed to download PDF for key %s: %s", attachment_key, e)
 
     return results

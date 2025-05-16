@@ -81,7 +81,11 @@ def zotero_read(
     # Create search data object to organize variables
     # download_pdfs flag controls whether PDFs are fetched now or deferred
     search_data = ZoteroSearchData(
-        query, only_articles, limit, tool_call_id, download_pdfs
+        query=query,
+        only_articles=only_articles,
+        limit=limit,
+        download_pdfs=download_pdfs,
+        tool_call_id=tool_call_id,
     )
 
     # Process the search
