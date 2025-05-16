@@ -70,4 +70,3 @@ class Talk2Scholars(AgentState):
     zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
-

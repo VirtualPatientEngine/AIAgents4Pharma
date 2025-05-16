@@ -5,14 +5,14 @@ Utility for zotero read tool.
 """
 
 import logging
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List
 
 import hydra
 import requests
 from pyzotero import zotero
 
 from .zotero_path import get_item_collections
-from .pdf_downloader import download_zotero_pdf, download_pdfs_in_parallel
+from .zotero_pdf_downloader import download_pdfs_in_parallel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -106,8 +106,6 @@ class ZoteroSearchData:
             )
 
         return items
-
-
 
     # pylint: disable=too-many-locals, too-many-branches
     def _filter_and_format_papers(self, items: List[Dict[str, Any]]) -> None:
@@ -223,7 +221,11 @@ class ZoteroSearchData:
             )
 
             # Update orphan data with downloaded file paths
-            for item_key, (file_path, filename, attachment_key) in orphan_results.items():
+            for item_key, (
+                file_path,
+                filename,
+                attachment_key,
+            ) in orphan_results.items():
                 self.article_data[item_key]["filename"] = filename
                 self.article_data[item_key]["pdf_url"] = file_path
                 self.article_data[item_key]["attachment_key"] = attachment_key
@@ -233,9 +235,9 @@ class ZoteroSearchData:
             # Record attachment keys; Title already set to filename
             for attachment_key in orphaned_pdfs:
                 self.article_data[attachment_key]["attachment_key"] = attachment_key
-                self.article_data[attachment_key]["filename"] = (
-                    self.article_data[attachment_key].get("Title", attachment_key)
-                )
+                self.article_data[attachment_key]["filename"] = self.article_data[
+                    attachment_key
+                ].get("Title", attachment_key)
 
         if self.download_pdfs:
             # Download regular item PDFs in parallel

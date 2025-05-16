@@ -46,7 +46,7 @@ class ZoteroSearchInput(BaseModel):
     )
     download_pdfs: bool = Field(
         default=False,
-        description="Whether to download PDF attachments immediately (default True)."
+        description="Whether to download PDF attachments immediately (default True).",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -64,7 +64,8 @@ def zotero_read(
 
     Args:
         query (str): Text query to search in titles, abstracts, tags, etc.
-        only_articles (bool): When True, only include items of type 'journalArticle' or 'conferencePaper'.
+        only_articles (bool): When True, only include items of type 'journalArticle'
+        or 'conferencePaper'.
         tool_call_id (str): Internal ID injected by LangGraph to track this tool call.
         limit (int, optional): Max number of items to return (1–100). Defaults to 2.
         download_pdfs (bool, optional): If True, PDFs for each returned item will be downloaded now.
