@@ -71,5 +71,3 @@ class Talk2Scholars(AgentState):
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
 
-# Shared vector store for RAG (set by Streamlit application at startup)
-vector_store: Any = None
