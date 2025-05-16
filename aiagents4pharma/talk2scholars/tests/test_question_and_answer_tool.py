@@ -840,7 +840,7 @@ class TestMissingState(unittest.TestCase):
 
         # Prepare a dummy pre-built vector store
 
-        class DummyVS:
+        class DummyVS:  # pylint: disable=too-few-public-methods
             """class to simulate"""
 
             def __init__(self):
@@ -848,9 +848,9 @@ class TestMissingState(unittest.TestCase):
                 self.loaded_papers = set()
                 self.vector_store = True
 
-            def retrieve_relevant_chunks(self, query, paper_ids, top_k):
+            def retrieve_relevant_chunks(self, *_args, **_kwargs):
                 """retrieve relevant chunks"""
-                # Return a single dummy Document
+                # Return a single dummy Document regardless of input
                 return [Document(page_content="chunk", metadata={"paper_id": "p1"})]
 
         dummy_vs = DummyVS()
