@@ -30,11 +30,14 @@ class ZoteroSearchData:
         only_articles: bool,
         limit: int,
         tool_call_id: str,
+        download_pdfs: bool = True,
     ):
         self.query = query
         self.only_articles = only_articles
         self.limit = limit
         self.tool_call_id = tool_call_id
+        # Control whether to fetch PDF attachments now
+        self.download_pdfs = download_pdfs
         self.cfg = self._load_config()
         self.zot = self._init_zotero_client()
         self.item_to_collections = get_item_collections(self.zot)
@@ -211,26 +214,43 @@ class ZoteroSearchData:
                         "Failed to get attachments for item %s: %s", item_key, e
                     )
 
-        # Now download all PDFs in parallel - first orphaned PDFs
-        logger.info("Downloading %d orphaned PDFs in parallel", len(orphaned_pdfs))
-        orphan_results = download_pdfs_in_parallel(
-            self.session, self.cfg.user_id, self.cfg.api_key, orphaned_pdfs
-        )
+        # Handle PDF attachments: download now or defer
+        if self.download_pdfs:
+            # Download orphaned PDFs in parallel
+            logger.info("Downloading %d orphaned PDFs in parallel", len(orphaned_pdfs))
+            orphan_results = download_pdfs_in_parallel(
+                self.session, self.cfg.user_id, self.cfg.api_key, orphaned_pdfs
+            )
 
-        # Update orphan data
-        for item_key, (file_path, filename, attachment_key) in orphan_results.items():
-            self.article_data[item_key]["filename"] = filename
-            self.article_data[item_key]["pdf_url"] = file_path
-            self.article_data[item_key]["attachment_key"] = attachment_key
-            logger.info("Downloaded orphaned Zotero PDF to: %s", file_path)
+            # Update orphan data with downloaded file paths
+            for item_key, (file_path, filename, attachment_key) in orphan_results.items():
+                self.article_data[item_key]["filename"] = filename
+                self.article_data[item_key]["pdf_url"] = file_path
+                self.article_data[item_key]["attachment_key"] = attachment_key
+                logger.info("Downloaded orphaned Zotero PDF to: %s", file_path)
+        else:
+            logger.info("Skipping orphaned PDF downloads (download_pdfs=False)")
+            # Record attachment keys; Title already set to filename
+            for attachment_key in orphaned_pdfs:
+                self.article_data[attachment_key]["attachment_key"] = attachment_key
+                self.article_data[attachment_key]["filename"] = (
+                    self.article_data[attachment_key].get("Title", attachment_key)
+                )
 
-        # Download regular item attachments
-        logger.info(
-            "Downloading %d regular item PDFs in parallel", len(item_attachments)
-        )
-        item_results = download_pdfs_in_parallel(
-            self.session, self.cfg.user_id, self.cfg.api_key, item_attachments
-        )
+        if self.download_pdfs:
+            # Download regular item PDFs in parallel
+            logger.info(
+                "Downloading %d regular item PDFs in parallel", len(item_attachments)
+            )
+            item_results = download_pdfs_in_parallel(
+                self.session, self.cfg.user_id, self.cfg.api_key, item_attachments
+            )
+        else:
+            logger.info("Skipping regular PDF downloads (download_pdfs=False)")
+            # Record attachment keys without downloading
+            for attachment_key, item_key in item_attachments.items():
+                self.article_data[item_key]["attachment_key"] = attachment_key
+            item_results = {}
 
         # Update item data
         for item_key, (file_path, filename, attachment_key) in item_results.items():
