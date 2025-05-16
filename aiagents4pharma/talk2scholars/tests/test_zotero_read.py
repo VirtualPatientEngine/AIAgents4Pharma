@@ -10,6 +10,8 @@ from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
 from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
     ZoteroSearchData,
 )
+from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader import download_zotero_pdf
+import requests
 
 # pylint: disable=protected-access
 # pylint: disable=protected-access, too-many-arguments, too-many-positional-arguments
@@ -204,8 +206,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper."
-        "ZoteroSearchData._download_pdfs_in_parallel"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.download_pdfs_in_parallel"
     )
     def test_filtering_no_matching_papers(
         self,
@@ -713,39 +714,23 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertNotIn("filename", filtered_papers["paper1"])
         self.assertNotIn("attachment_key", filtered_papers["paper1"])
 
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.get")
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader.requests.Session.get"
     )
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
-    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
-    def test_download_zotero_pdf_exception(
-        self,
-        mock_hydra_init,
-        mock_hydra_compose,
-        mock_zotero_class,
-        mock_get_item_collections,
-        mock_requests_get,
-    ):
-        """Test that _download_zotero_pdf returns None and logs error on request exception."""
-        # Setup mocks for config and Zotero client
-        mock_hydra_compose.return_value = dummy_cfg
-        mock_hydra_init.return_value.__enter__.return_value = None
-        mock_zotero_class.return_value = MagicMock()
-        mock_get_item_collections.return_value = {}
-
-        # Simulate a request exception during PDF download
-        mock_requests_get.side_effect = Exception("Simulated download failure")
-
-        zotero_search = ZoteroSearchData(
-            query="test", only_articles=False, limit=1, tool_call_id="test123"
+    def test_download_zotero_pdf_exception(self, mock_session_get):
+        """Test that download_zotero_pdf returns None and logs error on request exception."""
+        # Simulate a session.get exception during PDF download
+        mock_session_get.side_effect = Exception("Simulated download failure")
+        # Create a session for testing
+        session = requests.Session()
+        # Call the module-level download function
+        result = download_zotero_pdf(
+            session,
+            dummy_cfg.tools.zotero_read.user_id,
+            dummy_cfg.tools.zotero_read.api_key,
+            "FAKE_ATTACHMENT_KEY",
         )
-
-        result = zotero_search._download_zotero_pdf("FAKE_ATTACHMENT_KEY")
-
+        # Should return None on failure
         self.assertIsNone(result)
 
     @patch(
@@ -791,10 +776,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_zotero_class.return_value = fake_zot
         mock_get_item_collections.return_value = {"paper1": ["/Fake Collection"]}
 
-        # Patch just the internal _download_zotero_pdf to raise an exception
+        # Patch the module-level download_zotero_pdf to raise an exception
         with patch(
-            "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper."
-            "ZoteroSearchData._download_zotero_pdf"
+            "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader."  \
+            "download_zotero_pdf"
         ) as mock_download_pdf:
             mock_download_pdf.side_effect = Exception("Simulated download error")
 
