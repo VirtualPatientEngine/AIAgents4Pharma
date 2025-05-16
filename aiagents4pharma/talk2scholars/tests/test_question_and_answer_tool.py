@@ -3,18 +3,19 @@ Unit tests for question_and_answer tool functionality.
 """
 
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
+from langchain_core.messages import ToolMessage
 
-from types import SimpleNamespace
+import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
 from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import (
     Vectorstore,
     generate_answer,
     question_and_answer,
 )
-from langchain_core.messages import ToolMessage
 
 
 class TestQuestionAndAnswerTool(unittest.TestCase):
@@ -823,10 +824,6 @@ class TestMissingState(unittest.TestCase):
         )
         assert results == []
 
-
-class TestQuestionAndAnswerToolPrebuiltVS(unittest.TestCase):
-    """Test question_and_answer tool with a shared pre-built vector store branch."""
-
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.load_hydra_config"
     )
@@ -834,6 +831,7 @@ class TestQuestionAndAnswerToolPrebuiltVS(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.generate_answer"
     )
     def test_prebuilt_vector_store_branch(self, mock_generate, mock_load_config):
+        """Test question_and_answer tool with a shared pre-built vector store branch."""
         # Mock configuration for tool-level thresholds
         config = SimpleNamespace(top_k_papers=1, top_k_chunks=1)
         mock_load_config.return_value = config
@@ -841,14 +839,17 @@ class TestQuestionAndAnswerToolPrebuiltVS(unittest.TestCase):
         mock_generate.return_value = {"output_text": "Answer", "papers_used": ["p1"]}
 
         # Prepare a dummy pre-built vector store
-        import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
 
         class DummyVS:
+            """class to simulate"""
+
             def __init__(self):
+                """initialize"""
                 self.loaded_papers = set()
                 self.vector_store = True
 
             def retrieve_relevant_chunks(self, query, paper_ids, top_k):
+                """retrieve relevant chunks"""
                 # Return a single dummy Document
                 return [Document(page_content="chunk", metadata={"paper_id": "p1"})]
 
