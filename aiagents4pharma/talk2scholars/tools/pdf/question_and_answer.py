@@ -208,7 +208,6 @@ class Vectorstore:
         )
         logger.info("Built vector store with %d documents", len(documents_list))
 
-
     def rank_papers_by_query(
         self, query: str, top_k: int = 40
     ) -> List[Tuple[str, float]]:
@@ -393,8 +392,10 @@ def generate_answer(
         "papers_used": list(paper_sources),
     }
 
+
 # Shared pre-built Vectorstore for RAG (set externally, e.g., by Streamlit startup)
 prebuilt_vector_store: Optional[Vectorstore] = None
+
 
 @tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
 def question_and_answer(
@@ -462,7 +463,7 @@ def question_and_answer(
     # Use shared pre-built Vectorstore if provided, else create a new one
     if prebuilt_vector_store is not None:
         vector_store = prebuilt_vector_store
-        logger.info("Using shared pre-built vector store from module global")
+        logger.info("Using shared pre-built vector store from the memory")
     else:
         vector_store = Vectorstore(embedding_model=text_embedding_model)
         logger.info("Initialized new vector store (no pre-built store found)")
