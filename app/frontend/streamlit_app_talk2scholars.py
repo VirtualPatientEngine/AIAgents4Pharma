@@ -33,6 +33,40 @@ sys.path.append("./")
 # import get_app from main_agent
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
+# Helper to initialize Zotero fetch and RAG index once after greeting
+def initialize_zotero_and_build_store():
+    # Download PDFs and build vector store
+    with st.spinner("Downloading Zotero library and building RAG index..."):
+        from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import ZoteroSearchData
+        # Empty query fetches all items up to max_limit
+        search_data = ZoteroSearchData(
+            query="", only_articles=True, limit=1,
+            tool_call_id="startup", download_pdfs=True
+        )
+        search_data.process_search()
+        results = search_data.get_search_results()
+        # Save article metadata and PDF paths
+        st.session_state.article_data = results.get("article_data", {})
+        # Update agent state with article_data
+        config = {"configurable": {"thread_id": st.session_state.unique_id}}
+        app.update_state(config, {"article_data": st.session_state.article_data})
+        # Build RAG vector store
+        from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import Vectorstore
+        embedding_model = streamlit_utils.get_text_embedding_model(
+            st.session_state.text_embedding_model
+        )
+        vector_store = Vectorstore(embedding_model=embedding_model)
+        for paper_id, meta in st.session_state.article_data.items():
+            pdf_url = meta.get("pdf_url")
+            if pdf_url:
+                vector_store.add_paper(paper_id, pdf_url, meta)
+        vector_store.build_vector_store()
+        # Store vector store in shared state for QA tool
+        import aiagents4pharma.talk2scholars.state.state_talk2scholars as state_module
+        state_module.vector_store = vector_store
+    st.success("Zotero library loaded and RAG index built!")
+    st.session_state.zotero_initialized = True
+
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
@@ -109,6 +143,7 @@ if "app" not in st.session_state:
         )
 # Get the app
 app = st.session_state.app
+
 
 
 def _submit_feedback(user_response):
@@ -333,7 +368,9 @@ with main_col2:
                     st.session_state.messages.append(
                         {"type": "message", "content": assistant_msg}
                     )
-                    st.empty()
+                    # After greeting, initialize Zotero library and RAG index once
+                    if "zotero_initialized" not in st.session_state:
+                        initialize_zotero_and_build_store()
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2s()):
                 if st.button(
