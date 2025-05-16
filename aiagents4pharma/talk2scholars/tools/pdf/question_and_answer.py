@@ -27,7 +27,6 @@ from langchain_core.vectorstores import VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langgraph.prebuilt import InjectedState
-import aiagents4pharma.talk2scholars.state.state_talk2scholars as state_module
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
@@ -208,6 +207,7 @@ class Vectorstore:
             documents=documents_list, embedding=self.embedding_model
         )
         logger.info("Built vector store with %d documents", len(documents_list))
+
 
     def rank_papers_by_query(
         self, query: str, top_k: int = 40
@@ -393,6 +393,8 @@ def generate_answer(
         "papers_used": list(paper_sources),
     }
 
+# Shared pre-built Vectorstore for RAG (set externally, e.g., by Streamlit startup)
+prebuilt_vector_store: Optional[Vectorstore] = None
 
 @tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
 def question_and_answer(
@@ -457,13 +459,14 @@ def question_and_answer(
         logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
-    # Use shared pre-built vector store if available in shared state module
-    if state_module.vector_store is not None:
-        vector_store = state_module.vector_store
-        logger.info("Using shared pre-built vector store from state module")
+    # Use shared pre-built Vectorstore if provided, else create a new one
+    global prebuilt_vector_store
+    if prebuilt_vector_store is not None:
+        vector_store = prebuilt_vector_store
+        logger.info("Using shared pre-built vector store from module global")
     else:
         vector_store = Vectorstore(embedding_model=text_embedding_model)
-        logger.info("Initialized new vector store (no shared prebuilt store found)")
+        logger.info("Initialized new vector store (no pre-built store found)")
 
     # Check if there are papers from different sources
     has_uploaded_papers = any(
