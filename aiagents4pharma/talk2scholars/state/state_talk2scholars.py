@@ -70,3 +70,6 @@ class Talk2Scholars(AgentState):
     zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
+
+# Shared vector store for RAG (set by Streamlit application at startup)
+vector_store: Any = None
