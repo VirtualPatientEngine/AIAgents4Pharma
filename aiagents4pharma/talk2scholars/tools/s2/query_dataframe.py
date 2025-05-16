@@ -39,6 +39,7 @@ class QueryDataFrameInput(BaseModel):
         question (str): Metadata-level query to run over the last displayed papers.
         state (dict): Shared agent state containing 'last_displayed_papers' and metadata.
     """
+
     question: str = Field(
         ..., description="The metadata-level query to execute on the papers table"
     )
@@ -46,11 +47,9 @@ class QueryDataFrameInput(BaseModel):
         ..., description="Injected shared state with 'last_displayed_papers' key"
     )
 
+
 @tool(args_schema=QueryDataFrameInput, parse_docstring=True)
-def query_dataframe(
-    question: str,
-    state: Annotated[dict, InjectedState]
-) -> str:
+def query_dataframe(question: str, state: Annotated[dict, InjectedState]) -> str:
     """
     Answer a metadata query over the last displayed papers using a DataFrame agent.
 
