@@ -720,7 +720,8 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertNotIn("attachment_key", filtered_papers["paper1"])
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader.requests.Session.get"
+        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader."
+        "requests.Session.get"
     )
     def test_download_zotero_pdf_exception(self, mock_session_get):
         """Test that download_zotero_pdf returns None and logs error on request exception."""
