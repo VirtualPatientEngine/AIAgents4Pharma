@@ -32,6 +32,10 @@ class ZoteroSearchInput(BaseModel):
     limit: int = Field(
         default=2, description="Maximum number of results to return", ge=1, le=100
     )
+    download_pdfs: bool = Field(
+        default=True,
+        description="Whether to download PDF attachments immediately (default True)."
+    )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
@@ -41,6 +45,7 @@ def zotero_read(
     only_articles: bool,
     tool_call_id: Annotated[str, InjectedToolCallId],
     limit: int = 2,
+    download_pdfs: bool = True,
 ) -> Command[Any]:
     """
     Use this tool to search and retrieve papers from Zotero library.
@@ -54,7 +59,10 @@ def zotero_read(
         Dict[str, Any]: The search results and related information.
     """
     # Create search data object to organize variables
-    search_data = ZoteroSearchData(query, only_articles, limit, tool_call_id)
+    # download_pdfs flag controls whether PDFs are fetched now or deferred
+    search_data = ZoteroSearchData(
+        query, only_articles, limit, tool_call_id, download_pdfs
+    )
 
     # Process the search
     search_data.process_search()
