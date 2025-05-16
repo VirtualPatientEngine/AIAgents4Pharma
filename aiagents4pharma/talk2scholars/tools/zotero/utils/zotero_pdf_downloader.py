@@ -33,10 +33,11 @@ def download_zotero_pdf(
         Tuple of (local_file_path, filename) if successful, else None.
     """
     # Log download start
-    logger.info("Downloading Zotero PDF for attachment %s from Zotero API", attachment_key)
+    logger.info(
+        "Downloading Zotero PDF for attachment %s from Zotero API", attachment_key
+    )
     zotero_pdf_url = (
-        f"https://api.zotero.org/users/{user_id}/items/"
-        f"{attachment_key}/file"
+        f"https://api.zotero.org/users/{user_id}/items/" f"{attachment_key}/file"
     )
     headers = {"Zotero-API-Key": api_key}
 
@@ -110,8 +111,6 @@ def download_pdfs_in_parallel(
                     temp_file_path, filename = result
                     results[item_key] = (temp_file_path, filename, attachment_key)
             except Exception as e:
-                logger.error(
-                    "Failed to download PDF for key %s: %s", attachment_key, e
-                )
+                logger.error("Failed to download PDF for key %s: %s", attachment_key, e)
 
     return results

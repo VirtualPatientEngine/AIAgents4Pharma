@@ -460,7 +460,6 @@ def question_and_answer(
         raise ValueError(error_msg)
 
     # Use shared pre-built Vectorstore if provided, else create a new one
-    global prebuilt_vector_store
     if prebuilt_vector_store is not None:
         vector_store = prebuilt_vector_store
         logger.info("Using shared pre-built vector store from module global")
