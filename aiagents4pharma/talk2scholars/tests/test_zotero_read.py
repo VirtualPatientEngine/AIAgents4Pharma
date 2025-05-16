@@ -261,6 +261,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "only_articles": False,
             "tool_call_id": "test_id_4",
             "limit": 2,
+            "download_pdfs": True,
         }
 
         result = zotero_read.run(tool_input)
@@ -515,6 +516,7 @@ class TestZoteroSearchTool(unittest.TestCase):
             "only_articles": True,
             "tool_call_id": "test_pdf_success",
             "limit": 1,
+            "download_pdfs": True,
         }
 
         result = zotero_read.run(tool_input)
