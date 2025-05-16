@@ -1,8 +1,10 @@
 """
-Tool for performing Q&A on PDF documents using retrieval augmented generation.
-This module provides functionality to load PDFs from URLs, split them into
-chunks, retrieve relevant segments via semantic search, and generate answers
-to user-provided questions using a language model chain.
+PDF Question & Answer Tool
+
+This LangGraph tool answers user questions by leveraging a pre-built FAISS vector store
+of embedded PDF document chunks. Given a question, it retrieves the most relevant text
+segments from the loaded PDFs, invokes an LLM for answer generation, and returns the
+response with source attribution.
 """
 
 import logging
@@ -25,6 +27,7 @@ from langchain_core.vectorstores import VectorStore
 from langchain_core.vectorstores.utils import maximal_marginal_relevance
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langgraph.prebuilt import InjectedState
+import aiagents4pharma.talk2scholars.state.state_talk2scholars as state_module
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
@@ -52,19 +55,18 @@ def load_hydra_config() -> Any:
 
 class QuestionAndAnswerInput(BaseModel):
     """
-    Input schema for the PDF Question and Answer tool.
-
-    This schema defines the inputs required for querying academic or research-related
-    PDFs to answer a specific question using a language model and document retrieval.
+    Input schema for the PDF Q&A tool.
 
     Attributes:
-        question (str): The question to ask regarding the PDF content.
-        paper_ids (Optional[List[str]]): Optional list of specific paper IDs to query.
-            If not provided, the system will determine relevant papers automatically.
-        use_all_papers (bool): Whether to use all available papers for answering the question.
-            If True, the system will include all loaded papers regardless of relevance filtering.
-        tool_call_id (str): Unique identifier for the tool call, injected automatically.
-        state (dict): Shared application state, injected automatically.
+        question (str): Free-text question to answer based on PDF content.
+        paper_ids (Optional[List[str]]): If provided, restricts retrieval to these paper IDs.
+        use_all_papers (bool): If True, include all loaded papers without semantic ranking.
+        tool_call_id (str): Internal ID injected by LangGraph for this tool call.
+        state (dict): Shared agent state containing:
+            - 'article_data': dict of paper metadata with 'pdf_url' keys
+            - 'text_embedding_model': embedding model instance
+            - 'llm_model': chat/LLM instance
+            - 'vector_store': pre-built Vectorstore for retrieval
     """
 
     question: str = Field(description="The question to ask regarding the PDF content.")
@@ -401,30 +403,29 @@ def question_and_answer(
     use_all_papers: bool = False,
 ) -> Command[Any]:
     """
-    Answer a question using PDF content with advanced retrieval augmented generation.
+    Generate an answer to a user question using Retrieval-Augmented Generation (RAG) over PDFs.
 
-    This tool retrieves PDF documents from URLs, processes them using semantic search,
-    and generates an answer to the user's question based on the most relevant content.
-    It can work with multiple papers simultaneously and provides source attribution.
+    This tool expects that a FAISS vector store of PDF document chunks has already been built
+    and stored in shared state. It retrieves the most relevant chunks for the input question,
+    invokes an LLM to craft a response, and returns the answer with source attribution.
 
     Args:
-        question (str): The question to answer based on PDF content.
-        paper_ids (Optional[List[str]]): Optional list of specific paper IDs to query.
-        use_all_papers (bool): Whether to use all available papers.
-        tool_call_id (str): Unique identifier for the current tool call.
-        state (dict): Current state dictionary containing article data and required models.
-            Expected keys:
-            - "article_data": Dictionary containing article metadata including PDF URLs
-            - "text_embedding_model": Model for generating embeddings
-            - "llm_model": Language model for generating answers
-            - "vector_store": Optional Vectorstore instance
+        question (str): The free-text question to answer.
+        state (dict): Injected agent state mapping that must include:
+            - 'article_data': mapping of paper IDs to metadata (including 'pdf_url')
+            - 'text_embedding_model': the embedding model instance
+            - 'llm_model': the chat/LLM instance
+        tool_call_id (str): Internal identifier for this tool call.
+        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).
+        use_all_papers (bool): If True, bypasses semantic ranking and includes all papers.
 
     Returns:
-        Dict[str, Any]: A dictionary wrapped in a Command that updates the conversation
-            with either the answer or an error message.
+        Command[Any]: A LangGraph Command that updates the conversation state:
+            - 'messages': a single ToolMessage containing the generated answer text.
 
     Raises:
-        ValueError: If required components are missing or if PDF processing fails.
+        ValueError: If required models or 'article_data' are missing from state.
+        RuntimeError: If no relevant document chunks can be retrieved.
     """
     # Load configuration
     config = load_hydra_config()
@@ -456,8 +457,13 @@ def question_and_answer(
         logger.error("%s: %s", call_id, error_msg)
         raise ValueError(error_msg)
 
-    # Always use a fresh in-memory document store for this Q&A call
-    vector_store = Vectorstore(embedding_model=text_embedding_model)
+    # Use shared pre-built vector store if available in shared state module
+    if state_module.vector_store is not None:
+        vector_store = state_module.vector_store
+        logger.info("Using shared pre-built vector store from state module")
+    else:
+        vector_store = Vectorstore(embedding_model=text_embedding_model)
+        logger.info("Initialized new vector store (no shared prebuilt store found)")
 
     # Check if there are papers from different sources
     has_uploaded_papers = any(
