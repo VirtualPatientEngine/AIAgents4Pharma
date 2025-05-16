@@ -839,21 +839,13 @@ class TestMissingState(unittest.TestCase):
         mock_generate.return_value = {"output_text": "Answer", "papers_used": ["p1"]}
 
         # Prepare a dummy pre-built vector store
-
-        class DummyVS:  # pylint: disable=too-few-public-methods
-            """class to simulate"""
-
-            def __init__(self):
-                """initialize"""
-                self.loaded_papers = set()
-                self.vector_store = True
-
-            def retrieve_relevant_chunks(self, *_args, **_kwargs):
-                """retrieve relevant chunks"""
-                # Return a single dummy Document regardless of input
-                return [Document(page_content="chunk", metadata={"paper_id": "p1"})]
-
-        dummy_vs = DummyVS()
+        dummy_vs = SimpleNamespace(
+            loaded_papers=set(),
+            vector_store=True,
+            retrieve_relevant_chunks=lambda *_args, **_kwargs: [
+                Document(page_content="chunk", metadata={"paper_id": "p1"})
+            ],
+        )
         # Override the module-level prebuilt_vector_store
         qa_module.prebuilt_vector_store = dummy_vs
 
