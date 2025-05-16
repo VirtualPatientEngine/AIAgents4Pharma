@@ -32,6 +32,8 @@ def download_zotero_pdf(
     Returns:
         Tuple of (local_file_path, filename) if successful, else None.
     """
+    # Log download start
+    logger.info("Downloading Zotero PDF for attachment %s from Zotero API", attachment_key)
     zotero_pdf_url = (
         f"https://api.zotero.org/users/{user_id}/items/"
         f"{attachment_key}/file"
@@ -44,10 +46,13 @@ def download_zotero_pdf(
         )
         response.raise_for_status()
 
+        # Download to a temporary file first
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
             for chunk in response.iter_content(chunk_size=16384):
                 temp_file.write(chunk)
             temp_file_path = temp_file.name
+        # Temp file written to %s
+        logger.info("Zotero PDF downloaded to temporary file: %s", temp_file_path)
 
         content_disp = response.headers.get("Content-Disposition", "")
         if "filename=" in content_disp:
