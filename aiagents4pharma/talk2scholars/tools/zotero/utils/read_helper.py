@@ -5,15 +5,14 @@ Utility for zotero read tool.
 """
 
 import logging
-import tempfile
 from typing import Any, Dict, List, Tuple, Optional
-import concurrent.futures
 
 import hydra
 import requests
 from pyzotero import zotero
 
 from .zotero_path import get_item_collections
+from .pdf_downloader import download_zotero_pdf, download_pdfs_in_parallel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -105,87 +104,7 @@ class ZoteroSearchData:
 
         return items
 
-    def _download_zotero_pdf(self, attachment_key: str) -> Optional[Tuple[str, str]]:
-        """Download a PDF from Zotero by attachment key. Returns (file_path, filename) or None."""
-        zotero_pdf_url = (
-            f"https://api.zotero.org/users/{self.cfg.user_id}/items/"
-            f"{attachment_key}/file"
-        )
-        headers = {"Zotero-API-Key": self.cfg.api_key}
 
-        try:
-            # Use session for connection pooling
-            response = self.session.get(
-                zotero_pdf_url, headers=headers, stream=True, timeout=10
-            )
-            response.raise_for_status()
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                # Increased chunk size for better performance
-                for chunk in response.iter_content(chunk_size=16384):
-                    temp_file.write(chunk)
-                temp_file_path = temp_file.name
-
-            content_disp = response.headers.get("Content-Disposition", "")
-            filename = (
-                content_disp.split("filename=")[-1].strip('"')
-                if "filename=" in content_disp
-                else "downloaded.pdf"
-            )
-
-            return temp_file_path, filename
-
-        except Exception as e:
-            logger.error(
-                "Failed to download Zotero PDF for attachment %s: %s", attachment_key, e
-            )
-            return None
-
-    def _download_pdfs_in_parallel(
-        self, attachment_item_map: Dict[str, str]
-    ) -> Dict[str, Tuple[str, str, str]]:
-        """
-        Download multiple PDFs in parallel using ThreadPoolExecutor.
-
-        Args:
-            attachment_item_map: Dictionary mapping attachment keys to parent item keys
-
-        Returns:
-            Dictionary mapping parent item keys to (file_path, filename, attachment_key)
-        """
-        results = {}
-        max_workers = min(10, len(attachment_item_map))  # Set reasonable limit
-
-        if not attachment_item_map:
-            return results
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # Create a dictionary mapping Future objects to attachment keys
-            future_to_key = {
-                executor.submit(self._download_zotero_pdf, attachment_key): (
-                    attachment_key,
-                    item_key,
-                )
-                for attachment_key, item_key in attachment_item_map.items()
-            }
-
-            for future in concurrent.futures.as_completed(future_to_key):
-                attachment_key, item_key = future_to_key[future]
-                try:
-                    result = future.result()
-                    if result:
-                        temp_file_path, resolved_filename = result
-                        results[item_key] = (
-                            temp_file_path,
-                            resolved_filename,
-                            attachment_key,
-                        )
-                except Exception as e:
-                    logger.error(
-                        "Failed to download PDF for key %s: %s", attachment_key, e
-                    )
-
-        return results
 
     # pylint: disable=too-many-locals, too-many-branches
     def _filter_and_format_papers(self, items: List[Dict[str, Any]]) -> None:
@@ -294,7 +213,9 @@ class ZoteroSearchData:
 
         # Now download all PDFs in parallel - first orphaned PDFs
         logger.info("Downloading %d orphaned PDFs in parallel", len(orphaned_pdfs))
-        orphan_results = self._download_pdfs_in_parallel(orphaned_pdfs)
+        orphan_results = download_pdfs_in_parallel(
+            self.session, self.cfg.user_id, self.cfg.api_key, orphaned_pdfs
+        )
 
         # Update orphan data
         for item_key, (file_path, filename, attachment_key) in orphan_results.items():
@@ -307,7 +228,9 @@ class ZoteroSearchData:
         logger.info(
             "Downloading %d regular item PDFs in parallel", len(item_attachments)
         )
-        item_results = self._download_pdfs_in_parallel(item_attachments)
+        item_results = download_pdfs_in_parallel(
+            self.session, self.cfg.user_id, self.cfg.api_key, item_attachments
+        )
 
         # Update item data
         for item_key, (file_path, filename, attachment_key) in item_results.items():
