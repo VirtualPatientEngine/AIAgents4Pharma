@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 """
-This tool is used to search for papers in Zotero library.
+Zotero Read Tool
+
+This LangGraph tool searches a user's Zotero library for items matching a query
+and optionally downloads their PDF attachments. It returns structured metadata
+for each found item and makes the results available as an artifact.
 """
 
 import logging
@@ -20,7 +24,15 @@ logger = logging.getLogger(__name__)
 
 
 class ZoteroSearchInput(BaseModel):
-    """Input schema for the Zotero search tool."""
+    """Input schema for the Zotero search tool.
+
+    Attributes:
+        query (str): Search string to match against item metadata.
+        only_articles (bool): If True, restrict results to 'journalArticle' and similar types.
+        limit (int): Maximum number of items to fetch from Zotero.
+        download_pdfs (bool): If True, download PDF attachments for each item.
+        tool_call_id (str): Internal identifier for this tool invocation.
+    """
 
     query: str = Field(
         description="Search query string to find papers in Zotero library."
@@ -32,6 +44,10 @@ class ZoteroSearchInput(BaseModel):
     limit: int = Field(
         default=2, description="Maximum number of results to return", ge=1, le=100
     )
+    download_pdfs: bool = Field(
+        default=False,
+        description="Whether to download PDF attachments immediately (default True).",
+    )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
@@ -41,20 +57,36 @@ def zotero_read(
     only_articles: bool,
     tool_call_id: Annotated[str, InjectedToolCallId],
     limit: int = 2,
+    download_pdfs: bool = False,
 ) -> Command[Any]:
     """
-    Use this tool to search and retrieve papers from Zotero library.
+    Execute a search on the Zotero library and return matching items.
 
     Args:
-        query (str): The search query string to find papers.
-        tool_call_id (Annotated[str, InjectedToolCallId]): The tool call ID.
-        limit (int, optional): The maximum number of results to return. Defaults to 2.
+        query (str): Text query to search in titles, abstracts, tags, etc.
+        only_articles (bool): When True, only include items of type 'journalArticle'
+        or 'conferencePaper'.
+        tool_call_id (str): Internal ID injected by LangGraph to track this tool call.
+        limit (int, optional): Max number of items to return (1–100). Defaults to 2.
+        download_pdfs (bool, optional): If True, PDFs for each returned item will be downloaded now.
+                                        If False, only metadata is fetched. Defaults to False.
 
     Returns:
-        Dict[str, Any]: The search results and related information.
+        Command[Any]: A LangGraph Command updating the agent state:
+            - 'article_data': dict mapping item keys to metadata (and 'pdf_url' if downloaded).
+            - 'last_displayed_papers': identifier pointing to the articles in state.
+            - 'messages': list containing a ToolMessage with a human-readable summary
+                           and an 'artifact' referencing the raw article_data.
     """
     # Create search data object to organize variables
-    search_data = ZoteroSearchData(query, only_articles, limit, tool_call_id)
+    # download_pdfs flag controls whether PDFs are fetched now or deferred
+    search_data = ZoteroSearchData(
+        query=query,
+        only_articles=only_articles,
+        limit=limit,
+        download_pdfs=download_pdfs,
+        tool_call_id=tool_call_id,
+    )
 
     # Process the search
     search_data.process_search()
@@ -63,7 +95,8 @@ def zotero_read(
     return Command(
         update={
             "article_data": results["article_data"],
-            "last_displayed_papers": "article_data",
+            # Store the latest article_data mapping directly for display
+            "last_displayed_papers": results["article_data"],
             "messages": [
                 ToolMessage(
                     content=results["content"],

@@ -33,6 +33,7 @@ sys.path.append("./")
 # import get_app from main_agent
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
+
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
@@ -296,7 +297,9 @@ with main_col2:
         # i.e. when there are no messages in the chat
         if not st.session_state.messages:
             with st.chat_message("assistant", avatar="🤖"):
-                with st.spinner("Initializing the agent ..."):
+                with st.spinner(
+                    "Setting up the `agent` and `vector store`. This may take a moment..."
+                ):
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
@@ -333,7 +336,9 @@ with main_col2:
                     st.session_state.messages.append(
                         {"type": "message", "content": assistant_msg}
                     )
-                    st.empty()
+                    # After greeting, initialize Zotero library and RAG index once
+                    if "zotero_initialized" not in st.session_state:
+                        streamlit_utils.initialize_zotero_and_build_store()
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2s()):
                 if st.button(

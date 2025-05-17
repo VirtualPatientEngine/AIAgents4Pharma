@@ -49,13 +49,17 @@ def query_dataframe(question: str, state: Annotated[dict, InjectedState]) -> str
     """
     logger.info("Querying last displayed papers with question: %s", question)
     llm_model = state.get("llm_model")
-    if not state.get("last_displayed_papers"):
+    context_val = state.get("last_displayed_papers")
+    if not context_val:
         logger.info("No papers displayed so far, raising NoPapersFoundError")
         raise NoPapersFoundError(
             "No papers found. A search needs to be performed first."
         )
-    context_key = state.get("last_displayed_papers")
-    dic_papers = state.get(context_key)
+    # Support both key reference (str) and direct mapping
+    if isinstance(context_val, dict):
+        dic_papers = context_val
+    else:
+        dic_papers = state.get(context_val)
     df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
     df_agent = create_pandas_dataframe_agent(
         llm_model,

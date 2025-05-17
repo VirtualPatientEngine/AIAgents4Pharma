@@ -2,6 +2,7 @@
 library_type: "user" # Type of library ('user' or 'group')
 default_limit: 2
 request_timeout: 10
+chunk_size: 16384  # Size (in bytes) for streaming PDF download chunks
 user_id: ${oc.env:ZOTERO_USER_ID} # Load from environment variable
 api_key: ${oc.env:ZOTERO_API_KEY} # Load from environment variable
 

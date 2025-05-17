@@ -61,7 +61,7 @@ nav:
           - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
           - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
           - Drug Enrichments/Embeddings (SMILES/molmim): ./notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed.ipynb
-          - PrimeKG enrichments/embeddings : ./notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment.ipynb
+          - PrimeKG enrichments/embeddings: ./notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment.ipynb
           - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
@@ -128,6 +128,7 @@ nav:
           - Zotero Read Helper: talk2scholars/utils/read_helper.md
           - Zotero Review Helper: talk2scholars/utils/review_helper.md
           - Zotero Path: talk2scholars/utils/zotero_path.md
+          - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
 
   - Documentation:
       - Ops:

@@ -7,6 +7,7 @@ across agent interactions.
 """
 
 import logging
+from collections.abc import Mapping
 from typing import Annotated, Any, Dict
 
 from langchain_core.embeddings import Embeddings
@@ -18,7 +19,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
+def merge_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Merges the existing dictionary with a new dictionary.
+
+    This function logs the state merge and ensures that the new values
+    are appended to the existing state without overwriting other entries.
+    Args:
+        existing (Dict[str, Any]): The current dictionary state.
+        new (Dict[str, Any]): The new dictionary state to merge.
+    Returns:
+        Dict[str, Any]: The merged dictionary state.
+    """
+    merged = dict(existing) if existing else {}
+    merged.update(new or {})
+    return merged
+
+
+def replace_dict(existing: Dict[str, Any], new: Any) -> Any:
     """
     Replaces the existing dictionary with a new dictionary.
 
@@ -39,9 +57,13 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
         >>> print(updated_state)
         {"papers": {"id2": "Paper 2"}}
     """
-    # No-op operation to use the 'existing' variable
-    _ = len(existing)
-    return new
+    # If new is not a mapping, just replace existing value outright
+    if not isinstance(new, Mapping):
+        return new
+    # In-place replace: clear existing mapping and update with new entries
+    existing.clear()
+    existing.update(new)
+    return existing
 
 
 class Talk2Scholars(AgentState):
@@ -63,10 +85,14 @@ class Talk2Scholars(AgentState):
     """
 
     # Agent state fields
+    # Key controlling UI display: always replace to reference latest output
+    # Stores the most recently displayed papers metadata
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
-    papers: Annotated[Dict[str, Any], replace_dict]
-    multi_papers: Annotated[Dict[str, Any], replace_dict]
-    article_data: Annotated[Dict[str, Any], replace_dict]
+    # Accumulative keys: merge new entries into existing state
+    papers: Annotated[Dict[str, Any], merge_dict]
+    multi_papers: Annotated[Dict[str, Any], merge_dict]
+    article_data: Annotated[Dict[str, Any], merge_dict]
+    # Approval status: always replace to reflect latest operation
     zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
