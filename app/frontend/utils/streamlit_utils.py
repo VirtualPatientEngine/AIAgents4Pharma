@@ -4,28 +4,38 @@
 Utils for Streamlit.
 """
 
-import os
 import datetime
-import hydra
+import os
+import pickle
+import sys
 import tempfile
-import streamlit as st
-import streamlit.components.v1 as components
+
+import gravis
+import hydra
+import networkx as nx
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from langsmith import Client
+import streamlit as st
+import streamlit.components.v1 as components
+from langchain.callbacks.tracers import LangChainTracer
+from langchain_core.embeddings import Embeddings
+from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import AIMessage, AIMessageChunk, ChatMessage, HumanMessage
+from langchain_core.tracers.context import collect_runs
+from langchain_nvidia_ai_endpoints import ChatNVIDIA, NVIDIAEmbeddings
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
-from langchain_nvidia_ai_endpoints import ChatNVIDIA, NVIDIAEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_core.language_models import BaseChatModel
-from langchain_core.embeddings import Embeddings
-from langchain_core.messages import AIMessageChunk, HumanMessage, ChatMessage, AIMessage
-from langchain_core.tracers.context import collect_runs
-from langchain.callbacks.tracers import LangChainTracer
-import networkx as nx
-import gravis
-import pickle
+from langsmith import Client
+
+sys.path.append("./")
+import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
+from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import Vectorstore
+from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
+    ZoteroSearchData,
+)
+
 
 def submit_feedback(user_response):
     """
@@ -216,6 +226,41 @@ def sample_questions_t2s():
         "First, show all the papers in my Zotero library. Then, for each paper, list the PDB IDs of the 3D structures of the GPCRs used in the PDFs.",
     ]
     return questions
+
+
+def initialize_zotero_and_build_store():
+    """
+    Download all PDFs from the user's Zotero library and build a RAG vector store.
+    """
+    # Retrieve the agent app from session state
+    app = st.session_state.app
+    # Fetch Zotero items and download PDFs
+    search_data = ZoteroSearchData(
+        query="",
+        only_articles=True,
+        limit=1,
+        tool_call_id="startup",
+        download_pdfs=True,
+    )
+    search_data.process_search()
+    results = search_data.get_search_results()
+    # Save article metadata and PDF paths
+    st.session_state.article_data = results.get("article_data", {})
+    # Update agent state with article data
+    config = {"configurable": {"thread_id": st.session_state.unique_id}}
+    app.update_state(config, {"article_data": st.session_state.article_data})
+    # Build RAG vector store
+    embedding_model = get_text_embedding_model(st.session_state.text_embedding_model)
+    vector_store = Vectorstore(embedding_model=embedding_model)
+    for paper_id, meta in st.session_state.article_data.items():
+        pdf_url = meta.get("pdf_url")
+        if pdf_url:
+            vector_store.add_paper(paper_id, pdf_url, meta)
+    vector_store.build_vector_store()
+    # Expose the vector store for use by the Q&A tool
+    qa_module.prebuilt_vector_store = vector_store
+    # Mark as initialized to prevent rerunning
+    st.session_state.zotero_initialized = True
 
 
 def sample_questions_t2aa4p():
@@ -1031,6 +1076,7 @@ def initialize_selections() -> None:
         selections[i] = []
 
     return selections
+
 
 @st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
