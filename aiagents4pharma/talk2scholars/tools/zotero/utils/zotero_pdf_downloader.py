@@ -17,7 +17,7 @@ def download_zotero_pdf(
     user_id: str,
     api_key: str,
     attachment_key: str,
-    timeout: int = 10,
+    **kwargs,
 ) -> Optional[Tuple[str, str]]:
     """
     Download a PDF from Zotero by attachment key.
@@ -27,11 +27,16 @@ def download_zotero_pdf(
         user_id: Zotero user ID.
         api_key: Zotero API key.
         attachment_key: Zotero attachment item key.
-        timeout: Request timeout in seconds.
+        kwargs:
+            timeout (int): Request timeout in seconds (default: 10).
+            chunk_size (int, optional): Chunk size for streaming.
 
     Returns:
         Tuple of (local_file_path, filename) if successful, else None.
     """
+    # Extract optional parameters
+    timeout = kwargs.get("timeout", 10)
+    chunk_size = kwargs.get("chunk_size")
     # Log download start
     logger.info(
         "Downloading Zotero PDF for attachment %s from Zotero API", attachment_key
@@ -49,15 +54,19 @@ def download_zotero_pdf(
 
         # Download to a temporary file first
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-            for chunk in response.iter_content(chunk_size=16384):
+            for chunk in response.iter_content(chunk_size=chunk_size):
                 temp_file.write(chunk)
             temp_file_path = temp_file.name
         # Temp file written to %s
         logger.info("Zotero PDF downloaded to temporary file: %s", temp_file_path)
 
-        content_disp = response.headers.get("Content-Disposition", "")
-        if "filename=" in content_disp:
-            filename = content_disp.split("filename=")[-1].strip('"')
+        # Determine filename from Content-Disposition header or default
+        if "filename=" in response.headers.get("Content-Disposition", ""):
+            filename = (
+                response.headers.get("Content-Disposition", "")
+                .split("filename=")[-1]
+                .strip('"')
+            )
         else:
             filename = "downloaded.pdf"
 
@@ -75,7 +84,7 @@ def download_pdfs_in_parallel(
     user_id: str,
     api_key: str,
     attachment_item_map: Dict[str, str],
-    max_workers: Optional[int] = None,
+    **kwargs,
 ) -> Dict[str, Tuple[str, str, str]]:
     """
     Download multiple PDFs in parallel using ThreadPoolExecutor.
@@ -85,21 +94,35 @@ def download_pdfs_in_parallel(
         user_id: Zotero user ID.
         api_key: Zotero API key.
         attachment_item_map: Mapping of attachment_key to parent item_key.
-        max_workers: Maximum number of worker threads (default: min(10, n)).
+        kwargs:
+            max_workers (int, optional): Maximum number of worker threads (default: min(10, n)).
+            chunk_size (int, optional): Chunk size for streaming.
 
     Returns:
         Mapping of parent item_key to (local_file_path, filename, attachment_key).
     """
+    # Extract optional parameters
+    max_workers = kwargs.get("max_workers")
+    chunk_size = kwargs.get("chunk_size")
     results: Dict[str, Tuple[str, str, str]] = {}
     if not attachment_item_map:
         return results
 
     with concurrent.futures.ThreadPoolExecutor(
-        max_workers=max_workers if max_workers is not None else min(10, len(attachment_item_map))
+        max_workers=(
+            max_workers
+            if max_workers is not None
+            else min(10, len(attachment_item_map))
+        )
     ) as executor:
         future_to_keys = {
             executor.submit(
-                download_zotero_pdf, session, user_id, api_key, attachment_key
+                download_zotero_pdf,
+                session,
+                user_id,
+                api_key,
+                attachment_key,
+                chunk_size=chunk_size,
             ): (attachment_key, item_key)
             for attachment_key, item_key in attachment_item_map.items()
         }
@@ -107,10 +130,9 @@ def download_pdfs_in_parallel(
         for future in concurrent.futures.as_completed(future_to_keys):
             attachment_key, item_key = future_to_keys[future]
             try:
-                result = future.result()
-                if result:
-                    temp_file_path, filename = result
-                    results[item_key] = (temp_file_path, filename, attachment_key)
+                res = future.result()
+                if res:
+                    results[item_key] = (*res, attachment_key)
             except (requests.exceptions.RequestException, OSError) as e:
                 logger.error("Failed to download PDF for key %s: %s", attachment_key, e)
 

@@ -132,7 +132,11 @@ class ZoteroSearchData:
         if self.download_pdfs:
             logger.info("Downloading %d orphaned PDFs in parallel", len(orphaned_pdfs))
             results = download_pdfs_in_parallel(
-                self.session, self.cfg.user_id, self.cfg.api_key, orphaned_pdfs
+                self.session,
+                self.cfg.user_id,
+                self.cfg.api_key,
+                orphaned_pdfs,
+                chunk_size=getattr(self.cfg, "chunk_size", None),
             )
             for item_key, (file_path, filename, attachment_key) in results.items():
                 self.article_data[item_key]["filename"] = filename
@@ -154,7 +158,11 @@ class ZoteroSearchData:
                 "Downloading %d regular item PDFs in parallel", len(item_attachments)
             )
             results = download_pdfs_in_parallel(
-                self.session, self.cfg.user_id, self.cfg.api_key, item_attachments
+                self.session,
+                self.cfg.user_id,
+                self.cfg.api_key,
+                item_attachments,
+                chunk_size=getattr(self.cfg, "chunk_size", None),
             )
         else:
             logger.info("Skipping regular PDF downloads (download_pdfs=False)")
