@@ -76,3 +76,20 @@ class TestS2Tools:
 
         assert isinstance(result, str)  # Ensure output is a string
         assert result == "Mocked response"  # Validate the expected response
+    
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
+    )
+    def test_query_dataframe_direct_mapping(self, mock_create_agent, initial_state):
+        """Tests query_dataframe when last_displayed_papers is a direct dict mapping."""
+        # Prepare state with direct mapping
+        state = initial_state.copy()
+        state["last_displayed_papers"] = MOCK_STATE_PAPER
+        # Mock the dataframe agent
+        mock_agent = MagicMock()
+        mock_agent.invoke.return_value = {"output": "Direct mapping response"}
+        mock_create_agent.return_value = mock_agent
+        # Invoke tool
+        result = query_dataframe.invoke({"question": "Filter papers", "state": state})
+        assert isinstance(result, str)
+        assert result == "Direct mapping response"

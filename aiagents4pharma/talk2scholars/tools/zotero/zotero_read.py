@@ -95,7 +95,8 @@ def zotero_read(
     return Command(
         update={
             "article_data": results["article_data"],
-            "last_displayed_papers": "article_data",
+            # Store the latest article_data mapping directly for display
+            "last_displayed_papers": results["article_data"],
             "messages": [
                 ToolMessage(
                     content=results["content"],

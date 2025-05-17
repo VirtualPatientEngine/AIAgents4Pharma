@@ -66,8 +66,12 @@ def display_dataframe(
         NoPapersFoundError: If no entries exist under 'last_displayed_papers' in state.
     """
     logger.info("Displaying papers")
-    context_key = state.get("last_displayed_papers")
-    artifact = state.get(context_key)
+    context_val = state.get("last_displayed_papers")
+    # Support both key reference (str) and direct mapping
+    if isinstance(context_val, dict):
+        artifact = context_val
+    else:
+        artifact = state.get(context_val)
     if not artifact:
         logger.info("No papers found in state, raising NoPapersFoundError")
         raise NoPapersFoundError(

@@ -69,7 +69,8 @@ def get_single_paper_recommendations(
     return Command(
         update={
             "papers": results["papers"],
-            "last_displayed_papers": "papers",
+            # Store the latest single-paper results mapping directly for display
+            "last_displayed_papers": results["papers"],
             "messages": [
                 ToolMessage(
                     content=results["content"],

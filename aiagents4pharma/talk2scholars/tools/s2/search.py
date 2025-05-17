@@ -65,7 +65,8 @@ def search_tool(
     return Command(
         update={
             "papers": results["papers"],
-            "last_displayed_papers": "papers",
+            # Store the latest results mapping directly for display
+            "last_displayed_papers": results["papers"],
             "messages": [
                 ToolMessage(
                     content=results["content"],

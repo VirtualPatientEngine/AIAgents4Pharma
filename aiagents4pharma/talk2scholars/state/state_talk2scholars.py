@@ -7,6 +7,7 @@ across agent interactions.
 """
 
 import logging
+from collections.abc import Mapping
 from typing import Annotated, Any, Dict
 
 from langchain_core.embeddings import Embeddings
@@ -35,7 +36,7 @@ def merge_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
     return merged
 
 
-def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
+def replace_dict(existing: Dict[str, Any], new: Any) -> Any:
     """
     Replaces the existing dictionary with a new dictionary.
 
@@ -56,9 +57,13 @@ def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any
         >>> print(updated_state)
         {"papers": {"id2": "Paper 2"}}
     """
-    # No-op operation to use the 'existing' variable
-    _ = len(existing)
-    return new
+    # If new is not a mapping, just replace existing value outright
+    if not isinstance(new, Mapping):
+        return new
+    # In-place replace: clear existing mapping and update with new entries
+    existing.clear()
+    existing.update(new)
+    return existing
 
 
 class Talk2Scholars(AgentState):
@@ -81,6 +86,7 @@ class Talk2Scholars(AgentState):
 
     # Agent state fields
     # Key controlling UI display: always replace to reference latest output
+    # Stores the most recently displayed papers metadata
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
     # Accumulative keys: merge new entries into existing state
     papers: Annotated[Dict[str, Any], merge_dict]

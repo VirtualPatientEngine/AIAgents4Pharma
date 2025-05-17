@@ -71,7 +71,8 @@ def get_multi_paper_recommendations(
     return Command(
         update={
             "multi_papers": results["papers"],
-            "last_displayed_papers": "multi_papers",
+            # Store the latest multi-paper results mapping directly for display
+            "last_displayed_papers": results["papers"],
             "messages": [
                 ToolMessage(
                     content=results["content"],
