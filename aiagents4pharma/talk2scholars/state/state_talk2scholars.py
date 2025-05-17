@@ -18,6 +18,23 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def merge_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Merges the existing dictionary with a new dictionary.
+
+    This function logs the state merge and ensures that the new values
+    are appended to the existing state without overwriting other entries.
+    Args:
+        existing (Dict[str, Any]): The current dictionary state.
+        new (Dict[str, Any]): The new dictionary state to merge.
+    Returns:
+        Dict[str, Any]: The merged dictionary state.
+    """
+    merged = dict(existing) if existing else {}
+    merged.update(new or {})
+    return merged
+
+
 def replace_dict(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Any]:
     """
     Replaces the existing dictionary with a new dictionary.
@@ -63,10 +80,13 @@ class Talk2Scholars(AgentState):
     """
 
     # Agent state fields
+    # Key controlling UI display: always replace to reference latest output
     last_displayed_papers: Annotated[Dict[str, Any], replace_dict]
-    papers: Annotated[Dict[str, Any], replace_dict]
-    multi_papers: Annotated[Dict[str, Any], replace_dict]
-    article_data: Annotated[Dict[str, Any], replace_dict]
+    # Accumulative keys: merge new entries into existing state
+    papers: Annotated[Dict[str, Any], merge_dict]
+    multi_papers: Annotated[Dict[str, Any], merge_dict]
+    article_data: Annotated[Dict[str, Any], merge_dict]
+    # Approval status: always replace to reflect latest operation
     zotero_write_approval_status: Annotated[Dict[str, Any], replace_dict]
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
