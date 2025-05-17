@@ -76,7 +76,7 @@ class TestS2Tools:
 
         assert isinstance(result, str)  # Ensure output is a string
         assert result == "Mocked response"  # Validate the expected response
-    
+
     @patch(
         "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
     )

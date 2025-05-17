@@ -52,7 +52,9 @@ class TestS2Tools:
             raised_error,
             match="No papers found. A search/rec needs to be performed first.",
         ):
-            display_dataframe.invoke({"state": initial_state, "tool_call_id": "test123"})
+            display_dataframe.invoke(
+                {"state": initial_state, "tool_call_id": "test123"}
+            )
 
     def test_display_dataframe_shows_papers(self, initial_state):
         """Verifies display_dataframe tool correctly returns papers from state"""
@@ -72,7 +74,7 @@ class TestS2Tools:
             "1 papers found. Papers are attached as an artifact."
             in result.update["messages"][0].content
         )
-    
+
     def test_display_dataframe_direct_mapping(self, initial_state):
         """Verifies display_dataframe handles direct dict mapping in last_displayed_papers."""
         # Prepare state with direct mapping of papers

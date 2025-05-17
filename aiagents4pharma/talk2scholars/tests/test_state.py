@@ -2,7 +2,7 @@
 Tests for state management functionality.
 """
 
-from ..state.state_talk2scholars import replace_dict, merge_dict
+from ..state.state_talk2scholars import merge_dict, replace_dict
 
 
 def test_state_replace_dict():
@@ -12,6 +12,7 @@ def test_state_replace_dict():
     result = replace_dict(existing, new)
     assert result == new
     assert isinstance(result, dict)
+
 
 def test_state_merge_dict():
     """Verifies state dictionary merging works correctly"""
@@ -24,9 +25,10 @@ def test_state_merge_dict():
     # original existing dict should be unchanged
     assert existing == {"a": 1, "b": 2}
 
+
 def test_replace_dict_non_mapping():
     """Verifies replace_dict returns non-mapping values directly"""
-    from ..state.state_talk2scholars import replace_dict
+
     existing = {"key": "value"}
     # When new is not a dict, replace_dict should return new value unchanged
     new_value = "not_a_dict"
