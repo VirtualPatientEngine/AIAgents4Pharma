@@ -37,6 +37,8 @@ def download_zotero_pdf(
     # Extract optional parameters
     timeout = kwargs.get("timeout", 10)
     chunk_size = kwargs.get("chunk_size")
+    # Log configured parameters for verification
+    logger.info("download_zotero_pdf params -> timeout=%s, chunk_size=%s", timeout, chunk_size)
     # Log download start
     logger.info(
         "Downloading Zotero PDF for attachment %s from Zotero API", attachment_key
@@ -104,6 +106,12 @@ def download_pdfs_in_parallel(
     # Extract optional parameters
     max_workers = kwargs.get("max_workers")
     chunk_size = kwargs.get("chunk_size")
+    # Log configured parameters for verification
+    logger.info(
+        "download_pdfs_in_parallel params -> max_workers=%s, chunk_size=%s", 
+        max_workers,
+        chunk_size,
+    )
     results: Dict[str, Tuple[str, str, str]] = {}
     if not attachment_item_map:
         return results
