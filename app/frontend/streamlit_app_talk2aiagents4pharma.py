@@ -90,6 +90,10 @@ if "data_package_key" not in st.session_state:
 if "endotype_key" not in st.session_state:
     st.session_state.endotype_key = 0
 
+# Initialize session state for multimodal data package uploader
+if "multimodal_key" not in st.session_state:
+    st.session_state.multimodal_key = 0
+
 # Initialize session state for uploaded files
 if "uploaded_files" not in st.session_state:
     st.session_state.uploaded_files = []
