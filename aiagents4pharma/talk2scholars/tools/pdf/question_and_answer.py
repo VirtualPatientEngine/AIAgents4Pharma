@@ -120,6 +120,8 @@ class Vectorstore:
         self.documents: Dict[str, Document] = {}
         self.vector_store: Optional[VectorStore] = None
         self.paper_metadata: Dict[str, Dict[str, Any]] = {}
+        # Cache for document chunk embeddings to avoid recomputation
+        self.embeddings: Dict[str, Any] = {}
 
     def add_paper(
         self,
@@ -161,6 +163,14 @@ class Vectorstore:
         # Split documents and add metadata for each chunk
         chunks = splitter.split_documents(documents)
         logger.info("Split %s into %d chunks", paper_id, len(chunks))
+        # Embed and cache chunk embeddings to avoid recomputation
+        chunk_texts = [chunk.page_content for chunk in chunks]
+        try:
+            chunk_embeddings = self.embedding_model.embed_documents(chunk_texts)
+            logger.info("Embedded %d chunks for paper %s", len(chunk_embeddings), paper_id)
+        except Exception as e:
+            logger.error("Error embedding chunks for paper %s: %s", paper_id, e)
+            chunk_embeddings = [None] * len(chunks)
 
         # Enhance document metadata
         for i, chunk in enumerate(chunks):
@@ -183,6 +193,9 @@ class Vectorstore:
             # Store chunk
             doc_id = f"{paper_id}_{i}"
             self.documents[doc_id] = chunk
+            # Cache embedding if available
+            if chunk_embeddings[i] is not None:
+                self.embeddings[doc_id] = chunk_embeddings[i]
 
         # Mark as loaded to prevent duplicate loading
         self.loaded_papers.add(paper_id)
@@ -296,12 +309,20 @@ class Vectorstore:
             logger.warning("No documents found after filtering by paper_ids.")
             return []
 
-        texts = [doc.page_content for doc in all_docs]
-
-        # Step 3: Batch embed all documents
-        logger.info("Starting batch embedding for %d chunks...", len(texts))
-        all_embeddings = self.embedding_model.embed_documents(texts)
-        logger.info("Completed embedding for %d chunks...", len(texts))
+        # Step 3: Retrieve or compute embeddings for all documents using cache
+        logger.info("Retrieving embeddings for %d chunks...", len(all_docs))
+        all_embeddings = []
+        for doc in all_docs:
+            doc_id = f"{doc.metadata['paper_id']}_{doc.metadata['chunk_id']}"
+            if doc_id not in self.embeddings:
+                logger.info("Embedding missing chunk %s", doc_id)
+                try:
+                    emb = self.embedding_model.embed_documents([doc.page_content])[0]
+                    self.embeddings[doc_id] = emb
+                except Exception as e:
+                    logger.error("Error embedding chunk %s: %s", doc_id, e)
+                    continue
+            all_embeddings.append(self.embeddings[doc_id])
 
         # Step 4: Apply MMR
         mmr_indices = maximal_marginal_relevance(
