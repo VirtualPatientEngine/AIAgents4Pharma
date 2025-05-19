@@ -148,8 +148,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
         vector_store.vector_store = True
+        # Add a document chunk with required metadata including chunk_id
         vector_store.documents["test_doc"] = Document(
-            page_content="Test content", metadata={"paper_id": "test_paper"}
+            page_content="Test content", metadata={"paper_id": "test_paper", "chunk_id": 0}
         )
 
         results = vector_store.retrieve_relevant_chunks(query="test query")
@@ -796,8 +797,9 @@ class TestMissingState(unittest.TestCase):
 
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
         vector_store.vector_store = True
-        doc1 = Document(page_content="Doc 1", metadata={"paper_id": "paper1"})
-        doc2 = Document(page_content="Doc 2", metadata={"paper_id": "paper2"})
+        # Add document chunks with necessary metadata including chunk_ids
+        doc1 = Document(page_content="Doc 1", metadata={"paper_id": "paper1", "chunk_id": 0})
+        doc2 = Document(page_content="Doc 2", metadata={"paper_id": "paper2", "chunk_id": 1})
         vector_store.documents = {"doc1": doc1, "doc2": doc2}
 
         results = vector_store.retrieve_relevant_chunks(
