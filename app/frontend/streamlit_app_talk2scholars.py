@@ -300,6 +300,9 @@ with main_col2:
                 with st.spinner(
                     "Setting up the `agent` and `vector store`. This may take a moment..."
                 ):
+                    # Initialize Zotero library and RAG index before greeting
+                    if "zotero_initialized" not in st.session_state:
+                        streamlit_utils.initialize_zotero_and_build_store()
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
@@ -336,9 +339,6 @@ with main_col2:
                     st.session_state.messages.append(
                         {"type": "message", "content": assistant_msg}
                     )
-                    # After greeting, initialize Zotero library and RAG index once
-                    if "zotero_initialized" not in st.session_state:
-                        streamlit_utils.initialize_zotero_and_build_store()
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2s()):
                 if st.button(
