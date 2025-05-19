@@ -163,14 +163,10 @@ class Vectorstore:
         # Split documents and add metadata for each chunk
         chunks = splitter.split_documents(documents)
         logger.info("Split %s into %d chunks", paper_id, len(chunks))
-        # Embed and cache chunk embeddings to avoid recomputation
+        # Embed and cache chunk embeddings
         chunk_texts = [chunk.page_content for chunk in chunks]
-        try:
-            chunk_embeddings = self.embedding_model.embed_documents(chunk_texts)
-            logger.info("Embedded %d chunks for paper %s", len(chunk_embeddings), paper_id)
-        except Exception as e:
-            logger.error("Error embedding chunks for paper %s: %s", paper_id, e)
-            chunk_embeddings = [None] * len(chunks)
+        chunk_embeddings = self.embedding_model.embed_documents(chunk_texts)
+        logger.info("Embedded %d chunks for paper %s", len(chunk_embeddings), paper_id)
 
         # Enhance document metadata
         for i, chunk in enumerate(chunks):
@@ -316,12 +312,8 @@ class Vectorstore:
             doc_id = f"{doc.metadata['paper_id']}_{doc.metadata['chunk_id']}"
             if doc_id not in self.embeddings:
                 logger.info("Embedding missing chunk %s", doc_id)
-                try:
-                    emb = self.embedding_model.embed_documents([doc.page_content])[0]
-                    self.embeddings[doc_id] = emb
-                except Exception as e:
-                    logger.error("Error embedding chunk %s: %s", doc_id, e)
-                    continue
+                emb = self.embedding_model.embed_documents([doc.page_content])[0]
+                self.embeddings[doc_id] = emb
             all_embeddings.append(self.embeddings[doc_id])
 
         # Step 4: Apply MMR
