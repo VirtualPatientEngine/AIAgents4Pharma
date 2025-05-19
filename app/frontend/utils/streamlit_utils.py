@@ -224,8 +224,7 @@ def sample_questions_t2s():
         "Save these articles in my Zotero library under the collection 'Curiosity'",
         "Download the article 'BioBridge' with arxiv_id '2310.03320' and summarize it",
         "Show all the papers in my Zotero library.",
-        "List the PDB IDs of the 3D structures of the GPCRs used in all the PDFs.",
-        "How were the embeddings of the GPCR sequences generated in the PDFs?",
+        "Describe the PDB IDs of the GPCR 3D structures used in all the PDFs, and explain how the embeddings of the GPCR sequences were generated.",
     ]
     return questions
 
