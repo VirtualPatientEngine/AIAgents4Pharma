@@ -3,8 +3,7 @@ default_user: "talk2kg_user"
 data_package_allowed_file_types:
   - "pdf"
 multimodal_allowed_file_types:
-  - "xls"
-  - "xlsx"
+  - "csv"
 upload_data_dir: "../files"
 kg_name: "PrimeKG"
 kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
