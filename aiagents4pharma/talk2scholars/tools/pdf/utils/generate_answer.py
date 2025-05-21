@@ -16,6 +16,33 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
+def _build_context_and_sources(
+    retrieved_chunks: List[Document]
+) -> tuple[str, set[str]]:
+    """
+    Build the combined context string and set of paper_ids from retrieved chunks.
+    """
+    papers = {}
+    for doc in retrieved_chunks:
+        pid = doc.metadata.get("paper_id", "unknown")
+        papers.setdefault(pid, []).append(doc)
+    formatted = []
+    idx = 1
+    for pid, chunks in papers.items():
+        title = chunks[0].metadata.get("title", "Unknown")
+        formatted.append(f"[Document {idx}] From: '{title}' (ID: {pid})")
+        for chunk in chunks:
+            page = chunk.metadata.get("page", "unknown")
+            formatted.append(f"Page {page}: {chunk.page_content}")
+        idx += 1
+    context = "\n\n".join(formatted)
+    sources: set[str] = set()
+    for doc in retrieved_chunks:
+        pid = doc.metadata.get("paper_id")
+        if isinstance(pid, str):
+            sources.add(pid)
+    return context, sources
+
 
 def load_hydra_config() -> Any:
     """
@@ -55,45 +82,9 @@ def generate_answer(
     if "prompt_template" not in config:
         raise ValueError("The prompt_template is missing from the configuration.")
 
-    # Prepare context from retrieved documents with source attribution.
-    # Group chunks by paper_id
-    papers = {}
-    for doc in retrieved_chunks:
-        paper_id = doc.metadata.get("paper_id", "unknown")
-        if paper_id not in papers:
-            papers[paper_id] = []
-        papers[paper_id].append(doc)
-
-    # Format chunks by paper
-    formatted_chunks = []
-    doc_index = 1
-    for paper_id, chunks in papers.items():
-        # Get the title from the first chunk (should be the same for all chunks)
-        title = chunks[0].metadata.get("title", "Unknown")
-
-        # Add a document header
-        formatted_chunks.append(
-            f"[Document {doc_index}] From: '{title}' (ID: {paper_id})"
-        )
-
-        # Add each chunk with its page information
-        for chunk in chunks:
-            page = chunk.metadata.get("page", "unknown")
-            formatted_chunks.append(f"Page {page}: {chunk.page_content}")
-
-        # Increment document index for the next paper
-        doc_index += 1
-
-    # Join all chunks
-    context = "\n\n".join(formatted_chunks)
-
-    # Get unique paper sources.
-    paper_sources = {doc.metadata["paper_id"] for doc in retrieved_chunks}
-
-    # Create prompt using the Hydra-provided prompt_template.
+    # Build context and sources, then invoke LLM
+    context, paper_sources = _build_context_and_sources(retrieved_chunks)
     prompt = config["prompt_template"].format(context=context, question=question)
-
-    # Get the answer from the language model
     response = llm_model.invoke(prompt)
 
     # Return the response with metadata
