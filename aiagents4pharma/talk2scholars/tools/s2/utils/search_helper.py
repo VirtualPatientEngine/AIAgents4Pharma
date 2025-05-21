@@ -125,6 +125,8 @@ class SearchData:
                 ],
                 "URL": paper.get("url", "N/A"),
                 "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
+                "medrxiv_id": paper.get("externalIds", {}).get("DOI", "N/A"),
+                "biorxiv_id": paper.get("externalIds", {}).get("DOI", "N/A"),
             }
             for paper in self.papers
             if paper.get("title") and paper.get("authors")
