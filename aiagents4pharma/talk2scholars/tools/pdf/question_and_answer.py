@@ -149,13 +149,7 @@ def question_and_answer(
                 try:
                     vector_store.add_paper(pid, pdf_url, article_data[pid])
                 except (IOError, ValueError) as e:
-                    logger.warning(
-                        "%s: Error loading paper %s: %s", call_id, pid, e
-                    )
-
-    # Build the FAISS vector store if not already built
-    if not vector_store.vector_store:
-        vector_store.build_vector_store()
+                    logger.warning("%s: Error loading paper %s: %s", call_id, pid, e)
 
     # Always perform NVIDIA semantic reranking over the candidates
     try:
@@ -180,22 +174,6 @@ def question_and_answer(
             call_id,
             len(selected_paper_ids),
         )
-
-    # Load selected papers if needed
-    for paper_id in selected_paper_ids:
-        if paper_id not in vector_store.loaded_papers:
-            pdf_url = article_data[paper_id].get("pdf_url")
-            if pdf_url:
-                try:
-                    vector_store.add_paper(paper_id, pdf_url, article_data[paper_id])
-                except (IOError, ValueError) as e:
-                    logger.warning(
-                        "%s: Error loading paper %s: %s", call_id, paper_id, e
-                    )
-
-    # Ensure vector store is built
-    if not vector_store.vector_store:
-        vector_store.build_vector_store()
 
     # Retrieve relevant chunks across selected papers
     relevant_chunks = retrieve_relevant_chunks(
