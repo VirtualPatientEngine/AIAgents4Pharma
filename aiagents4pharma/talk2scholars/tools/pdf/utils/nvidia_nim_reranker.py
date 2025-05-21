@@ -2,15 +2,15 @@
 PDF Question & Answer Tool
 """
 
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from langchain_core.documents import Document
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 
-from .generate_answer import load_hydra_config
 
-
-def rank_papers_by_query(self, query: str, top_k: int = 40) -> List[Tuple[str, float]]:
+def rank_papers_by_query(
+    self, query: str, config: Any, top_k: int = 40
+) -> List[Tuple[str, float]]:
     """
     Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
 
@@ -19,6 +19,7 @@ def rank_papers_by_query(self, query: str, top_k: int = 40) -> List[Tuple[str, f
 
     Args:
         query (str): The query string.
+        config (Any): Configuration containing reranker settings (model, api_key).
         top_k (int): Number of top papers to return.
 
     Returns:
@@ -38,8 +39,7 @@ def rank_papers_by_query(self, query: str, top_k: int = 40) -> List[Tuple[str, f
             Document(page_content=aggregated_text, metadata={"paper_id": paper_id})
         )
 
-    # Instantiate the NVIDIA re-ranker client
-    config = load_hydra_config()
+    # Instantiate the NVIDIA re-ranker client using provided config
     reranker = NVIDIARerank(
         model=config.reranker.model,
         api_key=config.reranker.api_key,

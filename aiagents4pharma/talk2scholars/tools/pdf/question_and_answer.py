@@ -134,8 +134,11 @@ def question_and_answer(
         vector_store = prebuilt_vector_store
         logger.info("Using shared pre-built vector store from the memory")
     else:
-        vector_store = Vectorstore(embedding_model=text_embedding_model)
-        logger.info("Initialized new vector store (no pre-built store found)")
+        vector_store = Vectorstore(
+            embedding_model=text_embedding_model,
+            config=config,
+        )
+        logger.info("Initialized new vector store with provided configuration")
 
     # Check if there are papers from different sources
     has_uploaded_papers = any(
@@ -192,7 +195,10 @@ def question_and_answer(
 
         # Now rank papers
         ranked_papers = rank_papers_by_query(
-            vector_store, question, top_k=config.top_k_papers
+            vector_store,
+            question,
+            config,
+            top_k=config.top_k_papers,
         )
         selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
         logger.info(
@@ -241,7 +247,7 @@ def question_and_answer(
         )
 
     # Generate answer using retrieved chunks
-    result = generate_answer(question, relevant_chunks, llm_model)
+    result = generate_answer(question, relevant_chunks, llm_model, config)
 
     # Format answer with attribution
     answer_text = result.get("output_text", "No answer generated.")

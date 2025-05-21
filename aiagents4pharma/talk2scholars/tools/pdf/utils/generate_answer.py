@@ -4,7 +4,7 @@ PDF Question & Answer Tool
 
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import hydra
 from langchain_core.documents import Document
@@ -35,7 +35,7 @@ def generate_answer(
     question: str,
     retrieved_chunks: List[Document],
     llm_model: BaseChatModel,
-    config: Optional[Any] = None,
+    config: Any,
 ) -> Dict[str, Any]:
     """
     Generate an answer for a question using retrieved chunks.
@@ -44,17 +44,14 @@ def generate_answer(
         question (str): The question to answer
         retrieved_chunks (List[Document]): List of relevant document chunks
         llm_model (BaseChatModel): Language model for generating answers
-        config (Optional[Any]): Configuration for answer generation
+        config (Any): Configuration for answer generation
 
     Returns:
         Dict[str, Any]: Dictionary with the answer and metadata
     """
-    # Load configuration using the global function.
-    config = load_hydra_config()
-
-    # Ensure the configuration is not None and has the prompt_template.
+    # Ensure the configuration is provided and has the prompt_template.
     if config is None:
-        raise ValueError("Hydra config loading failed: config is None.")
+        raise ValueError("Configuration for generate_answer is required.")
     if "prompt_template" not in config:
         raise ValueError("The prompt_template is missing from the configuration.")
 

@@ -14,7 +14,6 @@ from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import VectorStore
 
-from .generate_answer import load_hydra_config
 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
@@ -33,6 +32,7 @@ class Vectorstore:
         self,
         embedding_model: Embeddings,
         metadata_fields: Optional[List[str]] = None,
+        config: Any = None,
     ):
         """
         Initialize the document store.
@@ -42,6 +42,7 @@ class Vectorstore:
             metadata_fields: Fields to include in document metadata for filtering/retrieval
         """
         self.embedding_model = embedding_model
+        self.config = config
         self.metadata_fields = metadata_fields or [
             "title",
             "paper_id",
@@ -92,11 +93,14 @@ class Vectorstore:
         documents = loader.load()
         logger.info("Loaded %d pages from %s", len(documents), paper_id)
 
-        # Create text splitter according to Hydra config
-        cfg = load_hydra_config()
+        # Create text splitter according to provided configuration
+        if self.config is None:
+            raise ValueError(
+                "Configuration is required for text splitting in Vectorstore."
+            )
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=cfg.chunk_size,
-            chunk_overlap=cfg.chunk_overlap,
+            chunk_size=self.config.chunk_size,
+            chunk_overlap=self.config.chunk_overlap,
             separators=["\n\n", "\n", ". ", " ", ""],
         )
 

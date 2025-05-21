@@ -31,6 +31,9 @@ from langsmith import Client
 
 sys.path.append("./")
 import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
+from aiagents4pharma.talk2scholars.tools.pdf.utils.generate_answer import (
+    load_hydra_config,
+)
 from aiagents4pharma.talk2scholars.tools.pdf.utils.vector_store import Vectorstore
 from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
     ZoteroSearchData,
@@ -251,8 +254,9 @@ def initialize_zotero_and_build_store():
     config = {"configurable": {"thread_id": st.session_state.unique_id}}
     app.update_state(config, {"article_data": st.session_state.article_data})
     # Build RAG vector store
+    pdf_config = load_hydra_config()
     embedding_model = get_text_embedding_model(st.session_state.text_embedding_model)
-    vector_store = Vectorstore(embedding_model=embedding_model)
+    vector_store = Vectorstore(embedding_model=embedding_model, config=pdf_config)
     for paper_id, meta in st.session_state.article_data.items():
         pdf_url = meta.get("pdf_url")
         if pdf_url:
