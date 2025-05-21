@@ -31,7 +31,7 @@ from langsmith import Client
 
 sys.path.append("./")
 import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
-from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import Vectorstore
+from aiagents4pharma.talk2scholars.tools.pdf.utils.vector_store import Vectorstore
 from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
     ZoteroSearchData,
 )
