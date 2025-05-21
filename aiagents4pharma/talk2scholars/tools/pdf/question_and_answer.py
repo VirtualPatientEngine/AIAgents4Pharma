@@ -81,7 +81,7 @@ def question_and_answer(
             - 'text_embedding_model': the embedding model instance
             - 'llm_model': the chat/LLM instance
         tool_call_id (str): Internal identifier for this tool call.
-        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).  
+        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).
             If not provided, all papers are considered and ranked by NVIDIA reranker.
 
     Returns:
@@ -133,66 +133,52 @@ def question_and_answer(
         )
         logger.info("Initialized new vector store with provided configuration")
 
-    # Prepare for paper selection
-    selected_paper_ids: List[str] = []
-    # Always use NVIDIA-based semantic ranking when not explicitly overridden
+    # Determine candidate papers: either user-specified or all available
+    candidate_paper_ids: List[str] = paper_ids or list(article_data.keys())
+    logger.info(
+        "%s: Candidate paper IDs for reranking: %s",
+        call_id,
+        candidate_paper_ids,
+    )
 
-    if paper_ids:
-        # Use explicitly specified papers
-        selected_paper_ids = [pid for pid in paper_ids if pid in article_data]
-        logger.info(
-            "%s: Using explicitly specified papers: %s", call_id, selected_paper_ids
-        )
-
-        if not selected_paper_ids:
-            logger.warning(
-                "%s: None of the provided paper_ids %s were found", call_id, paper_ids
-            )
-
-    else:
-        # Semantic ranking: always run NVIDIA reranker
-        logger.info("%s: Running semantic ranking with NVIDIA reranker over %d papers", call_id, len(article_data))
-        # Ensure all papers are loaded into the vector store
-        for paper_id, paper in article_data.items():
-            pdf_url = paper.get("pdf_url")
-            if pdf_url and paper_id not in vector_store.loaded_papers:
+    # Ensure candidate papers are loaded into the vector store
+    for pid in candidate_paper_ids:
+        if pid not in vector_store.loaded_papers:
+            pdf_url = article_data[pid].get("pdf_url")
+            if pdf_url:
                 try:
-                    vector_store.add_paper(paper_id, pdf_url, paper)
+                    vector_store.add_paper(pid, pdf_url, article_data[pid])
                 except (IOError, ValueError) as e:
-                    logger.error("%s: Error loading paper %s: %s", call_id, paper_id, e)
-                    raise
+                    logger.warning(
+                        "%s: Error loading paper %s: %s", call_id, pid, e
+                    )
 
-        # Invoke NVIDIA reranker to select top papers
-        try:
-            ranked_papers = rank_papers_by_query(
-                vector_store,
-                question,
-                config,
-                top_k=config.top_k_papers,
-            )
-            selected_paper_ids = list(ranked_papers)
-            logger.info(
-                "%s: Papers after NVIDIA reranking: %s",
-                call_id,
-                selected_paper_ids,
-            )
-        except Exception as e:
-            logger.error(
-                "%s: NVIDIA reranker failed: %s", call_id, str(e)
-            )
-            # Fallback to all papers on reranker failure
-            selected_paper_ids = list(article_data.keys())
-            logger.info(
-                "%s: Falling back to all %d papers due to reranker error",
-                call_id,
-                len(selected_paper_ids),
-            )
+    # Build the FAISS vector store if not already built
+    if not vector_store.vector_store:
+        vector_store.build_vector_store()
 
-    if not selected_paper_ids:
-        # Fallback to all papers if selection failed
-        selected_paper_ids = list(article_data.keys())
+    # Always perform NVIDIA semantic reranking over the candidates
+    try:
+        ranked_papers = rank_papers_by_query(
+            vector_store,
+            question,
+            config,
+            top_k=config.top_k_papers,
+        )
+        selected_paper_ids = list(ranked_papers)
         logger.info(
-            "%s: Falling back to all %d papers", call_id, len(selected_paper_ids)
+            "%s: Papers after NVIDIA reranking: %s",
+            call_id,
+            selected_paper_ids,
+        )
+    except Exception as e:
+        logger.error("%s: NVIDIA reranker failed: %s", call_id, e)
+        # Fallback to all candidate papers
+        selected_paper_ids = candidate_paper_ids
+        logger.info(
+            "%s: Falling back to all %d candidate papers",
+            call_id,
+            len(selected_paper_ids),
         )
 
     # Load selected papers if needed

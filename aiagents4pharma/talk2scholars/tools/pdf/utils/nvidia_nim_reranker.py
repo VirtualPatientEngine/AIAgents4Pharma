@@ -6,7 +6,7 @@ import logging
 import os
 
 
-from typing import Any, List, Tuple
+from typing import Any, List
 
 from langchain_core.documents import Document
 from langchain_nvidia_ai_endpoints import NVIDIARerank
@@ -20,7 +20,7 @@ logger.setLevel(getattr(logging, log_level))
 
 def rank_papers_by_query(
     self, query: str, config: Any, top_k: int = 40
-) -> List[Tuple[str, float]]:
+) -> List[str]:
     """
     Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
 
