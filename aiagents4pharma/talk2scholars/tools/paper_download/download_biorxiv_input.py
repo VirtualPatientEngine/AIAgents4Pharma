@@ -29,7 +29,7 @@ class DownloadBiorxivPaperInput(BaseModel):
 
 def fetch_biorxiv_metadata(doi: str) -> dict:
     """
-    Fetch metadata for a bioRxiv paper using its DOI and extract relevant fields.
+    Fetch metadata for a bioRxiv paper using its DOI or biorxiv id and extract relevant fields.
     
     Parameters:
         doi (str): The DOI of the bioRxiv paper.

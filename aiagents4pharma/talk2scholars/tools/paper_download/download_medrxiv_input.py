@@ -66,7 +66,7 @@ def extract_metadata(paper: dict, doi: str) -> dict:
         "pdf_url": pdf_url,
         "filename": f"{doi_suffix}.pdf",
         "source": "medrxiv",
-        "medrxiv_id": doi
+        "medrxiv": doi
     }
 
 # Tool to download medRxiv paper metadata and PDF URL
@@ -76,7 +76,7 @@ def download_medrxiv_paper(
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> Command[Any]:
     """
-    Get metadata and PDF URL for a medRxiv paper using its DOI.
+    Get metadata and PDF URL for a medRxiv paper using its doi or medrxiv id.
     """
     logger.info("Fetching metadata from medRxiv for DOI: %s", doi)
 
@@ -88,8 +88,6 @@ def download_medrxiv_paper(
         api_url = cfg.tools.download_medrxiv_paper.api_url
         request_timeout = cfg.tools.download_medrxiv_paper.request_timeout
         logger.info("API URL: %s", api_url)
-        logger.info("Request Timeout: %s", request_timeout)
-
 
     raw_data = fetch_medrxiv_metadata(doi)
     metadata = extract_metadata(raw_data, doi)
