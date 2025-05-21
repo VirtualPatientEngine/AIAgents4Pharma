@@ -1,5 +1,5 @@
 """
-PDF Question & Answer Tool
+NVIDIA NIM Reranker Utility
 """
 
 import logging
@@ -18,9 +18,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
 
-def rank_papers_by_query(
-    self, query: str, config: Any, top_k: int = 40
-) -> List[str]:
+def rank_papers_by_query(self, query: str, config: Any, top_k: int = 40) -> List[str]:
     """
     Rank papers by relevance to the query using NVIDIA's off-the-shelf re-ranker.
 

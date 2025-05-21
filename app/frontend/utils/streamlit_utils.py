@@ -262,8 +262,9 @@ def initialize_zotero_and_build_store():
         if pdf_url:
             vector_store.add_paper(paper_id, pdf_url, meta)
     vector_store.build_vector_store()
-    # Expose the vector store for use by the Q&A tool
-    qa_module.prebuilt_vector_store = vector_store
+    # Expose the vector store for use by the Q&A tool helper
+    # (helper.prebuilt_vector_store caches the shared store)
+    qa_module.helper.prebuilt_vector_store = vector_store
     # Mark as initialized to prevent rerunning
     st.session_state.zotero_initialized = True
 

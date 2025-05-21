@@ -1,5 +1,5 @@
 """
-PDF Question & Answer Tool
+Retrieve relevant chunks from a vector store using MMR (Maximal Marginal Relevance).
 """
 
 import logging

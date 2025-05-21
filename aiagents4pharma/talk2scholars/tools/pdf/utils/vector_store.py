@@ -1,5 +1,5 @@
 """
-PDF Question & Answer Tool
+Vectorstore class for managing document embeddings and retrieval.
 """
 
 import logging

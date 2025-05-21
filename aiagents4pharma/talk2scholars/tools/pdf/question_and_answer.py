@@ -19,10 +19,14 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
-from .utils.generate_answer import generate_answer, load_hydra_config
-from .utils.vector_store import Vectorstore
+from .utils.generate_answer import load_hydra_config
 from .utils.retrieve_chunks import retrieve_relevant_chunks
-from .utils.nvidia_nim_reranker import rank_papers_by_query
+from .utils.tool_helper import QAToolHelper
+
+# Helper for managing state, vectorstore, reranking, and formatting
+helper = QAToolHelper()
+# Load configuration and start logging
+config = load_hydra_config()
 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
@@ -54,96 +58,6 @@ class QuestionAndAnswerInput(BaseModel):
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
-
-
-# Shared pre-built Vectorstore for RAG (set externally, e.g., by Streamlit startup)
-prebuilt_vector_store: Optional[Vectorstore] = None
-
-def _get_state_models_and_data(state: dict, call_id: str):
-    """Retrieve embedding model, LLM, and article data from agent state, or raise."""
-    text_emb = state.get("text_embedding_model")
-    if not text_emb:
-        msg = "No text embedding model found in state."
-        logger.error("%s: %s", call_id, msg)
-        raise ValueError(msg)
-    llm = state.get("llm_model")
-    if not llm:
-        msg = "No LLM model found in state."
-        logger.error("%s: %s", call_id, msg)
-        raise ValueError(msg)
-    articles = state.get("article_data", {})
-    if not articles:
-        msg = "No article_data found in state."
-        logger.error("%s: %s", call_id, msg)
-        raise ValueError(msg)
-    return text_emb, llm, articles
-
-def _init_vector_store(emb_model, config):
-    """Return shared prebuilt vector store or initialize a new one."""
-    if prebuilt_vector_store is not None:
-        logger.info("Using shared pre-built vector store from memory")
-        return prebuilt_vector_store
-    vs = Vectorstore(embedding_model=emb_model, config=config)
-    logger.info("Initialized new vector store with provided configuration")
-    return vs
-
-def _load_candidate_papers(vs: Vectorstore, articles: dict, candidates: List[str], call_id: str):
-    """Ensure each candidate paper is loaded into the vector store."""
-    for pid in candidates:
-        if pid not in vs.loaded_papers:
-            pdf_url = articles.get(pid, {}).get("pdf_url")
-            if not pdf_url:
-                continue
-            try:
-                vs.add_paper(pid, pdf_url, articles[pid])
-            except (IOError, ValueError) as exc:
-                logger.warning("%s: Error loading paper %s: %s", call_id, pid, exc)
-
-def _run_reranker(
-    vs: Vectorstore,
-    query: str,
-    config: Any,
-    candidates: List[str],
-    call_id: str,
-) -> List[str]:
-    """Rank papers by relevance and return ordered paper IDs, falling back on candidates."""
-    try:
-        ranked = rank_papers_by_query(
-            vs, query, config, top_k=config.top_k_papers
-        )
-        logger.info("%s: Papers after NVIDIA reranking: %s", call_id, ranked)
-        return [pid for pid in ranked if pid in candidates]
-    except (ValueError, RuntimeError) as exc:
-        logger.error("%s: NVIDIA reranker failed: %s", call_id, exc)
-        logger.info(
-            "%s: Falling back to all %d candidate papers", call_id, len(candidates)
-        )
-        return candidates
-
-def _format_answer(
-    question: str,
-    chunks: List[Any],
-    llm: Any,
-    config: Any,
-    articles: dict,
-) -> str:
-    """Generate answer via LLM and format with source attribution."""
-    result = generate_answer(question, chunks, llm, config)
-    answer = result.get("output_text", "No answer generated.")
-    titles = {}
-    for pid in result.get("papers_used", []):
-        if pid in articles:
-            titles[pid] = articles[pid].get("Title", "Unknown paper")
-    if titles:
-        srcs = "\n\nSources:\n" + "\n".join(f"- {t}" for t in titles.values())
-    else:
-        srcs = ""
-    logger.info(
-        "Generated answer using %d chunks from %d papers",
-        len(chunks),
-        len(titles),
-    )
-    return f"{answer}{srcs}"
 
 
 @tool(args_schema=QuestionAndAnswerInput, parse_docstring=True)
@@ -178,42 +92,36 @@ def question_and_answer(
         ValueError: If required models or 'article_data' are missing from state.
         RuntimeError: If no relevant document chunks can be retrieved.
     """
-    # Load config and initialize call ID
-    config = load_hydra_config()
     call_id = f"qa_call_{time.time()}"
-    logger.info("Starting PDF Question and Answer tool call %s for question: %s", call_id, question)
+    logger.info(
+        "Starting PDF Question and Answer tool call %s for question: %s",
+        call_id,
+        question,
+    )
+    helper.start_call(config, call_id)
 
-    # Retrieve models and metadata
-    text_emb, llm_model, article_data = _get_state_models_and_data(state, call_id)
+    # Extract models and article metadata
+    text_emb, llm_model, article_data = helper.get_state_models_and_data(state)
 
-    # Initialize or reuse vector store and load papers
-    vs = _init_vector_store(text_emb, config)
+    # Initialize or reuse vector store, then load candidate papers
+    vs = helper.init_vector_store(text_emb)
     candidate_ids = paper_ids or list(article_data.keys())
     logger.info("%s: Candidate paper IDs for reranking: %s", call_id, candidate_ids)
-    _load_candidate_papers(vs, article_data, candidate_ids, call_id)
+    helper.load_candidate_papers(vs, article_data, candidate_ids)
 
-    # Rank papers and retrieve top chunks
-    selected_ids = _run_reranker(
-        vs, question, config, candidate_ids, call_id
-    )
+    # Rerank papers and retrieve top chunks
+    selected_ids = helper.run_reranker(vs, question, candidate_ids)
     relevant_chunks = retrieve_relevant_chunks(
-        vs,
-        query=question,
-        paper_ids=selected_ids,
-        top_k=config.top_k_chunks,
+        vs, query=question, paper_ids=selected_ids, top_k=config.top_k_chunks
     )
     if not relevant_chunks:
         msg = f"No relevant chunks found for question: '{question}'"
         logger.warning("%s: %s", call_id, msg)
         raise RuntimeError(msg)
 
-    # Generate and format the answer with sources
-    response_text = _format_answer(
-        question,
-        relevant_chunks,
-        llm_model,
-        config,
-        article_data,
+    # Generate answer and format with sources
+    response_text = helper.format_answer(
+        question, relevant_chunks, llm_model, article_data
     )
     return Command(
         update={
