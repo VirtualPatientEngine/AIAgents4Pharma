@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field
 from .utils.generate_answer import generate_answer, load_hydra_config
 from .utils.vector_store import Vectorstore
 from .utils.retrieve_chunks import retrieve_relevant_chunks
-from .utils.nvidia_nim import rank_papers_by_query
+from .utils.nvidia_nim_reranker import rank_papers_by_query
 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
