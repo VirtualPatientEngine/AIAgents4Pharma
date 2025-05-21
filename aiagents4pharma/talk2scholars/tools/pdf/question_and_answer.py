@@ -38,7 +38,6 @@ class QuestionAndAnswerInput(BaseModel):
     Attributes:
         question (str): Free-text question to answer based on PDF content.
         paper_ids (Optional[List[str]]): If provided, restricts retrieval to these paper IDs.
-        use_all_papers (bool): If True, include all loaded papers without semantic ranking.
         tool_call_id (str): Internal ID injected by LangGraph for this tool call.
         state (dict): Shared agent state containing:
             - 'article_data': dict of paper metadata with 'pdf_url' keys
@@ -52,11 +51,6 @@ class QuestionAndAnswerInput(BaseModel):
         default=None,
         description="Optional list of specific paper IDs to query. "
         "If not provided, relevant papers will be selected automatically.",
-    )
-    use_all_papers: bool = Field(
-        default=False,
-        description="Whether to use all available papers for answering the question. "
-        "Set to True to bypass relevance filtering and include all loaded papers.",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
@@ -72,7 +66,6 @@ def question_and_answer(
     state: Annotated[dict, InjectedState],
     tool_call_id: Annotated[str, InjectedToolCallId],
     paper_ids: Optional[List[str]] = None,
-    use_all_papers: bool = False,
 ) -> Command[Any]:
     """
     Generate an answer to a user question using Retrieval-Augmented Generation (RAG) over PDFs.
@@ -88,8 +81,8 @@ def question_and_answer(
             - 'text_embedding_model': the embedding model instance
             - 'llm_model': the chat/LLM instance
         tool_call_id (str): Internal identifier for this tool call.
-        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).
-        use_all_papers (bool): If True, bypasses semantic ranking and includes all papers.
+        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).  
+            If not provided, all papers are considered and ranked by NVIDIA reranker.
 
     Returns:
         Command[Any]: A LangGraph Command that updates the conversation state:
@@ -140,27 +133,9 @@ def question_and_answer(
         )
         logger.info("Initialized new vector store with provided configuration")
 
-    # Check if there are papers from different sources
-    has_uploaded_papers = any(
-        paper.get("source") == "upload"
-        for paper in article_data.values()
-        if isinstance(paper, dict)
-    )
-
-    has_zotero_papers = any(
-        paper.get("source") == "zotero"
-        for paper in article_data.values()
-        if isinstance(paper, dict)
-    )
-
-    has_arxiv_papers = any(
-        paper.get("source") == "arxiv"
-        for paper in article_data.values()
-        if isinstance(paper, dict)
-    )
-
-    # Choose papers to use
-    selected_paper_ids = []
+    # Prepare for paper selection
+    selected_paper_ids: List[str] = []
+    # Always use NVIDIA-based semantic ranking when not explicitly overridden
 
     if paper_ids:
         # Use explicitly specified papers
@@ -174,38 +149,44 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers:
-        # Use all available papers if explicitly requested or if we have papers from any source
-        selected_paper_ids = list(article_data.keys())
-        logger.info(
-            "%s: Using all %d available papers", call_id, len(selected_paper_ids)
-        )
-
     else:
-        # Use semantic ranking to find relevant papers
-        # First ensure papers are loaded
+        # Semantic ranking: always run NVIDIA reranker
+        logger.info("%s: Running semantic ranking with NVIDIA reranker over %d papers", call_id, len(article_data))
+        # Ensure all papers are loaded into the vector store
         for paper_id, paper in article_data.items():
             pdf_url = paper.get("pdf_url")
             if pdf_url and paper_id not in vector_store.loaded_papers:
                 try:
                     vector_store.add_paper(paper_id, pdf_url, paper)
                 except (IOError, ValueError) as e:
-                    logger.error("Error loading paper %s: %s", paper_id, e)
+                    logger.error("%s: Error loading paper %s: %s", call_id, paper_id, e)
                     raise
 
-        # Now rank papers
-        ranked_papers = rank_papers_by_query(
-            vector_store,
-            question,
-            config,
-            top_k=config.top_k_papers,
-        )
-        selected_paper_ids = [paper_id for paper_id, _ in ranked_papers]
-        logger.info(
-            "%s: Selected papers based on semantic relevance: %s",
-            call_id,
-            selected_paper_ids,
-        )
+        # Invoke NVIDIA reranker to select top papers
+        try:
+            ranked_papers = rank_papers_by_query(
+                vector_store,
+                question,
+                config,
+                top_k=config.top_k_papers,
+            )
+            selected_paper_ids = list(ranked_papers)
+            logger.info(
+                "%s: Papers after NVIDIA reranking: %s",
+                call_id,
+                selected_paper_ids,
+            )
+        except Exception as e:
+            logger.error(
+                "%s: NVIDIA reranker failed: %s", call_id, str(e)
+            )
+            # Fallback to all papers on reranker failure
+            selected_paper_ids = list(article_data.keys())
+            logger.info(
+                "%s: Falling back to all %d papers due to reranker error",
+                call_id,
+                len(selected_paper_ids),
+            )
 
     if not selected_paper_ids:
         # Fallback to all papers if selection failed

@@ -5,7 +5,7 @@ top_k_papers: 40 # Number of papers to rank and retrieve
 top_k_chunks: 25 # Number of chunks to retrieve
 reranker:
   model: "nvidia/nv-rerankqa-mistral-4b-v3"
-  api_key: ${env:NVIDIA_API_KEY}
+  api_key: ${oc.env:NVIDIA_API_KEY}
 prompt_template: |
   You are a scientific research assistant specialized in reading and extracting information from biological and biomedical research papers. 
   Your role is to answer questions by retrieving and synthesizing relevant information from the provided context.
