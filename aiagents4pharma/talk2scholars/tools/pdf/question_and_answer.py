@@ -146,6 +146,6 @@ def question_and_answer(
                     content=response_text,
                     tool_call_id=tool_call_id,
                 )
-            ]
+            ],
         }
     )
