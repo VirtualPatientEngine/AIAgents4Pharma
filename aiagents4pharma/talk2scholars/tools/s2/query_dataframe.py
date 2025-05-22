@@ -44,9 +44,11 @@ class QueryDataFrameInput(BaseModel):
 
     Notes:
       - This tool is only for metadata queries. It does not perform full-text PDF analysis.
-      - You can access standard metadata columns such as 'title', 'authors', 'venue', 'year', and 'arxiv_id'.
+      - You can access standard metadata columns such as 'title', 'authors',
+        'venue', 'year', and 'arxiv_id'.
       - The following columns are typically excluded from direct querying for safety or irrelevance:
-        ['Abstract', 'Key', 'semantic_scholar_paper_id', 'source', 'filename', 'pdf_url', 'attachment_key'].
+        ['Abstract', 'Key', 'semantic_scholar_paper_id', 'source', 'filename', 'pdf_url',
+        'attachment_key'].
     """
 
     question: str = Field(
