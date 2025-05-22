@@ -220,7 +220,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Verify that the exception message is as expected.
         self.assertEqual(str(context.exception), "Loading error")
-    
+
     @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.vector_store.PyPDFLoader")
     def test_add_paper_missing_config(self, mock_pypdf_loader):
         """Test that add_paper raises ValueError when config is missing."""
@@ -243,7 +243,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             )
         self.assertEqual(
             str(cm.exception),
-            "Configuration is required for text splitting in Vectorstore."
+            "Configuration is required for text splitting in Vectorstore.",
         )
 
     def test_build_vector_store_no_documents(self):
@@ -294,10 +294,6 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         vector_store = Vectorstore(embedding_model=mock_embedding_model)
 
         # Attempt to retrieve relevant chunks (vector_store.vector_store is None)
-        from aiagents4pharma.talk2scholars.tools.pdf.utils.retrieve_chunks import (
-            retrieve_relevant_chunks,
-        )
-
         result = retrieve_relevant_chunks(vector_store, query="test query")
 
         # Verify that an empty list is returned since the vector store is not built.
@@ -322,9 +318,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
 
         # Call retrieve_relevant_chunks with specific paper_ids
         paper_ids = ["paper1"]
-        from aiagents4pharma.talk2scholars.tools.pdf.utils.retrieve_chunks import (
-            retrieve_relevant_chunks,
-        )
+        # Use module-level retrieve_relevant_chunks
 
         result = retrieve_relevant_chunks(
             vector_store, query="test query", paper_ids=paper_ids
@@ -526,57 +520,79 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             vector_store, query="test", paper_ids=["nonexistent_id"]
         )
         assert results == []
-        
-    # ------------------------------------------------------------------------
-    # Tests for question_and_answer tool integration
-    # ------------------------------------------------------------------------
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.load_candidate_papers')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.run_reranker')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.retrieve_relevant_chunks')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.format_answer')
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.run_reranker"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.retrieve_relevant_chunks"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.format_answer"
+    )
     def test_question_and_answer_happy_path(
-        self, mock_format, mock_retrieve, mock_rerank, mock_load, mock_init, mock_state
+        self, mock_format, mock_retrieve, mock_rerank, mock_init, mock_state
     ):
+        """Test happy path for question_and_answer tool."""
         # Setup helper and utility mocks
         emb = object()
         llm = object()
-        articles = {'p1': {'pdf_url': 'u'}}
+        articles = {"p1": {"pdf_url": "u"}}
         mock_state.return_value = (emb, llm, articles)
-        vs = object()
+        # Use a dummy vector store with required attributes
+        vs = SimpleNamespace(loaded_papers=set(), add_paper=MagicMock())
         mock_init.return_value = vs
-        mock_rerank.return_value = ['p1']
+        mock_rerank.return_value = ["p1"]
         # Dummy chunk list
-        dummy_chunk = Document(page_content='c', metadata={'paper_id': 'p1'})
+        dummy_chunk = Document(page_content="c", metadata={"paper_id": "p1"})
         mock_retrieve.return_value = [dummy_chunk]
-        mock_format.return_value = 'formatted answer'
+        mock_format.return_value = "formatted answer"
 
-        from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import question_and_answer
+        # Use module-level question_and_answer
 
         state = {}
-        tool_input = {'question': 'Q?', 'state': state, 'tool_call_id': 'tid'}
+        tool_input = {"question": "Q?", "state": state, "tool_call_id": "tid"}
         result = question_and_answer.run(tool_input)
         # Verify Command message content and tool_call_id
-        msgs = result.update.get('messages', [])
+        msgs = result.update.get("messages", [])
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg.content, 'formatted answer')
-        self.assertEqual(msg.tool_call_id, 'tid')
+        self.assertEqual(msg.content, "formatted answer")
+        self.assertEqual(msg.tool_call_id, "tid")
 
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store')
-    @patch('aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.retrieve_relevant_chunks', return_value=[])
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.run_reranker",
+        return_value=["p1"],
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.retrieve_relevant_chunks",
+        return_value=[],
+    )
     def test_question_and_answer_no_chunks(
-        self, mock_retrieve, mock_init, mock_state
+        self, mock_retrieve, mock_rerank, mock_init, mock_state
     ):
+        """Test that no chunks raises RuntimeError."""
         emb = object()
         llm = object()
-        articles = {'p1': {'pdf_url': 'u'}}
+        articles = {"p1": {"pdf_url": "u"}}
         mock_state.return_value = (emb, llm, articles)
-        from aiagents4pharma.talk2scholars.tools.pdf.question_and_answer import question_and_answer
+        # Provide dummy vector store to satisfy load_candidate_papers
+        vs = SimpleNamespace(loaded_papers=set(), add_paper=MagicMock())
+        mock_init.return_value = vs
 
-        tool_input = {'question': 'Q?', 'state': {}, 'tool_call_id': 'id'}
+        tool_input = {"question": "Q?", "state": {}, "tool_call_id": "id"}
         with self.assertRaises(RuntimeError) as cm:
             question_and_answer.run(tool_input)
         self.assertIn("No relevant chunks found for question", str(cm.exception))
