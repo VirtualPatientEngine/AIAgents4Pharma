@@ -7,7 +7,7 @@ multimodal_allowed_file_types:
 upload_data_dir: "../files"
 kg_name: "PrimeKG"
 kg_nodes_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_nodes.parquet.gzip"
-kg_edges_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_nodes.parquet.gzip"
+kg_edges_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_edges.parquet.gzip"
 # kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
 # kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
