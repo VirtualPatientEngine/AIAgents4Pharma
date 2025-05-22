@@ -465,7 +465,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         # Simulate ranking returning an empty list to force the fallback branch.
         dummy_vs.rank_papers_by_query.return_value = []
         # In the "load selected papers" loop, simulate that add_paper raises an exception.
-        dummy_vs.add_paper.side_effect = IOError("Test error")
+        dummy_vs.add_paper.side_effect = RuntimeError("Test error")
         # When build_vector_store is called, simulate setting the vector store.
         dummy_vs.build_vector_store.side_effect = lambda: setattr(
             dummy_vs, "vector_store", True

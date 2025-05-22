@@ -28,7 +28,7 @@ class DownloadMedrxivPaperInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 # Fetching raw metadata from medRxiv API for a given DOI
-def fetch_medrxiv_metadata(doi: str) -> dict:
+def fetch_medrxiv_metadata(doi: str, request_timeout: int) -> dict:
     """
     Fetch metadata JSON from medRxiv API for a given DOI.
     """
@@ -37,7 +37,7 @@ def fetch_medrxiv_metadata(doi: str) -> dict:
 
     base_url = "https://api.biorxiv.org/details/medrxiv/"
     api_url = f"{base_url}{clean_doi}"
-    response = requests.get(api_url, timeout=10)
+    response = requests.get(api_url, timeout=request_timeout)
 
     data = response.json()
     if not data.get("collection"):
@@ -66,7 +66,7 @@ def extract_metadata(paper: dict, doi: str) -> dict:
         "pdf_url": pdf_url,
         "filename": f"{doi_suffix}.pdf",
         "source": "medrxiv",
-        "medrxiv": doi
+        "medrxiv_id": doi
     }
 
 # Tool to download medRxiv paper metadata and PDF URL
@@ -89,7 +89,7 @@ def download_medrxiv_paper(
         request_timeout = cfg.tools.download_medrxiv_paper.request_timeout
         logger.info("API URL: %s", api_url)
 
-    raw_data = fetch_medrxiv_metadata(doi)
+    raw_data = fetch_medrxiv_metadata(doi, request_timeout)
     metadata = extract_metadata(raw_data, doi)
     article_data = {doi: metadata}
 

@@ -527,12 +527,15 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif (use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers
-        or has_biorxiv_papers or has_medrxiv_papers):
-        # Use all available papers if explicitly requested or if we have papers from any source
+    has_any_papers = (
+    has_uploaded_papers or has_zotero_papers or has_arxiv_papers
+    or has_biorxiv_papers or has_medrxiv_papers
+    )
+    if use_all_papers or has_any_papers:
+        # Use all papers if requested or if they are from different sources
         selected_paper_ids = list(article_data.keys())
         logger.info(
-            "%s: Using all %d available papers", call_id, len(selected_paper_ids)
+            "Using all %d available papers", len(selected_paper_ids)
         )
 
     else:
@@ -576,6 +579,7 @@ def question_and_answer(
                     logger.warning(
                         "%s: Error loading paper %s: %s", call_id, paper_id, e
                     )
+                continue
 
     # Ensure vector store is built
     if not vector_store.vector_store:
