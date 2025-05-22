@@ -1,10 +1,17 @@
 """
-PDF Question & Answer Tool
+LangGraph PDF Retrieval-Augmented Generation (RAG) Tool
 
-This LangGraph tool answers user questions by leveraging a pre-built FAISS vector store
-of embedded PDF document chunks. Given a question, it retrieves the most relevant text
-segments from the loaded PDFs, invokes an LLM for answer generation, and returns the
-response with source attribution.
+This tool answers user questions by retrieving and ranking relevant text chunks from PDFs
+and invoking an LLM to generate a concise, source-attributed response. It supports
+single or multiple PDF sources—such as Zotero libraries, arXiv papers, or direct uploads.
+
+Workflow:
+  1. (Optional) Load PDFs from diverse sources into a FAISS vector store of embeddings.
+  2. Rerank candidate papers using NVIDIA NIM semantic re-ranker.
+  3. Retrieve top-K diverse text chunks via Maximal Marginal Relevance (MMR).
+  4. Build a context-rich prompt combining retrieved chunks and the user question.
+  5. Invoke the LLM to craft a clear answer with source citations.
+  6. Return the answer in a ToolMessage for LangGraph to dispatch.
 """
 
 import logging
@@ -37,24 +44,28 @@ logger.setLevel(getattr(logging, log_level))
 
 class QuestionAndAnswerInput(BaseModel):
     """
-    Input schema for the PDF Q&A tool.
+    Pydantic schema for the PDF Q&A tool inputs.
 
-    Attributes:
-        question (str): Free-text question to answer based on PDF content.
-        paper_ids (Optional[List[str]]): If provided, restricts retrieval to these paper IDs.
-        tool_call_id (str): Internal ID injected by LangGraph for this tool call.
-        state (dict): Shared agent state containing:
-            - 'article_data': dict of paper metadata with 'pdf_url' keys
-            - 'text_embedding_model': embedding model instance
-            - 'llm_model': chat/LLM instance
-            - 'vector_store': pre-built Vectorstore for retrieval
+    Fields:
+      question: User's free-text query to answer based on PDF content.
+      paper_ids: Optional list of specific paper IDs to restrict retrieval.
+      tool_call_id: LangGraph-injected call identifier for tracking.
+      state: Shared agent state dict containing:
+        - article_data: metadata mapping of paper IDs to info (e.g., 'pdf_url', title).
+        - text_embedding_model: embedding model instance for chunk indexing.
+        - llm_model: chat/LLM instance for answer generation.
+        - vector_store: optional pre-built Vectorstore for retrieval.
     """
 
-    question: str = Field(description="The question to ask regarding the PDF content.")
+    question: str = Field(
+        description="User question for generating a PDF-based answer."
+    )
     paper_ids: Optional[List[str]] = Field(
         default=None,
-        description="Optional list of specific paper IDs to query. "
-        "If not provided, relevant papers will be selected automatically.",
+        description=(
+            "Optional list of paper IDs to restrict retrieval. "
+            "If omitted, all papers in state.article_data are considered."
+        ),
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
@@ -68,29 +79,34 @@ def question_and_answer(
     paper_ids: Optional[List[str]] = None,
 ) -> Command[Any]:
     """
-    Generate an answer to a user question using Retrieval-Augmented Generation (RAG) over PDFs.
+    LangGraph tool for Retrieval-Augmented Generation over PDFs.
 
-    This tool expects that a FAISS vector store of PDF document chunks has already been built
-    and stored in shared state. It retrieves the most relevant chunks for the input question,
-    invokes an LLM to craft a response, and returns the answer with source attribution.
+    Given a user question, this tool applies the following pipeline:
+      1. Validates that embedding and LLM models, plus article metadata, are in state.
+      2. Initializes or reuses a FAISS-based Vectorstore for PDF embeddings.
+      3. Loads one or more PDFs (from Zotero, arXiv, uploads) as text chunks into the store.
+      4. Uses NVIDIA NIM semantic re-ranker to select top candidate papers.
+      5. Retrieves the most relevant and diverse text chunks via Maximal Marginal Relevance.
+      6. Constructs an LLM prompt combining contextual chunks and the query.
+      7. Invokes the LLM to generate an answer, appending source attributions.
+      8. Returns a LangGraph Command with a ToolMessage containing the answer.
 
     Args:
-        question (str): The free-text question to answer.
-        state (dict): Injected agent state mapping that must include:
-            - 'article_data': mapping of paper IDs to metadata (including 'pdf_url')
-            - 'text_embedding_model': the embedding model instance
-            - 'llm_model': the chat/LLM instance
-        tool_call_id (str): Internal identifier for this tool call.
-        paper_ids (Optional[List[str]]): Specific paper IDs to restrict retrieval (default: None).
-            If not provided, all papers are considered and ranked by NVIDIA reranker.
+      question (str): The free-text question to answer.
+      state (dict): Injected agent state; must include:
+        - article_data: mapping paper IDs → metadata (pdf_url, title, etc.)
+        - text_embedding_model: embedding model instance.
+        - llm_model: chat/LLM instance.
+      tool_call_id (str): Internal identifier for this tool invocation.
+      paper_ids (Optional[List[str]]): Specific paper IDs to restrict the RAG scope.
+        If omitted, all papers in state.article_data are considered and reranked.
 
     Returns:
-        Command[Any]: A LangGraph Command that updates the conversation state:
-            - 'messages': a single ToolMessage containing the generated answer text.
+      Command[Any]: updates conversation state with a ToolMessage(answer).
 
     Raises:
-        ValueError: If required models or 'article_data' are missing from state.
-        RuntimeError: If no relevant document chunks can be retrieved.
+      ValueError: when required models or metadata are missing in state.
+      RuntimeError: when no relevant chunks can be retrieved for the query.
     """
     call_id = f"qa_call_{time.time()}"
     logger.info(

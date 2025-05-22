@@ -55,7 +55,7 @@ def load_hydra_config() -> Any:
             overrides=["tools/question_and_answer=default"],
         )
         config = cfg.tools.question_and_answer
-        logger.info("Loaded Question and Answer tool configuration.")
+        logger.debug("Loaded Question and Answer tool configuration.")
         return config
 
 
