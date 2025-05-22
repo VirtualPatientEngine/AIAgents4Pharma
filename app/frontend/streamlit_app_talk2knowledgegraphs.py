@@ -300,8 +300,10 @@ with main_col2:
                             "dic_source_graph": [
                                 {
                                     "name": st.session_state.config["kg_name"],
-                                    "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                                    "kg_text_path": st.session_state.config["kg_text_path"],
+                                    "kg_nodes_path": st.session_state.config["kg_nodes_path"],
+                                    "kg_edges_path": st.session_state.config["kg_edges_path"]
+                                    # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+                                    # "kg_text_path": st.session_state.config["kg_text_path"],
                                 }
                             ],
                         },

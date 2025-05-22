@@ -1022,12 +1022,13 @@ def initialize_selections() -> None:
     Args:
         cfg: The configuration object.
     """
-    with open(st.session_state.config["kg_pyg_path"], "rb") as f:
-        pyg_graph = pickle.load(f)
+    # with open(st.session_state.config["kg_pyg_path"], "rb") as f:
+        # pyg_graph = pickle.load(f)
+    graph_nodes = pd.read_parquet(st.session_state.config["kg_nodes_path"])
 
     # Populate the selections based on the node type from the graph
     selections = {}
-    for i in np.unique(np.array(pyg_graph.node_type)):
+    for i in graph_nodes.node_type.unique():
         selections[i] = []
 
     return selections
@@ -1049,8 +1050,8 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     )
 
     multimodal_files = st.file_uploader(
-        "📦 Upload multimodal data package",
-        help="A spread sheet containing multimodal data package (e.g., genes, drugs, etc.)",
+        "📦 Upload multimodal endotype/phenotype data package",
+        help="A spread sheet containing multimodal endotype/phenotype data package (e.g., genes, drugs, etc.)",
         accept_multiple_files=True,
         type=cfg.multimodal_allowed_file_types,
         key=f"uploader_multimodal_{st.session_state.multimodal_key}",
