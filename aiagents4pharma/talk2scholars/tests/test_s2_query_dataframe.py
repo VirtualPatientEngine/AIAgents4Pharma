@@ -7,12 +7,14 @@ from unittest.mock import patch
 from unittest.mock import MagicMock
 import pytest
 from ..tools.s2.query_dataframe import query_dataframe, NoPapersFoundError
+from langchain_core.messages import ToolMessage
 
 
 @pytest.fixture
 def initial_state():
-    """Provides an empty initial state for tests."""
-    return {"papers": {}, "multi_papers": {}}
+    """Provides an empty initial state for tests with a dummy llm_model."""
+    from unittest.mock import MagicMock
+    return {"papers": {}, "multi_papers": {}, "llm_model": MagicMock()}
 
 
 # Fixed test data for deterministic results
@@ -46,13 +48,13 @@ class TestS2Tools:
 
     def test_query_dataframe_empty_state(self, initial_state):
         """Tests query_dataframe tool behavior when no papers are found."""
+        # Calling without any papers should raise NoPapersFoundError
+        tool_input = {"question": "List all papers", "state": initial_state, "tool_call_id": "test_id"}
         with pytest.raises(
             NoPapersFoundError,
-            match="No papers found. A search needs to be performed first.",
+            match="No papers found. A search needs to be performed first."
         ):
-            query_dataframe.invoke(
-                {"question": "List all papers", "state": initial_state}
-            )
+            query_dataframe.run(tool_input)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
@@ -72,10 +74,18 @@ class TestS2Tools:
         )
 
         # Ensure that the output of query_dataframe is correctly structured
-        result = query_dataframe.invoke({"question": "List all papers", "state": state})
-
-        assert isinstance(result, str)  # Ensure output is a string
-        assert result == "Mocked response"  # Validate the expected response
+        # Invoke the tool with a test tool_call_id
+        tool_input = {"question": "List all papers", "state": state, "tool_call_id": "test_id"}
+        result = query_dataframe.run(tool_input)
+        # The tool returns a Command with messages
+        assert hasattr(result, 'update')
+        update = result.update
+        assert "messages" in update
+        msgs = update["messages"]
+        assert len(msgs) == 1
+        msg = msgs[0]
+        assert isinstance(msg, ToolMessage)
+        assert msg.content == "Mocked response"
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
@@ -90,6 +100,13 @@ class TestS2Tools:
         mock_agent.invoke.return_value = {"output": "Direct mapping response"}
         mock_create_agent.return_value = mock_agent
         # Invoke tool
-        result = query_dataframe.invoke({"question": "Filter papers", "state": state})
-        assert isinstance(result, str)
-        assert result == "Direct mapping response"
+        # Invoke the tool with direct mapping and test tool_call_id
+        tool_input = {"question": "Filter papers", "state": state, "tool_call_id": "test_id"}
+        result = query_dataframe.run(tool_input)
+        update = result.update
+        assert "messages" in update
+        msgs = update["messages"]
+        assert len(msgs) == 1
+        msg = msgs[0]
+        assert isinstance(msg, ToolMessage)
+        assert msg.content == "Direct mapping response"
