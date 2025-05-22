@@ -386,91 +386,25 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             "The prompt_template is missing from the configuration.",
         )
 
-    def test_missing_text_embedding_model(self):
-        """Test error when text_embedding_model is missing from state."""
-        state = {
-            # Missing text_embedding_model
-            "llm_model": MagicMock(),
-            "article_data": {
-                "paper1": {
-                    "pdf_url": "http://example.com/test.pdf",
-                    "Title": "Test Paper",
-                }
-            },
-        }
-        tool_call_id = "test_call_2"
-        question = "What is the conclusion?"
-        tool_input = {
-            "question": question,
-            "tool_call_id": tool_call_id,
-            "state": state,
-        }
-        with self.assertRaises(ValueError) as context:
-            question_and_answer.run(tool_input)
-        self.assertEqual(
-            str(context.exception), "No text embedding model found in state."
-        )
-
-    def test_missing_llm_model(self):
-        """Test error when llm_model is missing from state."""
-        state = {
-            "text_embedding_model": MagicMock(),
-            # Missing llm_model
-            "article_data": {
-                "paper1": {
-                    "pdf_url": "http://example.com/test.pdf",
-                    "Title": "Test Paper",
-                }
-            },
-        }
-        tool_call_id = "test_call_3"
-        question = "What is the conclusion?"
-        tool_input = {
-            "question": question,
-            "tool_call_id": tool_call_id,
-            "state": state,
-        }
-        with self.assertRaises(ValueError) as context:
-            question_and_answer.run(tool_input)
-        self.assertEqual(str(context.exception), "No LLM model found in state.")
-
-    def test_missing_article_data(self):
-        """Test error when article_data is missing from state."""
-        state = {
-            "text_embedding_model": MagicMock(),
-            "llm_model": MagicMock(),
-            # Missing article_data
-        }
-        tool_call_id = "test_call_4"
-        question = "What is the conclusion?"
-        tool_input = {
-            "question": question,
-            "tool_call_id": tool_call_id,
-            "state": state,
-        }
-        with self.assertRaises(ValueError) as context:
-            question_and_answer.run(tool_input)
-        self.assertEqual(str(context.exception), "No article_data found in state.")
-
-    def test_empty_article_data(self):
-        """
-        Test that when article_data exists but is empty (no paper keys), a ValueError is raised.
-        """
-        state = {
-            "text_embedding_model": MagicMock(),
-            "llm_model": MagicMock(),
-            "article_data": {},  # empty dict
-        }
-        tool_call_id = "test_empty_article_data"
-        question = "What is the summary?"
-        tool_input = {
-            "question": question,
-            "tool_call_id": tool_call_id,
-            "state": state,
-        }
-        with self.assertRaises(ValueError) as context:
-            question_and_answer.run(tool_input)
-        self.assertEqual(str(context.exception), "No article_data found in state.")
+    def test_state_validation_errors(self):
+        """Test errors raised for missing state entries."""
+        valid_articles = {"paper1": {"pdf_url": "u", "Title": "T1"}}
+        cases = [
+            ({"llm_model": MagicMock(), "article_data": valid_articles},
+             "No text embedding model found in state."),
+            ({"text_embedding_model": MagicMock(), "article_data": valid_articles},
+             "No LLM model found in state."),
+            ({"text_embedding_model": MagicMock(), "llm_model": MagicMock()},
+             "No article_data found in state."),
+            ({"text_embedding_model": MagicMock(), "llm_model": MagicMock(), "article_data": {}},
+             "No article_data found in state."),
+        ]
+        for state_dict, expected_msg in cases:
+            with self.subTest(state=state_dict):
+                tool_input = {"question": "Q?", "state": state_dict, "tool_call_id": "id"}
+                with self.assertRaises(ValueError) as cm:
+                    question_and_answer.run(tool_input)
+                self.assertEqual(str(cm.exception), expected_msg)
 
     def test_retrieve_relevant_chunks_with_filtering(self):
         """Test that filtering works by paper_ids."""
@@ -490,10 +424,6 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
             page_content="Doc 2", metadata={"paper_id": "paper2", "chunk_id": 1}
         )
         vector_store.documents = {"doc1": doc1, "doc2": doc2}
-
-        from aiagents4pharma.talk2scholars.tools.pdf.utils.retrieve_chunks import (
-            retrieve_relevant_chunks,
-        )
 
         results = retrieve_relevant_chunks(
             vector_store, query="query", paper_ids=["paper1"]
@@ -522,22 +452,24 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         assert results == []
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data"
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer."
+        "helper.get_state_models_and_data"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store"
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer."
+        "helper.init_vector_store"
     )
     @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.run_reranker"
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer."
+        "retrieve_relevant_chunks"
     )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.retrieve_relevant_chunks"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.format_answer"
+    @patch.multiple(
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper",
+        run_reranker=lambda vs, query, candidates: ["p1"],
+        format_answer=lambda question, chunks, llm, articles: "formatted answer",
     )
     def test_question_and_answer_happy_path(
-        self, mock_format, mock_retrieve, mock_rerank, mock_init, mock_state
+        self, mock_retrieve, mock_init, mock_state
     ):
         """Test happy path for question_and_answer tool."""
         # Setup helper and utility mocks
@@ -545,14 +477,12 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         llm = object()
         articles = {"p1": {"pdf_url": "u"}}
         mock_state.return_value = (emb, llm, articles)
-        # Use a dummy vector store with required attributes
+        # Provide dummy vector store for loading
         vs = SimpleNamespace(loaded_papers=set(), add_paper=MagicMock())
         mock_init.return_value = vs
-        mock_rerank.return_value = ["p1"]
-        # Dummy chunk list
+        # Dummy chunk list for retrieval
         dummy_chunk = Document(page_content="c", metadata={"paper_id": "p1"})
         mock_retrieve.return_value = [dummy_chunk]
-        mock_format.return_value = "formatted answer"
 
         # Use module-level question_and_answer
 
@@ -567,7 +497,8 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         self.assertEqual(msg.tool_call_id, "tid")
 
     @patch(
-        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.get_state_models_and_data"
+        "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper."
+        "get_state_models_and_data"
     )
     @patch(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper.init_vector_store"
@@ -581,7 +512,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         return_value=[],
     )
     def test_question_and_answer_no_chunks(
-        self, mock_retrieve, mock_rerank, mock_init, mock_state
+        self, _mock_retrieve, _mock_rerank, mock_init, mock_state
     ):
         """Test that no chunks raises RuntimeError."""
         emb = object()
