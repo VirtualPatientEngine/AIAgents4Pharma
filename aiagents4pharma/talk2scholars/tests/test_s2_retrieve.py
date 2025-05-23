@@ -52,10 +52,9 @@ class TestS2Tools:
 
         assert isinstance(result, Command)
         assert "messages" in result.update
-        assert (
-            "Paper ID for 'Machine Learning Basics' is: 123"
-            in result.update["messages"][0].content
-        )
+        # The tool now returns the raw paper ID as the message content
+        content = result.update["messages"][0].content
+        assert content == "123"
 
     def test_retrieve_semantic_scholar_paper_id_no_results(self):
         """Test retrieving a paper ID when no results are found."""
