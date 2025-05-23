@@ -534,7 +534,7 @@ def question_and_answer(
         has_arxiv_papers,
         has_biorxiv_papers,
         has_medrxiv_papers,
-        ]   
+        ]
 
     elif any(paper_sources_present):
         # Use all available papers if explicitly requested or if we have papers from any source
