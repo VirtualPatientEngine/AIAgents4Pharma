@@ -123,9 +123,9 @@ class Vectorstore:
         # Cache for document chunk embeddings to avoid recomputation
         self.embeddings: Dict[str, Any] = {}
 
-    def add_paper(self, 
-                  paper_id: str, 
-                  pdf_url: str, 
+    def add_paper(self,
+                  paper_id: str,
+                  pdf_url: str,
                   paper_metadata: Dict[str, Any]) -> None:
         """
         Add a paper to the document store.
