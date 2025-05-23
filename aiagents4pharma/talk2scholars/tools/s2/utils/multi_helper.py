@@ -143,6 +143,8 @@ class MultiPaperRecData:
                 ],
                 "URL": paper.get("url", "N/A"),
                 "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
+                "pmc_id": "PMC"+paper.get("externalIds", {}).get("PubMedCentral", "N/A"),
+                "pm_id": paper.get("externalIds",{}).get("PubMed","N/A")
             }
             for paper in self.recommendations
             if paper.get("title") and paper.get("authors")
@@ -158,6 +160,7 @@ class MultiPaperRecData:
                 f"{i+1}. {paper['Title']} ({paper['Year']}; "
                 f"semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; "
                 f"arXiv ID: {paper['arxiv_id']})"
+                f"PMC ID: {paper['pmc_id']})"
                 for i, paper in enumerate(top_papers)
             ]
         )

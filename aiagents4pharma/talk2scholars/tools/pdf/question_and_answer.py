@@ -443,6 +443,7 @@ def question_and_answer(
         ValueError: If required models or 'article_data' are missing from state.
         RuntimeError: If no relevant document chunks can be retrieved.
     """
+
     # Load configuration
     config = load_hydra_config()
     # Create a unique identifier for this call to track potential infinite loops
@@ -499,6 +500,11 @@ def question_and_answer(
         for paper in article_data.values()
         if isinstance(paper, dict)
     )
+    has_pubmed_papers = any(
+    paper.get("source") == "pubmed"
+    for paper in article_data.values()
+    if isinstance(paper, dict)
+)
 
     # Choose papers to use
     selected_paper_ids = []
@@ -515,7 +521,13 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers:
+    elif (
+        use_all_papers
+        or has_uploaded_papers
+        or has_zotero_papers
+        or has_arxiv_papers
+        or has_pubmed_papers
+        ):
         # Use all available papers if explicitly requested or if we have papers from any source
         selected_paper_ids = list(article_data.keys())
         logger.info(

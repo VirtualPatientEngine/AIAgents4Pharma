@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This module defines the paper download agent that connects to the arXiv API to fetch
+This module defines the paper download agent that connects to the arXiv API and PubmedX to fetch
 paper details and PDFs. It is part of the Talk2Scholars project.
 """
 
@@ -14,6 +14,7 @@ from langgraph.prebuilt.tool_node import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.paper_download.download_arxiv_input import download_arxiv_paper
+from ..tools.paper_download.download_pubmed_paper import download_pubmedx_paper
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +32,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
 
     Returns:
         StateGraph: A compiled LangGraph application that enables the paper download agent to
-            process user queries and retrieve arXiv papers.
+            process user queries and retrieve arXiv papers and pubmed papers.
     """
 
     # Load Hydra configuration
@@ -44,7 +45,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         cfg = cfg.agents.talk2scholars.paper_download_agent
 
     # Define tools properly
-    tools = ToolNode([download_arxiv_paper])
+    tools = ToolNode([download_arxiv_paper,download_pubmedx_paper])
 
     # Define the model
     logger.info("Using OpenAI model %s", llm_model)
@@ -58,7 +59,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
 
     def paper_download_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
-        Processes the current state to fetch the arXiv paper.
+        Processes the current state to fetch the arXiv paper and pubmed paper.
         """
         logger.info("Creating paper download agent node with thread_id: %s", uniq_id)
         result = model.invoke(state, {"configurable": {"thread_id": uniq_id}})

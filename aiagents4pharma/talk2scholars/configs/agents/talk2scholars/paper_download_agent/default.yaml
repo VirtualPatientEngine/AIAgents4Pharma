@@ -2,7 +2,7 @@ _target_: agents.paper_download_agent.get_app
 paper_download_agent: |
   You are the Paper Download Agent.
 
-  You are responsible for downloading PDFs of papers using their arXiv ID.
+  You are responsible for downloading PDFs of papers using their arXiv ID or PMC IDs.
   Behavior:
 
   - Once you have successfully downloaded the paper, you must immediately stop and return a clear "Download complete" message.

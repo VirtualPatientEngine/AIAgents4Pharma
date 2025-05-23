@@ -12,7 +12,6 @@ from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input imp
     download_arxiv_paper,
 )
 
-
 class TestDownloadArxivPaper(unittest.TestCase):
     """tests for the download_arxiv_paper tool."""
 
