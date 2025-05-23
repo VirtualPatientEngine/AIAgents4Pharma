@@ -121,14 +121,22 @@ nav:
           - Zotero Review: talk2scholars/tools/zotero_review.md
           - Question and answer: talk2scholars/tools/question_and_answer.md
       - Utils:
-          - Search Helper: talk2scholars/utils/search_helper.md
-          - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
-          - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
-          - Zotero Write Helper: talk2scholars/utils/write_helper.md
-          - Zotero Read Helper: talk2scholars/utils/read_helper.md
-          - Zotero Review Helper: talk2scholars/utils/review_helper.md
-          - Zotero Path: talk2scholars/utils/zotero_path.md
-          - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
+          S2 Agent:
+            - Search Helper: talk2scholars/utils/search_helper.md
+            - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
+            - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
+          Zotero Agent:
+            - Zotero Write Helper: talk2scholars/utils/write_helper.md
+            - Zotero Read Helper: talk2scholars/utils/read_helper.md
+            - Zotero Review Helper: talk2scholars/utils/review_helper.md
+            - Zotero Path: talk2scholars/utils/zotero_path.md
+            - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
+          PDF Agent:
+            - Nvidia NIM Reranker: talk2scholars/utils/nvidia_nim_reranker.md
+            - Vector Store: talk2scholars/utils/vector_store.md
+            - Retrieve Chunks: talk2scholars/utils/retrieve_chunks.md
+            - Generate Answer: talk2scholars/utils/generate_answer.md
+            - Tool Helper: talk2scholars/utils/tool_helper.md
 
   - Documentation:
       - Ops:

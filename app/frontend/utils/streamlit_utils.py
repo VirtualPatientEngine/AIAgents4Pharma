@@ -222,10 +222,10 @@ def sample_questions_t2s():
     Function to get the sample questions for Talk2Scholars.
     """
     questions = [
-        "Search articles on 'Role of DNA damage response (DDR) in Cancer'",
+        "Find articles on 'Bridging Biomedical Foundation Models via Knowledge Graphs'.",
         "Tell me more about the first article in the last search results",
         "Save these articles in my Zotero library under the collection 'Curiosity'",
-        "Download the article 'BioBridge' with arxiv_id '2310.03320' and summarize it",
+        "Download the last displayed articles and summarize the pre-trained foundation models used in the articles.",
         "Show all the papers in my Zotero library.",
         "Describe the PDB IDs of the GPCR 3D structures used in all the PDFs, and explain how the embeddings of the GPCR sequences were generated.",
     ]
@@ -740,7 +740,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             columns_to_drop = [
                 "Abstract",
                 "Key",
-                # "arxiv_id",
+                "arxiv_id",
                 "semantic_scholar_paper_id",
                 "source",
                 "filename",
