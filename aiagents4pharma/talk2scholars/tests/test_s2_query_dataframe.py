@@ -3,17 +3,18 @@ Unit tests for S2 tools functionality.
 """
 
 # pylint: disable=redefined-outer-name
-from unittest.mock import patch
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
-from ..tools.s2.query_dataframe import query_dataframe, NoPapersFoundError
 from langchain_core.messages import ToolMessage
+
+from ..tools.s2.query_dataframe import NoPapersFoundError, query_dataframe
 
 
 @pytest.fixture
 def initial_state():
     """Provides an empty initial state for tests with a dummy llm_model."""
-    from unittest.mock import MagicMock
+
     return {"papers": {}, "multi_papers": {}, "llm_model": MagicMock()}
 
 
@@ -49,10 +50,14 @@ class TestS2Tools:
     def test_query_dataframe_empty_state(self, initial_state):
         """Tests query_dataframe tool behavior when no papers are found."""
         # Calling without any papers should raise NoPapersFoundError
-        tool_input = {"question": "List all papers", "state": initial_state, "tool_call_id": "test_id"}
+        tool_input = {
+            "question": "List all papers",
+            "state": initial_state,
+            "tool_call_id": "test_id",
+        }
         with pytest.raises(
             NoPapersFoundError,
-            match="No papers found. A search needs to be performed first."
+            match="No papers found. A search needs to be performed first.",
         ):
             query_dataframe.run(tool_input)
 
@@ -75,10 +80,14 @@ class TestS2Tools:
 
         # Ensure that the output of query_dataframe is correctly structured
         # Invoke the tool with a test tool_call_id
-        tool_input = {"question": "List all papers", "state": state, "tool_call_id": "test_id"}
+        tool_input = {
+            "question": "List all papers",
+            "state": state,
+            "tool_call_id": "test_id",
+        }
         result = query_dataframe.run(tool_input)
         # The tool returns a Command with messages
-        assert hasattr(result, 'update')
+        assert hasattr(result, "update")
         update = result.update
         assert "messages" in update
         msgs = update["messages"]
@@ -101,7 +110,11 @@ class TestS2Tools:
         mock_create_agent.return_value = mock_agent
         # Invoke tool
         # Invoke the tool with direct mapping and test tool_call_id
-        tool_input = {"question": "Filter papers", "state": state, "tool_call_id": "test_id"}
+        tool_input = {
+            "question": "Filter papers",
+            "state": state,
+            "tool_call_id": "test_id",
+        }
         result = query_dataframe.run(tool_input)
         update = result.update
         assert "messages" in update
@@ -110,3 +123,24 @@ class TestS2Tools:
         msg = msgs[0]
         assert isinstance(msg, ToolMessage)
         assert msg.content == "Direct mapping response"
+
+    def test_query_dataframe_missing_llm(self, initial_state):
+        """Test that missing llm_model raises ValueError."""
+        # Remove llm_model
+        state = {k: v for k, v in initial_state.items() if k != "llm_model"}
+        state["last_displayed_papers"] = MOCK_STATE_PAPER
+        tool_input = {"question": "Test", "state": state, "tool_call_id": "test_id"}
+        with pytest.raises(ValueError) as exc:
+            query_dataframe.run(tool_input)
+        assert "Missing 'llm_model' in state." in str(exc.value)
+
+    def test_query_dataframe_invalid_mapping(self, initial_state):
+        """Test that invalid last_displayed_papers mapping raises ValueError."""
+        # Provide invalid mapping key
+        state = initial_state.copy()
+        state["last_displayed_papers"] = "nonexistent_key"
+        # llm_model present
+        tool_input = {"question": "Test", "state": state, "tool_call_id": "test_id"}
+        with pytest.raises(ValueError) as exc:
+            query_dataframe.run(tool_input)
+        assert "Could not resolve a valid metadata dictionary" in str(exc.value)
