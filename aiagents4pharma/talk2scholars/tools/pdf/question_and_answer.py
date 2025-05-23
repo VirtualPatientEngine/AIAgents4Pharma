@@ -123,12 +123,10 @@ class Vectorstore:
         # Cache for document chunk embeddings to avoid recomputation
         self.embeddings: Dict[str, Any] = {}
 
-    def add_paper(
-        self,
-        paper_id: str,
-        pdf_url: str,
-        paper_metadata: Dict[str, Any],
-    ) -> None:
+    def add_paper(self, 
+                  paper_id: str, 
+                  pdf_url: str, 
+                  paper_metadata: Dict[str, Any]) -> None:
         """
         Add a paper to the document store.
 
@@ -137,61 +135,65 @@ class Vectorstore:
             pdf_url: URL to the PDF
             paper_metadata: Metadata about the paper
         """
+        try:
         # Skip if already loaded
-        if paper_id in self.loaded_papers:
-            logger.info("Paper %s already loaded, skipping", paper_id)
-            return
+            if paper_id in self.loaded_papers:
+                logger.info("Paper %s already loaded, skipping", paper_id)
+                return
 
-        logger.info("Loading paper %s from %s", paper_id, pdf_url)
+            logger.info("Loading paper %s from %s", paper_id, pdf_url)
 
-        # Store paper metadata
-        self.paper_metadata[paper_id] = paper_metadata
+            # Store paper metadata
+            self.paper_metadata[paper_id] = paper_metadata
 
-        # Load the PDF and split into chunks according to Hydra config
-        loader = PyPDFLoader(pdf_url)
-        documents = loader.load()
-        logger.info("Loaded %d pages from %s", len(documents), paper_id)
+            # Load the PDF and split into chunks according to Hydra config
+            loader = PyPDFLoader(pdf_url)
+            documents = loader.load()
+            logger.info("Loaded %d pages from %s", len(documents), paper_id)
 
-        # Create text splitter according to Hydra config
-        cfg = load_hydra_config()
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=cfg.chunk_size,
-            chunk_overlap=cfg.chunk_overlap,
-            separators=["\n\n", "\n", ". ", " ", ""],
-        )
-
-        # Split documents and add metadata for each chunk
-        chunks = splitter.split_documents(documents)
-        logger.info("Split %s into %d chunks", paper_id, len(chunks))
-        # Embed and cache chunk embeddings
-        chunk_texts = [chunk.page_content for chunk in chunks]
-        chunk_embeddings = self.embedding_model.embed_documents(chunk_texts)
-        logger.info("Embedded %d chunks for paper %s", len(chunk_embeddings), paper_id)
-
-        # Enhance document metadata
-        for i, chunk in enumerate(chunks):
-            # Add paper metadata to each chunk
-            chunk.metadata.update(
-                {
-                    "paper_id": paper_id,
-                    "title": paper_metadata.get("Title", "Unknown"),
-                    "chunk_id": i,
-                    # Keep existing page number if available
-                    "page": chunk.metadata.get("page", 0),
-                }
+            # Create text splitter according to Hydra config
+            cfg = load_hydra_config()
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=cfg.chunk_size,
+                chunk_overlap=cfg.chunk_overlap,
+                separators=["\n\n", "\n", ". ", " ", ""],
             )
 
-            # Add any additional metadata fields
-            for field in self.metadata_fields:
-                if field in paper_metadata and field not in chunk.metadata:
-                    chunk.metadata[field] = paper_metadata[field]
+            # Split documents and add metadata for each chunk
+            chunks = splitter.split_documents(documents)
+            logger.info("Split %s into %d chunks", paper_id, len(chunks))
+            # Embed and cache chunk embeddings
+            chunk_texts = [chunk.page_content for chunk in chunks]
+            chunk_embeddings = self.embedding_model.embed_documents(chunk_texts)
+            logger.info("Embedded %d chunks for paper %s", len(chunk_embeddings), paper_id)
 
-            # Store chunk
-            doc_id = f"{paper_id}_{i}"
-            self.documents[doc_id] = chunk
-            # Cache embedding if available
-            if chunk_embeddings[i] is not None:
-                self.embeddings[doc_id] = chunk_embeddings[i]
+            # Enhance document metadata
+            for i, chunk in enumerate(chunks):
+                # Add paper metadata to each chunk
+                chunk.metadata.update(
+                    {
+                        "paper_id": paper_id,
+                        "title": paper_metadata.get("Title", "Unknown"),
+                        "chunk_id": i,
+                        # Keep existing page number if available
+                        "page": chunk.metadata.get("page", 0),
+                    }
+                )
+
+                # Add any additional metadata fields
+                for field in self.metadata_fields:
+                    if field in paper_metadata and field not in chunk.metadata:
+                        chunk.metadata[field] = paper_metadata[field]
+
+                # Store chunk
+                doc_id = f"{paper_id}_{i}"
+                self.documents[doc_id] = chunk
+                # Cache embedding if available
+                if chunk_embeddings[i] is not None:
+                    self.embeddings[doc_id] = chunk_embeddings[i]
+        except Exception as e:
+            logger.error("Error loading paper %s: %s", paper_id, e)
+            raise
 
         # Mark as loaded to prevent duplicate loading
         self.loaded_papers.add(paper_id)
@@ -572,17 +574,13 @@ def question_and_answer(
         )
 
     # Load selected papers if needed
-    for paper_id in selected_paper_ids:
-        if paper_id not in vector_store.loaded_papers:
-            pdf_url = article_data[paper_id].get("pdf_url")
-            if pdf_url:
-                try:
-                    vector_store.add_paper(paper_id, pdf_url, article_data[paper_id])
-                except (IOError, ValueError) as e:
-                    logger.warning(
-                        "%s: Error loading paper %s: %s", call_id, paper_id, e
-                    )
-
+    for paper_id, paper in article_data.items():
+        pdf_url = paper.get("pdf_url")
+        if pdf_url and paper_id not in vector_store.loaded_papers:
+            try:
+                vector_store.add_paper(paper_id, pdf_url, paper)
+            except Exception as e:
+                logger.warning("Skipping paper %s due to error: %s", paper_id, e)
     # Ensure vector store is built
     if not vector_store.vector_store:
         vector_store.build_vector_store()
