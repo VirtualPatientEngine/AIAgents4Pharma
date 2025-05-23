@@ -4,17 +4,19 @@
 """
 Tool for rendering the most recently displayed papers as a DataFrame artifact for the front-end.
 
-This module defines a tool that retrieves the paper metadata stored under the state key
-'last_displayed_papers' and returns it as an artifact (dictionary of papers). The front-end
-can then render this artifact as a pandas DataFrame for display. If no papers are found,
-a NoPapersFoundError is raised to indicate that a search or recommendation should be
-performed first.
+Call this tool when you need to present the current set of retrieved papers to the user
+(e.g., "show me the papers", "display results"). It reads the 'last_displayed_papers'
+dictionary from the agent state and returns it as an artifact that the UI will render
+as a pandas DataFrame. This tool does not perform any new searches or filtering; it
+only displays the existing list. If no papers are available, it raises NoPapersFoundError
+to signal that a search or recommendation must be executed first.
 """
 
 
 import logging
 
 from typing import Annotated
+from pydantic import BaseModel, Field
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -40,10 +42,31 @@ class NoPapersFoundError(Exception):
     """
 
 
-@tool("display_dataframe", parse_docstring=True)
+class DisplayDataFrameInput(BaseModel):
+    """
+    Pydantic schema for displaying the last set of papers as a DataFrame artifact.
+
+    Fields:
+      state: Agent state dict containing the 'last_displayed_papers' key.
+      tool_call_id: LangGraph-injected identifier for this tool invocation.
+    """
+
+    state: Annotated[dict, InjectedState] = Field(
+        ..., description="Agent state containing the 'last_displayed_papers' reference."
+    )
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(
+        ..., description="LangGraph-injected identifier for this tool call."
+    )
+
+
+@tool(
+    "display_dataframe",
+    args_schema=DisplayDataFrameInput,
+    parse_docstring=True,
+)
 def display_dataframe(
-    tool_call_id: Annotated[str, InjectedToolCallId],
-    state: Annotated[dict, InjectedState],
+    tool_call_id: str,
+    state: dict,
 ) -> Command:
     """
     Render the last set of retrieved papers as a DataFrame in the front-end.
@@ -55,7 +78,7 @@ def display_dataframe(
     that a search or recommendation must be performed first.
 
     Args:
-        tool_call_id (InjectedToolCallId): Unique ID of this tool invocation.
+        tool_call_id (str): LangGraph-injected unique ID for this tool call.
         state (dict): The agent's state containing the 'last_displayed_papers' reference.
 
     Returns:
@@ -65,7 +88,7 @@ def display_dataframe(
     Raises:
         NoPapersFoundError: If no entries exist under 'last_displayed_papers' in state.
     """
-    logger.info("Displaying papers")
+    logger.info("Displaying papers from 'last_displayed_papers'")
     context_val = state.get("last_displayed_papers")
     # Support both key reference (str) and direct mapping
     if isinstance(context_val, dict):
