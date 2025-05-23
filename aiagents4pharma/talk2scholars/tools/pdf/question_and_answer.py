@@ -514,6 +514,13 @@ def question_and_answer(
 
     # Choose papers to use
     selected_paper_ids = []
+    paper_sources_present = [
+        has_uploaded_papers,
+        has_zotero_papers,
+        has_arxiv_papers,
+        has_biorxiv_papers,
+        has_medrxiv_papers,
+    ]
 
     if paper_ids:
         # Use explicitly specified papers
@@ -527,16 +534,7 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-        paper_sources_present = [
-        use_all_papers,
-        has_uploaded_papers,
-        has_zotero_papers,
-        has_arxiv_papers,
-        has_biorxiv_papers,
-        has_medrxiv_papers,
-        ]
-
-    elif any(paper_sources_present):
+    elif use_all_papers or paper_sources_present:
         # Use all available papers if explicitly requested or if we have papers from any source
         selected_paper_ids = list(article_data.keys())
         logger.info(
