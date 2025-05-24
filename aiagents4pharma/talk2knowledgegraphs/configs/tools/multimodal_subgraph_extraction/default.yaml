@@ -23,3 +23,14 @@ node_colors_dict:
   "biological_process": "#c5c9c7"
   "drug": "#c4a661"
   "disease": "#80013f"
+
+biobridge:
+  source: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal/"
+  node_type:
+    - "gene/protein"
+    - "molecular_function"
+    - "cellular_component"
+    - "biological_process"
+    - "drug"
+    - "disease"
+  

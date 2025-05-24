@@ -218,59 +218,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         Returns:
             A dictionary containing the PyG graph, NetworkX graph, and textualized graph.
         """
-        # print(subgraph)
-        # Prepare the PyTorch Geometric graph
-        # mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
-        # pyg_graph = Data(
-        #     # Node features
-        #     # x=pyg_graph.x[subgraph["nodes"]],
-        #     x=[graph["pyg"].x[i] for i in subgraph["nodes"]],
-        #     node_id=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
-        #     node_name=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
-        #     enriched_node=np.array(graph["pyg"].enriched_node)[subgraph["nodes"]].tolist(),
-        #     num_nodes=len(subgraph["nodes"]),
-        #     # Edge features
-        #     edge_index=torch.LongTensor(
-        #         [
-        #             [
-        #                 mapping[i]
-        #                 for i in graph["pyg"].edge_index[:, subgraph["edges"]][0].tolist()
-        #             ],
-        #             [
-        #                 mapping[i]
-        #                 for i in graph["pyg"].edge_index[:, subgraph["edges"]][1].tolist()
-        #             ],
-        #         ]
-        #     ),
-        #     edge_attr=graph["pyg"].edge_attr[subgraph["edges"]],
-        #     edge_type=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-        #     relation=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-        #     label=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-        #     enriched_edge=np.array(graph["pyg"].enriched_edge)[subgraph["edges"]].tolist(),
-        # )
-
-        # # Networkx DiGraph construction to be visualized in the frontend
-        # nx_graph = nx.DiGraph()
-        # # Add nodes with attributes
-        # node_colors = {n: cfg.node_colors_dict[k]
-        #                for k, v in state["selections"].items() for n in v}
-        # for n in pyg_graph.node_name:
-        #     nx_graph.add_node(n, color=node_colors.get(n, None))
-
-        # # Add edges with attributes
-        # edges = zip(
-        #     pyg_graph.edge_index[0].tolist(),
-        #     pyg_graph.edge_index[1].tolist(),
-        #     pyg_graph.edge_type
-        # )
-        # for src, dst, edge_type in edges:
-        #     nx_graph.add_edge(
-        #         pyg_graph.node_name[src],
-        #         pyg_graph.node_name[dst],
-        #         relation=edge_type,
-        #         label=edge_type,
-        #     )
-
         # Convert the dict to a cudf DataFrame
         node_colors = {n: cfg.node_colors_dict[k]
                         for k, v in state["selections"].items() for n in v}

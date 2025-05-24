@@ -167,3 +167,6 @@ experiment/web/vectordb
 
 # macOS metadata file
 .DS_Store
+
+# BioBridge Data
+aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal
