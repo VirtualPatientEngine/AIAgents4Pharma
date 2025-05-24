@@ -1,0 +1,2 @@
+api_url: "https://api.biorxiv.org/details/biorxiv/"
+request_timeout: 20
