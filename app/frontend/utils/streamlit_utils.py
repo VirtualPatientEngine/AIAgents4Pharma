@@ -741,6 +741,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
                 "filename",
                 "pdf_url",
                 "attachment_key",
+                "doi",
             ]
 
             # Check if columns exist before dropping
@@ -750,6 +751,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
 
             if existing_columns:
                 df_papers.drop(columns=existing_columns, inplace=True)
+            
 
             if "Year" in df_papers.columns:
                 df_papers["Year"] = df_papers["Year"].apply(

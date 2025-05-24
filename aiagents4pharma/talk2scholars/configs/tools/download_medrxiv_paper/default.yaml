@@ -1,2 +1,2 @@
 api_url: "https://api.biorxiv.org/details/medrxiv"
-request_timeout: 10
+request_timeout: 20

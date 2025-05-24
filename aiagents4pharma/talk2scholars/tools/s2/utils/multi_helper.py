@@ -159,6 +159,7 @@ class MultiPaperRecData:
                 f"{i+1}. {paper['Title']} ({paper['Year']}; "
                 f"semantic_scholar_paper_id: {paper['semantic_scholar_paper_id']}; "
                 f"arXiv ID: {paper['arxiv_id']})"
+                f"doi: {paper['doi']})"
                 for i, paper in enumerate(top_papers)
             ]
         )

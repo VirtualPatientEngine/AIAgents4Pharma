@@ -23,8 +23,9 @@ class DownloadBiorxivPaperInput(BaseModel):
     """Input schema for the bioRxiv paper download tool."""
 
     doi: str = Field(
-        description="The bioRxiv DOI used to retrieve the paper details and PDF URL."
+        description="The bioRxiv DOI, from search_helper, used to retrieve the paper details and PDF URL."
     )
+    print(f"DOI received: {doi}")
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 def fetch_biorxiv_metadata(doi: str) -> dict:
