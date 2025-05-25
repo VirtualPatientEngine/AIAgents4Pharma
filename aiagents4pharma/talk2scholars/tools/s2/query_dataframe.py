@@ -62,7 +62,12 @@ class QueryDataFrameInput(BaseModel):
     state: Annotated[dict, InjectedState]
 
 
-@tool("query_dataframe", args_schema=QueryDataFrameInput, parse_docstring=True)
+@tool(
+    "query_dataframe",
+    args_schema=QueryDataFrameInput,
+    parse_docstring=True,
+    return_direct=True,
+)
 def query_dataframe(
     question: str, state: Annotated[dict, InjectedState], tool_call_id: str
 ) -> Command:

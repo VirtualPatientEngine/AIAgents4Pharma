@@ -52,7 +52,10 @@ class MultiPaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
-@tool(args_schema=MultiPaperRecInput, parse_docstring=True)
+@tool(
+    args_schema=MultiPaperRecInput,
+    parse_docstring=True,
+)
 def get_multi_paper_recommendations(
     paper_ids: List[str],
     tool_call_id: Annotated[str, InjectedToolCallId],

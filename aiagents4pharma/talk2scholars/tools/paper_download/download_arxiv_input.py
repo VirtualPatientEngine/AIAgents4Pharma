@@ -80,7 +80,11 @@ def extract_metadata(entry: ET.Element, ns: dict, arxiv_id: str) -> dict:
     }
 
 
-@tool(args_schema=DownloadArxivPaperInput, parse_docstring=True)
+@tool(
+    args_schema=DownloadArxivPaperInput,
+    parse_docstring=True,
+    return_direct=True,
+)
 def download_arxiv_paper(
     arxiv_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],

@@ -35,7 +35,7 @@ class SinglePaperRecInput(BaseModel):
         description="40-character Semantic Scholar Paper ID to base recommendations on"
     )
     limit: int = Field(
-        default=5,
+        default=10,
         description="Maximum number of recommendations to return (1-500)",
         ge=1,
         le=500,
@@ -48,11 +48,14 @@ class SinglePaperRecInput(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
-@tool(args_schema=SinglePaperRecInput, parse_docstring=True)
+@tool(
+    args_schema=SinglePaperRecInput,
+    parse_docstring=True,
+)
 def get_single_paper_recommendations(
     paper_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    limit: int = 5,
+    limit: int = 10,
     year: Optional[str] = None,
 ) -> Command[Any]:
     """

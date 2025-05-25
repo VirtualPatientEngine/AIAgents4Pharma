@@ -47,11 +47,15 @@ class SearchInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
-@tool("search_tool", args_schema=SearchInput, parse_docstring=True)
+@tool(
+    "search_tool",
+    args_schema=SearchInput,
+    parse_docstring=True,
+)
 def search_tool(
     query: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
-    limit: int = 5,
+    limit: int = 10,
     year: Optional[str] = None,
 ) -> Command[Any]:
     """
