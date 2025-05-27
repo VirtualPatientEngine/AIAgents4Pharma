@@ -740,7 +740,11 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             columns_to_drop = [
                 "Abstract",
                 "Key",
+                "paper_ids",
                 "arxiv_id",
+                "pm_id",
+                "pmc_id",
+                "doi",
                 "semantic_scholar_paper_id",
                 "source",
                 "filename",
