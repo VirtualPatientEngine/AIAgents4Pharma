@@ -26,14 +26,20 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     """
     Initializes and returns the LangGraph application for the Talk2Scholars paper download agent.
 
+    This agent supports downloading scientific papers from multiple preprint servers, including
+    arXiv, BioRxiv, and MedRxiv. It can intelligently handle user queries by extracting or resolving
+    necessary identifiers (e.g., arXiv ID or DOI) from the paper title and routing the request to
+    the appropriate download tool.
+
     Args:
         uniq_id (str): A unique identifier for tracking the current session.
         llm_model (BaseChatModel, optional): The language model to be used by the agent.
-            Defaults to ChatOpenAI(model="gpt-4o-mini", temperature=0.5).
+        Defaults to ChatOpenAI(model="gpt-4o-mini", temperature=0.5).
 
     Returns:
         StateGraph: A compiled LangGraph application that enables the paper download agent to
-            process user queries and retrieve arXiv papers.
+        process user queries and retrieve research papers from arXiv (using arXiv ID),
+        BioRxiv and MedRxiv (using DOI resolved from the paper title or provided directly).
     """
 
     # Load Hydra configuration
@@ -60,7 +66,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
 
     def paper_download_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
         """
-        Processes the current state to fetch the arXiv paper.
+        Processes the current state to fetch the research paper from arXiv, BioRxiv, or MedRxiv.
         """
         logger.info("Creating paper download agent node with thread_id: %s", uniq_id)
         result = model.invoke(state, {"configurable": {"thread_id": uniq_id}})

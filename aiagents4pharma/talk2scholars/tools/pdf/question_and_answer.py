@@ -500,8 +500,27 @@ def question_and_answer(
         if isinstance(paper, dict)
     )
 
+    has_biorxiv_papers = any(
+        paper.get("source") == "biorxiv"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
+    has_medrxiv_papers = any(
+        paper.get("source") == "medrxiv"
+        for paper in article_data.values()
+        if isinstance(paper, dict)
+    )
+
     # Choose papers to use
     selected_paper_ids = []
+    has_combimed_papers = (
+        has_uploaded_papers
+        or has_zotero_papers
+        or has_arxiv_papers
+        or has_biorxiv_papers
+        or has_medrxiv_papers
+    )
 
     if paper_ids:
         # Use explicitly specified papers
@@ -515,7 +534,7 @@ def question_and_answer(
                 "%s: None of the provided paper_ids %s were found", call_id, paper_ids
             )
 
-    elif use_all_papers or has_uploaded_papers or has_zotero_papers or has_arxiv_papers:
+    elif use_all_papers or has_combimed_papers:
         # Use all available papers if explicitly requested or if we have papers from any source
         selected_paper_ids = list(article_data.keys())
         logger.info(
