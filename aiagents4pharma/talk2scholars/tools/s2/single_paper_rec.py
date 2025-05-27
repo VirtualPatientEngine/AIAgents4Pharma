@@ -42,7 +42,8 @@ class SinglePaperRecInput(BaseModel):
     )
     year: Optional[str] = Field(
         default=None,
-        description="Publication year filter; supports formats: 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
+        description="Publication year filter; supports formats::"
+        "'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     model_config = {"arbitrary_types_allowed": True}
@@ -68,7 +69,8 @@ def get_single_paper_recommendations(
         paper_id (str): 40-character Semantic Scholar paper ID.
         tool_call_id (str): Internal tool call identifier injected by the system.
         limit (int, optional): Maximum number of recommendations to return. Defaults to 5.
-        year (str, optional): Publication year filter; supports 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
+        year (str, optional): Publication year filter; supports 'YYYY', 'YYYY-',
+        '-YYYY', 'YYYY:YYYY'. Defaults to None.
 
     Returns:
         Command: A Command object containing:

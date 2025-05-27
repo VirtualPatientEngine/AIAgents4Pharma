@@ -60,7 +60,8 @@ class QueryDataFrameInput(BaseModel):
     extract_ids: bool = Field(
         default=False,
         description=(
-            "If true, instruct the DataFrame agent to extract values from the specified ID column via a Python expression."
+            "If true, instruct the DataFrame agent to extract values from the"
+            "specified ID column via a Python expression."
         ),
     )
     id_column: str = Field(
@@ -72,7 +73,8 @@ class QueryDataFrameInput(BaseModel):
     row_number: Optional[int] = Field(
         default=None,
         description=(
-            "1-based index of the ID to extract from the list; if provided, returns only that single ID."
+            "1-based index of the ID to extract from the list; if provided, returns only"
+            "that single ID."
         ),
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
@@ -104,10 +106,13 @@ def query_dataframe(
 
     Args:
         question (str): The metadata query to ask over the papers table.
-        extract_ids (bool): If true, modify the query to instruct the DataFrame agent to extract values from the specified ID column via Python code.
+        extract_ids (bool): If true, modify the query to instruct the DataFrame agent
+        to extract values from the specified ID column via Python code.
         id_column (str): Name of the metadata column to extract values from when extract_ids=True.
-        row_number (int, optional): 1-based index of the ID to extract from the list; if provided, returns only that single ID.
-        state (dict): The agent's state containing 'last_displayed_papers' key referencing the metadata table in state.
+        row_number (int, optional): 1-based index of the ID to extract from the list; if provided,
+        returns only that single ID.
+        state (dict): The agent's state containing 'last_displayed_papers' key
+        referencing the metadata table in state.
         tool_call_id (str): LangGraph-injected identifier for this tool call.
 
     Returns:

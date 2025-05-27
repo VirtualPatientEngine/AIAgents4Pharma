@@ -35,7 +35,8 @@ class MultiPaperRecInput(BaseModel):
     """
 
     paper_ids: List[str] = Field(
-        description="List of 40-character Semantic Scholar Paper IDs (at least two) to base recommendations on"
+        description="List of 40-character Semantic Scholar Paper IDs"
+        "(at least two) to base recommendations on"
     )
     limit: int = Field(
         default=10,
@@ -45,7 +46,8 @@ class MultiPaperRecInput(BaseModel):
     )
     year: Optional[str] = Field(
         default=None,
-        description="Publication year filter; supports formats: 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
+        description="Publication year filter; supports formats:"
+        "'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -70,10 +72,12 @@ def get_multi_paper_recommendations(
     from each input paper.
 
     Args:
-        paper_ids (List[str]): List of 40-character Semantic Scholar paper IDs. Provide at least two IDs.
+        paper_ids (List[str]): List of 40-character Semantic Scholar paper IDs.
+        Provide at least two IDs.
         tool_call_id (str): Internal tool call identifier injected by the system.
         limit (int, optional): Maximum total number of recommendations to return. Defaults to 10.
-        year (str, optional): Publication year filter; supports formats: 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
+        year (str, optional): Publication year filter; supports formats: 'YYYY',
+        'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
 
     Returns:
         Command: A Command object containing:

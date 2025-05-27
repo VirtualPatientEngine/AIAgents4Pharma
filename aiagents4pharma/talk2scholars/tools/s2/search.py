@@ -27,7 +27,8 @@ class SearchInput(BaseModel):
     Attributes:
         query: Full or partial paper title or keywords to search for.
         limit: Maximum number of search results to return (1-100).
-        year: Optional publication year filter; supports 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'.
+        year: Optional publication year filter; supports 'YYYY',
+        'YYYY-', '-YYYY', 'YYYY:YYYY'.
         tool_call_id: Internal tool call identifier injected by the system.
     """
 
@@ -42,7 +43,8 @@ class SearchInput(BaseModel):
     )
     year: Optional[str] = Field(
         default=None,
-        description="Publication year filter; supports formats: 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
+        description="Publication year filter; supports formats:"
+        "'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -61,14 +63,15 @@ def search_tool(
     """
     Return academic papers from Semantic Scholar matching a title or keyword query.
 
-    This tool searches Semantic Scholar for papers whose titles or keywords match the given text,
-    optionally filtered by publication year.
+    This tool searches Semantic Scholar for papers whose titles or keywords
+    match the given text, optionally filtered by publication year.
 
     Args:
         query (str): Full or partial paper title or keywords to search for.
         tool_call_id (str): Internal tool call identifier injected by the system.
         limit (int, optional): Maximum number of search results to return. Defaults to 5.
-        year (str, optional): Publication year filter; supports 'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
+        year (str, optional): Publication year filter; supports 'YYYY',
+        'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
 
     Returns:
         Command: A Command object containing:
