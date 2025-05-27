@@ -116,6 +116,8 @@ nav:
           - Query Dataframe: talk2scholars/tools/query_dataframe.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
+          - Download BioRxiv Input: talk2scholars/tools/download_biorxiv_input.md
+          - Download MedRxiv Input: talk2scholars/tools/download_medrxiv_input.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
           - Zotero Write: talk2scholars/tools/zotero_write.md
           - Zotero Review: talk2scholars/tools/zotero_review.md
