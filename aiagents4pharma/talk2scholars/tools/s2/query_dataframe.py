@@ -67,7 +67,8 @@ class QueryDataFrameInput(BaseModel):
     id_column: str = Field(
         default="paper_ids",
         description=(
-            "Name of the metadata column containing a list of paper IDs to extract when extract_ids=True."
+            "Name of the metadata column containing a list of paper IDs to"
+            "extract when extract_ids=True."
         ),
     )
     row_number: Optional[int] = Field(
