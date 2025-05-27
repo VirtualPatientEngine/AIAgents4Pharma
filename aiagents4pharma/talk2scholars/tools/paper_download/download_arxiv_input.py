@@ -29,6 +29,16 @@ class DownloadArxivPaperInput(BaseModel):
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
+# Helper to load arXiv download configuration
+def _get_arxiv_config() -> Any:
+    """Load arXiv download configuration."""
+    with hydra.initialize(version_base=None, config_path="../../configs"):
+        cfg = hydra.compose(
+            config_name="config", overrides=["tools/download_arxiv_paper=default"]
+        )
+    return cfg.tools.download_arxiv_paper
+
+
 def fetch_arxiv_metadata(
     api_url: str, arxiv_id: str, request_timeout: int
 ) -> ET.Element:
@@ -96,44 +106,34 @@ def download_arxiv_paper(
     logger.info("Fetching metadata from arXiv for paper IDs: %s", arxiv_ids)
 
     # Load configuration
-    with hydra.initialize(version_base=None, config_path="../../configs"):
-        cfg = hydra.compose(
-            config_name="config", overrides=["tools/download_arxiv_paper=default"]
-        )
-        api_url = cfg.tools.download_arxiv_paper.api_url
-        request_timeout = cfg.tools.download_arxiv_paper.request_timeout
+    cfg = _get_arxiv_config()
+    api_url = cfg.api_url
+    request_timeout = cfg.request_timeout
 
     # Aggregate results
     article_data: dict[str, Any] = {}
     for aid in arxiv_ids:
         logger.info("Processing arXiv ID: %s", aid)
         # Fetch and parse metadata
-        root = fetch_arxiv_metadata(api_url, aid, request_timeout)
-        ns = {"atom": "http://www.w3.org/2005/Atom"}
-        entry = root.find("atom:entry", ns)
+        entry = fetch_arxiv_metadata(api_url, aid, request_timeout).find(
+            "atom:entry", {"atom": "http://www.w3.org/2005/Atom"}
+        )
         if entry is None:
             logger.warning("No entry found for arXiv ID %s", aid)
             continue
-        # Extract metadata
-        article_data[aid] = extract_metadata(entry, ns, aid)
-
-    # Prepare a summary of the first few downloaded papers
-    top_n = 3
-    top_ids = list(article_data.keys())[:top_n]
-    summary_lines: list[str] = []
-    for i, aid in enumerate(top_ids):
-        meta = article_data.get(aid, {})
-        title = meta.get("Title", "N/A")
-        pub_date = meta.get("Publication Date", "N/A")
-        url = meta.get("URL", "")
-        summary_lines.append(
-            f"{i+1}. {title} ({pub_date}; arXiv ID: {aid}; URL: {url})"
+        article_data[aid] = extract_metadata(
+            entry, {"atom": "http://www.w3.org/2005/Atom"}, aid
         )
 
-    summary = "\n".join(summary_lines)
-    if len(article_data) > top_n:
-        summary += f"\n...and {len(article_data) - top_n} more papers."
-
+    # Prepare a summary of up to three downloaded papers
+    summary = "\n".join(
+        f"{idx+1}. {meta.get('Title','N/A')} ({meta.get('Publication Date','N/A')}; "
+        f"arXiv ID: {aid}; URL: {meta.get('URL','')})"
+        for idx, (aid, meta) in enumerate(list(article_data.items())[:3])
+    )
+    remaining = len(article_data) - 3
+    if remaining > 0:
+        summary += f"\n...and {remaining} more papers."
     return Command(
         update={
             "article_data": article_data,

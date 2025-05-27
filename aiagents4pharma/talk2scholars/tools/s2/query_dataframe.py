@@ -10,7 +10,7 @@ or summarization. For PDF-level question answering, use the 'question_and_answer
 """
 
 import logging
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Any
 
 import pandas as pd
 from langchain_core.messages import ToolMessage
@@ -93,9 +93,7 @@ def query_dataframe(
     question: str,
     state: Annotated[dict, InjectedState],
     tool_call_id: str,
-    extract_ids: bool = False,
-    id_column: str = "paper_ids",
-    row_number: Optional[int] = None,
+    **kwargs: Any,
 ) -> Command:
     """
     Perform a tabular query on the most recently displayed papers.
@@ -148,18 +146,19 @@ def query_dataframe(
 
     df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
     # Prepare the query: if extracting IDs, let the DataFrame agent handle it via Python code
+    extract_ids_flag = kwargs.get("extract_ids", False)
+    id_column = kwargs.get("id_column", "paper_ids")
+    row_number = kwargs.get("row_number")
     question_to_agent = question
-    if extract_ids:
+    if extract_ids_flag:
         if not id_column:
             raise ValueError("Must specify 'id_column' when extract_ids=True.")
-        # Build Python expression: dropna, pick first ID of each list,
-        # then optionally select a single row
-        base_expr = f"df['{id_column}'].dropna().str[0].tolist()"
         if row_number is not None:
-            idx = row_number - 1
-            question_to_agent = f"{base_expr}[{idx}]"
+            question_to_agent = (
+                f"df['{id_column}'].dropna().str[0].tolist()[{row_number-1}]"
+            )
         else:
-            question_to_agent = base_expr
+            question_to_agent = f"df['{id_column}'].dropna().str[0].tolist()"
         logger.info(
             "extract_ids enabled: asking agent to run expression: %s", question_to_agent
         )
