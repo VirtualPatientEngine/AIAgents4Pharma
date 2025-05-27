@@ -43,11 +43,12 @@ class QueryDataFrameInput(BaseModel):
 
     Notes:
       - This tool is only for metadata queries. It does not perform full-text PDF analysis.
-      - You can access standard metadata columns such as 'title', 'authors',
-        'venue', 'year', and 'arxiv_id'.
-      - The following columns are typically excluded from direct querying for safety or irrelevance:
-        ['Abstract', 'Key', 'semantic_scholar_paper_id', 'source', 'filename', 'pdf_url',
-        'attachment_key'].
+      - You can access standard metadata columns such as 'Title', 'Authors',
+        'Venue', 'Year', and the unified 'paper_ids' (list of <source>:<ID>).
+      - To extract raw paper IDs for downloading, set extract_ids=True and specify:
+          - id_column: 'paper_ids' (default)
+          - row_number: 1-based index of the paper to return (optional—for a single ID)
+        Example: {{"question":"","extract_ids":True,"row_number":4}}
     """
 
     question: str = Field(
@@ -151,15 +152,14 @@ def query_dataframe(
     if extract_ids:
         if not id_column:
             raise ValueError("Must specify 'id_column' when extract_ids=True.")
-        # Build a Python expression to pull non-null IDs (and optional single row)
+        # Build Python expression: dropna, pick first ID of each list, then optionally select a single row
+        base_expr = f"df['{id_column}'].dropna().str[0].tolist()"
         if row_number is not None:
             idx = row_number - 1
-            question_to_agent = f"df['{id_column}'].dropna().tolist()[{idx}]"
+            question_to_agent = f"{base_expr}[{idx}]"
         else:
-            question_to_agent = f"df['{id_column}'].dropna().tolist()"
-        logger.info(
-            "extract_ids enabled: asking agent to run expression: %s", question_to_agent
-        )
+            question_to_agent = base_expr
+        logger.info("extract_ids enabled: asking agent to run expression: %s", question_to_agent)
 
     df_agent = create_pandas_dataframe_agent(
         llm_model,
