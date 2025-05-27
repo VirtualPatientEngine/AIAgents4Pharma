@@ -65,9 +65,9 @@ class QueryDataFrameInput(BaseModel):
         ),
     )
     id_column: str = Field(
-        default="arxiv_id",
+        default="paper_ids",
         description=(
-            "Name of the metadata column to extract values from when extract_ids=True."
+            "Name of the metadata column containing a list of paper IDs to extract when extract_ids=True."
         ),
     )
     row_number: Optional[int] = Field(
@@ -92,7 +92,7 @@ def query_dataframe(
     state: Annotated[dict, InjectedState],
     tool_call_id: str,
     extract_ids: bool = False,
-    id_column: str = "arxiv_id",
+    id_column: str = "paper_ids",
     row_number: Optional[int] = None,
 ) -> Command:
     """
