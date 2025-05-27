@@ -145,7 +145,7 @@ def test_helpers_empty_when_no_external_ids(monkeypatch):
             """raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_post1(url, headers, params, data, timeout):
+    def dummy_post1(*_, **__):
         """dummy response for multi-paper recommendation with empty externalIds"""
         return DummyResp1(
             {
@@ -181,7 +181,7 @@ def test_helpers_empty_when_no_external_ids(monkeypatch):
             """raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_get2(url, params, timeout):
+    def dummy_get2(*_, **__):
         """dummy response for search with empty externalIds"""
         return DummyResp2(
             {
@@ -217,7 +217,7 @@ def test_helpers_empty_when_no_external_ids(monkeypatch):
             """raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_get3(url, params, timeout):
+    def dummy_get3(*_, **__):
         """dummy response for single paper recommendation with empty externalIds"""
         return DummyResp3(
             {
@@ -256,7 +256,7 @@ def test_multi_helper_arxiv_and_pubmed_ids(monkeypatch):
             """raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_post5(url, headers, params, data, timeout):
+    def dummy_post5(*_, **__):
         """dummy response for multi-paper recommendation with ArXiv and PubMed IDs"""
         return DummyResp5(
             {
@@ -296,7 +296,7 @@ def test_search_helper_arxiv_and_pubmed_ids(monkeypatch):
             """ "raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_get6(url, params, timeout):
+    def dummy_get6(*_, **__):
         """dummy response for search with ArXiv and PubMed IDs"""
         return DummyResp6(
             {
@@ -336,7 +336,7 @@ def test_single_helper_arxiv_and_pubmed_ids(monkeypatch):
             """raise_for_status method to simulate successful response"""
             return None
 
-    def dummy_get7(url, params, timeout):
+    def dummy_get7(*_, **__):
         """dummy response for single paper recommendation with ArXiv and PubMed IDs"""
         return DummyResp7(
             {
