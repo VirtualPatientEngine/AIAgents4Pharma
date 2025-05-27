@@ -10,7 +10,7 @@ or summarization. For PDF-level question answering, use the 'question_and_answer
 """
 
 import logging
-from typing import Annotated
+from typing import Annotated, Optional
 
 import pandas as pd
 from langchain_core.messages import ToolMessage
@@ -20,7 +20,6 @@ from langchain_experimental.agents import create_pandas_dataframe_agent
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
-
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +57,24 @@ class QueryDataFrameInput(BaseModel):
             "(e.g., df['arxiv_id'].dropna().tolist())."
         )
     )
+    extract_ids: bool = Field(
+        default=False,
+        description=(
+            "If true, instruct the DataFrame agent to extract values from the specified ID column via a Python expression."
+        ),
+    )
+    id_column: str = Field(
+        default="arxiv_id",
+        description=(
+            "Name of the metadata column to extract values from when extract_ids=True."
+        ),
+    )
+    row_number: Optional[int] = Field(
+        default=None,
+        description=(
+            "1-based index of the ID to extract from the list; if provided, returns only that single ID."
+        ),
+    )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
@@ -69,7 +86,12 @@ class QueryDataFrameInput(BaseModel):
     return_direct=True,
 )
 def query_dataframe(
-    question: str, state: Annotated[dict, InjectedState], tool_call_id: str
+    question: str,
+    state: Annotated[dict, InjectedState],
+    tool_call_id: str,
+    extract_ids: bool = False,
+    id_column: str = "arxiv_id",
+    row_number: Optional[int] = None,
 ) -> Command:
     """
     Perform a tabular query on the most recently displayed papers.
@@ -82,8 +104,10 @@ def query_dataframe(
 
     Args:
         question (str): The metadata query to ask over the papers table.
-        state (dict): The agent's state containing 'last_displayed_papers'
-            key referencing the metadata table in state.
+        extract_ids (bool): If true, modify the query to instruct the DataFrame agent to extract values from the specified ID column via Python code.
+        id_column (str): Name of the metadata column to extract values from when extract_ids=True.
+        row_number (int, optional): 1-based index of the ID to extract from the list; if provided, returns only that single ID.
+        state (dict): The agent's state containing 'last_displayed_papers' key referencing the metadata table in state.
         tool_call_id (str): LangGraph-injected identifier for this tool call.
 
     Returns:
@@ -116,6 +140,21 @@ def query_dataframe(
         )
 
     df_papers = pd.DataFrame.from_dict(dic_papers, orient="index")
+    # Prepare the query: if extracting IDs, let the DataFrame agent handle it via Python code
+    question_to_agent = question
+    if extract_ids:
+        if not id_column:
+            raise ValueError("Must specify 'id_column' when extract_ids=True.")
+        # Build a Python expression to pull non-null IDs (and optional single row)
+        if row_number is not None:
+            idx = row_number - 1
+            question_to_agent = f"df['{id_column}'].dropna().tolist()[{idx}]"
+        else:
+            question_to_agent = f"df['{id_column}'].dropna().tolist()"
+        logger.info(
+            "extract_ids enabled: asking agent to run expression: %s", question_to_agent
+        )
+
     df_agent = create_pandas_dataframe_agent(
         llm_model,
         allow_dangerous_code=True,
@@ -127,7 +166,7 @@ def query_dataframe(
         verbose=True,
     )
 
-    llm_result = df_agent.invoke({"input": question}, stream_mode=None)
+    llm_result = df_agent.invoke({"input": question_to_agent}, stream_mode=None)
     response_text = llm_result["output"]
 
     return Command(
