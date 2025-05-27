@@ -5,7 +5,7 @@ Tool for downloading arXiv paper metadata and retrieving the PDF URL.
 
 import logging
 import xml.etree.ElementTree as ET
-from typing import Annotated, Any
+from typing import Annotated, Any, List
 
 import hydra
 import requests
@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 class DownloadArxivPaperInput(BaseModel):
     """Input schema for the arXiv paper download tool."""
 
-    arxiv_id: str = Field(
-        description="The arXiv paper ID used to retrieve the paper details and PDF URL."
+    arxiv_ids: List[str] = Field(
+        description="List of arXiv paper IDs used to retrieve paper details and PDF URLs."
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -42,19 +42,21 @@ def fetch_arxiv_metadata(
 def extract_metadata(entry: ET.Element, ns: dict, arxiv_id: str) -> dict:
     """Extract metadata from the XML entry."""
     title_elem = entry.find("atom:title", ns)
-    title = title_elem.text.strip() if title_elem is not None else "N/A"
+    title = (title_elem.text or "").strip() if title_elem is not None else "N/A"
 
-    authors = [
-        author_elem.find("atom:name", ns).text.strip()
-        for author_elem in entry.findall("atom:author", ns)
-        if author_elem.find("atom:name", ns) is not None
-    ]
+    authors = []
+    for author_elem in entry.findall("atom:author", ns):
+        name_elem = author_elem.find("atom:name", ns)
+        if name_elem is not None and name_elem.text:
+            authors.append(name_elem.text.strip())
 
     summary_elem = entry.find("atom:summary", ns)
-    abstract = summary_elem.text.strip() if summary_elem is not None else "N/A"
+    abstract = (summary_elem.text or "").strip() if summary_elem is not None else "N/A"
 
     published_elem = entry.find("atom:published", ns)
-    pub_date = published_elem.text.strip() if published_elem is not None else "N/A"
+    pub_date = (
+        (published_elem.text or "").strip() if published_elem is not None else "N/A"
+    )
 
     pdf_url = next(
         (
@@ -83,16 +85,15 @@ def extract_metadata(entry: ET.Element, ns: dict, arxiv_id: str) -> dict:
 @tool(
     args_schema=DownloadArxivPaperInput,
     parse_docstring=True,
-    return_direct=True,
 )
 def download_arxiv_paper(
-    arxiv_id: str,
+    arxiv_ids: List[str],
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> Command[Any]:
     """
-    Get metadata and PDF URL for an arXiv paper using its unique arXiv ID.
+    Get metadata and PDF URLs for one or more arXiv papers using their unique arXiv IDs.
     """
-    logger.info("Fetching metadata from arXiv for paper ID: %s", arxiv_id)
+    logger.info("Fetching metadata from arXiv for paper IDs: %s", arxiv_ids)
 
     # Load configuration
     with hydra.initialize(version_base=None, config_path="../../configs"):
@@ -102,25 +103,40 @@ def download_arxiv_paper(
         api_url = cfg.tools.download_arxiv_paper.api_url
         request_timeout = cfg.tools.download_arxiv_paper.request_timeout
 
-    # Fetch and parse metadata
-    root = fetch_arxiv_metadata(api_url, arxiv_id, request_timeout)
-    ns = {"atom": "http://www.w3.org/2005/Atom"}
+    # Aggregate results
+    article_data: dict[str, Any] = {}
+    for aid in arxiv_ids:
+        logger.info("Processing arXiv ID: %s", aid)
+        # Fetch and parse metadata
+        root = fetch_arxiv_metadata(api_url, aid, request_timeout)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        entry = root.find("atom:entry", ns)
+        if entry is None:
+            logger.warning("No entry found for arXiv ID %s", aid)
+            continue
+        # Extract metadata
+        article_data[aid] = extract_metadata(entry, ns, aid)
 
-    entry = root.find("atom:entry", ns)
-    if entry is None:
-        raise ValueError(f"No entry found for arXiv ID {arxiv_id}")
+    # Prepare a summary of the first few downloaded papers
+    top_n = 3
+    top_ids = list(article_data.keys())[:top_n]
+    summary_lines: list[str] = []
+    for i, aid in enumerate(top_ids):
+        meta = article_data.get(aid, {})
+        title = meta.get("Title", "N/A")
+        pub_date = meta.get("Publication Date", "N/A")
+        url = meta.get("URL", "")
+        summary_lines.append(
+            f"{i+1}. {title} ({pub_date}; arXiv ID: {aid}; URL: {url})"
+        )
 
-    # Extract metadata
-    metadata = extract_metadata(entry, ns, arxiv_id)
-
-    # Create article_data entry with the paper ID as the key
-    article_data = {arxiv_id: metadata}
-
-    content = f"Successfully retrieved metadata and PDF URL for arXiv ID {arxiv_id}"
+    summary = "\n".join(summary_lines)
+    if len(article_data) > top_n:
+        summary += f"\n...and {len(article_data) - top_n} more papers."
 
     return Command(
         update={
             "article_data": article_data,
-            "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
+            "messages": [ToolMessage(content=summary, tool_call_id=tool_call_id)],
         }
     )
