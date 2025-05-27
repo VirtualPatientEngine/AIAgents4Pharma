@@ -38,29 +38,24 @@ class TestDownloadArxivPaper(unittest.TestCase):
 
         # Set up a dummy XML response with a valid entry including a pdf link.
         arxiv_id = "1234.56789"
-        dummy_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-        <feed xmlns="http://www.w3.org/2005/Atom">
-            <entry>
-                <title>Sample Paper Title</title>
-                <author>
-                    <name>Author One</name>
-                </author>
-                <author>
-                    <name>Author Two</name>
-                </author>
-                <summary>This is a sample abstract.</summary>
-                <published>2020-01-01T00:00:00Z</published>
-                <link title="pdf" href="http://arxiv.org/pdf/{arxiv_id}v1"/>
-            </entry>
-        </feed>
-        """
         dummy_response = MagicMock()
-        dummy_response.text = dummy_xml
+        dummy_response.text = (
+            f"""<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <feed xmlns=\"http://www.w3.org/2005/Atom\">"""
+            f"            <entry>"
+            f"<title>Sample Paper Title</title>"
+            f"<author><name>Author One</name></author>"
+            f"<author><name>Author Two</name></author>"
+            f"<summary>This is a sample abstract.</summary>"
+            f"<published>2020-01-01T00:00:00Z</published>"
+            f'<link title="pdf" href="http://arxiv.org/pdf/{arxiv_id}v1"/>'
+            f"</entry></feed>"
+        )
         dummy_response.raise_for_status = MagicMock()
         mock_get.return_value = dummy_response
 
         tool_call_id = "test_tool_id"
-        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
+        tool_input = {"arxiv_ids": [arxiv_id], "tool_call_id": tool_call_id}
         result = download_arxiv_paper.run(tool_input)
         update = result.update
 
@@ -82,10 +77,13 @@ class TestDownloadArxivPaper(unittest.TestCase):
         messages = update["messages"]
         self.assertTrue(len(messages) >= 1)
         self.assertIsInstance(messages[0], ToolMessage)
-        self.assertIn(
-            f"Successfully retrieved metadata and PDF URL for arXiv ID {arxiv_id}",
-            messages[0].content,
+        # Check that the summary lists the downloaded paper
+        content = messages[0].content
+        expected = (
+            f"1. Sample Paper Title (2020-01-01T00:00:00Z; arXiv ID: {arxiv_id}; "
+            f"URL: http://arxiv.org/pdf/{arxiv_id}v1)"
         )
+        self.assertEqual(content, expected)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
@@ -117,12 +115,15 @@ class TestDownloadArxivPaper(unittest.TestCase):
         mock_get.return_value = dummy_response
 
         tool_call_id = "test_tool_id"
-        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
-        with self.assertRaises(ValueError) as context:
-            download_arxiv_paper.run(tool_input)
-        self.assertEqual(
-            str(context.exception), f"No entry found for arXiv ID {arxiv_id}"
-        )
+        tool_input = {"arxiv_ids": [arxiv_id], "tool_call_id": tool_call_id}
+        # No entry found should result in empty article_data and empty message
+        result = download_arxiv_paper.run(tool_input)
+        update = result.update
+        self.assertIn("article_data", update)
+        self.assertEqual(update["article_data"], {})
+        messages = update.get("messages", [])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].content, "")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
@@ -163,9 +164,50 @@ class TestDownloadArxivPaper(unittest.TestCase):
         mock_get.return_value = dummy_response
 
         tool_call_id = "test_tool_id"
-        tool_input = {"arxiv_id": arxiv_id, "tool_call_id": tool_call_id}
+        tool_input = {"arxiv_ids": [arxiv_id], "tool_call_id": tool_call_id}
         with self.assertRaises(RuntimeError) as context:
             download_arxiv_paper.run(tool_input)
         self.assertEqual(
             str(context.exception), f"Could not find PDF URL for arXiv ID {arxiv_id}"
         )
+
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.extract_metadata"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_"
+        "arxiv_input.fetch_arxiv_metadata"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
+    )
+    @patch(
+        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
+    )
+    def test_summary_multiple_papers(
+        self, mock_initialize, mock_compose, _mock_fetch, mock_extract
+    ):
+        """Test summary includes '...and N more papers.' when more than 3 papers."""
+        # Dummy config
+        dummy_cfg = MagicMock()
+        dummy_cfg.tools.download_arxiv_paper.api_url = "http://dummy"
+        dummy_cfg.tools.download_arxiv_paper.request_timeout = 5
+        mock_compose.return_value = dummy_cfg
+        mock_initialize.return_value.__enter__.return_value = None
+
+        # Simulate metadata extraction for multiple papers
+        def dummy_meta(_entry, _ns, aid):
+            """dummy metadata extraction function."""
+            return {
+                "Title": f"T{aid}",
+                "Publication Date": "2020-01-01T00:00:00Z",
+                "URL": f"u{aid}v1",
+            }
+
+        mock_extract.side_effect = dummy_meta
+        # Prepare 5 paper IDs
+        ids = [str(i) for i in range(5)]
+        tool_input = {"arxiv_ids": ids, "tool_call_id": "tid"}
+        result = download_arxiv_paper.run(tool_input)
+        summary = result.update["messages"][0].content
+        assert summary.endswith("...and 2 more papers.")
