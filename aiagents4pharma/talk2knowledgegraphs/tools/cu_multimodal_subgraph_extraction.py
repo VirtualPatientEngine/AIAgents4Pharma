@@ -163,9 +163,14 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             A dictionary containing the extracted subgraph with nodes and edges.
         """
         # Initialize the subgraph dictionary
-        subgraphs = {}
-        subgraphs["nodes"] = []
-        subgraphs["edges"] = []
+        subgraphs = []
+        unified_subgraph = {
+            "nodes": [],
+            "edges": []
+        }
+        # subgraphs = {}
+        # subgraphs["nodes"] = []
+        # subgraphs["edges"] = []
 
         # Loop over query embeddings and modalities
         for q in query_df.to_pandas().iterrows():
@@ -188,16 +193,29 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                                q[1]['node_type'])
 
             # Append the extracted subgraph to the dictionary
-            subgraphs["nodes"].append(subgraph["nodes"].tolist())
-            subgraphs["edges"].append(subgraph["edges"].tolist())
+            unified_subgraph["nodes"].append(subgraph["nodes"].tolist())
+            unified_subgraph["edges"].append(subgraph["edges"].tolist())
+            subgraphs.append((q[1]['node_id'], 
+                              subgraph["nodes"].tolist(), 
+                              subgraph["edges"].tolist()))
 
         # Concatenate and get unique node and edge indices
-        subgraphs["nodes"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["nodes"]])
-        )
-        subgraphs["edges"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["edges"]])
-        )
+        unified_subgraph["nodes"] = np.unique(
+            np.concatenate([np.array(list_) for list_ in unified_subgraph["nodes"]])
+        ).tolist()
+        unified_subgraph["edges"] = np.unique(
+            np.concatenate([np.array(list_) for list_ in unified_subgraph["edges"]])
+        ).tolist()
+
+        # Convert the unified subgraph and subgraphs to cudf DataFrames
+        unified_subgraph = cudf.DataFrame([("Unified Subgraph",
+                                            unified_subgraph["nodes"],
+                                            unified_subgraph["edges"])],
+                                            columns=["name", "nodes", "edges"])
+        subgraphs = cudf.DataFrame(subgraphs, columns=["name", "nodes", "edges"])
+
+        # Concate both DataFrames
+        subgraphs = cudf.concat([unified_subgraph, subgraphs], ignore_index=True)
 
         return subgraphs
 
@@ -222,47 +240,65 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         node_colors = {n: cfg.node_colors_dict[k]
                         for k, v in state["selections"].items() for n in v}
         color_df = cudf.DataFrame(list(node_colors.items()), columns=["node_id", "color"])
+        # print(color_df)
 
-        # Prepare graph dataframes
-        # Nodes
-        graph_nodes = graph["nodes"].copy()
-        graph_nodes = graph_nodes.iloc[subgraph['nodes']][
-            ['node_id', 'node_name', 'node_type', 'desc', 'enriched_node']
-        ]
-        graph_nodes = graph_nodes.merge(color_df, on="node_id", how="left")
-        graph_nodes['color'].fillna('black', inplace=True) # set default node color to black
-        # Edges
-        graph_edges = graph["edges"].copy()
-        graph_edges = graph_edges.iloc[subgraph['edges']][
-            ['head_id', 'tail_id', 'edge_type']
-        ]
+        # Prepare the subgraph dictionary
+        graph_dict = {
+            "name": [],
+            "nodes": [],
+            "edges": [],
+            "text": ""
+        }
+        for sub in subgraph.to_pandas().itertuples(index=False):
+            # Prepare the graph name
+            graph_dict["name"].append(sub.name)
+            print(f"Processing subgraph: {sub.name}")
 
-        # Prepare lists for visualization
-        graph_dict = {}
-        graph_dict["nodes"] = [(
-            row.node_id,
-            {'hover': "Node Name : " + row.node_name + "\n" +\
-                "Node Type : " + row.node_type + "\n" +
-                'Desc : ' + row.desc,
-             'click': '$hover',
-             'color': row.color})
-             for row in graph_nodes.to_arrow().to_pandas().itertuples(index=False)]
-        graph_dict["edges"] = [(
-            row.head_id, 
-            row.tail_id,
-            {'label': tuple(row.edge_type)})
-            for row in graph_edges.to_arrow().to_pandas().itertuples(index=False)]
+            # Prepare graph dataframes
+            # Nodes
+            graph_nodes = graph["nodes"].copy()
+            graph_nodes = graph_nodes.iloc[sub.nodes][
+                ['node_id', 'node_name', 'node_type', 'desc', 'enriched_node']
+            ]
+            if not color_df.empty:
+                # Merge the color dataframe with the graph nodes
+                graph_nodes = graph_nodes.merge(color_df, on="node_id", how="left")
+            else:
+                graph_nodes["color"] = 'black'  # Default color
+            graph_nodes['color'].fillna('black', inplace=True) # Fill NaN colors with black
+            # Edges
+            graph_edges = graph["edges"].copy()
+            graph_edges = graph_edges.iloc[sub.edges][
+                ['head_id', 'tail_id', 'edge_type']
+            ]
 
-        # Prepare the textualized subgraph
-        graph_dict["text"] = (
-            graph_nodes[
-                ['node_id', 'desc']
-            ].rename(columns={'desc': 'node_attr'}).to_arrow().to_pandas().to_csv(index=False)
-            + "\n"
-            + graph_edges[
-                ['head_id', 'edge_type', 'tail_id']
-            ].to_arrow().to_pandas().to_csv(index=False)
-        )
+            # Prepare lists for visualization
+            graph_dict["nodes"].append([(
+                row.node_id,
+                {'hover': "Node Name : " + row.node_name + "\n" +\
+                    "Node Type : " + row.node_type + "\n" +
+                    'Desc : ' + row.desc,
+                'click': '$hover',
+                'color': row.color})
+                for row in graph_nodes.to_arrow().to_pandas().itertuples(index=False)])
+            graph_dict["edges"].append([(
+                row.head_id,
+                row.tail_id,
+                {'label': tuple(row.edge_type)})
+                for row in graph_edges.to_arrow().to_pandas().itertuples(index=False)])
+
+            # Prepare the textualized subgraph
+            if sub.name == "Unified Subgraph":
+                graph_dict["text"] = (
+                    graph_nodes[
+                        ['node_id', 'desc']
+                    ].rename(columns={'desc': 'node_attr'}).to_arrow().to_pandas().\
+                        to_csv(index=False)
+                    + "\n"
+                    + graph_edges[
+                        ['head_id', 'edge_type', 'tail_id']
+                    ].to_arrow().to_pandas().to_csv(index=False)
+                )
 
         return graph_dict
 
@@ -334,6 +370,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             "topk_nodes": state["topk_nodes"],
             "topk_edges": state["topk_edges"],
             "graph_dict": {
+                "name": final_subgraph["name"],
                 "nodes": final_subgraph["nodes"],
                 "edges": final_subgraph["edges"],
             },

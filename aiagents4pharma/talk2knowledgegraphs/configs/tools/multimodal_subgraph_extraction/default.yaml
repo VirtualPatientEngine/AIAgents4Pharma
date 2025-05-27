@@ -25,7 +25,7 @@ node_colors_dict:
   "disease": "#80013f"
 
 biobridge:
-  source: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal/"
+  source: "aiagents4pharma/talk2knowledgegraphs/tests/files/ibd_biobridge_multimodal/"
   node_type:
     - "gene/protein"
     - "molecular_function"

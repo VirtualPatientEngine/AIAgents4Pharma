@@ -8,14 +8,15 @@ import os
 import sys
 import random
 import streamlit as st
-import pandas as pd
+# import pandas as pd
 import hydra
 from streamlit_feedback import streamlit_feedback
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+# from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from utils import streamlit_utils
 
@@ -131,6 +132,25 @@ if "topk_nodes" not in st.session_state:
     # Subgraph extraction settings
     st.session_state.topk_nodes = cfg.reasoning_subgraph_topk_nodes
     st.session_state.topk_edges = cfg.reasoning_subgraph_topk_edges
+
+# if "nodes_enrichment" not in st.session_state or "nodes_embedding" not in st.session_state or \
+#     "edges_enrichment" not in st.session_state or "edges_embedding" not in st.session_state:
+#     # Initialize enrichment and embedding dataframes for nodes and edges
+#     st.session_state.nodes_enrichment, \
+#     st.session_state.nodes_embedding, \
+#     st.session_state.edges_enrichment, \
+#     st.session_state.edges_embedding = streamlit_utils.load_enrichment_and_embedding_dataframes()
+
+# if "graph_store" not in st.session_state or "feature_store" not in st.session_state:
+#     # Initialize graph and feature store
+#     st.session_state.graph_store, \
+#     st.session_state.feature_store = streamlit_utils.load_graph_and_feature_store(
+#         cfg,
+#         st.session_state.nodes_enrichment,
+#         st.session_state.nodes_embedding,
+#         st.session_state.edges_enrichment,
+#         st.session_state.edges_embedding
+#     )
 
 # Get the app
 app = st.session_state.app
@@ -278,7 +298,9 @@ with main_col2:
                             model=st.session_state.llm_model,
                             temperature=cfg.temperature,
                         )
-                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        # emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        # For IBD BioBridge data, we still use Ollama embeddings
+                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
                     else:
                         llm_model = ChatOllama(
                             model=st.session_state.llm_model,
@@ -306,6 +328,20 @@ with main_col2:
                                     # "kg_text_path": st.session_state.config["kg_text_path"],
                                 }
                             ],
+                            # "graph": {
+                            #     "nodes": {
+                            #         "enrichment": st.session_state.nodes_enrichment,
+                            #         "embedding": st.session_state.nodes_embedding,
+                            #     },
+                            #     "edges": {
+                            #         "enrichment": st.session_state.edges_enrichment,
+                            #         "embedding": st.session_state.edges_embedding,
+                            #     },
+                                # "store": {
+                                #     "graph": st.session_state.graph_store,
+                                #     "feature": st.session_state.feature_store,
+                                # }
+                            # }
                         },
                     )
 

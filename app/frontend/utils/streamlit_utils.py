@@ -26,6 +26,9 @@ from langchain.callbacks.tracers import LangChainTracer
 import networkx as nx
 import gravis
 import pickle
+import glob
+import cudf
+import re
 
 def submit_feedback(user_response):
     """
@@ -751,45 +754,129 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
         key: The key for the graph
         save_graph: Whether to save the graph in the chat history
     """
-    # Create a directed graph
-    graph = nx.DiGraph()
+    def extract_inner_html(html):
+        match = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL)
+        return match.group(1) if match else html
 
-    # Add nodes with attributes
-    for node, attrs in graph_dict["nodes"]:
-        graph.add_node(node, **attrs)
+    figures_inner_html = ""
 
-    # Add edges with attributes
-    for source, target, attrs in graph_dict["edges"]:
-        graph.add_edge(source, target, **attrs)
+    for name, subgraph_nodes, subgraph_edges in zip(graph_dict["name"],
+                                                    graph_dict["nodes"],
+                                                    graph_dict["edges"]):
+        # Create a directed graph
+        graph = nx.DiGraph()
 
-    # print("Graph nodes:", graph.nodes(data=True))
-    # print("Graph edges:", graph.edges(data=True))
+        # Add nodes with attributes
+        for node, attrs in subgraph_nodes:
+            graph.add_node(node, **attrs)
 
-    # Render the graph
-    fig = gravis.d3(
-        graph,
-        node_size_factor=3.0,
-        show_edge_label=True,
-        edge_label_data_source="label",
-        edge_curvature=0.25,
-        zoom_factor=1.0,
-        many_body_force_strength=-500,
-        many_body_force_theta=0.3,
-        node_hover_neighborhood=True,
-        # layout_algorithm_active=True,
-    )
-    components.html(fig.to_html(), height=475)
+        # Add edges with attributes
+        for source, target, attrs in subgraph_edges:
+            graph.add_edge(source, target, **attrs)
 
-    if save_graph:
-        # Add data to the chat history
-        st.session_state.messages.append(
-            {
-                "type": "graph",
-                "content": graph_dict,
-                "key": key,
-            }
+        # print("Graph nodes:", graph.nodes(data=True))
+        # print("Graph edges:", graph.edges(data=True))
+
+        # Render the graph
+        fig = gravis.d3(
+            graph,
+            node_size_factor=3.0,
+            show_edge_label=True,
+            edge_label_data_source="label",
+            edge_curvature=0.25,
+            zoom_factor=1.0,
+            many_body_force_strength=-500,
+            many_body_force_theta=0.3,
+            node_hover_neighborhood=True,
+            # layout_algorithm_active=True,
         )
+        # components.html(fig.to_html(), height=475)
+        inner_html = extract_inner_html(fig.to_html())
+        wrapped_html = f'''
+        <div class="graph-content">
+            {inner_html}
+        </div>
+        '''
 
+        figures_inner_html += f'''
+        <div class="graph-box">
+            <h3 class="graph-title">{name}</h3>
+            {wrapped_html}
+        </div>
+        '''
+
+        if save_graph:
+            # Add data to the chat history
+            st.session_state.messages.append(
+                {
+                    "type": "graph",
+                    "content": graph_dict,
+                    "key": key,
+                }
+            )
+
+    full_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+        html, body {{
+            margin: 0;
+            padding: 0;
+            overflow-y: hidden;
+            height: 100%;
+        }}
+        .scroll-container {{
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f5f5f5;
+            height: 100%;
+            box-sizing: border-box;
+        }}
+        .graph-box {{
+            flex: 0 0 auto;
+            width: 500px;
+            height: 515px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            padding: 0.5rem;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }}
+        .graph-title {{
+            margin: 0 0 16px 0;  /* Increased bottom margin */
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }}
+        .graph-content {{
+            width: 100%;
+            flex-grow: 1;
+        }}
+        .graph-box svg, .graph-box canvas {{
+            max-width: 100% !important;
+            max-height: 100% !important;
+            height: 100% !important;
+            width: 100% !important;
+        }}
+    </style>
+    </head>
+    <body>
+    <div class="scroll-container">
+        {figures_inner_html}
+    </div>
+    </body>
+    </html>
+    """
+    components.html(full_html, height=550, scrolling=False)
 
 def get_text_embedding_model(model_name) -> Embeddings:
     """
@@ -1116,3 +1203,45 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.session_state.data_package_key += 1
                     st.session_state.multimodal_key += 1
                     st.rerun(scope="fragment")
+
+# def load_enrichment_and_embedding_dataframes() -> tuple:
+#     """
+#     Load the enrichment and embedding dataframes from the specified paths.
+
+#     Args:
+#         cfg: The configuration object.
+
+#     Returns:
+#         tuple: A tuple containing the enrichment and embedding dataframes.
+#     """
+#     # Load Hydra configuration
+#     with hydra.initialize(
+#         version_base=None,
+#         config_path="../../../aiagents4pharma/talk2knowledgegraphs/configs",
+#     ):
+#         cfg = hydra.compose(config_name="config",
+#                             overrides=["tools/multimodal_subgraph_extraction=default"])
+#         cfg = cfg.tools.multimodal_subgraph_extraction
+
+#     # Loop over nodes and edges
+#     graph_dict = {}
+#     for element in ["nodes", "edges"]:
+#         # Make an empty dictionary for each folder
+#         graph_dict[element] = {}
+#         for stage in ["enrichment", "embedding"]:
+#             print(element, stage)
+#             # Create the file pattern for the current subfolder
+#             file_list = glob.glob(os.path.join(
+#                                               cfg.biobridge.source,
+#                                                element,
+#                                                stage, '*.parquet.gzip'))
+            
+#             print(file_list)
+#             # if element != "edges" and stage == "embedding":
+#             # Read and concatenate all dataframes in the folder
+#             graph_dict[element][stage] = cudf.concat([
+#                 cudf.read_parquet(f) for f in file_list
+#             ], ignore_index=True)
+
+#     return graph_dict["nodes"]["enrichment"], graph_dict["nodes"]["embedding"], \
+#         graph_dict["edges"]["enrichment"], graph_dict["edges"]["embedding"]
