@@ -109,8 +109,28 @@ class SearchData:
 
     def _filter_papers(self) -> None:
         """Filter and format papers."""
-        self.filtered_papers = {
-            paper["paperId"]: {
+        # Build filtered papers mapping with unified paper_ids list
+        filtered: Dict[str, Any] = {}
+        for paper in self.papers:
+            if not paper.get("title") or not paper.get("authors"):
+                continue
+            ext = paper.get("externalIds", {}) or {}
+            # Prioritized list of IDs: arXiv, PubMed, PubMedCentral, DOI
+            ids: list[str] = []
+            arxiv = ext.get("ArXiv")
+            if arxiv:
+                ids.append(f"arxiv:{arxiv}")
+            pubmed = ext.get("PubMed")
+            if pubmed:
+                ids.append(f"pubmed:{pubmed}")
+            pmc = ext.get("PubMedCentral")
+            if pmc:
+                ids.append(f"pmc:{pmc}")
+            doi_id = ext.get("DOI")
+            if doi_id:
+                ids.append(f"doi:{doi_id}")
+            # Compose metadata dict
+            metadata = {
                 "semantic_scholar_paper_id": paper["paperId"],
                 "Title": paper.get("title", "N/A"),
                 "Abstract": paper.get("abstract", "N/A"),
@@ -124,12 +144,15 @@ class SearchData:
                     for author in paper.get("authors", [])
                 ],
                 "URL": paper.get("url", "N/A"),
-                "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
+                "arxiv_id": arxiv or "N/A",
+                "pmc_id": pmc or "N/A",
+                "pm_id": pubmed or "N/A",
+                "doi": doi_id or "N/A",
+                "paper_ids": ids,
                 "source": "semantic_scholar",
             }
-            for paper in self.papers
-            if paper.get("title") and paper.get("authors")
-        }
+            filtered[paper["paperId"]] = metadata
+        self.filtered_papers = filtered
 
         logger.info("Filtered %d papers", len(self.filtered_papers))
 

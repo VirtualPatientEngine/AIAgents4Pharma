@@ -5,7 +5,7 @@ Utility for fetching recommendations based on a single paper.
 """
 
 import logging
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 import hydra
 import requests
 
@@ -120,8 +120,26 @@ class SinglePaperRecData:
 
     def _filter_papers(self) -> None:
         """Filter and format papers."""
-        self.filtered_papers = {
-            paper["paperId"]: {
+        # Build filtered recommendations with unified paper_ids
+        filtered: Dict[str, Any] = {}
+        for paper in self.recommendations:
+            if not paper.get("title") or not paper.get("authors"):
+                continue
+            ext = paper.get("externalIds", {}) or {}
+            ids: List[str] = []
+            arxiv = ext.get("ArXiv")
+            if arxiv:
+                ids.append(f"arxiv:{arxiv}")
+            pubmed = ext.get("PubMed")
+            if pubmed:
+                ids.append(f"pubmed:{pubmed}")
+            pmc = ext.get("PubMedCentral")
+            if pmc:
+                ids.append(f"pmc:{pmc}")
+            doi_id = ext.get("DOI")
+            if doi_id:
+                ids.append(f"doi:{doi_id}")
+            metadata = {
                 "semantic_scholar_paper_id": paper["paperId"],
                 "Title": paper.get("title", "N/A"),
                 "Abstract": paper.get("abstract", "N/A"),
@@ -135,12 +153,15 @@ class SinglePaperRecData:
                     for author in paper.get("authors", [])
                 ],
                 "URL": paper.get("url", "N/A"),
-                "arxiv_id": paper.get("externalIds", {}).get("ArXiv", "N/A"),
+                "arxiv_id": arxiv or "N/A",
+                "pm_id": pubmed or "N/A",
+                "pmc_id": pmc or "N/A",
+                "doi": doi_id or "N/A",
+                "paper_ids": ids,
                 "source": "semantic_scholar",
             }
-            for paper in self.recommendations
-            if paper.get("title") and paper.get("authors")
-        }
+            filtered[paper["paperId"]] = metadata
+        self.filtered_papers = filtered
 
         logger.info("Filtered %d papers", len(self.filtered_papers))
 
