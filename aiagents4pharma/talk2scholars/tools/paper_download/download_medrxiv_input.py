@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 class DownloadMedrxivPaperInput(BaseModel):
     """Input schema for the medRxiv paper download tool."""
 
-    doi: str = Field(
-        description="""The medRxiv DOI, from search_helper or multi_helper or single_helper, 
+    doi: str = Field(description=
+    """The medRxiv DOI, from search_helper or multi_helper or single_helper, 
     used to retrieve the paper details and PDF URL."""
     )
     logger.info("DOI Received: %s", doi)
@@ -33,10 +33,10 @@ class DownloadMedrxivPaperInput(BaseModel):
 def fetch_medrxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict:
     """
     Fetch metadata for a medRxiv paper using its DOI and extract relevant fields.
-    
+
     Parameters:
         doi (str): The DOI of the medRxiv paper.
-    
+
     Returns:
         dict: A dictionary containing the title, authors, abstract, publication date, and URLs.
     """
@@ -59,10 +59,10 @@ def extract_metadata(paper: dict, doi: str) -> dict:
     """
     Extract relevant metadata fields from a medRxiv paper entry.
     """
-    title = paper.get("title", " ")
+    title = paper.get("title", "")
     authors = paper.get("authors", "")
     abstract = paper.get("abstract", "")
-    pub_date = paper.get("date", " ")
+    pub_date = paper.get("date", "")
     doi_suffix = paper.get("doi", "").split("10.1101/")[-1]
     pdf_url = f"https://www.medrxiv.org/content/10.1101/{doi_suffix}.full.pdf"
     logger.info("PDF URL: %s", pdf_url)
@@ -98,7 +98,7 @@ def download_medrxiv_paper(
         request_timeout = cfg.tools.download_medrxiv_paper.request_timeout
         logger.info("API URL: %s", api_url)
 
-    raw_data = fetch_medrxiv_metadata(doi, request_timeout)
+    raw_data = fetch_medrxiv_metadata(doi, api_url, request_timeout)
     metadata = extract_metadata(raw_data, doi)
     article_data = {doi: metadata}
 

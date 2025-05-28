@@ -59,9 +59,9 @@ def extract_metadata(paper: dict, doi: str) -> dict:
     """
     Extract relevant metadata fields from a bioRxiv paper entry.
     """
-    title = paper.get("title", " ")
-    authors = paper.get("authors", " ")
-    abstract = paper.get("abstract", " ")
+    title = paper.get("title", "")
+    authors = paper.get("authors", "")
+    abstract = paper.get("abstract", "")
     pub_date = paper.get("date", "")
     doi_suffix = paper.get("doi", "").split("10.1101/")[-1]
     pdf_url = f"https://www.biorxiv.org/content/10.1101/{doi_suffix}.full.pdf"
