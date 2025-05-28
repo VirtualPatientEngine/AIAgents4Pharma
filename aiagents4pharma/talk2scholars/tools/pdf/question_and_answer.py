@@ -17,7 +17,7 @@ Workflow:
 import logging
 import os
 import time
-from typing import Annotated, Any, List, Optional
+from typing import Annotated, Any
 
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
@@ -48,7 +48,6 @@ class QuestionAndAnswerInput(BaseModel):
 
     Fields:
       question: User's free-text query to answer based on PDF content.
-      paper_ids: Optional list of specific paper IDs to restrict retrieval.
       tool_call_id: LangGraph-injected call identifier for tracking.
       state: Shared agent state dict containing:
         - article_data: metadata mapping of paper IDs to info (e.g., 'pdf_url', title).
@@ -60,13 +59,6 @@ class QuestionAndAnswerInput(BaseModel):
     question: str = Field(
         description="User question for generating a PDF-based answer."
     )
-    paper_ids: Optional[List[str]] = Field(
-        default=None,
-        description=(
-            "Optional list of paper IDs to restrict retrieval. "
-            "If omitted, all papers in state.article_data are considered."
-        ),
-    )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
@@ -76,7 +68,6 @@ def question_and_answer(
     question: str,
     state: Annotated[dict, InjectedState],
     tool_call_id: Annotated[str, InjectedToolCallId],
-    paper_ids: Optional[List[str]] = None,
 ) -> Command[Any]:
     """
     LangGraph tool for Retrieval-Augmented Generation over PDFs.
@@ -98,8 +89,6 @@ def question_and_answer(
         - text_embedding_model: embedding model instance.
         - llm_model: chat/LLM instance.
       tool_call_id (str): Internal identifier for this tool invocation.
-      paper_ids (Optional[List[str]]): Specific paper IDs to restrict the RAG scope.
-        If omitted, all papers in state.article_data are considered and reranked.
 
     Returns:
       Command[Any]: updates conversation state with a ToolMessage(answer).
@@ -121,7 +110,7 @@ def question_and_answer(
 
     # Initialize or reuse vector store, then load candidate papers
     vs = helper.init_vector_store(text_emb)
-    candidate_ids = paper_ids or list(article_data.keys())
+    candidate_ids = list(article_data.keys())
     logger.info("%s: Candidate paper IDs for reranking: %s", call_id, candidate_ids)
     helper.load_candidate_papers(vs, article_data, candidate_ids)
 
