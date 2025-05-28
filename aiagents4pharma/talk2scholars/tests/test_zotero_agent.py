@@ -2,7 +2,6 @@
 Updated Unit Tests for the Zotero agent (Zotero Library Managent sub-agent).
 """
 
-# pylint: disable=redefined-outer-name
 from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage

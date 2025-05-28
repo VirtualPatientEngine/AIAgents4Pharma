@@ -17,8 +17,6 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader impo
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
 
-# pylint: disable=protected-access
-# pylint: disable=protected-access, too-many-arguments, too-many-positional-arguments
 
 # Dummy Hydra configuration to be used in tests
 dummy_zotero_read_config = SimpleNamespace(
@@ -211,15 +209,15 @@ class TestZoteroSearchTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.download_pdfs_in_parallel"
     )
-    def test_filtering_no_matching_papers(
-        self,
-        mock_batch_download,
-        mock_hydra_init,
-        mock_hydra_compose,
-        mock_zotero_class,
-        mock_get_item_collections,
-    ):
+    def test_filtering_no_matching_papers(self, *mocks):
         """Testing filtering when no paper matching"""
+        (
+            mock_batch_download,
+            mock_hydra_init,
+            mock_hydra_compose,
+            mock_zotero_class,
+            mock_get_item_collections,
+        ) = mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
@@ -460,15 +458,15 @@ class TestZoteroSearchTool(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.Session.get"
     )
-    def test_pdf_attachment_success(
-        self,
-        mock_session_get,
-        mock_hydra_init,
-        mock_hydra_compose,
-        mock_zotero_class,
-        mock_get_item_collections,
-    ):
+    def test_pdf_attachment_success(self, *mocks):
         """Test for pdf attachment success"""
+        (
+            mock_session_get,
+            mock_hydra_init,
+            mock_hydra_compose,
+            mock_zotero_class,
+            mock_get_item_collections,
+        ) = mocks
         mock_hydra_compose.return_value = dummy_cfg
         mock_hydra_init.return_value.__enter__.return_value = None
 
