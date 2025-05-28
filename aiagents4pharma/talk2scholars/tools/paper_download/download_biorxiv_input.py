@@ -26,10 +26,10 @@ class DownloadBiorxivPaperInput(BaseModel):
     """The bioRxiv DOI, from search_helper or multi_helper or single_helper, 
     used to retrieve the paper details and PDF URL."""
     )
-    print(f"DOI received: {doi}")
+    logger.info("DOI Received: %s", doi)
     tool_call_id: Annotated[str, InjectedToolCallId]
 
-def fetch_biorxiv_metadata(doi: str) -> dict:
+def fetch_biorxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict:
     """
     Fetch metadata for a bioRxiv paper using its DOI and extract relevant fields.
     
@@ -42,10 +42,9 @@ def fetch_biorxiv_metadata(doi: str) -> dict:
     # Strip any version suffix (e.g., v1) since bioRxiv's API is version-sensitive
     clean_doi = doi.split("v")[0]
 
-    base_url = "https://api.biorxiv.org/details/biorxiv/"
-    api_url = f"{base_url}{clean_doi}"
+    api_url = f"{api_url}{clean_doi}"
     logger.info("Fetching metadata from api url: %s", api_url)
-    response = requests.get(api_url, timeout=10)
+    response = requests.get(api_url, timeout=request_timeout)
     response.raise_for_status()
 
     data = response.json()
@@ -60,10 +59,10 @@ def extract_metadata(paper: dict, doi: str) -> dict:
     """
     Extract relevant metadata fields from a bioRxiv paper entry.
     """
-    title = paper.get("title", "N/A")
-    authors = paper.get("authors", "N/A")
-    abstract = paper.get("abstract", "N/A")
-    pub_date = paper.get("date", "N/A")
+    title = paper.get("title", " ")
+    authors = paper.get("authors", " ")
+    abstract = paper.get("abstract", " ")
+    pub_date = paper.get("date", "")
     doi_suffix = paper.get("doi", "").split("10.1101/")[-1]
     pdf_url = f"https://www.biorxiv.org/content/10.1101/{doi_suffix}.full.pdf"
     logger.info("PDF URL: %s", pdf_url)
@@ -100,7 +99,7 @@ def download_biorxiv_paper(
         logger.info("Request Timeout: %s", request_timeout)
 
     # Fetch metadata
-    raw_data = fetch_biorxiv_metadata(doi)
+    raw_data = fetch_biorxiv_metadata(doi, api_url, request_timeout)
     metadata = extract_metadata(raw_data, doi)
     article_data = {doi: metadata}
     content = f"Successfully retrieved metadata and PDF URL for bioRxiv DOI {doi}"

@@ -23,21 +23,30 @@ class DownloadMedrxivPaperInput(BaseModel):
     """Input schema for the medRxiv paper download tool."""
 
     doi: str = Field(
-        description="The medRxiv DOI used to retrieve the paper details and PDF URL."
+        description="""The medRxiv DOI, from search_helper or multi_helper or single_helper, 
+    used to retrieve the paper details and PDF URL."""
     )
+    logger.info("DOI Received: %s", doi)
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 # Fetching raw metadata from medRxiv API for a given DOI
-def fetch_medrxiv_metadata(doi: str, request_timeout: int) -> dict:
+def fetch_medrxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict:
     """
-    Fetch metadata JSON from medRxiv API for a given DOI.
+    Fetch metadata for a medRxiv paper using its DOI and extract relevant fields.
+    
+    Parameters:
+        doi (str): The DOI of the medRxiv paper.
+    
+    Returns:
+        dict: A dictionary containing the title, authors, abstract, publication date, and URLs.
     """
     # Strip any version suffix (e.g., v1) since bioRxiv's API is version-sensitive
     clean_doi = doi.split("v")[0]
 
-    base_url = "https://api.biorxiv.org/details/medrxiv/"
-    api_url = f"{base_url}{clean_doi}"
+    api_url = f"{api_url}{clean_doi}"
+    logger.info("Fetching metadata from api url: %s", api_url)
     response = requests.get(api_url, timeout=request_timeout)
+    response.raise_for_status()
 
     data = response.json()
     if not data.get("collection"):
@@ -50,10 +59,10 @@ def extract_metadata(paper: dict, doi: str) -> dict:
     """
     Extract relevant metadata fields from a medRxiv paper entry.
     """
-    title = paper.get("title", "N/A")
-    authors = paper.get("authors", "N/A")
-    abstract = paper.get("abstract", "N/A")
-    pub_date = paper.get("date", "N/A")
+    title = paper.get("title", " ")
+    authors = paper.get("authors", "")
+    abstract = paper.get("abstract", "")
+    pub_date = paper.get("date", " ")
     doi_suffix = paper.get("doi", "").split("10.1101/")[-1]
     pdf_url = f"https://www.medrxiv.org/content/10.1101/{doi_suffix}.full.pdf"
     logger.info("PDF URL: %s", pdf_url)
