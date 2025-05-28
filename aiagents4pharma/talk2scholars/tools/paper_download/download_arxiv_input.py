@@ -131,7 +131,6 @@ def _build_summary(article_data: dict[str, Any]) -> str:
 @tool(
     args_schema=DownloadArxivPaperInput,
     parse_docstring=True,
-    return_direct=True,
 )
 def download_arxiv_paper(
     arxiv_ids: List[str],
