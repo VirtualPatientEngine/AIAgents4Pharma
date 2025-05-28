@@ -115,7 +115,7 @@ def _build_summary(article_data: dict[str, Any]) -> str:
         snippet = _get_snippet(paper.get("Abstract", ""))
         line = f"{idx+1}. {title} ({pub_date})"
         if url:
-            line += f"\n   PDF URL: {url}"
+            line += f"\n   View PDF: {url}"
         if snippet:
             line += f"\n   Abstract snippet: {snippet}"
         lines.append(line)
@@ -166,6 +166,12 @@ def download_arxiv_paper(
     return Command(
         update={
             "article_data": article_data,
-            "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
+            "messages": [
+                ToolMessage(
+                    content=content,
+                    tool_call_id=tool_call_id,
+                    artifact=article_data,
+                )
+            ],
         }
     )

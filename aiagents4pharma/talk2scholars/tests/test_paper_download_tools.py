@@ -87,7 +87,7 @@ class TestDownloadArxivPaper(unittest.TestCase):
             f"Number of papers found: 1\n"
             "Top 3 papers:\n"
             f"1. Sample Paper Title (2020-01-01T00:00:00Z)\n"
-            f"   PDF URL: http://arxiv.org/pdf/{arxiv_id}v1\n"
+            f"   View PDF: http://arxiv.org/pdf/{arxiv_id}v1\n"
             "   Abstract snippet: This is a sample abstract."
         )
         self.assertEqual(content, expected)
@@ -229,7 +229,7 @@ class TestDownloadArxivPaper(unittest.TestCase):
         assert "Top 3 papers:" in summary
         # Entries for first three IDs should include URL and no ellipsis
         assert "1. T0 (2020-01-01T00:00:00Z)" in summary
-        assert "   PDF URL: u0v1" in summary
+        assert "   View PDF: u0v1" in summary
         assert "3. T2 (2020-01-01T00:00:00Z)" in summary
         assert "...and" not in summary
 
