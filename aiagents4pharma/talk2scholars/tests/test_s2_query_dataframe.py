@@ -2,7 +2,6 @@
 Unit tests for S2 tools functionality.
 """
 
-# pylint: disable=redefined-outer-name
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -11,10 +10,9 @@ from langchain_core.messages import ToolMessage
 from ..tools.s2.query_dataframe import NoPapersFoundError, query_dataframe
 
 
-@pytest.fixture
-def initial_state():
+@pytest.fixture(name="initial_state")
+def initial_state_fixture():
     """Provides an empty initial state for tests with a dummy llm_model."""
-
     return {"papers": {}, "multi_papers": {}, "llm_model": MagicMock()}
 
 
@@ -144,6 +142,7 @@ class TestS2Tools:
         with pytest.raises(ValueError) as exc:
             query_dataframe.run(tool_input)
         assert "Could not resolve a valid metadata dictionary" in str(exc.value)
+
     @patch(
         "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
     )
@@ -160,7 +159,9 @@ class TestS2Tools:
         state[state_key] = dic  # simulate indirect mapping
         # Mock agent to echo the Python expression
         mock_agent = MagicMock()
-        mock_agent.invoke.side_effect = lambda args, stream_mode=None: {"output": args["input"]}
+        mock_agent.invoke.side_effect = lambda args, stream_mode=None: {
+            "output": args["input"]
+        }
         mock_create_agent.return_value = mock_agent
         # Test full list
         tool_input = {
@@ -181,17 +182,20 @@ class TestS2Tools:
         output2 = result2.update["messages"][0].content
         expected2 = "df['paper_ids'].dropna().str[0].tolist()[1]"
         assert output2 == expected2
+
     def test_query_dataframe_extract_ids_missing_column(self, initial_state):
         """Test that missing id_column raises ValueError when extract_ids=True."""
         state = initial_state.copy()
         state["last_displayed_papers"] = {"p1": {"paper_ids": ["id1"]}}
         state["papers"] = state["last_displayed_papers"]
         with pytest.raises(ValueError) as exc:
-            query_dataframe.run({
-                "question": "",
-                "state": state,
-                "tool_call_id": "tid",
-                "extract_ids": True,
-                "id_column": "",
-            })
+            query_dataframe.run(
+                {
+                    "question": "",
+                    "state": state,
+                    "tool_call_id": "tid",
+                    "extract_ids": True,
+                    "id_column": "",
+                }
+            )
         assert "Must specify 'id_column' when extract_ids=True." in str(exc.value)

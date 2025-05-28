@@ -2,7 +2,6 @@
 Unit tests for S2 tools functionality.
 """
 
-# pylint: disable=redefined-outer-name
 import pytest
 from langgraph.types import Command
 from ..tools.s2.display_dataframe import (
@@ -11,8 +10,8 @@ from ..tools.s2.display_dataframe import (
 )
 
 
-@pytest.fixture
-def initial_state():
+@pytest.fixture(name="initial_state")
+def initial_state_fixture():
     """Provides an empty initial state for tests."""
     return {"papers": {}, "multi_papers": {}}
 
