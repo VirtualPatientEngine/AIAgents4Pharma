@@ -115,7 +115,7 @@ def _build_summary(article_data: dict[str, Any]) -> str:
         snippet = _get_snippet(paper.get("Abstract", ""))
         line = f"{idx+1}. {title} ({pub_date})"
         if url:
-            line += f"\n   URL: {url}"
+            line += f"\n   PDF URL: {url}"
         if snippet:
             line += f"\n   Abstract snippet: {snippet}"
         lines.append(line)
