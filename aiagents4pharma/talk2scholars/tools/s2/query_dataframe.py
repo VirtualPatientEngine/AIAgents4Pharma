@@ -87,6 +87,7 @@ class QueryDataFrameInput(BaseModel):
     "query_dataframe",
     args_schema=QueryDataFrameInput,
     parse_docstring=True,
+    return_direct=True,
 )
 def query_dataframe(
     question: str,
