@@ -354,3 +354,60 @@ def test_single_helper_arxiv_and_pubmed_ids(monkeypatch):
     monkeypatch.setattr(requests, "get", dummy_get7)
     ids_list = sp.process_recommendations()["papers"].get("xY", {}).get("paper_ids")
     assert ids_list == ["arxiv:ax3", "pubmed:pm3"]
+
+
+def test_search_helper_create_content_snippet(monkeypatch):
+    """Test that SearchData._create_content includes snippets appropriately."""
+    sd = SearchData(query="QueryX", limit=3, year="2022", tool_call_id="tid")
+    sd.filtered_papers = {
+        "p1": {"Title": "Title1", "Year": "2021", "Abstract": "First. Second. Third."},
+        "p2": {"Title": "Title2", "Year": "2020", "Abstract": ""},
+    }
+    # Stub out network fetch/filter to rely on preset filtered_papers
+    monkeypatch.setattr(SearchData, "_fetch_papers", lambda self: None)
+    monkeypatch.setattr(SearchData, "_filter_papers", lambda self: None)
+    results = sd.process_search()
+    content = results["content"]
+    assert "1. Title1 (2021)" in content
+    assert "Abstract snippet: First. Second." in content
+    assert "2. Title2 (2020)" in content
+    # Only one snippet present
+    assert content.count("Abstract snippet:") == 1
+
+
+def test_single_helper_create_content_snippet(monkeypatch):
+    """Test that SinglePaperRecData._create_content includes snippets appropriately."""
+    sp = SinglePaperRecData(paper_id="pid", limit=2, year=None, tool_call_id="tid")
+    sp.filtered_papers = {
+        "x1": {"Title": "STitle1", "Year": "2019", "Abstract": "SOne. STwo. SThree."},
+        "x2": {"Title": "STitle2", "Year": "2018", "Abstract": ""},
+    }
+    # Stub out network fetch/filter to rely on preset filtered_papers
+    monkeypatch.setattr(SinglePaperRecData, "_fetch_recommendations", lambda self: None)
+    monkeypatch.setattr(SinglePaperRecData, "_filter_papers", lambda self: None)
+    results = sp.process_recommendations()
+    content = results["content"]
+    assert "1. STitle1 (2019)" in content
+    assert "Abstract snippet: SOne. STwo." in content
+    assert "2. STitle2 (2018)" in content
+    assert content.count("Abstract snippet:") == 1
+
+
+def test_multi_helper_create_content_snippet(monkeypatch):
+    """Test that MultiPaperRecData._create_content includes snippets appropriately."""
+    mr = MultiPaperRecData(
+        paper_ids=["a", "b"], limit=2, year="2021", tool_call_id="tid"
+    )
+    mr.filtered_papers = {
+        "m1": {"Title": "MTitle1", "Year": "2017", "Abstract": "MOne. MTwo. MThree."},
+        "m2": {"Title": "MTitle2", "Year": "2016", "Abstract": ""},
+    }
+    # Stub out network fetch/filter to rely on preset filtered_papers
+    monkeypatch.setattr(MultiPaperRecData, "_fetch_recommendations", lambda self: None)
+    monkeypatch.setattr(MultiPaperRecData, "_filter_papers", lambda self: None)
+    results = mr.process_recommendations()
+    content = results["content"]
+    assert "1. MTitle1 (2017)" in content
+    assert "Abstract snippet: MOne. MTwo." in content
+    assert "2. MTitle2 (2016)" in content
+    assert content.count("Abstract snippet:") == 1
