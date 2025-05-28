@@ -92,6 +92,42 @@ def extract_metadata(entry: ET.Element, ns: dict, arxiv_id: str) -> dict:
     }
 
 
+def _get_snippet(abstract: str) -> str:
+    """Extract the first one or two sentences from an abstract."""
+    if not abstract or abstract == "N/A":
+        return ""
+    sentences = abstract.split(". ")
+    snippet_sentences = sentences[:2]
+    snippet = ". ".join(snippet_sentences)
+    if not snippet.endswith("."):
+        snippet += "."
+    return snippet
+
+
+def _build_summary(article_data: dict[str, Any]) -> str:
+    """Build a summary string for up to three papers with snippets."""
+    top = list(article_data.values())[:3]
+    lines: list[str] = []
+    for idx, paper in enumerate(top):
+        title = paper.get("Title", "N/A")
+        pub_date = paper.get("Publication Date", "N/A")
+        url = paper.get("URL", "")
+        snippet = _get_snippet(paper.get("Abstract", ""))
+        line = f"{idx+1}. {title} ({pub_date})"
+        if url:
+            line += f"\n   URL: {url}"
+        if snippet:
+            line += f"\n   Abstract snippet: {snippet}"
+        lines.append(line)
+    summary = "\n".join(lines)
+    return (
+        "Download was successful. Papers metadata are attached as an artifact. "
+        "Here is a summary of the results:\n"
+        f"Number of papers found: {len(article_data)}\n"
+        "Top 3 papers:\n" + summary
+    )
+
+
 @tool(
     args_schema=DownloadArxivPaperInput,
     parse_docstring=True,
@@ -125,18 +161,11 @@ def download_arxiv_paper(
             entry, {"atom": "http://www.w3.org/2005/Atom"}, aid
         )
 
-    # Prepare a summary of up to three downloaded papers
-    summary = "\n".join(
-        f"{idx+1}. {meta.get('Title','N/A')} ({meta.get('Publication Date','N/A')}; "
-        f"arXiv ID: {aid}; URL: {meta.get('URL','')})"
-        for idx, (aid, meta) in enumerate(list(article_data.items())[:3])
-    )
-    remaining = len(article_data) - 3
-    if remaining > 0:
-        summary += f"\n...and {remaining} more papers."
+    # Build and return summary
+    content = _build_summary(article_data)
     return Command(
         update={
             "article_data": article_data,
-            "messages": [ToolMessage(content=summary, tool_call_id=tool_call_id)],
+            "messages": [ToolMessage(content=content, tool_call_id=tool_call_id)],
         }
     )

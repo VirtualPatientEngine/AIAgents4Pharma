@@ -6,9 +6,11 @@ Unit tests for arXiv paper downloading functionality, including:
 import unittest
 from unittest.mock import MagicMock, patch
 
+import pytest
 from langchain_core.messages import ToolMessage
 
 from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input import (
+    _get_snippet,
     download_arxiv_paper,
 )
 
@@ -73,15 +75,20 @@ class TestDownloadArxivPaper(unittest.TestCase):
         self.assertEqual(metadata["source"], "arxiv")
         self.assertEqual(metadata["arxiv_id"], arxiv_id)
 
-        # Check that the message content is as expected.
+        # Check that the message content matches the new summary format
         messages = update["messages"]
-        self.assertTrue(len(messages) >= 1)
+        self.assertEqual(len(messages), 1)
         self.assertIsInstance(messages[0], ToolMessage)
-        # Check that the summary lists the downloaded paper
         content = messages[0].content
+        # Build expected summary
         expected = (
-            f"1. Sample Paper Title (2020-01-01T00:00:00Z; arXiv ID: {arxiv_id}; "
-            f"URL: http://arxiv.org/pdf/{arxiv_id}v1)"
+            "Download was successful. Papers metadata are attached as an artifact. "
+            "Here is a summary of the results:\n"
+            f"Number of papers found: 1\n"
+            "Top 3 papers:\n"
+            f"1. Sample Paper Title (2020-01-01T00:00:00Z)\n"
+            f"   URL: http://arxiv.org/pdf/{arxiv_id}v1\n"
+            "   Abstract snippet: This is a sample abstract."
         )
         self.assertEqual(content, expected)
 
@@ -116,14 +123,21 @@ class TestDownloadArxivPaper(unittest.TestCase):
 
         tool_call_id = "test_tool_id"
         tool_input = {"arxiv_ids": [arxiv_id], "tool_call_id": tool_call_id}
-        # No entry found should result in empty article_data and empty message
+        # No entry found should result in empty article_data and header-only summary
         result = download_arxiv_paper.run(tool_input)
         update = result.update
         self.assertIn("article_data", update)
         self.assertEqual(update["article_data"], {})
         messages = update.get("messages", [])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(messages[0].content, "")
+        content = messages[0].content
+        expected = (
+            "Download was successful. Papers metadata are attached as an artifact. "
+            "Here is a summary of the results:\n"
+            "Number of papers found: 0\n"
+            "Top 3 papers:\n"
+        )
+        self.assertEqual(content, expected)
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
@@ -210,4 +224,26 @@ class TestDownloadArxivPaper(unittest.TestCase):
         tool_input = {"arxiv_ids": ids, "tool_call_id": "tid"}
         result = download_arxiv_paper.run(tool_input)
         summary = result.update["messages"][0].content
-        assert summary.endswith("...and 2 more papers.")
+        # Should report total count of 5 and list only top 3 without ellipsis
+        assert "Number of papers found: 5" in summary
+        assert "Top 3 papers:" in summary
+        # Entries for first three IDs should include URL and no ellipsis
+        assert "1. T0 (2020-01-01T00:00:00Z)" in summary
+        assert "   URL: u0v1" in summary
+        assert "3. T2 (2020-01-01T00:00:00Z)" in summary
+        assert "...and" not in summary
+
+
+@pytest.mark.parametrize(
+    "input_text,expected",
+    [
+        ("", ""),
+        ("N/A", ""),
+        ("Just one sentence", "Just one sentence."),
+        ("First. Second", "First. Second."),
+        ("Hello. World.", "Hello. World."),
+    ],
+)
+def test_get_snippet_various(input_text, expected):
+    """Test _get_snippet behavior for various abstracts."""
+    assert _get_snippet(input_text) == expected
