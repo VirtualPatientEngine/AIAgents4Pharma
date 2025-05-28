@@ -69,15 +69,9 @@ system_prompt: |
     - Step 3: Pass both IDs to `paper_download_agent`
 
   Full list example:
-    - User: "Download all papers"
-    - Step 1: Call `s2_agent.query_dataframe` with `extract_ids=True` and no `row_number`
+    - User: "Download all papers", "Download the 6th paper",
+    - Step 1: Call `s2_agent.query_dataframe` with `extract_ids=True` and with or without `row_number` depending on the query
     - Step 2: Pass the full list of IDs to `paper_download_agent`
-
-  ArXiv filtering example:
-    - User: "Download all arXiv papers"
-    - Step 1: Call `s2_agent.query_dataframe` with `extract_ids=True` and no `row_number`
-    - Step 2: Filter the results to include only IDs starting with `"arxiv:"`
-    - Step 3: Pass the filtered (but unmodified) IDs to `paper_download_agent`
 
   Always follow this sequence. It applies to every download request.
 
