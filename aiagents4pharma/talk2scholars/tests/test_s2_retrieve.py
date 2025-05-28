@@ -2,7 +2,6 @@
 Unit tests for S2 tools functionality.
 """
 
-# pylint: disable=redefined-outer-name
 from unittest.mock import patch
 import pytest
 from langgraph.types import Command
@@ -56,8 +55,11 @@ class TestS2Tools:
         content = result.update["messages"][0].content
         assert content == "123"
 
-    def test_retrieve_semantic_scholar_paper_id_no_results(self):
+    @patch("requests.get")
+    def test_retrieve_semantic_scholar_paper_id_no_results(self, mock_get):
         """Test retrieving a paper ID when no results are found."""
+        mock_get.return_value.json.return_value = {"data": []}
+        mock_get.return_value.status_code = 200
         with pytest.raises(ValueError, match="No papers found for query: UnknownPaper"):
             retrieve_semantic_scholar_paper_id.invoke(
                 input={"paper_title": "UnknownPaper", "tool_call_id": "test123"}
