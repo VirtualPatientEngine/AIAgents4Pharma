@@ -176,9 +176,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /home/runner/.ollama/models
-          key: ollama-models-${{ runner.os }}
+          key: Linux-ollama
           restore-keys: |
-            ollama-models-
+            Linux-ollama
 
       - name: Ensure Ollama model directory exists
         shell: bash -l {0}
@@ -231,7 +231,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: /home/runner/.ollama/models
-          key: ollama-models-${{ runner.os }}
+          key: Linux-ollama
 
   # code coverage job for macos
   code-cov-macos:
