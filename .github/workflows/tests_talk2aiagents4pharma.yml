@@ -174,7 +174,7 @@ jobs:
         uses: actions/cache@v4
         id: cache_ollama
         with:
-          path: ~/.ollama/models
+          path: /home/runner/.ollama/models
           key: ${{ runner.os }}-ollama
 
       - name: Install Ollama CLI and start service
