@@ -78,7 +78,7 @@ LANGCHAIN_TRACING_V2=true           # Optional for both agents
 LANGCHAIN_API_KEY=...               # Optional for both agents
 ```
 
-[Additional Notes for Windows Users](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2aiagents4pharma/install.md)
+[Additional Notes for Windows Users](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users)
 
 ##### **3. Start the application**
 
@@ -87,7 +87,7 @@ chmod +x startup.sh
 ./startup.sh        # Add --cpu flag to force CPU mode if needed
 ```
 
-[More about startup script](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2aiagents4pharma/install.md)
+[More about startup script](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#about-startupsh)
 
 ##### **To Run Talk2Biomodels / Talk2Scholars**
 
@@ -129,11 +129,11 @@ To use **Talk2BioModels** or **Talk2Scholars**, you need a free **NVIDIA API key
 
 Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
 
-If you are using docker on Windows, please follow these [Windows Setup Notes](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2aiagents4pharma/install.md).
+If you are using docker on Windows, please follow these [Windows Setup Notes](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users).
 
 **LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
-[More on running multiple agents simultaneously](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2aiagents4pharma/install.md)
+[More on running multiple agents simultaneously](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#to-run-multiple-agents-simultaneously)
 
 #### Option 2: git (for developers and contributors)
 
