@@ -171,39 +171,29 @@ jobs:
         uses: actions/cache@v4
         id: cache_ollama
         with:
-          path: |
-            /usr/share/ollama/.ollama/models/*
-            test
+          path: ~/.ollama/models
           key: ${{ runner.os }}-ollama
 
       - name: Install and Pull Ollama models
         if: steps.cache_ollama.outputs.cache-hit != 'true'
+        shell: bash -l {0}
         run: |
-          mkdir -p test
-          echo "Hello, World!" > test/hello.txt
           conda activate talk2aiagents4pharma
           curl -fsSL https://ollama.com/install.sh | sh
           ollama serve &
           sleep 10
           ollama pull llama3.2:1b
-          ls -l ~/.ollama/
-          ls -l /usr/share/ollama/.ollama/
-        shell: bash -l {0}
 
       - name: Reading cached Ollama models
-        run: |
-          cat test/hello.txt
-          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-          conda activate talk2aiagents4pharma
-          curl -fsSL https://ollama.com/install.sh | sh
-          ollama serve &
-          sleep 10
-          mkdir -p ~/.ollama/models/
-          cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
-          ollama list
-          du -sh ~/.ollama/
-          du -sh /usr/share/ollama/.ollama/
         shell: bash -l {0}
+        run: |
+          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
+          if [ "${{ steps.cache_ollama.outputs.cache-hit }}" != "true" ]; then
+            curl -fsSL https://ollama.com/install.sh | sh
+            ollama serve &
+            sleep 10
+          fi
+          ollama list
 
       - name: Run tests with coverage
         shell: bash -l {0}
