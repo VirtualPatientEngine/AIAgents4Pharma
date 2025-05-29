@@ -4,24 +4,32 @@
 Talk2Scholars: A Streamlit app for the Talk2Scholars graph.
 """
 
+import logging
 import os
 import random
 import sys
 
 import hydra
-import pandas as pd
 import streamlit as st
-from langchain.callbacks.tracers import LangChainTracer
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.tracers.context import collect_runs
 from langchain_openai import ChatOpenAI
 from langsmith import Client
-from langchain.callbacks.tracers import LangChainTracer
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
+from utils.streamlit_utils import get_text_embedding_model
 
-import logging
+sys.path.append("./")
+# import get_app from main_agent
+import aiagents4pharma.talk2scholars.tools.pdf.question_and_answer as qa_module
+from aiagents4pharma.talk2scholars.agents.main_agent import get_app
+from aiagents4pharma.talk2scholars.tools.pdf.utils.generate_answer import (
+    load_hydra_config,
+)
+from aiagents4pharma.talk2scholars.tools.pdf.utils.vector_store import Vectorstore
+from aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper import (
+    ZoteroSearchData,
+)
 
 # Set the logging level for Langsmith tracer to ERROR to suppress warnings
 logging.getLogger("langsmith").setLevel(logging.ERROR)
@@ -29,11 +37,6 @@ logging.getLogger("langsmith.client").setLevel(logging.ERROR)
 
 # Set the logging level for httpx to ERROR to suppress info logs
 logging.getLogger("httpx").setLevel(logging.ERROR)
-sys.path.append("./")
-# import get_app from main_agent
-from aiagents4pharma.talk2scholars.agents.main_agent import get_app
-
-
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
@@ -204,6 +207,43 @@ def process_pdf_upload():
         st.success(f"{len(pdf_files)} PDF(s) uploaded successfully.")
 
 
+def initialize_zotero_and_build_store():
+    """
+    Download all PDFs from the user's Zotero library and build a RAG vector store.
+    """
+    # Retrieve the agent app from session state
+    app = st.session_state.app
+    # Fetch Zotero items and download PDFs
+    search_data = ZoteroSearchData(
+        query="",
+        only_articles=True,
+        limit=1,
+        tool_call_id="startup",
+        download_pdfs=True,
+    )
+    search_data.process_search()
+    results = search_data.get_search_results()
+    # Save article metadata and PDF paths
+    st.session_state.article_data = results.get("article_data", {})
+    # Update agent state with article data
+    config = {"configurable": {"thread_id": st.session_state.unique_id}}
+    app.update_state(config, {"article_data": st.session_state.article_data})
+    # Build RAG vector store
+    pdf_config = load_hydra_config()
+    embedding_model = get_text_embedding_model(st.session_state.text_embedding_model)
+    vector_store = Vectorstore(embedding_model=embedding_model, config=pdf_config)
+    for paper_id, meta in st.session_state.article_data.items():
+        pdf_url = meta.get("pdf_url")
+        if pdf_url:
+            vector_store.add_paper(paper_id, pdf_url, meta)
+    vector_store.build_vector_store()
+    # Expose the vector store for use by the Q&A tool helper
+    # (helper.prebuilt_vector_store caches the shared store)
+    qa_module.helper.prebuilt_vector_store = vector_store
+    # Mark as initialized to prevent rerunning
+    st.session_state.zotero_initialized = True
+
+
 # Main layout of the app split into two columns
 main_col1, main_col2 = st.columns([3, 7])
 # First column
@@ -302,7 +342,7 @@ with main_col2:
                 ):
                     # Initialize Zotero library and RAG index before greeting
                     if "zotero_initialized" not in st.session_state:
-                        streamlit_utils.initialize_zotero_and_build_store()
+                        initialize_zotero_and_build_store()
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
                     # Update the agent state with the selected LLM model
                     current_state = app.get_state(config)
