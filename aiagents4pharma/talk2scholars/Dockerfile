@@ -18,7 +18,7 @@ COPY docs /app/docs
 COPY app /app/app
 COPY requirements.txt /app
 
-# Install Python dependencies and FAISS via Conda (base env, no conda-forge)
+# Install Python dependencies and FAISS via Conda (base env)
 RUN conda update -n base -c defaults conda -y \
   && conda install -n base python=3.12 -y \
   && pip install --upgrade pip wheel \
