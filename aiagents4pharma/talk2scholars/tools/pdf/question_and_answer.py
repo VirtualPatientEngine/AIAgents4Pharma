@@ -110,6 +110,7 @@ def question_and_answer(
 
     # Initialize or reuse vector store, then load candidate papers
     vs = helper.init_vector_store(text_emb)
+    print("PRINTING ARTICLE DATA: ",article_data)
     candidate_ids = list(article_data.keys())
     logger.info("%s: Candidate paper IDs for reranking: %s", call_id, candidate_ids)
     helper.load_candidate_papers(vs, article_data, candidate_ids)
