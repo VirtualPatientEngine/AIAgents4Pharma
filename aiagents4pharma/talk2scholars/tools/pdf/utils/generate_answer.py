@@ -55,7 +55,7 @@ def _build_context_and_sources(
         pid = doc.metadata.get("paper_id")
         if isinstance(pid, str):
             sources.add(pid)
-    print(f"Generated context: {context[:50]}...")  # Log first 100 characters of context
+    # print(f"Generated context: {context[:50]}...")  # Log first 100 characters of context
     return context, sources
 
 
@@ -104,17 +104,24 @@ def generate_answer(
     prompt = ChatPromptTemplate.from_messages(
     [
         ("system", config['prompt_template'].format(context=context)),
-        ("human", "Based on the above answer this question {question}"),
+        ("human", "Based on the context: {context} answer this question {question}"),
     ]
 )
-    messages = prompt.invoke({"question":question})
+    messages = prompt.invoke({"context":context,"question":question})
     structured_llm = llm_model.with_structured_output(CitedAnswer)
-    print("Entering the structured LLM invocation with messages: ")
+    print("Entering the structured LLM invocation with messages: ",messages)
     response = structured_llm.invoke(messages)
     # print("Response from the generate answer: ",response)
     print("Response type: ", type(response))
-
-    output = f"{response['answer']}\n\nSources: {', '.join(response['citations'])}"
+    # print("Response content: ", response)
+    print("Answer:", response.answer)
+    print("Citations:", response.citations)
+    output = f"{response.answer}    Sources: {', '.join(response.citations)}"
+    # answer = response.answer
+    # citations = ', '.join(response['citations'])
+    # output_int = ''.join(answer)
+    # print("intermediate output: ", output_int)
+    # output = "\n\n".join(citations)
     print("OUTPUT",output)
     # Return the response with metadata
     return {

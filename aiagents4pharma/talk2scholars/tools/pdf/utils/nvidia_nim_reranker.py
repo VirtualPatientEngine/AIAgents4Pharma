@@ -67,9 +67,6 @@ def rank_papers_by_query(self, query: str, config: Any, top_k: int = 5) -> List[
         api_key=api_key,
         truncate="END",
     )
-    if not reranker.is_available():
-        logger.error("NVIDIA reranker is not available")
-        raise RuntimeError("NVIDIA reranker is not available. Check your configuration.")
     # Get the ranked list of documents based on the query
     response = reranker.compress_documents(query=query, documents=aggregated_documents)
     
