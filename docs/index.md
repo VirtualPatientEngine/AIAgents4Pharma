@@ -47,18 +47,21 @@ _We now have all the agents available on Docker Hub._
 
 Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
 
-##### **1. Clone the repository and navigate to the agent directory**
+##### **1. Download docker-compose.yml and .env.example from GitHub**
+
+###### TalkAgents4Pharma
 
 ```sh
-git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-
-cd AIAgents4Pharma/aiagents4pharma/<agent>
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/.env.example
 ```
 
-Replace `<agent>` with either:
+###### TalkKnowledgeGraphs
 
-- `talk2aiagents4pharma`
-- `talk2knowledgegraphs`
+```sh
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/.env.example
+```
 
 ##### **2. Setup environment variables**
 
@@ -142,8 +145,7 @@ If you are using docker on Windows, please follow these [Windows Setup Notes](ht
 1. **Clone the repository:**
 
 ```sh
-git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-cd AIAgents4Pharma
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma && cd AIAgents4Pharma
 ```
 
 2. **Install dependencies:**
@@ -254,9 +256,10 @@ git push origin feat/your-feature-name
 
 #### Contacts for contributions
 
-- **Talk2Biomodels / Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330), [@lilijap](https://github.com/lilijap), [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi), [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330), [@dmccloskey](https://github.com/dmccloskey)
+- **Talk2Biomodels**: [@lilijap](https://github.com/lilijap), [@gurdeep330](https://github.com/gurdeep330)
+- **Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330)
+- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi)
+- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330)
 
 Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for more detailed contribution guidelines.
 
