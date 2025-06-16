@@ -1,4 +1,4 @@
-###### Notes for Windows Users
+###### Notes for Windows Userss
 
 If you are using Windows, it is recommended to install **Git Bash** for a smoother experience when running the bash commands in this guide.
 
