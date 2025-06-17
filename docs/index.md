@@ -47,7 +47,7 @@ _We now have all the agents available on Docker Hub._
 
 Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
 
-##### **1. Download docker-compose.yml and .env.example from GitHub**
+##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
 
 ###### TalkAgents4Pharma
 
