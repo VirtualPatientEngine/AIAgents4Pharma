@@ -49,13 +49,13 @@ Both agents require [Ollama](https://ollama.com/) to run embedding models like `
 
 ##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
 
-###### TalkAgents4Pharma
+###### Talk2Agents4Pharma
 
 ```sh
 mkdir talk2aiagents4pharma && cd talk2aiagents4pharma && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/startup.sh
 ```
 
-###### TalkKnowledgeGraphs
+###### Talk2KnowledgeGraphs
 
 ```sh
 mkdir talk2knowledgegraphs && cd talk2knowledgegraphs && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/startup.sh
