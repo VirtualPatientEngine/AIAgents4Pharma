@@ -748,6 +748,24 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             )
             st.empty()
 
+        elif msg.name in ["question_and_answer"]:
+            citation = msg.artifact
+            if not citation:
+                continue
+
+            st.write(
+                citation
+            )
+
+            st.session_state.messages.append(
+                {
+                    "type": "citation",
+                    "content": citation,
+                    "key": "citation_" + uniq_msg_id,
+                    "tool_name": msg.name,
+                }
+            )
+            
 
 def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     """

@@ -116,16 +116,14 @@ def generate_answer(
     # print("Response content: ", response)
     print("Answer:", response.answer)
     print("Citations:", response.citations)
-    output = f"{response.answer}    Sources: {', '.join(response.citations)}"
-    # answer = response.answer
-    # citations = ', '.join(response['citations'])
-    # output_int = ''.join(answer)
-    # print("intermediate output: ", output_int)
-    # output = "\n\n".join(citations)
+    output = f"{response.answer}"
+    citations = response.citations
     print("OUTPUT",output)
+    print(f"citations and {citations} type: {type(citations)}")
     # Return the response with metadata
     return {
         "output_text": output,
+        "citations": citations,
         "sources": [doc.metadata for doc in retrieved_chunks],
         "num_sources": len(retrieved_chunks),
         "papers_used": list(paper_sources),

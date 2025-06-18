@@ -104,22 +104,27 @@ class QAToolHelper:
         chunks: List[Any],
         llm: Any,
         articles: Dict[str, Any],
-    ) -> str:
+    ) -> Dict[str, Any]:
         """Generate the final answer text with source attributions."""
         result = generate_answer(question, chunks, llm, self.config)
         answer = result.get("output_text", "No answer generated.")
+        citations = result.get("citations", [])
         titles: Dict[str, str] = {}
-        # for pid in result.get("papers_used", []):
-        #     if pid in articles:
-        #         titles[pid] = articles[pid].get("Title", "Unknown paper")
-        # if titles:
-        #     srcs = "\n\nSources:\n" + "\n".join(f"- {t}" for t in titles.values())
-        # else:
-        #     srcs = ""
+        for pid in citations:
+            if pid in articles:
+                titles[pid] = articles[pid].get("Title", "Unknown paper")
+        if titles:
+            srcs = "\n\nSources:\n" + "\n".join(f"- {t}" for t in titles.values())
+        else:
+            srcs = ""
         logger.info(
-            "%s: Generated answer using %d chunks from %d papers",
+            "%s: Generated answer using %d chunks from %d papers with %d sources",
             self.call_id,
             len(chunks),
             len(titles),
+            len(citations)
         )
-        return f"{answer}"
+        return {
+            "answer": answer,
+            "citations": srcs
+        }
