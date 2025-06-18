@@ -2,9 +2,12 @@
 Tool for performing multimodal subgraph extraction.
 """
 
+import os
+import glob
 from typing import Type, Annotated
 import logging
 import numpy as np
+import pandas as pd
 import cudf
 import cupy as cp
 import hydra
@@ -17,8 +20,8 @@ from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
 import torch
 from torch_geometric.data import Data
-from ..utils.extractions.cu_multimodal_pcst import MultimodalPCSTPruning
-from ..utils.embeddings.ollama import EmbeddingWithOllama
+from ..utils.extractions.cu2_multimodal_pcst import MultimodalPCSTPruning
+# from ..utils.embeddings.ollama import EmbeddingWithOllama
 from .load_arguments import ArgumentData
 
 # Initialize logger
@@ -58,17 +61,73 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
 
+    def _load_graph_data(self,
+                         state: Annotated[dict, InjectedState],
+                         cfg: dict,) -> dict:
+        """
+        Load the graph data from the state.
+
+        Args:
+            state: The injected state for the tool.
+            cfg: The configuration dictionary.
+
+        Returns:
+            A dictionary containing the graph data.
+        """
+        logger.log(logging.INFO, "Loading graph data from state")
+        # Retrieve source graph from the state
+        graph = {}
+        graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
+        # logger.log(logging.INFO, "Source graph: %s", source_graph)
+
+        # Load the knowledge graph
+        # graph["nodes"] = cudf.read_parquet(initial_graph["source"]["kg_nodes_path"])
+        # graph["edges"] = cudf.read_parquet(initial_graph["source"]["kg_edges_path"])
+
+        # Loop over nodes and edges
+        for element in ["nodes", "edges"]:
+            # Make an empty dictionary for each folder
+            graph[element] = {}
+            for stage in ["enrichment", "embedding"]:
+                print(element, stage)
+                # Create the file pattern for the current subfolder
+                file_list = glob.glob(os.path.join(cfg.biobridge.source,
+                                                   element,
+                                                   stage, '*.parquet.gzip'))
+                print(file_list)
+                # Read and concatenate all dataframes in the folder
+                # Except the edges embedding, which is too large to read in one go
+                # We are using a chunk size to read the edges embedding in smaller parts instead
+                if element == "edges" and stage == "embedding":
+                    # For edges embedding, only read two columns: triplet_index and edge_emb
+                    # We will read the edges embedding dataframes in chunks and store them in a list
+                    chunk_size = 5
+                    graph[element][stage] = []
+                    for i in range(0, len(file_list), chunk_size):
+                        chunk_files = file_list[i:i+chunk_size]
+                        chunk_df = cudf.concat(
+                            [cudf.read_parquet(f, columns=["triplet_index", "edge_emb"])
+                             for f in chunk_files], ignore_index=True)
+                        graph[element][stage].append(chunk_df)
+                else:
+                    # For nodes and edges enrichment, read and concat all dataframes in the folder
+                    # This includes the nodes embedding, which can be read in one go
+                    graph[element][stage] = cudf.concat(
+                        [cudf.read_parquet(f) for f in file_list], ignore_index=True)
+
+        return graph
+
     def _prepare_query_modalities(self,
-                                  prompt_emb: list,
+                                  prompt: dict,
                                   state: Annotated[dict, InjectedState],
-                                  graph_nodes: cudf.DataFrame) -> cudf.DataFrame:
+                                  graph_nodes: list) -> cudf.DataFrame:
         """
         Prepare the modality-specific query for subgraph extraction.
 
         Args:
-            prompt_emb: The embedding of the user prompt in a list.
+            prompt: The dictionary containing the user prompt and embeddings.
             state: The injected state for the tool.
-            graph_nodes: The nodes dataframe in the graph.
+            graph_nodes: A list of graph nodes (i.e., enrichment and embedding dataframes).
 
         Returns:
             A DataFrame containing the query embeddings and modalities.
@@ -77,32 +136,43 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         logger.log(logging.INFO, "Initializing dataframes")
         multimodal_df = cudf.DataFrame({"name": [], "node_type": []})
         query_df = cudf.DataFrame({"node_id": [],
-                                    "node_type": [],
-                                    "x": [],
-                                    "desc_x": [],
-                                    "use_description": []})
+                                   "node_type": [],
+                                   "feat": [],
+                                   "feat_emb": [],
+                                   "desc": [],
+                                   "desc_emb": [],
+                                   "use_description": []})
 
         # Loop over the uploaded files and find multimodal files
         logger.log(logging.INFO, "Looping over uploaded files")
         for i in range(len(state["uploaded_files"])):
             # Check if multimodal file is uploaded
             if state["uploaded_files"][i]["file_type"] == "multimodal":
-                # Read the csv file
-                multimodal_df = cudf.read_csv(state["uploaded_files"][i]["file_path"])
+                # Read the Excel file
+                multimodal_df = pd.read_excel(state["uploaded_files"][i]["file_path"],
+                                              sheet_name=None)
 
         # Check if the multimodal_df is empty
         logger.log(logging.INFO, "Checking if multimodal_df is empty")
         if len(multimodal_df) > 0:
             # Prepare multimodal_df
             logger.log(logging.INFO, "Preparing multimodal_df")
-            multimodal_df.rename(columns={"name": "q_node_name",
-                                          "node_type": "q_node_type"}, inplace=True)
+            # Merge all obtained dataframes into a single dataframe
+            multimodal_df = cudf.from_pandas(pd.concat(multimodal_df).reset_index())
+            multimodal_df.drop(columns=["level_1"], inplace=True)
+            multimodal_df.rename(columns={"level_0": "q_node_type",
+                                          "name": "q_node_name"}, inplace=True)
+            # Since an excel sheet name could not contain a `/`,
+            # but the node type can be 'gene/protein' as exists in the PrimeKG
+            multimodal_df["q_node_type"] = multimodal_df["q_node_type"].str.replace('-', '/')
 
             # Make and process a query dataframe by merging the graph_df and multimodal_df
-            logger.log(logging.INFO, "Processing query dataframe")
-            query_df = graph_nodes[
-                ['node_id', 'node_name', 'node_type', 'enriched_node', 'x', 'desc', 'desc_x']
+            # Merging with enrichment dataframe
+            logger.log(logging.INFO, "Merging with enrichment dataframe")
+            query_df = graph_nodes['enrichment'][
+                ['node_id', 'node_name', 'node_type', 'feat', 'desc']
             ].merge(multimodal_df, how='cross')
+            # Post-process the query dataframe
             logger.log(logging.INFO, "Lowering case for node names (q_node_name)")
             query_df['q_node_name'] = query_df['q_node_name'].str.lower()
             logger.log(logging.INFO, "Lowering case for node names (node_name)")
@@ -114,12 +184,19 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 (query_df['node_type'] == query_df['q_node_type'])
             )
             query_df = query_df[mask]
+            # Merging the final query dataframe with embedding dataframe
+            logger.log(logging.INFO, "Merging with embedding dataframe")
+            query_df = query_df.merge(
+                graph_nodes['embedding'][['node_id', 'feat_emb', 'desc_emb']],
+                how='left',
+                on='node_id')
+            # Post-process the query dataframe
             query_df = query_df[['node_id',
                                  'node_type',
-                                 'enriched_node',
-                                 'x',
+                                 'feat',
+                                 'feat_emb',
                                  'desc',
-                                 'desc_x']].reset_index(drop=True)
+                                 'desc_emb']].reset_index(drop=True)
             query_df['use_description'] = False # set to False for modal-specific embeddings
 
             # Update the state by adding the the selected node IDs
@@ -135,10 +212,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             cudf.DataFrame({
                 'node_id': 'user_prompt',
                 'node_type': 'prompt',
-                # 'enriched_node': prompt,
-                'x': prompt_emb,
-                # 'desc': prompt,
-                'desc_x': prompt_emb,
+                'feat': prompt["text"],
+                'feat_emb': prompt["emb"],
+                'desc': prompt["text"],
+                'desc_emb': prompt["emb"],
                 'use_description': True # set to True for user prompt embedding
             })
         ]).reset_index(drop=True)
@@ -188,8 +265,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 verbosity_level=cfg.verbosity_level,
                 use_description=q[1]['use_description'],
             ).extract_subgraph(graph,
-                               cp.array(q[1]['desc_x']).reshape(1, -1).astype(cp.float32),
-                               cp.array(q[1]['x']).reshape(1, -1).astype(cp.float32),
+                               cp.array(q[1]['desc_emb']).reshape(1, -1).astype(cp.float32),
+                               cp.array(q[1]['feat_emb']).reshape(1, -1).astype(cp.float32),
                                q[1]['node_type'])
 
             # Append the extracted subgraph to the dictionary
@@ -256,9 +333,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
             # Prepare graph dataframes
             # Nodes
-            graph_nodes = graph["nodes"].copy()
+            graph_nodes = graph["nodes"]["enrichment"].copy()
             graph_nodes = graph_nodes.iloc[sub.nodes][
-                ['node_id', 'node_name', 'node_type', 'desc', 'enriched_node']
+                ['node_id', 'node_name', 'node_type', 'desc', 'feat']
             ]
             if not color_df.empty:
                 # Merge the color dataframe with the graph nodes
@@ -267,7 +344,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 graph_nodes["color"] = 'black'  # Default color
             graph_nodes['color'].fillna('black', inplace=True) # Fill NaN colors with black
             # Edges
-            graph_edges = graph["edges"].copy()
+            graph_edges = graph["edges"]["enrichment"].sort_values("triplet_index",
+                                                                   ignore_index=True).copy()
             graph_edges = graph_edges.iloc[sub.edges][
                 ['head_id', 'tail_id', 'edge_type']
             ]
@@ -277,7 +355,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 row.node_id,
                 {'hover': "Node Name : " + row.node_name + "\n" +\
                     "Node Type : " + row.node_type + "\n" +
-                    'Desc : ' + row.desc,
+                    "Desc : " + row.desc,
                 'click': '$hover',
                 'color': row.color})
                 for row in graph_nodes.to_arrow().to_pandas().itertuples(index=False)])
@@ -330,19 +408,14 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             )
             cfg = cfg.tools.multimodal_subgraph_extraction
 
-        # Retrieve source graph from the state
-        initial_graph = {}
-        initial_graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
-        # logger.log(logging.INFO, "Source graph: %s", source_graph)
-
-        # Load the knowledge graph
-        initial_graph["nodes"] = cudf.read_parquet(initial_graph["source"]["kg_nodes_path"])
-        initial_graph["edges"] = cudf.read_parquet(initial_graph["source"]["kg_edges_path"])
+        # Load graph data
+        initial_graph =  self._load_graph_data(state, cfg)
 
         # Prepare the query embeddings and modalities
         logger.log(logging.INFO, "_prepare_query_modalities")
         query_df = self._prepare_query_modalities(
-            [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
+            {"text": prompt,
+             "emb": [state["embedding_model"].embed_query(prompt)]},
             state,
             initial_graph["nodes"]
         )

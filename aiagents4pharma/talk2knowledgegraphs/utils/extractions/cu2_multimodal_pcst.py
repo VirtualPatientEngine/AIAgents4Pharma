@@ -3,6 +3,7 @@ Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) al
 """
 
 from typing import Tuple, NamedTuple
+import logging
 import numpy as np
 import cudf
 from cuvs.distance import pairwise_distance
@@ -10,6 +11,10 @@ import cupy as cp
 import torch
 import pcst_fast
 from torch_geometric.data.data import Data
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class MultimodalPCSTPruning(NamedTuple):
     """
@@ -59,15 +64,15 @@ class MultimodalPCSTPruning(NamedTuple):
         return scores
 
     def _compute_node_prizes(self,
-                             graph_nodes: cudf.DataFrame,
-                             query_emb: torch.Tensor,
+                             graph_nodes: list,
+                             query_emb: cp.ndarray,
                              modality: str) :
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            graph_nodes: The nodes dataframe of the graph.
-            query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
+            graph_nodes: The list
+            query_emb: The query embedding in cupy array format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction based on the node type.
 
@@ -75,26 +80,32 @@ class MultimodalPCSTPruning(NamedTuple):
             The prizes of the nodes.
         """
         # Initialize variables
-        sim_scores = cudf.Series(cp.zeros(len(graph_nodes), dtype=cp.float32))
+        sim_scores = cudf.Series(cp.zeros(len(graph_nodes['embedding']), dtype=cp.float32))
 
         # Calculate cosine similarity for text features and update the score
+        logger.log(logging.INFO, "Computing node similarity scores")
         if self.use_description:
             sim_scores[:] = self._compute_sim_scores(
-                graph_nodes["desc_x"].list.leaves.to_cupy().reshape(
-                    -1, len(graph_nodes["desc_x"][0])
+                graph_nodes['embedding']['desc_emb'].list.leaves.to_cupy().reshape(
+                    graph_nodes['embedding'].shape[0], -1
                 ).astype(cp.float32),
                 query_emb
-            )  # shape [N, 1]
+            )
         else:
-            mask = graph_nodes.node_type == modality
+            mask = graph_nodes['enrichment'].node_type == modality
+            logger.log(logging.INFO, "Computing node similarity scores for modality: %s", modality)
+            logger.log(logging.INFO, "Number of nodes with modality %s: %d", modality, mask.sum())
+            logger.log(logging.INFO, "Length of graph nodes: %d", len(graph_nodes['embedding'][mask]))
+            logger.log(logging.INFO, "Shape of embedding: %s", graph_nodes['embedding'][mask].shape)
             sim_scores[mask] = self._compute_sim_scores(
-                graph_nodes[mask]["x"].list.leaves.to_cupy().reshape(
-                    -1, len(graph_nodes[mask]["x"][0])
+                graph_nodes['embedding'][mask]["feat_emb"].list.leaves.to_cupy().reshape(
+                    graph_nodes['embedding'][mask].shape[0], -1
                 ).astype(cp.float32),
                 query_emb
-            )  # shape [N, 1]
+            )
 
         # Set the prizes for nodes based on the similarity scores
+        logger.log(logging.INFO, "Computing node prizes")
         topk = min(self.topk, sim_scores.size)
         n_prizes = cudf.Series(0.0, index=cp.arange(sim_scores.size))
         n_prizes[(-sim_scores).sort_values()[:topk].index] = cp.arange(topk,
@@ -103,26 +114,43 @@ class MultimodalPCSTPruning(NamedTuple):
         return n_prizes.to_cupy()
 
     def _compute_edge_prizes(self,
-                             graph_edges: cudf.DataFrame,
-                             text_emb: torch.Tensor) :
+                             graph_edges: list,
+                             text_emb: cp.ndarray) :
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            graph_edges: The edges dataframe of the graph.
-            text_emb: The textual description embedding in PyTorch Tensor format.
+            graph_edges: A list of edges dataframes of the graph.
+            text_emb: The textual description embedding in cupy array format.
 
         Returns:
             The prizes of the nodes.
         """
         # Note that as of now, the edge features are based on textual features
         # Compute prizes for edges
-        e_prizes = self._compute_sim_scores(
-            graph_edges["edge_attr"].list.leaves.to_cupy().reshape(
-                -1, len(graph_edges["edge_attr"][0])
-            ).astype(cp.float32),
-            text_emb
-        )
+        sim_dict = {}
+        sim_dict['triplet_index'] = []
+        sim_dict['score'] = []
+        # Loop through the edges and compute the similarity scores
+        for i, edges_emb_df in enumerate(graph_edges['embedding']):
+            print(f"Processing edges chunk {i+1}/{len(graph_edges['embedding'])}")
+            # Append the triplet indices
+            sim_dict['triplet_index'].append(edges_emb_df['triplet_index'].to_cupy())
+
+            # Calculate the similarity score
+            sim_dict['score'].append(
+                self._compute_sim_scores(edges_emb_df['edge_emb'].list.leaves.to_cupy()\
+                    .reshape(edges_emb_df.shape[0], -1).astype(cp.float32),
+                    text_emb)
+                )
+
+        # Create a DataFrame with the results
+        e_prizes = cudf.DataFrame({
+            'triplet_index': cp.concatenate(sim_dict['triplet_index']),
+            'score': cp.concatenate(sim_dict['score'])
+        })
+        e_prizes = e_prizes.sort_values("triplet_index").reset_index(drop=True)
+        e_prizes = e_prizes['score'].to_cupy()
         unique_prizes, inverse_indices = cp.unique(e_prizes, return_inverse=True)
         topk_e = min(self.topk_e, len(graph_edges))
         topk_e_values = unique_prizes[cp.argsort(-unique_prizes)[:topk_e]]
@@ -158,9 +186,11 @@ class MultimodalPCSTPruning(NamedTuple):
             The prizes of the nodes and edges.
         """
         # Compute prizes for nodes
+        logger.log(logging.INFO, "_compute_node_prizes")
         n_prizes = self._compute_node_prizes(graph["nodes"], query_emb, modality)
 
         # Compute prizes for edges
+        logger.log(logging.INFO, "_compute_edge_prizes")
         e_prizes = self._compute_edge_prizes(graph["edges"], text_emb)
 
         return {"nodes": n_prizes, "edges": e_prizes}
@@ -263,6 +293,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return edges_dict, prizes, costs, mapping
 
+
     def get_subgraph_nodes_edges(self,
                                  num_nodes: int,
                                  vertices: cp.ndarray,
@@ -330,21 +361,26 @@ class MultimodalPCSTPruning(NamedTuple):
         assert self.topk_e > 0, "topk_e must be greater than or equal to 0"
 
         # Retrieve the top-k nodes and edges based on the query embedding
+        logger.log(logging.INFO, "compute_prizes")
         prizes = self.compute_prizes(graph, text_emb, query_emb, modality)
 
         # Create the edge index for the graph
-        # edge_index = self._create_edge_index(graph["nodes"], graph["edges"])
+        logger.log(logging.INFO, "Creating edge index")
+        edges_df_sorted = graph["edges"]["enrichment"].sort_values("triplet_index",
+                                                                   ignore_index=True)
         edge_index = cp.stack([
-            graph["edges"]["head_index"].to_cupy(),
-            graph["edges"]["tail_index"].to_cupy()
+            edges_df_sorted["head_index"].to_cupy(),
+            edges_df_sorted["tail_index"].to_cupy()
         ])
 
         # Compute costs in constructing the subgraph
+        logger.log(logging.INFO, "compute_subgraph_costs")
         edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
-            edge_index, len(graph["nodes"]), prizes
+            edge_index, len(graph["nodes"]["enrichment"]), prizes
         )
 
         # Retrieve the subgraph using the PCST algorithm
+        logger.log(logging.INFO, "Running PCST algorithm")
         result_vertices, result_edges = pcst_fast.pcst_fast(
             edges_dict["edges"].get(),
             prizes.get(),
@@ -355,8 +391,10 @@ class MultimodalPCSTPruning(NamedTuple):
             self.verbosity_level,
         )
 
+        # Get subgraph nodes and edges based on the result of the PCST algorithm
+        logger.log(logging.INFO, "Getting subgraph nodes and edges")
         subgraph = self.get_subgraph_nodes_edges(
-            len(graph["nodes"]),
+            len(graph["nodes"]["enrichment"]),
             cp.asarray(result_vertices),
             {"edges": cp.asarray(result_edges),
              "num_prior_edges": edges_dict["num_prior_edges"],

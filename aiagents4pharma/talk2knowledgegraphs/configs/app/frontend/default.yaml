@@ -3,11 +3,19 @@ default_user: "talk2kg_user"
 data_package_allowed_file_types:
   - "pdf"
 multimodal_allowed_file_types:
-  - "csv"
+  - "xls"
+  - "xlsx"
 upload_data_dir: "../files"
-kg_name: "PrimeKG"
-kg_nodes_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_nodes.parquet.gzip"
-kg_edges_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_edges.parquet.gzip"
+kg_name: "BioBridge-PrimeKG"
+kg_node_types:
+  - "gene/protein"
+  - "molecular_function"
+  - "cellular_component"
+  - "biological_process"
+  - "drug"
+  - "disease"
+# kg_nodes_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_nodes.parquet.gzip"
+# kg_edges_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_edges.parquet.gzip"
 # kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
 # kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
@@ -16,6 +24,7 @@ openai_llms:
   - "gpt-4-turbo"
   - "gpt-3.5-turbo"
 openai_embeddings:
+  - "text-embedding-ada-002"
   - "text-embedding-3-small"
 ollama_llms:
   - "llama3.2:1b"

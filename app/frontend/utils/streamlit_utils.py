@@ -1111,11 +1111,12 @@ def initialize_selections() -> None:
     """
     # with open(st.session_state.config["kg_pyg_path"], "rb") as f:
         # pyg_graph = pickle.load(f)
-    graph_nodes = pd.read_parquet(st.session_state.config["kg_nodes_path"])
+    # graph_nodes = pd.read_parquet(st.session_state.config["kg_nodes_path"])
+    node_types = st.session_state.config["kg_node_types"]
 
     # Populate the selections based on the node type from the graph
     selections = {}
-    for i in graph_nodes.node_type.unique():
+    for i in node_types:
         selections[i] = []
 
     return selections
@@ -1235,7 +1236,7 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
 #                                               cfg.biobridge.source,
 #                                                element,
 #                                                stage, '*.parquet.gzip'))
-            
+
 #             print(file_list)
 #             # if element != "edges" and stage == "embedding":
 #             # Read and concatenate all dataframes in the folder

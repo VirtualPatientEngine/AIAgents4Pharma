@@ -15,8 +15,8 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.tracers.context import collect_runs
 from langchain.callbacks.tracers import LangChainTracer
-# from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from utils import streamlit_utils
 
@@ -298,9 +298,9 @@ with main_col2:
                             model=st.session_state.llm_model,
                             temperature=cfg.temperature,
                         )
-                        # emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
                         # For IBD BioBridge data, we still use Ollama embeddings
-                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                        # emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
                     else:
                         llm_model = ChatOllama(
                             model=st.session_state.llm_model,
@@ -322,8 +322,8 @@ with main_col2:
                             "dic_source_graph": [
                                 {
                                     "name": st.session_state.config["kg_name"],
-                                    "kg_nodes_path": st.session_state.config["kg_nodes_path"],
-                                    "kg_edges_path": st.session_state.config["kg_edges_path"]
+                                    # "kg_nodes_path": st.session_state.config["kg_nodes_path"],
+                                    # "kg_edges_path": st.session_state.config["kg_edges_path"]
                                     # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
                                     # "kg_text_path": st.session_state.config["kg_text_path"],
                                 }
