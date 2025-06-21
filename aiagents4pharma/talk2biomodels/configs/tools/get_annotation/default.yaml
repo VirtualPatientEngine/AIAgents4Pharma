@@ -4,3 +4,5 @@ prompt: >
   If the user aks for a specific species, extract that species.
   If none of the species match the user question, return None.
   If the user asks for all species, return all species.
+  If the user does not specify any species or simpley asks for
+  model annotations, return all species.
