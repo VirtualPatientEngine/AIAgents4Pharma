@@ -55,7 +55,6 @@ def _build_context_and_sources(
         pid = doc.metadata.get("paper_id")
         if isinstance(pid, str):
             sources.add(pid)
-    # print(f"Generated context: {context[:50]}...")  # Log first 100 characters of context
     return context, sources
 
 
@@ -96,11 +95,8 @@ def generate_answer(
         raise ValueError("Configuration for generate_answer is required.")
     if "prompt_template" not in config:
         raise ValueError("The prompt_template is missing from the configuration.")
-    
-
     # Build context and sources, then invoke LLM
     context, paper_sources = _build_context_and_sources(retrieved_chunks)
-    # prompt = config["prompt_template"].format(context=context, question=question)
     prompt = ChatPromptTemplate.from_messages(
     [
         ("system", config['prompt_template'].format(context=context)),
@@ -109,17 +105,10 @@ def generate_answer(
 )
     messages = prompt.invoke({"context":context,"question":question})
     structured_llm = llm_model.with_structured_output(CitedAnswer)
-    print("Entering the structured LLM invocation with messages: ",messages)
     response = structured_llm.invoke(messages)
-    # print("Response from the generate answer: ",response)
-    print("Response type: ", type(response))
-    # print("Response content: ", response)
-    print("Answer:", response.answer)
-    print("Citations:", response.citations)
     output = f"{response.answer}"
     citations = response.citations
-    print("OUTPUT",output)
-    print(f"citations and {citations} type: {type(citations)}")
+    logger.info("Answer and citations generated successfully")
     # Return the response with metadata
     return {
         "output_text": output,

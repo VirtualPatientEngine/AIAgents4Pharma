@@ -178,7 +178,9 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         """test generating an answer."""
         # Mock the language model
         mock_llm = mock_base_chat_model.return_value
-        mock_llm.invoke.return_value.content = "Generated answer"
+        mock_structured = MagicMock()
+        mock_structured.invoke.return_value.answer = "Generated answer"
+        mock_llm.with_structured_output.return_value = mock_structured
 
         # Create a mock document
         mock_document = Document(
@@ -186,7 +188,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         )
 
         # Generate answer with dummy config
-        config = {"prompt_template": "{context} {question}"}
+        config = {"prompt_template": "{context}"}
         result = generate_answer(
             question="What is the test?",
             retrieved_chunks=[mock_document],
@@ -466,7 +468,10 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
     @patch.multiple(
         "aiagents4pharma.talk2scholars.tools.pdf.question_and_answer.helper",
         run_reranker=lambda vs, query, candidates: ["p1"],
-        format_answer=lambda question, chunks, llm, articles: "formatted answer",
+        format_answer=lambda question,
+        chunks,
+        llm,
+        articles: {"answer":"formatted answer","citations":"citations"}
     )
     def test_question_and_answer_happy_path(
         self, mock_retrieve, mock_init, mock_state
@@ -493,7 +498,7 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         msgs = result.update.get("messages", [])
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg.content, "formatted answer")
+        self.assertEqual(msg.content, "formatted answer. Citations are sent as an artifact.")
         self.assertEqual(msg.tool_call_id, "tid")
 
     @patch(

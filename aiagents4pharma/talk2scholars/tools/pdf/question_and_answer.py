@@ -80,7 +80,8 @@ def question_and_answer(
       5. Retrieves the most relevant and diverse text chunks via Maximal Marginal Relevance.
       6. Constructs an LLM prompt combining contextual chunks and the query.
       7. Invokes the LLM to generate an answer, appending source attributions.
-      8. Returns a LangGraph Command with a ToolMessage containing the answer and an artifact containing the citations.
+      8. Returns a LangGraph Command with a ToolMessage containing the answer 
+         and an artifact containing the citations.
 
     Args:
       question (str): The free-text question to answer.
@@ -91,7 +92,7 @@ def question_and_answer(
       tool_call_id (str): Internal identifier for this tool invocation.
 
     Returns:
-      Command[Any]: updates conversation state with a ToolMessage(answer) and an artifact containting the citations.
+      Command[Any]: updates conversation state with a ToolMessage(answer) and artifact(citations).
 
     Raises:
       ValueError: when required models or metadata are missing in state.
@@ -130,7 +131,7 @@ def question_and_answer(
     )
     content = f"{response_text.get("answer", "")}. Citations are sent as an artifact."
     artifact = response_text.get("citations", "")
-    logger.info("Sending back citations as artifact with len: %s", len(artifact))
+    logger.info("Sending back generated response and citations as an artifact")
     return Command(
         update={
             "messages": [

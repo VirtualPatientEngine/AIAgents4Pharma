@@ -69,9 +69,7 @@ def rank_papers_by_query(self, query: str, config: Any, top_k: int = 5) -> List[
     )
     # Get the ranked list of documents based on the query
     response = reranker.compress_documents(query=query, documents=aggregated_documents)
-    
     logger.info("Received %d documents from NVIDIA reranker", len(response))
-
     ranked_papers = [doc.metadata["paper_id"] for doc in response[:top_k]]
     logger.info("Top %d papers after reranking: %s", top_k, ranked_papers)
     return ranked_papers
