@@ -54,3 +54,4 @@ streamlit-feedback
 umap-learn==0.5.7
 PyPDF2==3.0.1
 openpyxl==3.1.5
+pymilvus==2.5.11
