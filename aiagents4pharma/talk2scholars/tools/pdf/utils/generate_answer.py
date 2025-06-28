@@ -105,16 +105,15 @@ def generate_answer(
     ]
 )
     try:
-        messages = prompt.invoke({"context":context,"question":question})
+        messages = prompt.invoke({"context": context, "question": question})
         structured_llm = llm_model.with_structured_output(CitedAnswer)
         try:
             response = structured_llm.invoke(messages)
-        except Exception as e:
-            logger.info("Error encountered during strutured output: %s",e)
-            raise RuntimeError("Error encountered during strutured output")
-    except Exception as e:
-            logger.info("Error encountered during LLM RAG invocation: %s",e)
-            raise RuntimeError("Error encountered during LLM RAG invocation")
+        except Exception as exc:
+            raise RuntimeError("Error encountered during structured output") from exc
+
+    except Exception as exc:
+        raise RuntimeError("Error encountered during LLM RAG invocation") from exc
     output = f"{response.answer}"
     citations = response.citations
     logger.info("Answer and citations generated successfully")

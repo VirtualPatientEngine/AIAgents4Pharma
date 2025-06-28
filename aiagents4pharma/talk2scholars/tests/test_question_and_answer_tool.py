@@ -532,3 +532,58 @@ class TestQuestionAndAnswerTool(unittest.TestCase):
         with self.assertRaises(RuntimeError) as cm:
             question_and_answer.run(tool_input)
         self.assertIn("No relevant chunks found for question", str(cm.exception))
+
+    def test_generate_answer_exception_handling(self):
+        """Test exception handling in generate_answer function."""
+        mock_document = Document(
+            page_content="Test content",
+            metadata={"paper_id": "test_paper", "title": "Test Title"}
+        )
+
+        config = {"prompt_template": "Answer based on: {context}"}
+
+        # Test case 1: Exception in outer try block (prompt.invoke fails)
+        mock_llm_1 = MagicMock()
+
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.pdf.utils.generate_answer.ChatPromptTemplate"
+            ) as mock_prompt_template:
+            mock_prompt = MagicMock()
+            mock_prompt.invoke.side_effect = Exception("Prompt invoke error")
+            mock_prompt_template.from_messages.return_value = mock_prompt
+
+            with self.assertRaises(RuntimeError) as context:
+                generate_answer(
+                    question="What is the test?",
+                    retrieved_chunks=[mock_document],
+                    llm_model=mock_llm_1,
+                    config=config,
+                )
+
+            self.assertEqual(str(context.exception), "Error encountered during LLM RAG invocation")
+
+        mock_llm_2 = MagicMock()
+
+        # Mock the structured LLM to raise an exception on invoke
+        mock_structured_llm = MagicMock()
+        mock_structured_llm.invoke.side_effect = Exception("Structured output error")
+        mock_llm_2.with_structured_output.return_value = mock_structured_llm
+
+        with patch(
+            "aiagents4pharma.talk2scholars.tools.pdf.utils.generate_answer.ChatPromptTemplate"
+            ) as mock_prompt_template:
+            mock_prompt = MagicMock()
+            mock_prompt.invoke.return_value = "mocked_messages"
+            mock_prompt_template.from_messages.return_value = mock_prompt
+
+            with self.assertRaises(RuntimeError) as context:
+                generate_answer(
+                    question="What is the test?",
+                    retrieved_chunks=[mock_document],
+                    llm_model=mock_llm_2,
+                    config=config,
+                )
+
+            # The inner exception gets caught and re-raised by the outer handler
+            # So we expect the outer exception message
+            self.assertEqual(str(context.exception), "Error encountered during LLM RAG invocation")
