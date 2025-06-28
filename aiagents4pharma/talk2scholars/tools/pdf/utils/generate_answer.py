@@ -55,6 +55,7 @@ def _build_context_and_sources(
         pid = doc.metadata.get("paper_id")
         if isinstance(pid, str):
             sources.add(pid)
+    context = context.replace("{","").replace("}","")
     return context, sources
 
 
@@ -103,9 +104,17 @@ def generate_answer(
         ("human", "Based on the context: {context} answer this question {question}"),
     ]
 )
-    messages = prompt.invoke({"context":context,"question":question})
-    structured_llm = llm_model.with_structured_output(CitedAnswer)
-    response = structured_llm.invoke(messages)
+    try:
+        messages = prompt.invoke({"context":context,"question":question})
+        structured_llm = llm_model.with_structured_output(CitedAnswer)
+        try:
+            response = structured_llm.invoke(messages)
+        except Exception as e:
+            logger.info("Error encountered during strutured output: %s",e)
+            raise RuntimeError("Error encountered during strutured output")
+    except Exception as e:
+            logger.info("Error encountered during LLM RAG invocation: %s",e)
+            raise RuntimeError("Error encountered during LLM RAG invocation")
     output = f"{response.answer}"
     citations = response.citations
     logger.info("Answer and citations generated successfully")
