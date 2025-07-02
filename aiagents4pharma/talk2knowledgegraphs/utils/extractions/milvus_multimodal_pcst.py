@@ -242,7 +242,6 @@ class MultimodalPCSTPruning(NamedTuple):
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
 
     def extract_subgraph(self,
-                         graph: Data,
                          text_emb: torch.Tensor,
                          query_emb: torch.Tensor,
                          modality: str) -> dict:
@@ -265,12 +264,10 @@ class MultimodalPCSTPruning(NamedTuple):
         assert self.topk_e > 0, "topk_e must be greater than or equal to 0"
 
         # Retrieve the top-k nodes and edges based on the query embedding
-        prizes = self.compute_prizes(graph, text_emb, query_emb, modality)
+        prizes = self.compute_prizes(text_emb, query_emb, modality)
 
         # Compute costs in constructing the subgraph
-        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
-            graph, prizes
-        )
+        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(prizes)
 
         # Retrieve the subgraph using the PCST algorithm
         result_vertices, result_edges = pcst_fast.pcst_fast(
@@ -283,9 +280,7 @@ class MultimodalPCSTPruning(NamedTuple):
             self.verbosity_level,
         )
 
-        subgraph = self.get_subgraph_nodes_edges(
-            graph,
-            result_vertices,
+        subgraph = self.get_subgraph_nodes_edges(result_vertices,
             {"edges": result_edges, "num_prior_edges": edges_dict["num_prior_edges"]},
             mapping)
 

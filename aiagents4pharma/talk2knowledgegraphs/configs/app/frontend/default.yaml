@@ -16,8 +16,8 @@ kg_node_types:
   - "disease"
 # kg_nodes_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_nodes.parquet.gzip"
 # kg_edges_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_edges.parquet.gzip"
-# kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
-# kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
+kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
+kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
 openai_llms:
   - "gpt-4o-mini"
@@ -40,3 +40,21 @@ reasoning_subgraph_topk_nodes_max: 100
 reasoning_subgraph_topk_edges: 5
 reasoning_subgraph_topk_edges_min: 1
 reasoning_subgraph_topk_edges_max: 100
+# Configuration for Milvus
+milvus_db:
+  alias: "default"
+  host: "localhost"
+  port: "19530"
+  uri: "http://localhost:19530"
+  token: "root:Milvus"
+  user: "root"
+  password: "Milvus"
+  database_name: "t2kg_primekg"
+  collection_edges: "t2kg_primekg_edges"
+  collection_nodes: "t2kg_primekg_nodes"
+  collection_nodes_gene_protein: "t2kg_primekg_nodes_gene_protein"
+  collection_nodes_molecular_function: "t2kg_primekg_nodes_molecular_function"
+  collection_nodes_cellular_component: "t2kg_primekg_nodes_cellular_component"
+  collection_nodes_biological_process: "t2kg_primekg_nodes_biological_process"
+  collection_nodes_drug: "t2kg_primekg_nodes_drug"
+  collection_nodes_disease: "t2kg_primekg_nodes_disease"

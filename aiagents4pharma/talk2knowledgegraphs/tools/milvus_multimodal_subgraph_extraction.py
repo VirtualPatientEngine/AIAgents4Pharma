@@ -5,28 +5,34 @@ Tool for performing multimodal subgraph extraction.
 from typing import Type, Annotated
 import logging
 import pickle
-import numpy as np
-import pandas as pd
 import hydra
 import networkx as nx
+import torch
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
-import torch
 from torch_geometric.data import Data
 from pymilvus import (
-    db,
+    # db,
     connections,
     Collection,
-    utility,
-    MilvusClient
+    # utility,
+    # MilvusClient
 )
-from ..utils.extractions.multimodal_pcst import MultimodalPCSTPruning
+from ..utils.extractions.milvus_multimodal_pcst import MultimodalPCSTPruning
 from ..utils.embeddings.ollama import EmbeddingWithOllama
 from .load_arguments import ArgumentData
+if torch.cuda.is_available():
+    import pandas as pd
+    import cudf as df
+    import cupy as py
+else:
+    import pandas as pd
+    import pandas as df
+    import numpy as py
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -65,108 +71,99 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
 
-    def _setup_milvus(self, cfg: dict):
-        """
-        Function to connect to the Milvus database.
-
-        Args:
-            cfg: The configuration dictionary containing Milvus connection details.
-        """
-        # Check if the connection already exists
-        if not connections.has_connection(cfg.milvus_connection_name):
-            # Create a new connection to Milvus
-            # Connect to Milvus
-            connections.connect(
-                alias=cfg.milvus_db.alias,
-                host=cfg.milvus_db.host,
-                port=cfg.milvus_db.port,
-                user=cfg.milvus_db.user,
-                password=cfg.milvus_db.password
-            )
-            logger.log(logging.INFO, "Connected to Milvus database.")
-        else:
-            logger.log(logging.INFO, "Already connected to Milvus database.")
-
-        # Use a predefined Milvus database
-        db.using_database(cfg.milvus_db.database_name)
-
     def _prepare_query_modalities(self,
-                                  prompt_emb: list,
+                                  prompt: dict,
                                   state: Annotated[dict, InjectedState],
-                                  pyg_graph: Data) -> pd.DataFrame:
+                                  cfg: dict) -> df.DataFrame:
         """
         Prepare the modality-specific query for subgraph extraction.
 
         Args:
-            prompt_emb: The embedding of the user prompt in a list.
+            prompt: The dictionary containing the user prompt and embeddings.
             state: The injected state for the tool.
-            pyg_graph: The PyTorch Geometric graph Data.
+            cfg: The configuration dictionary.
 
         Returns:
             A DataFrame containing the query embeddings and modalities.
         """
         # Initialize dataframes
-        multimodal_df = pd.DataFrame({"name": []})
-        query_df = pd.DataFrame({"node_id": [],
-                                 "node_type": [],
-                                 "x": [],
-                                 "desc_x": [],
-                                 "use_description": []})
+        logger.log(logging.INFO, "Initializing dataframes")
+        multimodal_df = df.DataFrame({"name": [], "node_type": []})
+        query_df = []
 
         # Loop over the uploaded files and find multimodal files
+        logger.log(logging.INFO, "Looping over uploaded files")
         for i in range(len(state["uploaded_files"])):
             # Check if multimodal file is uploaded
             if state["uploaded_files"][i]["file_type"] == "multimodal":
                 # Read the Excel file
                 multimodal_df = pd.read_excel(state["uploaded_files"][i]["file_path"],
-                                              sheet_name=None)
+                                                sheet_name=None)
 
         # Check if the multimodal_df is empty
+        logger.log(logging.INFO, "Checking if multimodal_df is empty")
         if len(multimodal_df) > 0:
+            # Prepare multimodal_df
+            logger.log(logging.INFO, "Preparing multimodal_df")
             # Merge all obtained dataframes into a single dataframe
             multimodal_df = pd.concat(multimodal_df).reset_index()
+            multimodal_df = df.DataFrame(multimodal_df)
             multimodal_df.drop(columns=["level_1"], inplace=True)
             multimodal_df.rename(columns={"level_0": "q_node_type",
                                         "name": "q_node_name"}, inplace=True)
             # Since an excel sheet name could not contain a `/`,
             # but the node type can be 'gene/protein' as exists in the PrimeKG
-            multimodal_df["q_node_type"] = multimodal_df.q_node_type.apply(
-                lambda x: x.replace('-', '/')
-            )
+            multimodal_df["q_node_type"] = multimodal_df["q_node_type"].str.replace('-', '_')
 
-            # Convert PyG graph to a DataFrame for easier filtering
-            graph_df = pd.DataFrame({
-                "node_id": pyg_graph.node_id,
-                "node_name": pyg_graph.node_name,
-                "node_type": pyg_graph.node_type,
-                "x": pyg_graph.x,
-                "desc_x": pyg_graph.desc_x.tolist(),
-            })
+            # Query the Milvus database for each node type in multimodal_df
+            logger.log(logging.INFO, "Querying Milvus database for each node type in multimodal_df")
+            for node_type, node_type_df in multimodal_df.groupby("q_node_type"):
+                print(f"Processing node type: {node_type}")
 
-            # Make a query dataframe by merging the graph_df and multimodal_df
-            query_df = graph_df.merge(multimodal_df, how='cross')
-            query_df = query_df[
-                query_df.apply(
-                    lambda x:
-                    (x['q_node_name'].lower() in x['node_name'].lower()) & # node name
-                    (x['node_type'] == x['q_node_type']), # node type
-                    axis=1
+                # Load the collection
+                collection = Collection(
+                    name=f"{cfg.milvus_db.database_name}_nodes_{node_type.replace('/', '_')}"
                 )
-            ]
-            query_df = query_df[['node_id', 'node_type', 'x', 'desc_x']].reset_index(drop=True)
-            query_df['use_description'] = False # set to False for modal-specific embeddings
+                collection.load()
+
+                # Query the collection with node names from multimodal_df
+                q_node_names =  getattr(node_type_df['q_node_name'],
+                                        "to_pandas",
+                                        lambda: node_type_df['q_node_name'])().tolist()
+                q_columns = ["node_id", "node_type", "feat", "feat_emb", "desc", "desc_emb"]
+                res = collection.query(
+                    expr=f'node_name IN [{','.join(f'"{name}"' for name in q_node_names)}]',
+                    output_fields=q_columns,
+                )
+
+                # Convert the result to a DataFrame
+                res_df = df.DataFrame(res)[q_columns]
+                res_df["use_description"] = False
+
+                # Append the results to query_df
+                query_df.append(res_df)
+
+            # Concatenate all results into a single DataFrame
+            logger.log(logging.INFO, "Concatenating all results into a single DataFrame")
+            query_df = df.concat(query_df, ignore_index=True)
 
             # Update the state by adding the the selected node IDs
-            state["selections"] = query_df.groupby("node_type")["node_id"].apply(list).to_dict()
+            logger.log(logging.INFO, "Updating state with selected node IDs")
+            state["selections"] = query_df.to_pandas().groupby(
+                "node_type"
+            )["node_id"].apply(list).to_dict()
 
         # Append a user prompt to the query dataframe
-        query_df = pd.concat([
+        logger.log(logging.INFO, "Adding user prompt to query dataframe")
+        query_df = df.concat([
             query_df,
-            pd.DataFrame({
+            df.DataFrame({
                 'node_id': 'user_prompt',
                 'node_type': 'prompt',
-                'x': prompt_emb,
-                'desc_x': prompt_emb,
+                'feat': prompt["text"],
+                'feat_emb': prompt["emb"],
+                'desc': prompt["text"],
+                'desc_emb': prompt["emb"],
                 'use_description': True # set to True for user prompt embedding
             })
         ]).reset_index(drop=True)
@@ -176,7 +173,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     def _perform_subgraph_extraction(self,
                                      state: Annotated[dict, InjectedState],
                                      cfg: dict,
-                                     pyg_graph: Data,
                                      query_df: pd.DataFrame) -> dict:
         """
         Perform multimodal subgraph extraction based on modal-specific embeddings.
@@ -209,8 +205,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
                 use_description=q[1]['use_description'],
-            ).extract_subgraph(pyg_graph,
-                               torch.tensor(q[1]['desc_x']), # description embedding
+            ).extract_subgraph(torch.tensor(q[1]['desc_x']), # description embedding
                                torch.tensor(q[1]['x']), # modal-specific embedding
                                q[1]['node_type'])
 
@@ -337,10 +332,15 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             cfg = hydra.compose(
                 config_name="config", overrides=["tools/multimodal_subgraph_extraction=default"]
             )
+            cfg_fe = cfg.app.frontend
             cfg = cfg.tools.multimodal_subgraph_extraction
 
-        # Setup Milvus connection and database
-        self._setup_milvus(cfg)
+        # Check if the Milvus connection exists
+        logger.log(logging.INFO, "Checking Milvus connection")
+        logger.log(logging.INFO, "Milvus connection name: %s", cfg_fe.milvus_db.alias)
+        logger.log(logging.INFO, "Milvus connection DB: %s", cfg_fe.milvus_db.database_name)
+        logger.log(logging.INFO, "Is connection established? %s",
+                   connections.has_connection(cfg_fe.milvus_db.alias))
 
         # Retrieve source graph from the state
         initial_graph = {}
@@ -348,22 +348,24 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         # logger.log(logging.INFO, "Source graph: %s", source_graph)
 
         # Load the knowledge graph
-        # with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
-        #     initial_graph["pyg"] = pickle.load(f)
-        # with open(initial_graph["source"]["kg_text_path"], "rb") as f:
-        #     initial_graph["text"] = pickle.load(f)
+        with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
+            initial_graph["pyg"] = pickle.load(f)
+        with open(initial_graph["source"]["kg_text_path"], "rb") as f:
+            initial_graph["text"] = pickle.load(f)
 
         # Prepare the query embeddings and modalities
         query_df = self._prepare_query_modalities(
-            [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
+            {"text": prompt,
+             "emb": [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
+            #  "emb": [state["embedding_model"].embed_query(prompt)]
+            },
             state,
-            initial_graph["pyg"]
+            cfg,
         )
 
         # Perform subgraph extraction
         subgraphs = self._perform_subgraph_extraction(state,
                                                       cfg,
-                                                      initial_graph["pyg"],
                                                       query_df)
 
         # Prepare subgraph as a NetworkX graph and textualized graph

@@ -29,6 +29,10 @@ import pickle
 import glob
 import cudf
 import re
+from pymilvus import (
+    db,
+    connections,
+)
 
 def submit_feedback(user_response):
     """
@@ -745,6 +749,139 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             st.empty()
 
 
+# def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
+#     """
+#     Function to render the graph in the chat.
+
+#     Args:
+#         graph_dict: The graph dictionary
+#         key: The key for the graph
+#         save_graph: Whether to save the graph in the chat history
+#     """
+#     def extract_inner_html(html):
+#         match = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL)
+#         return match.group(1) if match else html
+
+#     figures_inner_html = ""
+
+#     for name, subgraph_nodes, subgraph_edges in zip(graph_dict["name"],
+#                                                     graph_dict["nodes"],
+#                                                     graph_dict["edges"]):
+#         # Create a directed graph
+#         graph = nx.DiGraph()
+
+#         # Add nodes with attributes
+#         for node, attrs in subgraph_nodes:
+#             graph.add_node(node, **attrs)
+
+#         # Add edges with attributes
+#         for source, target, attrs in subgraph_edges:
+#             graph.add_edge(source, target, **attrs)
+
+#         # print("Graph nodes:", graph.nodes(data=True))
+#         # print("Graph edges:", graph.edges(data=True))
+
+#         # Render the graph
+#         fig = gravis.d3(
+#             graph,
+#             node_size_factor=3.0,
+#             show_edge_label=True,
+#             edge_label_data_source="label",
+#             edge_curvature=0.25,
+#             zoom_factor=1.0,
+#             many_body_force_strength=-500,
+#             many_body_force_theta=0.3,
+#             node_hover_neighborhood=True,
+#             # layout_algorithm_active=True,
+#         )
+#         # components.html(fig.to_html(), height=475)
+#         inner_html = extract_inner_html(fig.to_html())
+#         wrapped_html = f'''
+#         <div class="graph-content">
+#             {inner_html}
+#         </div>
+#         '''
+
+#         figures_inner_html += f'''
+#         <div class="graph-box">
+#             <h3 class="graph-title">{name}</h3>
+#             {wrapped_html}
+#         </div>
+#         '''
+
+#         if save_graph:
+#             # Add data to the chat history
+#             st.session_state.messages.append(
+#                 {
+#                     "type": "graph",
+#                     "content": graph_dict,
+#                     "key": key,
+#                 }
+#             )
+
+#     full_html = f"""
+#     <!DOCTYPE html>
+#     <html>
+#     <head>
+#     <style>
+#         html, body {{
+#             margin: 0;
+#             padding: 0;
+#             overflow-y: hidden;
+#             height: 100%;
+#         }}
+#         .scroll-container {{
+#             display: flex;
+#             overflow-x: auto;
+#             overflow-y: hidden;
+#             gap: 1rem;
+#             padding: 1rem;
+#             background: #f5f5f5;
+#             height: 100%;
+#             box-sizing: border-box;
+#         }}
+#         .graph-box {{
+#             flex: 0 0 auto;
+#             width: 500px;
+#             height: 515px;
+#             border: 1px solid #ccc;
+#             border-radius: 8px;
+#             background: white;
+#             padding: 0.5rem;
+#             box-sizing: border-box;
+#             position: relative;
+#             display: flex;
+#             flex-direction: column;
+#             align-items: center;
+#         }}
+#         .graph-title {{
+#             margin: 0 0 16px 0;  /* Increased bottom margin */
+#             font-family: Arial, sans-serif;
+#             font-weight: 600;
+#             font-size: 1.1rem;
+#             text-align: center;
+#         }}
+#         .graph-content {{
+#             width: 100%;
+#             flex-grow: 1;
+#         }}
+#         .graph-box svg, .graph-box canvas {{
+#             max-width: 100% !important;
+#             max-height: 100% !important;
+#             height: 100% !important;
+#             width: 100% !important;
+#         }}
+#     </style>
+#     </head>
+#     <body>
+#     <div class="scroll-container">
+#         {figures_inner_html}
+#     </div>
+#     </body>
+#     </html>
+#     """
+#     components.html(full_html, height=550, scrolling=False)
+
 def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     """
     Function to render the graph in the chat.
@@ -754,129 +891,44 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
         key: The key for the graph
         save_graph: Whether to save the graph in the chat history
     """
-    def extract_inner_html(html):
-        match = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL)
-        return match.group(1) if match else html
+    # Create a directed graph
+    graph = nx.DiGraph()
 
-    figures_inner_html = ""
+    # Add nodes with attributes
+    for node, attrs in graph_dict["nodes"]:
+        graph.add_node(node, **attrs)
 
-    for name, subgraph_nodes, subgraph_edges in zip(graph_dict["name"],
-                                                    graph_dict["nodes"],
-                                                    graph_dict["edges"]):
-        # Create a directed graph
-        graph = nx.DiGraph()
+    # Add edges with attributes
+    for source, target, attrs in graph_dict["edges"]:
+        graph.add_edge(source, target, **attrs)
 
-        # Add nodes with attributes
-        for node, attrs in subgraph_nodes:
-            graph.add_node(node, **attrs)
+    # print("Graph nodes:", graph.nodes(data=True))
+    # print("Graph edges:", graph.edges(data=True))
 
-        # Add edges with attributes
-        for source, target, attrs in subgraph_edges:
-            graph.add_edge(source, target, **attrs)
+    # Render the graph
+    fig = gravis.d3(
+        graph,
+        node_size_factor=3.0,
+        show_edge_label=True,
+        edge_label_data_source="label",
+        edge_curvature=0.25,
+        zoom_factor=1.0,
+        many_body_force_strength=-500,
+        many_body_force_theta=0.3,
+        node_hover_neighborhood=True,
+        # layout_algorithm_active=True,
+    )
+    components.html(fig.to_html(), height=475)
 
-        # print("Graph nodes:", graph.nodes(data=True))
-        # print("Graph edges:", graph.edges(data=True))
-
-        # Render the graph
-        fig = gravis.d3(
-            graph,
-            node_size_factor=3.0,
-            show_edge_label=True,
-            edge_label_data_source="label",
-            edge_curvature=0.25,
-            zoom_factor=1.0,
-            many_body_force_strength=-500,
-            many_body_force_theta=0.3,
-            node_hover_neighborhood=True,
-            # layout_algorithm_active=True,
+    if save_graph:
+        # Add data to the chat history
+        st.session_state.messages.append(
+            {
+                "type": "graph",
+                "content": graph_dict,
+                "key": key,
+            }
         )
-        # components.html(fig.to_html(), height=475)
-        inner_html = extract_inner_html(fig.to_html())
-        wrapped_html = f'''
-        <div class="graph-content">
-            {inner_html}
-        </div>
-        '''
-
-        figures_inner_html += f'''
-        <div class="graph-box">
-            <h3 class="graph-title">{name}</h3>
-            {wrapped_html}
-        </div>
-        '''
-
-        if save_graph:
-            # Add data to the chat history
-            st.session_state.messages.append(
-                {
-                    "type": "graph",
-                    "content": graph_dict,
-                    "key": key,
-                }
-            )
-
-    full_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-        html, body {{
-            margin: 0;
-            padding: 0;
-            overflow-y: hidden;
-            height: 100%;
-        }}
-        .scroll-container {{
-            display: flex;
-            overflow-x: auto;
-            overflow-y: hidden;
-            gap: 1rem;
-            padding: 1rem;
-            background: #f5f5f5;
-            height: 100%;
-            box-sizing: border-box;
-        }}
-        .graph-box {{
-            flex: 0 0 auto;
-            width: 500px;
-            height: 515px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background: white;
-            padding: 0.5rem;
-            box-sizing: border-box;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }}
-        .graph-title {{
-            margin: 0 0 16px 0;  /* Increased bottom margin */
-            font-family: Arial, sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-align: center;
-        }}
-        .graph-content {{
-            width: 100%;
-            flex-grow: 1;
-        }}
-        .graph-box svg, .graph-box canvas {{
-            max-width: 100% !important;
-            max-height: 100% !important;
-            height: 100% !important;
-            width: 100% !important;
-        }}
-    </style>
-    </head>
-    <body>
-    <div class="scroll-container">
-        {figures_inner_html}
-    </div>
-    </body>
-    </html>
-    """
-    components.html(full_html, height=550, scrolling=False)
 
 def get_text_embedding_model(model_name) -> Embeddings:
     """
@@ -1246,3 +1298,30 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
 
 #     return graph_dict["nodes"]["enrichment"], graph_dict["nodes"]["embedding"], \
 #         graph_dict["edges"]["enrichment"], graph_dict["edges"]["embedding"]
+
+def setup_milvus(cfg: dict):
+    """
+    Function to connect to the Milvus database.
+
+    Args:
+        cfg: The configuration dictionary containing Milvus connection details.
+    """
+    # Check if the connection already exists
+    if not connections.has_connection(cfg.milvus_db.alias):
+        # Create a new connection to Milvus
+        # Connect to Milvus
+        connections.connect(
+            alias=cfg.milvus_db.alias,
+            host=cfg.milvus_db.host,
+            port=cfg.milvus_db.port,
+            user=cfg.milvus_db.user,
+            password=cfg.milvus_db.password
+        )
+        print("Connected to Milvus database.")
+    else:
+        print("Already connected to Milvus database.")
+
+    # Use a predefined Milvus database
+    db.using_database(cfg.milvus_db.database_name)
+    
+    return connections.get_connection_addr(cfg.milvus_db.alias)
