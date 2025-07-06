@@ -167,3 +167,6 @@ experiment/web/vectordb
 
 # macOS metadata file
 .DS_Store
+
+# CTD chemicals file
+docs/notebooks/talk2knowledgegraphs/CTD_chemicals.tsv.gz

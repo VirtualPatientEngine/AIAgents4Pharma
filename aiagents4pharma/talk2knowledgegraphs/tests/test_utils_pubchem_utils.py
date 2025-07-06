@@ -4,6 +4,17 @@ Test cases for utils/pubchem_utils.py
 
 from ..utils import pubchem_utils
 
+def test_cas_rn2pubchem_cid():
+    """
+    Test the casRN2pubchem_cid function.
+
+    The CAS RN for ethyl cabonate is 105-58-8.
+    The PubChem CID for ethyl cabonate is 7766.
+    """
+    casrn = "105-58-8"
+    pubchem_cid = pubchem_utils.cas_rn2pubchem_cid(casrn)
+    assert pubchem_cid == 7766
+
 def test_external_id2pubchem_cid():
     """
     Test the external_id2pubchem_cid function.
