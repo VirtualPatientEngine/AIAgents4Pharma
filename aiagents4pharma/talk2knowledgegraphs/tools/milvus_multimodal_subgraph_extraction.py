@@ -4,35 +4,25 @@ Tool for performing multimodal subgraph extraction.
 
 from typing import Type, Annotated
 import logging
-import pickle
 import hydra
-import networkx as nx
 import torch
+import pandas as pd
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
 from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
-from torch_geometric.data import Data
-from pymilvus import (
-    # db,
-    connections,
-    Collection,
-    # utility,
-    # MilvusClient
-)
+from pymilvus import connections, Collection, utility
 from ..utils.extractions.milvus_multimodal_pcst import MultimodalPCSTPruning
-from ..utils.embeddings.ollama import EmbeddingWithOllama
 from .load_arguments import ArgumentData
 if torch.cuda.is_available():
-    import pandas as pd
-    import cudf as df
     import cupy as py
+    import cudf
+    df = cudf
 else:
-    import pandas as pd
-    import pandas as df
     import numpy as py
+    df = pd
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -71,25 +61,18 @@ class MultimodalSubgraphExtractionTool(BaseTool):
     description: str = "A tool for subgraph extraction based on user's prompt."
     args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
 
-    def _prepare_query_modalities(self,
-                                  prompt: dict,
-                                  state: Annotated[dict, InjectedState],
-                                  cfg: dict) -> df.DataFrame:
+    def _read_multimodal_files(self,
+                               state: Annotated[dict, InjectedState]) -> df.DataFrame:
         """
-        Prepare the modality-specific query for subgraph extraction.
-
+        Read the uploaded multimodal files and return a DataFrame.
+        
         Args:
-            prompt: The dictionary containing the user prompt and embeddings.
             state: The injected state for the tool.
-            cfg: The configuration dictionary.
-
+        
         Returns:
-            A DataFrame containing the query embeddings and modalities.
+            A DataFrame containing the multimodal files.
         """
-        # Initialize dataframes
-        logger.log(logging.INFO, "Initializing dataframes")
         multimodal_df = df.DataFrame({"name": [], "node_type": []})
-        query_df = []
 
         # Loop over the uploaded files and find multimodal files
         logger.log(logging.INFO, "Looping over uploaded files")
@@ -115,6 +98,42 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             # but the node type can be 'gene/protein' as exists in the PrimeKG
             multimodal_df["q_node_type"] = multimodal_df["q_node_type"].str.replace('-', '_')
 
+        return multimodal_df
+
+    def _prepare_query_modalities(self,
+                                  prompt: dict,
+                                  state: Annotated[dict, InjectedState],
+                                  cfg_db: dict) -> df.DataFrame:
+        """
+        Prepare the modality-specific query for subgraph extraction.
+
+        Args:
+            prompt: The dictionary containing the user prompt and embeddings.
+            state: The injected state for the tool.
+            cfg_db: The configuration dictionary for Milvus database.
+
+        Returns:
+            A DataFrame containing the query embeddings and modalities.
+        """
+        # Initialize dataframes
+        logger.log(logging.INFO, "Initializing dataframes")
+        query_df = []
+        prompt_df = df.DataFrame({
+            'node_id': 'user_prompt',
+            'node_type': 'prompt',
+            'feat': prompt["text"],
+            'feat_emb': prompt["emb"],
+            'desc': prompt["text"],
+            'desc_emb': prompt["emb"],
+            'use_description': True # set to True for user prompt embedding
+        })
+
+        # Read multimodal files uploaded by the user
+        multimodal_df = self._read_multimodal_files(state)
+
+        # Check if the multimodal_df is empty
+        logger.log(logging.INFO, "Prepare query modalities")
+        if len(multimodal_df) > 0:
             # Query the Milvus database for each node type in multimodal_df
             logger.log(logging.INFO, "Querying Milvus database for each node type in multimodal_df")
             for node_type, node_type_df in multimodal_df.groupby("q_node_type"):
@@ -122,7 +141,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
                 # Load the collection
                 collection = Collection(
-                    name=f"{cfg.milvus_db.database_name}_nodes_{node_type.replace('/', '_')}"
+                    name=f"{cfg_db.milvus_db.database_name}_nodes_{node_type.replace('/', '_')}"
                 )
                 collection.load()
 
@@ -135,6 +154,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                     expr=f'node_name IN [{','.join(f'"{name}"' for name in q_node_names)}]',
                     output_fields=q_columns,
                 )
+                # Convert the embeedings into floats
+                for r_ in res:
+                    r_['feat_emb'] = [float(x) for x in r_['feat_emb']]
+                    r_['desc_emb'] = [float(x) for x in r_['desc_emb']]
 
                 # Convert the result to a DataFrame
                 res_df = df.DataFrame(res)[q_columns]
@@ -153,26 +176,19 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 "node_type"
             )["node_id"].apply(list).to_dict()
 
-        # Append a user prompt to the query dataframe
-        logger.log(logging.INFO, "Adding user prompt to query dataframe")
-        query_df = df.concat([
-            query_df,
-            df.DataFrame({
-                'node_id': 'user_prompt',
-                'node_type': 'prompt',
-                'feat': prompt["text"],
-                'feat_emb': prompt["emb"],
-                'desc': prompt["text"],
-                'desc_emb': prompt["emb"],
-                'use_description': True # set to True for user prompt embedding
-            })
-        ]).reset_index(drop=True)
+            # Append a user prompt to the query dataframe
+            logger.log(logging.INFO, "Adding user prompt to query dataframe")
+            query_df = df.concat([query_df, prompt_df]).reset_index(drop=True)
+        else:
+            # If no multimodal files are uploaded, use the prompt embeddings
+            query_df = prompt_df
 
         return query_df
 
     def _perform_subgraph_extraction(self,
                                      state: Annotated[dict, InjectedState],
                                      cfg: dict,
+                                     cfg_db: dict,
                                      query_df: pd.DataFrame) -> dict:
         """
         Perform multimodal subgraph extraction based on modal-specific embeddings.
@@ -180,19 +196,24 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         Args:
             state: The injected state for the tool.
             cfg: The configuration dictionary.
-            pyg_graph: The PyTorch Geometric graph Data.
+            cfg_db: The configuration dictionary for Milvus database.
             query_df: The DataFrame containing the query embeddings and modalities.
 
         Returns:
             A dictionary containing the extracted subgraph with nodes and edges.
         """
         # Initialize the subgraph dictionary
-        subgraphs = {}
-        subgraphs["nodes"] = []
-        subgraphs["edges"] = []
+        subgraphs = []
+        unified_subgraph = {
+            "nodes": [],
+            "edges": []
+        }
+        # subgraphs = {}
+        # subgraphs["nodes"] = []
+        # subgraphs["edges"] = []
 
         # Loop over query embeddings and modalities
-        for q in query_df.iterrows():
+        for q in getattr(query_df, "to_pandas", lambda: query_df)().iterrows():
             # Prepare the PCSTPruning object and extract the subgraph
             # Parameters were set in the configuration file obtained from Hydra
             subgraph = MultimodalPCSTPruning(
@@ -204,107 +225,138 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 num_clusters=cfg.num_clusters,
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
-                use_description=q[1]['use_description'],
-            ).extract_subgraph(torch.tensor(q[1]['desc_x']), # description embedding
-                               torch.tensor(q[1]['x']), # modal-specific embedding
-                               q[1]['node_type'])
+                use_description=q[1]['use_description']
+            ).extract_subgraph(q[1]['desc_emb'],
+                               q[1]['feat_emb'],
+                               q[1]['node_type'],
+                               cfg_db)
 
             # Append the extracted subgraph to the dictionary
-            subgraphs["nodes"].append(subgraph["nodes"].tolist())
-            subgraphs["edges"].append(subgraph["edges"].tolist())
+            unified_subgraph["nodes"].append(subgraph["nodes"].tolist())
+            unified_subgraph["edges"].append(subgraph["edges"].tolist())
+            subgraphs.append((q[1]['node_id'],
+                              subgraph["nodes"].tolist(),
+                              subgraph["edges"].tolist()))
 
         # Concatenate and get unique node and edge indices
-        subgraphs["nodes"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["nodes"]])
-        )
-        subgraphs["edges"] = np.unique(
-            np.concatenate([np.array(list_) for list_ in subgraphs["edges"]])
-        )
+        unified_subgraph["nodes"] = py.unique(
+            py.concatenate([py.array(list_) for list_ in unified_subgraph["nodes"]])
+        ).tolist()
+        unified_subgraph["edges"] = py.unique(
+            py.concatenate([py.array(list_) for list_ in unified_subgraph["edges"]])
+        ).tolist()
+
+        # Convert the unified subgraph and subgraphs to cudf DataFrames
+        unified_subgraph = df.DataFrame([("Unified Subgraph",
+                                            unified_subgraph["nodes"],
+                                            unified_subgraph["edges"])],
+                                            columns=["name", "nodes", "edges"])
+        subgraphs = df.DataFrame(subgraphs, columns=["name", "nodes", "edges"])
+
+        # Concate both DataFrames
+        subgraphs = df.concat([unified_subgraph, subgraphs], ignore_index=True)
 
         return subgraphs
 
     def _prepare_final_subgraph(self,
-                               state:Annotated[dict, InjectedState],
-                               subgraph: dict,
-                               graph: dict,
-                               cfg) -> dict:
+                                state:Annotated[dict, InjectedState],
+                                subgraph: dict,
+                                cfg: dict,
+                                cfg_db) -> dict:
         """
         Prepare the subgraph based on the extracted subgraph.
 
         Args:
             state: The injected state for the tool.
             subgraph: The extracted subgraph.
-            graph: The initial graph containing PyG and textualized graph.
-            cfg: The configuration dictionary.
+            graph: The graph dictionary.
+            cfg: The configuration dictionary for the tool.
+            cfg_db: The configuration dictionary for Milvus database.
 
         Returns:
             A dictionary containing the PyG graph, NetworkX graph, and textualized graph.
         """
-        # print(subgraph)
-        # Prepare the PyTorch Geometric graph
-        mapping = {n: i for i, n in enumerate(subgraph["nodes"].tolist())}
-        pyg_graph = Data(
-            # Node features
-            # x=pyg_graph.x[subgraph["nodes"]],
-            x=[graph["pyg"].x[i] for i in subgraph["nodes"]],
-            node_id=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
-            node_name=np.array(graph["pyg"].node_id)[subgraph["nodes"]].tolist(),
-            enriched_node=np.array(graph["pyg"].enriched_node)[subgraph["nodes"]].tolist(),
-            num_nodes=len(subgraph["nodes"]),
-            # Edge features
-            edge_index=torch.LongTensor(
-                [
-                    [
-                        mapping[i]
-                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][0].tolist()
-                    ],
-                    [
-                        mapping[i]
-                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][1].tolist()
-                    ],
-                ]
-            ),
-            edge_attr=graph["pyg"].edge_attr[subgraph["edges"]],
-            edge_type=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-            relation=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-            label=np.array(graph["pyg"].edge_type)[subgraph["edges"]].tolist(),
-            enriched_edge=np.array(graph["pyg"].enriched_edge)[subgraph["edges"]].tolist(),
-        )
-
-        # Networkx DiGraph construction to be visualized in the frontend
-        nx_graph = nx.DiGraph()
-        # Add nodes with attributes
+        # Convert the dict to a cudf DataFrame
         node_colors = {n: cfg.node_colors_dict[k]
-                       for k, v in state["selections"].items() for n in v}
-        for n in pyg_graph.node_name:
-            nx_graph.add_node(n, color=node_colors.get(n, None))
+                        for k, v in state["selections"].items() for n in v}
+        color_df = df.DataFrame(list(node_colors.items()), columns=["node_id", "color"])
+        # print(color_df)
 
-        # Add edges with attributes
-        edges = zip(
-            pyg_graph.edge_index[0].tolist(),
-            pyg_graph.edge_index[1].tolist(),
-            pyg_graph.edge_type
-        )
-        for src, dst, edge_type in edges:
-            nx_graph.add_edge(
-                pyg_graph.node_name[src],
-                pyg_graph.node_name[dst],
-                relation=edge_type,
-                label=edge_type,
-            )
-
-        # Prepare the textualized subgraph
-        textualized_graph = (
-            graph["text"]["nodes"].iloc[subgraph["nodes"]].to_csv(index=False)
-            + "\n"
-            + graph["text"]["edges"].iloc[subgraph["edges"]].to_csv(index=False)
-        )
-
-        return {
-            "graph_pyg": pyg_graph,
-            "graph_nx": nx_graph,
-            "graph_text": textualized_graph,
+        # Prepare the subgraph dictionary
+        graph_dict = {
+            "name": [],
+            "nodes": [],
+            "edges": [],
+            "text": ""
         }
+        for sub in getattr(subgraph, "to_pandas", lambda: subgraph)().itertuples(index=False):
+            # Prepare the graph name
+            graph_dict["name"].append(sub.name)
+            print(f"Processing subgraph: {sub.name}")
+            print('---')
+            print(sub.nodes)
+            print('---')
+            print(sub.edges)
+            print('---')
+
+            # Prepare graph dataframes
+            # Nodes
+            coll_name = f"{cfg_db.milvus_db.database_name}_nodes"
+            node_coll = Collection(name=coll_name)
+            node_coll.load()
+            graph_nodes = node_coll.query(
+                expr=f'node_index IN [{",".join(f"{n}" for n in sub.nodes)}]',
+                output_fields=['node_id', 'node_name', 'node_type', 'desc']
+            )
+            graph_nodes = df.DataFrame(graph_nodes)
+            graph_nodes.drop(columns=['node_index'], inplace=True)
+            if not color_df.empty:
+                # Merge the color dataframe with the graph nodes
+                graph_nodes = graph_nodes.merge(color_df, on="node_id", how="left")
+            else:
+                graph_nodes["color"] = 'black'  # Default color
+            graph_nodes['color'].fillna('black', inplace=True) # Fill NaN colors with black
+            # Edges
+            coll_name = f"{cfg_db.milvus_db.database_name}_edges"
+            edge_coll = Collection(name=coll_name)
+            edge_coll.load()
+            graph_edges = edge_coll.query(
+                expr=f'triplet_index IN [{",".join(f"{e}" for e in sub.edges)}]',
+                output_fields=['head_id', 'tail_id', 'edge_type']
+            )
+            graph_edges = df.DataFrame(graph_edges)
+            graph_edges.drop(columns=['triplet_index'], inplace=True)
+            graph_edges['edge_type'] = graph_edges['edge_type'].str.split('|')
+
+            # Prepare lists for visualization
+            graph_dict["nodes"].append([(
+                row.node_id,
+                {'hover': "Node Name : " + row.node_name + "\n" +\
+                    "Node Type : " + row.node_type + "\n" +
+                    "Desc : " + row.desc,
+                'click': '$hover',
+                'color': row.color})
+                for row in graph_nodes.to_arrow().to_pandas().itertuples(index=False)])
+            graph_dict["edges"].append([(
+                row.head_id,
+                row.tail_id,
+                {'label': tuple(row.edge_type)})
+                for row in graph_edges.to_arrow().to_pandas().itertuples(index=False)])
+
+            # Prepare the textualized subgraph
+            if sub.name == "Unified Subgraph":
+                graph_dict["text"] = (
+                    graph_nodes[
+                        ['node_id', 'desc']
+                    ].rename(columns={'desc': 'node_attr'}).to_arrow().to_pandas().\
+                        to_csv(index=False)
+                    + "\n"
+                    + graph_edges[
+                        ['head_id', 'edge_type', 'tail_id']
+                    ].to_arrow().to_pandas().to_csv(index=False)
+                )
+
+        return graph_dict
 
     def _run(
         self,
@@ -332,60 +384,59 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             cfg = hydra.compose(
                 config_name="config", overrides=["tools/multimodal_subgraph_extraction=default"]
             )
-            cfg_fe = cfg.app.frontend
+            cfg_db = cfg.app.frontend
             cfg = cfg.tools.multimodal_subgraph_extraction
 
         # Check if the Milvus connection exists
         logger.log(logging.INFO, "Checking Milvus connection")
-        logger.log(logging.INFO, "Milvus connection name: %s", cfg_fe.milvus_db.alias)
-        logger.log(logging.INFO, "Milvus connection DB: %s", cfg_fe.milvus_db.database_name)
+        logger.log(logging.INFO, "Milvus connection name: %s", cfg_db.milvus_db.alias)
+        logger.log(logging.INFO, "Milvus connection DB: %s", cfg_db.milvus_db.database_name)
         logger.log(logging.INFO, "Is connection established? %s",
-                   connections.has_connection(cfg_fe.milvus_db.alias))
-
-        # Retrieve source graph from the state
-        initial_graph = {}
-        initial_graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
-        # logger.log(logging.INFO, "Source graph: %s", source_graph)
-
-        # Load the knowledge graph
-        with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
-            initial_graph["pyg"] = pickle.load(f)
-        with open(initial_graph["source"]["kg_text_path"], "rb") as f:
-            initial_graph["text"] = pickle.load(f)
+                   connections.has_connection(cfg_db.milvus_db.alias))
+        if connections.has_connection(cfg_db.milvus_db.alias):
+            logger.log(logging.INFO, "Milvus connection is established.")
+            for collection_name in utility.list_collections():
+                logger.log(logging.INFO, "Collection: %s", collection_name)
 
         # Prepare the query embeddings and modalities
+        logger.log(logging.INFO, "_prepare_query_modalities")
         query_df = self._prepare_query_modalities(
             {"text": prompt,
-             "emb": [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
-            #  "emb": [state["embedding_model"].embed_query(prompt)]
+             "emb": [state["embedding_model"].embed_query(prompt)]
             },
             state,
-            cfg,
+            cfg_db,
         )
 
         # Perform subgraph extraction
+        logger.log(logging.INFO, "_perform_subgraph_extraction")
         subgraphs = self._perform_subgraph_extraction(state,
                                                       cfg,
+                                                      cfg_db,
                                                       query_df)
 
         # Prepare subgraph as a NetworkX graph and textualized graph
+        logger.log(logging.INFO, "_prepare_final_subgraph")
+        logger.log(logging.INFO, "Subgraphs extracted: %s", len(subgraphs))
         final_subgraph = self._prepare_final_subgraph(state,
                                                       subgraphs,
-                                                      initial_graph,
-                                                      cfg)
+                                                      cfg,
+                                                      cfg_db)
 
         # Prepare the dictionary of extracted graph
+        logger.log(logging.INFO, "dic_extracted_graph")
         dic_extracted_graph = {
             "name": arg_data.extraction_name,
             "tool_call_id": tool_call_id,
-            "graph_source": initial_graph["source"]["name"],
+            "graph_source": cfg_db.milvus_db.database_name,
             "topk_nodes": state["topk_nodes"],
             "topk_edges": state["topk_edges"],
             "graph_dict": {
-                "nodes": list(final_subgraph["graph_nx"].nodes(data=True)),
-                "edges": list(final_subgraph["graph_nx"].edges(data=True)),
+                "name": final_subgraph["name"],
+                "nodes": final_subgraph["nodes"],
+                "edges": final_subgraph["edges"],
             },
-            "graph_text": final_subgraph["graph_text"],
+            "graph_text": final_subgraph["text"],
             "graph_summary": None,
         }
 

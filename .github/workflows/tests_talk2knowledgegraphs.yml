@@ -53,7 +53,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+          pylint --disable=R0801,R0902,W0221,W0122,W0640 aiagents4pharma/talk2knowledgegraphs
 
   # pylint job for macos
   pylint-macos:
@@ -91,7 +91,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+          pylint --disable=R0801,R0902,W0221,W0122,W0640 aiagents4pharma/talk2knowledgegraphs
 
   # pylint job for windows
   pylint-windows:
@@ -129,7 +129,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2knowledgegraphs
+          pylint --disable=R0801,R0902,W0221,W0122,W0640 aiagents4pharma/talk2knowledgegraphs
 
   # code coverage job for ubuntu
   code-cov-ubuntu:

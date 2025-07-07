@@ -3,11 +3,23 @@ Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) al
 """
 
 from typing import Tuple, NamedTuple
-import numpy as np
+import logging
 import pandas as pd
-import torch
 import pcst_fast
-from torch_geometric.data.data import Data
+from pymilvus import Collection
+# from torch_geometric.data.data import Data
+import torch
+if torch.cuda.is_available():
+    import cupy as py
+    import cudf
+    df = cudf
+else:
+    import numpy as py
+    df = pd
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class MultimodalPCSTPruning(NamedTuple):
     """
@@ -37,78 +49,115 @@ class MultimodalPCSTPruning(NamedTuple):
     verbosity_level: int = 0
     use_description: bool = False
 
+    def prepare_collections(self, cfg: dict, modality: str) -> dict:
+        """
+        Prepare the collections for nodes, node-type specific nodes, and edges in Milvus.
+
+        Args:
+            cfg: The configuration dictionary containing the Milvus setup.
+            modality: The modality to use for the subgraph extraction.
+
+        Returns:
+            A dictionary containing the collections of nodes, node-type specific nodes, and edges.
+        """
+        # Initialize the collections dictionary
+        colls = {}
+
+        # Load the collection for nodes
+        colls["nodes"] = Collection(name=f"{cfg.milvus_db.database_name}_nodes")
+
+        if modality != "prompt":
+            # Load the collection for the specific node type
+            colls["nodes_type"] = Collection(
+                f"{cfg.milvus_db.database_name}_nodes_{modality.replace('/', '_')}"
+            )
+
+        # Load the collection for edges
+        colls["edges"] = Collection(name=f"{cfg.milvus_db.database_name}_edges")
+
+        # Load the collections
+        for coll in colls.values():
+            coll.load()
+
+        return colls
+
     def _compute_node_prizes(self,
-                             graph: Data,
                              query_emb: torch.Tensor,
-                             modality: str) :
+                             colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
-            modality: The modality to use for the subgraph extraction based on the node type.
+            colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
         Returns:
             The prizes of the nodes.
         """
-        # Convert PyG graph to a DataFrame
-        graph_df = pd.DataFrame({
-            "node_type": graph.node_type,
-            "desc_x": [x.tolist() for x in graph.desc_x],
-            "x": [list(x) for x in graph.x],
-            "score": [0.0 for _ in range(len(graph.node_id))],
-        })
+        # Intialize several variables
+        topk = min(self.topk, colls["nodes"].num_entities)
+        n_prizes = py.zeros(colls["nodes"].num_entities, dtype=py.float32)
 
         # Calculate cosine similarity for text features and update the score
         if self.use_description:
-            graph_df.loc[:, "score"] = torch.nn.CosineSimilarity(dim=-1)(
-                    query_emb,
-                    torch.tensor(list(graph_df.desc_x.values)) # Using textual description features
-                ).tolist()
+            # Search the collection with the text embedding
+            res = colls["nodes"].search(
+                data=[query_emb],
+                anns_field="desc_emb",
+                param={"metric_type": "IP"},
+                limit=topk,
+                output_fields=["node_id"])
         else:
-            graph_df.loc[graph_df["node_type"] == modality,
-                         "score"] = torch.nn.CosineSimilarity(dim=-1)(
-                    query_emb,
-                    torch.tensor(list(graph_df[graph_df["node_type"]== modality].x.values))
-                ).tolist()
+            # Search the collection with the query embedding
+            res = colls["nodes_type"].search(
+                data=[query_emb],
+                anns_field="feat_emb",
+                param={"metric_type": "IP"},
+                limit=topk,
+                output_fields=["node_id"])
 
-        # Set the prizes for nodes based on the similarity scores
-        n_prizes = torch.tensor(graph_df.score.values, dtype=torch.float32)
-        # n_prizes = torch.nn.CosineSimilarity(dim=-1)(query_emb, graph.x)
-        topk = min(self.topk, graph.num_nodes)
-        _, topk_n_indices = torch.topk(n_prizes, topk, largest=True)
-        n_prizes = torch.zeros_like(n_prizes)
-        n_prizes[topk_n_indices] = torch.arange(topk, 0, -1).float()
+        # Update the prizes based on the search results
+        n_prizes[[r.id for r in res[0]]] = py.arange(topk, 0, -1).astype(py.float32)
 
         return n_prizes
 
     def _compute_edge_prizes(self,
-                             graph: Data,
-                             text_emb: torch.Tensor) :
+                             text_emb: torch.Tensor,
+                             colls: dict) -> py.ndarray:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
             text_emb: The textual description embedding in PyTorch Tensor format.
+            colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
         Returns:
             The prizes of the nodes.
         """
-        # Note that as of now, the edge features are based on textual features
-        # Compute prizes for edges
-        e_prizes = torch.nn.CosineSimilarity(dim=-1)(text_emb, graph.edge_attr)
-        unique_prizes, inverse_indices = e_prizes.unique(return_inverse=True)
-        topk_e = min(self.topk_e, unique_prizes.size(0))
-        topk_e_values, _ = torch.topk(unique_prizes, topk_e, largest=True)
-        e_prizes[e_prizes < topk_e_values[-1]] = 0.0
+        # Intialize several variables
+        topk_e = min(self.topk_e, colls["edges"].num_entities)
+        e_prizes = py.zeros(colls["edges"].num_entities, dtype=py.float32)
+
+        # Search the collection with the query embedding
+        res = colls["edges"].search(
+            data=[text_emb],
+            anns_field="feat_emb",
+            param={"metric_type": "IP"},
+            limit=topk_e, # Only retrieve the top-k edges
+            # limit=colls["edges"].num_entities,
+            output_fields=["head_id", "tail_id"])
+
+        # Update the prizes based on the search results
+        e_prizes[[r.id for r in res[0]]] = [r.score for r in res[0]]
+
+        # Further process the edge_prizes
+        unique_prizes, inverse_indices = py.unique(e_prizes, return_inverse=True)
+        topk_e_values = unique_prizes[py.argsort(-unique_prizes)[:topk_e]]
+        # e_prizes[e_prizes < topk_e_values[-1]] = 0.0
         last_topk_e_value = topk_e
         for k in range(topk_e):
-            indices = inverse_indices == (
-                unique_prizes == topk_e_values[k]
-            ).nonzero(as_tuple=True)[0]
+            indices = inverse_indices == (unique_prizes == topk_e_values[k]).nonzero()[0]
             value = min((topk_e - k) / indices.sum().item(), last_topk_e_value)
             e_prizes[indices] = value
             last_topk_e_value = value * (1 - self.c_const)
@@ -116,10 +165,9 @@ class MultimodalPCSTPruning(NamedTuple):
         return e_prizes
 
     def compute_prizes(self,
-                       graph: Data,
                        text_emb: torch.Tensor,
                        query_emb: torch.Tensor,
-                       modality: str):
+                       colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes,
         as well as the edge prizes based on the cosine similarity between the query and edges.
@@ -127,31 +175,34 @@ class MultimodalPCSTPruning(NamedTuple):
         with the query.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
             text_emb: The textual description embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
-            modality: The modality to use for the subgraph extraction based on node type.
+            colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
         Returns:
             The prizes of the nodes and edges.
         """
         # Compute prizes for nodes
-        n_prizes = self._compute_node_prizes(graph, query_emb, modality)
+        logger.log(logging.INFO, "_compute_node_prizes")
+        n_prizes = self._compute_node_prizes(query_emb, colls)
 
         # Compute prizes for edges
-        e_prizes = self._compute_edge_prizes(graph, text_emb)
+        logger.log(logging.INFO, "_compute_edge_prizes")
+        e_prizes = self._compute_edge_prizes(text_emb, colls)
 
         return {"nodes": n_prizes, "edges": e_prizes}
 
     def compute_subgraph_costs(self,
-                               graph: Data,
-                               prizes: dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                               edge_index: py.ndarray,
+                               num_nodes: int,
+                               prizes: dict) -> Tuple[py.ndarray, py.ndarray, py.ndarray]:
         """
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
+            edge_index: The edge index of the graph.
+            num_nodes: The number of nodes in the graph.
             prizes: The prizes of the nodes and the edges.
 
         Returns:
@@ -160,63 +211,84 @@ class MultimodalPCSTPruning(NamedTuple):
             prizes: The prizes of the subgraph.
             costs: The costs of the subgraph.
         """
-        # Logic to reduce the cost of the edges such that at least one edge is selected
+        # Initialize several variables
+        real_ = {}
+        virt_ = {}
+
+        # Update edge cost threshold
         updated_cost_e = min(
             self.cost_e,
-            prizes["edges"].max().item() * (1 - self.c_const / 2),
+            py.max(prizes["edges"]).item() * (1 - self.c_const / 2),
         )
 
-        # Initialize variables
-        edges = []
-        costs = []
-        virtual = {
-            "n_prizes": [],
-            "edges": [],
-            "costs": [],
+        # Masks for real and virtual edges
+        real_["mask"] = prizes["edges"] <= updated_cost_e
+        virt_["mask"] = ~real_["mask"]
+
+        # Real edge indices
+        real_["indices"] = py.nonzero(real_["mask"])[0]
+        real_["src"] = edge_index[0][real_["indices"]]
+        real_["dst"] = edge_index[1][real_["indices"]]
+        real_["edges"] = py.stack([real_["src"], real_["dst"]], axis=1)
+        real_["costs"] = updated_cost_e - prizes["edges"][real_["indices"]]
+
+        # Edge index mapping: local real edge idx -> original global index
+        mapping_edges = {int(i): int(j) for i, j in enumerate(real_["indices"])}
+
+        # Virtual edge handling
+        virt_["indices"] = py.nonzero(virt_["mask"])[0]
+        virt_["src"] = edge_index[0][virt_["indices"]]
+        virt_["dst"] = edge_index[1][virt_["indices"]]
+        virt_["prizes"] = prizes["edges"][virt_["indices"]] - updated_cost_e
+
+        # Generate virtual node IDs
+        virt_["num"] = virt_["indices"].shape[0]
+        virt_["node_ids"] = py.arange(num_nodes, num_nodes + virt_["num"])
+
+        # Virtual edges: (src → virtual), (virtual → dst)
+        virt_["edges_1"] = py.stack([virt_["src"], virt_["node_ids"]], axis=1)
+        virt_["edges_2"] = py.stack([virt_["node_ids"], virt_["dst"]], axis=1)
+        virt_["edges"] = py.concatenate([virt_["edges_1"],
+                                         virt_["edges_2"]], axis=0)
+        virt_["costs"] = py.zeros((virt_["edges"].shape[0],), dtype=real_["costs"].dtype)
+
+        # Combine real and virtual edges/costs
+        all_edges = py.concatenate([real_["edges"], virt_["edges"]], axis=0)
+        all_costs = py.concatenate([real_["costs"], virt_["costs"]], axis=0)
+
+        # Final prizes
+        final_prizes = py.concatenate([prizes["nodes"], virt_["prizes"]], axis=0)
+
+        # Mapping virtual node ID -> edge index in original graph
+        mapping_nodes = {int(nid): int(idx) for nid, idx in zip(virt_["node_ids"],
+                                                                virt_["indices"])}
+
+        # Build return values
+        edges_dict = {
+            "edges": all_edges,
+            "num_prior_edges": real_["edges"].shape[0],
         }
-        mapping = {"nodes": {}, "edges": {}}
+        mapping = {
+            "edges": mapping_edges,
+            "nodes": mapping_nodes,
+        }
 
-        # Compute the costs, edges, and virtual variables based on the prizes
-        for i, (src, dst) in enumerate(graph.edge_index.T.numpy()):
-            prize_e = prizes["edges"][i]
-            if prize_e <= updated_cost_e:
-                mapping["edges"][len(edges)] = i
-                edges.append((src, dst))
-                costs.append(updated_cost_e - prize_e)
-            else:
-                virtual_node_id = graph.num_nodes + len(virtual["n_prizes"])
-                mapping["nodes"][virtual_node_id] = i
-                virtual["edges"].append((src, virtual_node_id))
-                virtual["edges"].append((virtual_node_id, dst))
-                virtual["costs"].append(0)
-                virtual["costs"].append(0)
-                virtual["n_prizes"].append(prize_e - updated_cost_e)
-        prizes = np.concatenate([prizes["nodes"], np.array(virtual["n_prizes"])])
-        edges_dict = {}
-        edges_dict["edges"] = edges
-        edges_dict["num_prior_edges"] = len(edges)
-        # Final computation of the costs and edges based on the virtual costs and virtual edges
-        if len(virtual["costs"]) > 0:
-            costs = np.array(costs + virtual["costs"])
-            edges = np.array(edges + virtual["edges"])
-            edges_dict["edges"] = edges
+        return edges_dict, final_prizes, all_costs, mapping
 
-        return edges_dict, prizes, costs, mapping
-
-    def get_subgraph_nodes_edges(
-        self, graph: Data, vertices: np.ndarray, edges_dict: dict, mapping: dict,
-    ) -> dict:
+    def get_subgraph_nodes_edges(self,
+                                 num_nodes: int,
+                                 vertices: py.ndarray,
+                                 edges_dict: dict,
+                                 mapping: dict) -> dict:
         """
         Get the selected nodes and edges of the subgraph based on the vertices and edges computed
         by the PCST algorithm.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
-            vertices: The vertices of the subgraph computed by the PCST algorithm.
-            edges_dict: The dictionary of edges of the subgraph computed by the PCST algorithm,
-                and the number of prior edges (without virtual edges).
-            mapping: The mapping dictionary of the nodes and edges.
-            num_prior_edges: The number of edges before adding virtual edges.
+            num_nodes: The number of nodes in the graph.
+            vertices: The vertices selected by the PCST algorithm.
+            edges_dict: A dictionary containing the edges and the number of prior edges.
+            mapping: A dictionary containing the mapping of nodes and edges.
 
         Returns:
             The selected nodes and edges of the extracted subgraph.
@@ -224,18 +296,21 @@ class MultimodalPCSTPruning(NamedTuple):
         # Get edges information
         edges = edges_dict["edges"]
         num_prior_edges = edges_dict["num_prior_edges"]
+        # Get edges information
+        edges = edges_dict["edges"]
+        num_prior_edges = edges_dict["num_prior_edges"]
         # Retrieve the selected nodes and edges based on the given vertices and edges
-        subgraph_nodes = vertices[vertices < graph.num_nodes]
-        subgraph_edges = [mapping["edges"][e] for e in edges if e < num_prior_edges]
-        virtual_vertices = vertices[vertices >= graph.num_nodes]
+        subgraph_nodes = vertices[vertices < num_nodes]
+        subgraph_edges = [mapping["edges"][e.item()] for e in edges if e < num_prior_edges]
+        virtual_vertices = vertices[vertices >= num_nodes]
         if len(virtual_vertices) > 0:
-            virtual_vertices = vertices[vertices >= graph.num_nodes]
-            virtual_edges = [mapping["nodes"][i] for i in virtual_vertices]
-            subgraph_edges = np.array(subgraph_edges + virtual_edges)
-        edge_index = graph.edge_index[:, subgraph_edges]
-        subgraph_nodes = np.unique(
-            np.concatenate(
-                [subgraph_nodes, edge_index[0].numpy(), edge_index[1].numpy()]
+            virtual_vertices = vertices[vertices >= num_nodes]
+            virtual_edges = [mapping["nodes"][i.item()] for i in virtual_vertices]
+            subgraph_edges = py.array(subgraph_edges + virtual_edges)
+        edge_index = edges_dict["edge_index"][:, subgraph_edges]
+        subgraph_nodes = py.unique(
+            py.concatenate(
+                [subgraph_nodes, edge_index[0], edge_index[1]]
             )
         )
 
@@ -244,44 +319,69 @@ class MultimodalPCSTPruning(NamedTuple):
     def extract_subgraph(self,
                          text_emb: torch.Tensor,
                          query_emb: torch.Tensor,
-                         modality: str) -> dict:
+                         modality: str,
+                         cfg: dict) -> dict:
         """
         Perform the Prize-Collecting Steiner Tree (PCST) algorithm to extract the subgraph.
 
         Args:
-            graph: The knowledge graph in PyTorch Geometric Data format.
             text_emb: The textual description embedding in PyTorch Tensor format.
             query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction
                 (e.g., "text", "sequence", "smiles").
+            cfg: The configuration dictionary containing the Milvus setup.
 
         Returns:
             The selected nodes and edges of the subgraph.
         """
+        # Load the collections for nodes
+        colls = self.prepare_collections(cfg, modality)
+
         # Assert the topk and topk_e values for subgraph retrieval
         assert self.topk > 0, "topk must be greater than or equal to 0"
         assert self.topk_e > 0, "topk_e must be greater than or equal to 0"
 
         # Retrieve the top-k nodes and edges based on the query embedding
-        prizes = self.compute_prizes(text_emb, query_emb, modality)
+        logger.log(logging.INFO, "compute_prizes")
+        prizes = self.compute_prizes(text_emb, query_emb, colls)
+
+        # Obtain edge_index
+        logger.log(logging.INFO, "Creating edge index")
+        edges = colls["edges"].query(
+            expr="triplet_index >= 0",
+            output_fields=["head_index", "tail_index"]
+        )
+        edge_index = py.array([
+            [r['head_index'] for r in edges],
+            [r['tail_index'] for r in edges]
+        ])
 
         # Compute costs in constructing the subgraph
-        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(prizes)
+        logger.log(logging.INFO, "compute_subgraph_costs")
+        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
+            edge_index, colls["nodes"].num_entities, prizes)
 
         # Retrieve the subgraph using the PCST algorithm
+        logger.log(logging.INFO, "Running PCST algorithm")
         result_vertices, result_edges = pcst_fast.pcst_fast(
-            edges_dict["edges"],
-            prizes,
-            costs,
+            edges_dict["edges"].tolist(),
+            prizes.tolist(),
+            costs.tolist(),
             self.root,
             self.num_clusters,
             self.pruning,
             self.verbosity_level,
         )
 
-        subgraph = self.get_subgraph_nodes_edges(result_vertices,
-            {"edges": result_edges, "num_prior_edges": edges_dict["num_prior_edges"]},
+        # Get subgraph nodes and edges based on the result of the PCST algorithm
+        logger.log(logging.INFO, "Getting subgraph nodes and edges")
+        subgraph = self.get_subgraph_nodes_edges(
+            colls["nodes"].num_entities,
+            py.asarray(result_vertices),
+            {"edges": py.asarray(result_edges),
+             "num_prior_edges": edges_dict["num_prior_edges"],
+             "edge_index": edge_index},
             mapping)
 
         return subgraph
