@@ -1,243 +1,138 @@
-"""
-Unit tests for bioRxiv paper downloading functionality, including:
-- download_bioRxiv_paper tool function.
-"""
+"""tests for the DownloadBiorxivPaperInput tool."""
 
-import unittest
-from unittest.mock import MagicMock, patch
+from contextlib import contextmanager
+from types import SimpleNamespace
+from unittest import mock
+
+import hydra
+import pytest
+import requests
 
 from aiagents4pharma.talk2scholars.tools.paper_download.download_biorxiv_input import (
-    DownloadBiorxivPaperInput)
+    DownloadBiorxivPaperInput,
+)
 
-PATH = "aiagents4pharma.talk2scholars.tools.paper_download.download_biorxiv_input"
-class TestDownloadBiorxivPaper(unittest.TestCase):
-    """Tests for the download_bioRxiv_paper tool."""
-    @patch(
-    f"{PATH}.hydra.initialize"
-    )
-    @patch(
-    f"{PATH}.hydra.compose"
-    )
-    def test_load_hydra_configs_runs_and_sets_attributes(self,mock_compose, mock_initialize):
-        """
-        Ensures:
-        - logger.info runs
-        - hydra.initialize runs
-        - hydra.compose runs
-        - self.metadata_url etc. get set
-        """
-        retriever = DownloadBiorxivPaperInput()
 
-        # Fake config structure
-        mock_cfg = MagicMock()
-        mock_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_compose.return_value = mock_cfg
+@pytest.fixture(autouse=True)
+def mock_hydra(monkeypatch):
+    """Make hydra.initialize a no‐op context manager and hydra.compose return a dummy config."""
 
-        retriever.load_hydra_configs()
+    @contextmanager
+    def dummy_initialize(*args, **kwargs):
+        yield
 
-        mock_initialize.assert_called_once_with(version_base=None, config_path="../../configs")
-        mock_compose.assert_called_once_with(
-            config_name="config",
-            overrides=["tools/download_biorxiv_paper=default"]
+    monkeypatch.setattr(hydra, "initialize", dummy_initialize)
+    dummy_cfg = SimpleNamespace(
+        tools=SimpleNamespace(
+            download_biorxiv_paper=SimpleNamespace(
+                api_url="http://api.test/", request_timeout=7
+            )
         )
-
-        assert retriever.request_timeout == 10
-    @patch(
-        f"{PATH}.DownloadBiorxivPaperInput.load_hydra_configs"
     )
-    @patch("requests.get")
-    def test_download_biorxiv_paper_success(self, mock_get, mock_load_hydra):
-        """Test successful metadata and PDF URL retrieval."""
-        dummy_cfg = MagicMock()
-        dummy_cfg.tools.download_biorxiv_paper.api_url = "http://dummy.biorxiv.org/api"
-        dummy_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_load_hydra.return_value = dummy_cfg
+    monkeypatch.setattr(hydra, "compose", lambda *args, **kwargs: dummy_cfg)
+    yield
 
-        doi = "10.1101/2025.05.13.653102"
 
-        dummy_response = MagicMock()
-        dummy_response.status_code = 200
-        dummy_response.raise_for_status = MagicMock()
-        dummy_response.json.return_value = {
-            "collection": [
-                {
-                    "title": "Sample BioRxiv Paper",
-                    "authors": "Author One; Author Two",
-                    "abstract": "This is a bioRxiv abstract.",
-                    "date": "2025-04-25",
-                    "doi": doi,
-                    "link": f"https://www.biorxiv.org/content/{doi}.full.pdf"
-                }
-            ]
-        }
-        mock_get.return_value = dummy_response
+def test_load_hydra_configs_returns_expected():
+    tool = DownloadBiorxivPaperInput()
+    cfg = tool.load_hydra_configs()
+    assert cfg.api_url == "http://api.test/"
+    assert cfg.request_timeout == 7
 
-        tool_input = "doi:"+doi
-        downloader = DownloadBiorxivPaperInput()
-        update = downloader.paper_retriever([tool_input])
 
-        self.assertIn("article_data", update)
-        self.assertIn(doi, update["article_data"])
-        metadata = update["article_data"][doi]
-        self.assertEqual(metadata["Title"], "Sample BioRxiv Paper")
-        self.assertEqual(metadata["Authors"], "Author One; Author Two")
-        self.assertEqual(metadata["Abstract"], "This is a bioRxiv abstract.")
-        self.assertEqual(metadata["Publication Date"], "2025-04-25")
-        self.assertEqual(metadata["URL"], f"https://www.biorxiv.org/content/{doi}.full.pdf")
-        self.assertEqual(metadata["pdf_url"], f"https://www.biorxiv.org/content/{doi}.full.pdf")
-        self.assertEqual(metadata["filename"], f"{doi.rsplit('/', maxsplit=1)[-1]}.pdf")
-        self.assertEqual(metadata["source"], "biorxiv")
-        self.assertEqual(metadata["biorxiv_id"], doi)
+def test_fetch_metadata_success_and_version_stripping(monkeypatch):
+    calls = {}
 
-    @patch(
-        f"{PATH}.DownloadBiorxivPaperInput.load_hydra_configs"
+    def fake_get(url, timeout):
+        calls["url"] = url
+        # simulate a successful HTTP response with JSON payload
+        resp = mock.Mock()
+        resp.raise_for_status = mock.Mock()
+        resp.json = mock.Mock(return_value={"collection": [{"foo": "bar"}]})
+        return resp
+
+    monkeypatch.setattr(requests, "get", fake_get)
+
+    tool = DownloadBiorxivPaperInput()
+    # include a version suffix in the paper_id
+    result = tool.fetch_metadata("http://api.test/", "10.1101/XYZv2")
+    assert result == {"foo": "bar"}
+    # ensure the version suffix was stripped from the URL
+    assert calls["url"] == "http://api.test/10.1101/XYZ"
+
+
+def test_fetch_metadata_no_collection_raises(monkeypatch):
+    # simulate HTTP okay but empty collection
+    resp = mock.Mock()
+    resp.raise_for_status = mock.Mock()
+    resp.json = mock.Mock(return_value={"collection": []})
+    monkeypatch.setattr(requests, "get", lambda url, timeout: resp)
+
+    tool = DownloadBiorxivPaperInput()
+    with pytest.raises(ValueError) as exc:
+        tool.fetch_metadata("u", "10.1101/ABCv1")
+    assert "No metadata found for DOI: 10.1101/ABC" in str(exc.value)
+
+
+def test_extract_metadata_success(monkeypatch):
+    # prepare a fake entry dict
+    data = {
+        "title": "My BioRxiv Title",
+        "authors": ["Alice", "Bob"],
+        "abstract": "An abstract.",
+        "date": "2025-07-07",
+        "doi": "10.1101/12345",
+    }
+    # simulate PDF being available
+    fake_pdf_resp = mock.Mock(status_code=200)
+    monkeypatch.setattr(requests, "get", lambda url, timeout: fake_pdf_resp)
+
+    tool = DownloadBiorxivPaperInput()
+    out = tool.extract_metadata(data, "10.1101/12345")
+    assert out["Title"] == "My BioRxiv Title"
+    assert out["Authors"] == ["Alice", "Bob"]
+    assert out["Abstract"] == "An abstract."
+    assert out["Publication Date"] == "2025-07-07"
+    expected_url = "https://www.biorxiv.org/content/10.1101/12345.full.pdf"
+    assert out["URL"] == expected_url
+    assert out["pdf_url"] == expected_url
+    assert out["filename"] == "12345.pdf"
+    assert out["source"] == "biorxiv"
+    assert out["biorxiv_id"] == "10.1101/12345"
+
+
+def test_extract_metadata_pdf_not_accessible(monkeypatch, capsys):
+    data = {"doi": "10.1101/ZZZ"}
+    # simulate PDF not accessible
+    fake_pdf_resp = mock.Mock(status_code=404)
+    monkeypatch.setattr(requests, "get", lambda url, timeout: fake_pdf_resp)
+
+    tool = DownloadBiorxivPaperInput()
+    with pytest.raises(ValueError, match="Pdf not accessible"):
+        tool.extract_metadata(data, "10.1101/ZZZ")
+    captured = capsys.readouterr()
+    assert (
+        "No PDF found or access denied at https://www.biorxiv.org/content/10.1101/ZZZ.full.pdf"
+        in captured.out
     )
-    @patch("requests.get")
-    def test_no_entry_found(self, mock_get, mock_load_hydra):
-        """Test behavior when no 'entry' is in response."""
-        dummy_cfg = MagicMock()
-        dummy_cfg.tools.download_biorxiv_paper.api_url = "http://dummy.biorxiv.org/api"
-        dummy_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_load_hydra.return_value = dummy_cfg
 
-        dummy_response = MagicMock()
-        dummy_response.status_code = 200
-        dummy_response.raise_for_status = MagicMock()
-        dummy_response.json.return_value = {}  # No collection
-        mock_get.return_value = dummy_response
 
-        doi = "10.1101/2025.05.13.653102"
-        tool_input = "doi:"+doi
+def test_paper_retriever_happy_and_skip_paths(monkeypatch):
+    tool = DownloadBiorxivPaperInput()
+    # stub config
+    fake_cfg = SimpleNamespace(api_url="u/", request_timeout=2)
+    monkeypatch.setattr(tool, "load_hydra_configs", lambda: fake_cfg)
+    # stub fetch_metadata (its return value is ignored by our extract stub)
+    monkeypatch.setattr(tool, "fetch_metadata", lambda url, doi: {"dummy": True})
 
-        downloader = DownloadBiorxivPaperInput()
-        with self.assertRaises(ValueError) as context:
-            downloader.paper_retriever([tool_input])
+    # make extract_metadata return a real dict for "good" and an empty dict (falsey) for "bad"
+    def fake_extract(data, doi):
+        return {} if doi == "bad" else {"val": doi}
 
-        self.assertEqual(str(context.exception), f"No metadata found for DOI: {doi}")
+    monkeypatch.setattr(tool, "extract_metadata", fake_extract)
 
-    @patch(
-        f"{PATH}.DownloadBiorxivPaperInput.load_hydra_configs"
-    )
-    @patch("requests.get")
-    def test_no_pdf_url_found(self, mock_get, mock_load_hydra):
-        """Test fallback to DOI-based PDF URL construction when 'link' is missing."""
-        dummy_cfg = MagicMock()
-        dummy_cfg.tools.download_biorxiv_paper.api_url = "http://dummy.biorxiv.org/api"
-        dummy_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_load_hydra.return_value = dummy_cfg
-
-        doi = "10.1101/2025.05.13.653102"
-
-        dummy_response = MagicMock()
-        dummy_response.status_code = 200
-        dummy_response.raise_for_status = MagicMock()
-        dummy_response.json.return_value = {
-            "collection": [
-                {
-                    "title": "Sample BioRxiv Paper",
-                    "authors": "Author One; Author Two",
-                    "abstract": "This is a bioRxiv abstract.",
-                    "date": "2025-04-25",
-                    "doi": doi
-                    # 'link' is intentionally omitted
-                }
-            ]
-        }
-        mock_get.return_value = dummy_response
-
-        tool_input = "doi:"+doi
-        downloader = DownloadBiorxivPaperInput()
-        update = downloader.paper_retriever([tool_input])
-        metadata = update["article_data"][doi]
-
-        expected_suffix = doi.rsplit('/', maxsplit=1)[-1]
-        expected_url = f"https://www.biorxiv.org/content/10.1101/{expected_suffix}.full.pdf"
-
-        self.assertEqual(metadata["pdf_url"], expected_url)
-        self.assertEqual(metadata["URL"], expected_url)
-
-    @patch(
-        f"{PATH}.DownloadBiorxivPaperInput.load_hydra_configs"
-    )
-    @patch("requests.get")
-    def test_extract_metadata_pdf_not_found(self, mock_get, mock_load_hydra):
-        """Test when PDF link returns non-200 status code (extract_metadata fallback)."""
-        dummy_cfg = MagicMock()
-        dummy_cfg.tools.download_biorxiv_paper.api_url = "http://dummy.biorxiv.org/api"
-        dummy_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_load_hydra.return_value = dummy_cfg
-
-        # Mock initial metadata fetch (metadata found)
-        metadata_response = MagicMock()
-        metadata_response.status_code = 200
-        metadata_response.raise_for_status = MagicMock()
-        metadata_response.json.return_value = {
-            "collection": [
-                {
-                    "title": "Test Title",
-                    "authors": "Test Author",
-                    "abstract": "Test Abstract",
-                    "date": "2025-04-25",
-                    "doi": "10.1101/2025.05.13.653102"
-                }
-            ]
-        }
-
-        # First GET returns metadata, second GET (PDF link) returns 404
-        def side_effect(url, timeout):
-            timeout+=1
-            if "api" in url:
-                return metadata_response
-            pdf_response = MagicMock()
-            pdf_response.status_code = 404  # Simulate PDF link not found
-            return pdf_response
-
-        mock_get.side_effect = side_effect
-
-        doi = "10.1101/2025.05.13.653102"
-        tool_input = "doi:" + doi
-        downloader = DownloadBiorxivPaperInput()
-        update = downloader.paper_retriever([tool_input])
-
-        # Should be empty because PDF was not accessible
-        self.assertNotIn(doi, update["article_data"])
-
-    @patch(
-        f"{PATH}.DownloadBiorxivPaperInput.load_hydra_configs"
-    )
-    @patch(f"{PATH}.DownloadBiorxivPaperInput.extract_metadata")
-    @patch("requests.get")
-    def test_paper_retriever_else_branch(self, mock_get, mock_extract_metadata, mock_load_hydra):
-        """Test paper_retriever hits 'else' branch when extract_metadata returns empty dict."""
-        dummy_cfg = MagicMock()
-        dummy_cfg.tools.download_biorxiv_paper.api_url = "http://dummy.biorxiv.org/api"
-        dummy_cfg.tools.download_biorxiv_paper.request_timeout = 10
-        mock_load_hydra.return_value = dummy_cfg
-
-        # Mock metadata fetch with valid collection
-        metadata_response = MagicMock()
-        metadata_response.status_code = 200
-        metadata_response.raise_for_status = MagicMock()
-        metadata_response.json.return_value = {
-            "collection": [
-                {
-                    "title": "Test Title",
-                    "authors": "Test Author",
-                    "abstract": "Test Abstract",
-                    "date": "2025-04-25",
-                    "doi": "10.1101/2025.05.13.653102"
-                }
-            ]
-        }
-        mock_get.return_value = metadata_response
-
-        # Force extract_metadata to return {}
-        mock_extract_metadata.return_value = {}
-
-        doi = "10.1101/2025.05.13.653102"
-        tool_input = "doi:" + doi
-        downloader = DownloadBiorxivPaperInput()
-        update = downloader.paper_retriever([tool_input])
-
-        # 'article_data' should not contain DOI because metadata is empty
-        self.assertNotIn(doi, update["article_data"])
+    result = tool.paper_retriever(["biorxiv:good", "biorxiv:bad"])
+    # only "good" should remain
+    assert "article_data" in result
+    assert set(result["article_data"].keys()) == {"good"}
+    assert result["article_data"]["good"]["val"] == "good"

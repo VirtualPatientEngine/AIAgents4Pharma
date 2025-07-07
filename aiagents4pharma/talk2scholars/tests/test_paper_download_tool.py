@@ -1,151 +1,168 @@
-"""
-Unit tests for paper download toal
-"""
+"""tests for the paper download tool."""
 
-from unittest.mock import patch, MagicMock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
+
+import pytest
+from langchain_core.messages import ToolMessage
+from langgraph.types import Command
+
 from aiagents4pharma.talk2scholars.tools.paper_download import download_tool
 
 
-# Dummy state fixture (if you use pytest fixtures, otherwise inline)
-dummy_state = {
-    "llm_model": MagicMock()
-}
+@pytest.fixture(autouse=True)
+def mock_build_summary():
+    """Always return a fixed summary."""
+    with patch.object(download_tool, "build_summary", lambda data: "SUMMARY"):
+        yield
 
 
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.utils.summary_builder.build_summary")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadArxivPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadBiorxivPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadPubmedPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadMedrxivPaperInput")
-def test_download_paper_tool(
-    mock_medrxiv_cls,
-    mock_pubmed_cls,
-    mock_biorxiv_cls,
-    mock_arxiv_cls,
-    mock_build_summary
-):
-    """Testing the download paper tool"""
-    # Create mocks for each retriever
-    mock_arxiv = MagicMock()
-    mock_biorxiv = MagicMock()
-    mock_pubmed = MagicMock()
-    mock_medrxiv = MagicMock()
-
-    mock_arxiv.paper_retriever.return_value = {
-        "article_data": {"1234.5678": {"Title": "Arxiv Paper"}}
-    }
-    mock_biorxiv.paper_retriever.return_value = {
-        "article_data": {"10.1101/2025.06.22.660927": {"Title": "Biorxiv Paper"}}
-    }
-    mock_pubmed.paper_retriever.return_value = {
-        "article_data": {"PMC123456": {"Title": "Pubmed Paper"}}
-    }
-    mock_medrxiv.paper_retriever.return_value = {
-        "article_data": {"10.1101/2025.06.22.660927": {"Title": "Medrxiv Paper"}}
-    }
-
-    # Set the patched classes to return the mocks
-    mock_arxiv_cls.return_value = mock_arxiv
-    mock_biorxiv_cls.return_value = mock_biorxiv
-    mock_pubmed_cls.return_value = mock_pubmed
-    mock_medrxiv_cls.return_value = mock_medrxiv
-
-    mock_build_summary.return_value = (
-    "Download was successful. \n"
-    "Papers metadata are attached as an artifact. Here is a summary of the results:\n"
-    "Number of papers found: 3\n"
-    "Top 3 papers:\n"
-    "1. Biorxiv Paper (N/A)\n"
-    "2. Pubmed Paper (N/A)\n"
-    "3. Arxiv Paper (N/A)"
-)
-    expected = """Download was successful.
-     Papers metadata are attached as an artifact. Here is a summary of the results:\n
-    Number of papers found: 3\n
-    Top 3 papers:\n
-    1. Biorxiv Paper (N/A)\n
-    2. Pubmed Paper (N/A)\n
-    3. Arxiv Paper (N/A)"""
-    tool_input = {
-        "paper_id": ["arxiv_id:1234.5678", "doi:10.1101/2025.06.22.660927", "pubmed:PMC123456"],
-        "tool_call_id": "test_call_id",
-        "state": dummy_state
-    }
-
-    result = download_tool.download_paper.run(tool_input)
-
-    # Assert each was called
-    mock_arxiv.paper_retriever.assert_called_once()
-    mock_biorxiv.paper_retriever.assert_called_once()
-    mock_pubmed.paper_retriever.assert_called_once()
-    # Medrxiv should not be called in the normal path
-    mock_medrxiv.paper_retriever.assert_not_called()
-
-    assert expected in result.update["messages"][0]
+@pytest.fixture
+def fake_llm_model():
+    """A fake LLM with structured output."""
+    llm = MagicMock()
+    structured = MagicMock()
+    llm.with_structured_output.return_value = structured
+    return llm, structured
 
 
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.utils.summary_builder.build_summary")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadArxivPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadBiorxivPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadPubmedPaperInput")
-@patch("aiagents4pharma.talk2scholars.tools.paper_download.download_tool.DownloadMedrxivPaperInput")
-def test_download_paper_medrxiv_fallback(
-    mock_medrxiv_cls,
-    mock_pubmed_cls,
-    mock_biorxiv_cls,
-    mock_arxiv_cls,
-    mock_build_summary
-):
-    """testing download when medrxiv id is given"""
-    mock_arxiv = MagicMock()
-    mock_biorxiv = MagicMock()
-    mock_pubmed = MagicMock()
-    mock_medrxiv = MagicMock()
+def make_state(llm_model):
+    return {"llm_model": llm_model}
 
-    # BioRxiv fails -> fallback to MedRxiv
-    mock_biorxiv.paper_retriever.side_effect = Exception("BioRxiv failed")
-    mock_medrxiv.paper_retriever.return_value = {
-        "article_data": {"10.1101/2025.06.22.660927": {"Title": "Medrxiv Paper"}}
-    }
 
-    mock_arxiv.paper_retriever.return_value = {
-        "article_data": {"1234.5678": {}}
-    }
-    mock_pubmed.paper_retriever.return_value = {
-        "article_data": {"PMC123456": {}}
-    }
+def test_arxiv_only_path(fake_llm_model, monkeypatch):
+    llm, structured = fake_llm_model
+    # only arxiv_ids
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=["arxiv:1"], dois=[], pubmed_ids=[]
+    )
+    # stub out retrievers
+    monkeypatch.setattr(
+        download_tool.DownloadArxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"1": {"from": "arxiv"}}},
+    )
 
-    mock_arxiv_cls.return_value = mock_arxiv
-    mock_biorxiv_cls.return_value = mock_biorxiv
-    mock_pubmed_cls.return_value = mock_pubmed
-    mock_medrxiv_cls.return_value = mock_medrxiv
+    # Call the underlying function, not the BaseTool wrapper
+    cmd: Command = download_tool.download_paper.func(
+        paper_id=["arxiv:1"],
+        tool_call_id="TCID",
+        state=make_state(llm),
+    )
+    upd = cmd.update
+    assert isinstance(cmd, Command)
+    assert upd["article_data"] == {"1": {"from": "arxiv"}}
+    msgs = upd["messages"]
+    assert len(msgs) == 1
+    tm = msgs[0]
+    assert isinstance(tm, ToolMessage)
+    assert tm.content == "SUMMARY"
+    assert tm.tool_call_id == "TCID"
+    assert tm.artifact == {"1": {"from": "arxiv"}}
 
-    mock_build_summary.return_value = (
-    "Download was successful. \n"
-    "Papers metadata are attached as an artifact. Here is a summary of the results:\n"
-    "Number of papers found: 3\n"
-    "Top 3 papers:\n"
-    "1. Medrxiv Paper (N/A)\n"
-    "2. N/A (N/A)\n"
-    "3. N/A (N/A)"
-)
-    expected = """Download was successful.
-     Papers metadata are attached as an artifact. Here is a summary of the results:\n
-    Number of papers found: 3\n
-    Top 3 papers:\n
-    1. Medrxiv Paper (N/A)\n
-    2. N/A (N/A)\n
-    3. N/A (N/A)"""
 
-    tool_input = {
-        "paper_id": ["arxiv_id:1234.5678", "doi:10.1101/2025.06.22.660927", "pubmed:PMC123456"],
-        "tool_call_id": "test_call_id",
-        "state": dummy_state
-    }
+def test_pubmed_only_path(fake_llm_model, monkeypatch):
+    llm, structured = fake_llm_model
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=[], dois=[], pubmed_ids=["pmc:123"]
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadPubmedPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"123": {"from": "pubmed"}}},
+    )
 
-    result = download_tool.download_paper.run(tool_input)
+    cmd = download_tool.download_paper.func(
+        paper_id=["pmc:123"],
+        tool_call_id="T2",
+        state=make_state(llm),
+    )
+    assert cmd.update["article_data"] == {"123": {"from": "pubmed"}}
 
-    mock_biorxiv.paper_retriever.assert_called_once()
-    mock_medrxiv.paper_retriever.assert_called_once()
 
-    assert expected in result.update["messages"][0]
+def test_biorxiv_success_path(fake_llm_model, monkeypatch):
+    llm, structured = fake_llm_model
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=[], dois=["10.1101/ABC"], pubmed_ids=[]
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadBiorxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"ABC": {"src": "biorxiv"}}},
+    )
+
+    cmd = download_tool.download_paper.func(
+        paper_id=["10.1101/ABC"],
+        tool_call_id="T3",
+        state=make_state(llm),
+    )
+    assert cmd.update["article_data"] == {"ABC": {"src": "biorxiv"}}
+
+
+def test_biorxiv_fails_then_medrxiv(fake_llm_model, monkeypatch):
+    llm, structured = fake_llm_model
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=[], dois=["10.1101/XYZ"], pubmed_ids=[]
+    )
+    # Biorxiv raises → Medrxiv used
+    monkeypatch.setattr(
+        download_tool.DownloadBiorxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: (_ for _ in ()).throw(ValueError("no meta")),
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadMedrxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"XYZ": {"src": "medrxiv"}}},
+    )
+
+    cmd = download_tool.download_paper.func(
+        paper_id=["10.1101/XYZ"],
+        tool_call_id="T4",
+        state=make_state(llm),
+    )
+    assert cmd.update["article_data"] == {"XYZ": {"src": "medrxiv"}}
+
+
+def test_multiple_sources_combined(fake_llm_model, monkeypatch):
+    llm, structured = fake_llm_model
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=["arxiv:9"], dois=["10.1101/DO"], pubmed_ids=["pmc:7"]
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadArxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"9": {"A": 1}}},
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadPubmedPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"7": {"P": 2}}},
+    )
+    monkeypatch.setattr(
+        download_tool.DownloadBiorxivPaperInput,
+        "paper_retriever",
+        lambda self, paper_ids: {"article_data": {"DO": {"D": 3}}},
+    )
+
+    cmd = download_tool.download_paper.func(
+        paper_id=["dummy"],
+        tool_call_id="T5",
+        state=make_state(llm),
+    )
+    art = cmd.update["article_data"]
+    assert art == {"9": {"A": 1}, "7": {"P": 2}, "DO": {"D": 3}}
+
+
+def test_no_ids_results_in_empty(fake_llm_model):
+    llm, structured = fake_llm_model
+    structured.invoke.return_value = SimpleNamespace(
+        arxiv_ids=[], dois=[], pubmed_ids=[]
+    )
+
+    cmd = download_tool.download_paper.func(
+        paper_id=["nothing"],
+        tool_call_id="T6",
+        state=make_state(llm),
+    )
+    assert cmd.update["article_data"] == {}
