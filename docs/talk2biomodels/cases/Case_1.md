@@ -148,7 +148,7 @@ Show me the parameters related to drug dosing regimen in the model
 **Q:** Show annotated species of the model. <br>
 
 ```
-get model annotations
+show me the annotations of all species in the model 537
 ```
 
 <details>
@@ -159,7 +159,7 @@ get model annotations
 **Q:** Show all species of a specific type in the model <br>
 
 ```
-show all interleukins in this model
+Show annotations of all interleukins in model 537
 ```
 
 <details>
