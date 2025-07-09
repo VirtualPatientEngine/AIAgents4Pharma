@@ -27,13 +27,9 @@ import networkx as nx
 import gravis
 import pickle
 import glob
-import cudf
 import re
-from pymilvus import (
-    db,
-    connections,
-)
-
+from pymilvus import db, connections, Collection
+    
 def submit_feedback(user_response):
     """
     Function to submit feedback to the developers.
@@ -1257,48 +1253,6 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.session_state.multimodal_key += 1
                     st.rerun(scope="fragment")
 
-# def load_enrichment_and_embedding_dataframes() -> tuple:
-#     """
-#     Load the enrichment and embedding dataframes from the specified paths.
-
-#     Args:
-#         cfg: The configuration object.
-
-#     Returns:
-#         tuple: A tuple containing the enrichment and embedding dataframes.
-#     """
-#     # Load Hydra configuration
-#     with hydra.initialize(
-#         version_base=None,
-#         config_path="../../../aiagents4pharma/talk2knowledgegraphs/configs",
-#     ):
-#         cfg = hydra.compose(config_name="config",
-#                             overrides=["tools/multimodal_subgraph_extraction=default"])
-#         cfg = cfg.tools.multimodal_subgraph_extraction
-
-#     # Loop over nodes and edges
-#     graph_dict = {}
-#     for element in ["nodes", "edges"]:
-#         # Make an empty dictionary for each folder
-#         graph_dict[element] = {}
-#         for stage in ["enrichment", "embedding"]:
-#             print(element, stage)
-#             # Create the file pattern for the current subfolder
-#             file_list = glob.glob(os.path.join(
-#                                               cfg.biobridge.source,
-#                                                element,
-#                                                stage, '*.parquet.gzip'))
-
-#             print(file_list)
-#             # if element != "edges" and stage == "embedding":
-#             # Read and concatenate all dataframes in the folder
-#             graph_dict[element][stage] = cudf.concat([
-#                 cudf.read_parquet(f) for f in file_list
-#             ], ignore_index=True)
-
-#     return graph_dict["nodes"]["enrichment"], graph_dict["nodes"]["embedding"], \
-#         graph_dict["edges"]["enrichment"], graph_dict["edges"]["embedding"]
-
 def setup_milvus(cfg: dict):
     """
     Function to connect to the Milvus database.
@@ -1325,3 +1279,37 @@ def setup_milvus(cfg: dict):
     db.using_database(cfg.milvus_db.database_name)
 
     return connections.get_connection_addr(cfg.milvus_db.alias)
+
+def get_cache_edge_index(cfg: dict):
+    """
+    Function to get the edge index of the knowledge graph in the Milvus collection.
+    Due to massive records that we should query to get edge index from the Milvus database,
+    we pre-loaded this information when the app is started and stored it in a state.
+
+    Args:
+        cfg: The configuration dictionary containing the path to the edge index file.
+
+    Returns:
+        The edge index.
+    """
+    # Load collection
+    coll = Collection(f"{cfg.milvus_db.database_name}_edges")
+    coll.load()
+    
+    batch_size = cfg.milvus_db.query_batch_size
+    head_list = []
+    tail_list = []
+    for start in range(0, coll.num_entities, batch_size):
+        end = min(start + batch_size, coll.num_entities)
+        print(f"Processing triplet_index range: {start} to {end}")
+        batch = coll.query(
+            expr=f"triplet_index >= {start} and triplet_index < {end}",
+            output_fields=["head_index", "tail_index"],
+        )
+        head_list.extend([r["head_index"] for r in batch])
+        tail_list.extend([r["tail_index"] for r in batch])
+    edge_index = [head_list, tail_list]
+    
+    # Save the edge index to a file
+    with open(cfg.milvus_db.cache_edge_index_path, "wb") as f:
+        pickle.dump(edge_index, f)

@@ -2,6 +2,7 @@
 Tool for performing multimodal subgraph extraction.
 """
 
+import datetime
 from typing import Type, Annotated
 import logging
 import hydra
@@ -214,8 +215,11 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
         # Loop over query embeddings and modalities
         for q in getattr(query_df, "to_pandas", lambda: query_df)().iterrows():
+            logger.log(logging.INFO, "===========================================")
+            logger.log(logging.INFO, "Processing query: %s", q[1]['node_id'])
             # Prepare the PCSTPruning object and extract the subgraph
             # Parameters were set in the configuration file obtained from Hydra
+            start = datetime.datetime.now()
             subgraph = MultimodalPCSTPruning(
                 topk=state["topk_nodes"],
                 topk_e=state["topk_edges"],
@@ -225,7 +229,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 num_clusters=cfg.num_clusters,
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
-                use_description=q[1]['use_description']
+                use_description=q[1]['use_description'],
+                metric_type=cfg.search_metric_type
             ).extract_subgraph(q[1]['desc_emb'],
                                q[1]['feat_emb'],
                                q[1]['node_type'],
@@ -237,6 +242,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             subgraphs.append((q[1]['node_id'],
                               subgraph["nodes"].tolist(),
                               subgraph["edges"].tolist()))
+            
+            end = datetime.datetime.now()
+            logger.log(logging.INFO, "Subgraph extraction time: %s seconds",
+                       (end - start).total_seconds())
 
         # Concatenate and get unique node and edge indices
         unified_subgraph["nodes"] = py.unique(
@@ -400,6 +409,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
         # Prepare the query embeddings and modalities
         logger.log(logging.INFO, "_prepare_query_modalities")
+        start = datetime.datetime.now()
         query_df = self._prepare_query_modalities(
             {"text": prompt,
              "emb": [state["embedding_model"].embed_query(prompt)]
@@ -407,28 +417,37 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             state,
             cfg_db,
         )
+        end = datetime.datetime.now()
+        logger.log(logging.INFO, "_prepare_query_modalities time: %s seconds", (end - start).total_seconds())
 
         # Perform subgraph extraction
         logger.log(logging.INFO, "_perform_subgraph_extraction")
+        start = datetime.datetime.now()
         subgraphs = self._perform_subgraph_extraction(state,
                                                       cfg,
                                                       cfg_db,
                                                       query_df)
+        end = datetime.datetime.now()
+        logger.log(logging.INFO, "_perform_subgraph_extraction time: %s seconds", (end - start).total_seconds())
 
         # Prepare subgraph as a NetworkX graph and textualized graph
         logger.log(logging.INFO, "_prepare_final_subgraph")
         logger.log(logging.INFO, "Subgraphs extracted: %s", len(subgraphs))
+        start = datetime.datetime.now()
         final_subgraph = self._prepare_final_subgraph(state,
                                                       subgraphs,
                                                       cfg,
                                                       cfg_db)
+        end = datetime.datetime.now()
+        logger.log(logging.INFO, "_prepare_final_subgraph time: %s seconds", (end - start).total_seconds())
 
         # Prepare the dictionary of extracted graph
         logger.log(logging.INFO, "dic_extracted_graph")
+        start = datetime.datetime.now()
         dic_extracted_graph = {
             "name": arg_data.extraction_name,
             "tool_call_id": tool_call_id,
-            "graph_source": cfg_db.milvus_db.database_name,
+            "graph_source": state["dic_source_graph"][0]["name"],
             "topk_nodes": state["topk_nodes"],
             "topk_edges": state["topk_edges"],
             "graph_dict": {
@@ -439,6 +458,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             "graph_text": final_subgraph["text"],
             "graph_summary": None,
         }
+        end = datetime.datetime.now()
+        logger.log(logging.INFO, "dic_extracted_graph time: %s seconds", (end - start).total_seconds())
 
         # Prepare the dictionary of updated state
         dic_updated_state_for_model = {}

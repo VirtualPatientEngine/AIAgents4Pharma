@@ -4,6 +4,7 @@ Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) al
 
 from typing import Tuple, NamedTuple
 import logging
+import pickle
 import pandas as pd
 import pcst_fast
 from pymilvus import Collection
@@ -48,6 +49,7 @@ class MultimodalPCSTPruning(NamedTuple):
     pruning: str = "gw"
     verbosity_level: int = 0
     use_description: bool = False
+    metric_type: str = "IP"  # Inner Product
 
     def prepare_collections(self, cfg: dict, modality: str) -> dict:
         """
@@ -105,7 +107,7 @@ class MultimodalPCSTPruning(NamedTuple):
             res = colls["nodes"].search(
                 data=[query_emb],
                 anns_field="desc_emb",
-                param={"metric_type": "IP"},
+                param={"metric_type": self.metric_type},
                 limit=topk,
                 output_fields=["node_id"])
         else:
@@ -113,7 +115,7 @@ class MultimodalPCSTPruning(NamedTuple):
             res = colls["nodes_type"].search(
                 data=[query_emb],
                 anns_field="feat_emb",
-                param={"metric_type": "IP"},
+                param={"metric_type": self.metric_type},
                 limit=topk,
                 output_fields=["node_id"])
 
@@ -143,7 +145,7 @@ class MultimodalPCSTPruning(NamedTuple):
         res = colls["edges"].search(
             data=[text_emb],
             anns_field="feat_emb",
-            param={"metric_type": "IP"},
+            param={"metric_type": self.metric_type},
             limit=topk_e, # Only retrieve the top-k edges
             # limit=colls["edges"].num_entities,
             output_fields=["head_id", "tail_id"])
@@ -201,7 +203,7 @@ class MultimodalPCSTPruning(NamedTuple):
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
         Args:
-            edge_index: The edge index of the graph.
+            edge_index: The edge index of the graph, consisting of source and destination nodes.
             num_nodes: The number of nodes in the graph.
             prizes: The prizes of the nodes and the edges.
 
@@ -222,10 +224,12 @@ class MultimodalPCSTPruning(NamedTuple):
         )
 
         # Masks for real and virtual edges
+        logger.log(logging.INFO, "Creating masks for real and virtual edges")
         real_["mask"] = prizes["edges"] <= updated_cost_e
         virt_["mask"] = ~real_["mask"]
 
         # Real edge indices
+        logger.log(logging.INFO, "Computing real edges")
         real_["indices"] = py.nonzero(real_["mask"])[0]
         real_["src"] = edge_index[0][real_["indices"]]
         real_["dst"] = edge_index[1][real_["indices"]]
@@ -233,19 +237,23 @@ class MultimodalPCSTPruning(NamedTuple):
         real_["costs"] = updated_cost_e - prizes["edges"][real_["indices"]]
 
         # Edge index mapping: local real edge idx -> original global index
-        mapping_edges = {int(i): int(j) for i, j in enumerate(real_["indices"])}
+        logger.log(logging.INFO, "Creating mapping for real edges")
+        mapping_edges = dict(zip(range(len(real_["indices"])), real_["indices"].tolist()))
 
         # Virtual edge handling
+        logger.log(logging.INFO, "Computing virtual edges")
         virt_["indices"] = py.nonzero(virt_["mask"])[0]
         virt_["src"] = edge_index[0][virt_["indices"]]
         virt_["dst"] = edge_index[1][virt_["indices"]]
         virt_["prizes"] = prizes["edges"][virt_["indices"]] - updated_cost_e
 
         # Generate virtual node IDs
+        logger.log(logging.INFO, "Generating virtual node IDs")
         virt_["num"] = virt_["indices"].shape[0]
         virt_["node_ids"] = py.arange(num_nodes, num_nodes + virt_["num"])
 
         # Virtual edges: (src → virtual), (virtual → dst)
+        logger.log(logging.INFO, "Creating virtual edges")
         virt_["edges_1"] = py.stack([virt_["src"], virt_["node_ids"]], axis=1)
         virt_["edges_2"] = py.stack([virt_["node_ids"], virt_["dst"]], axis=1)
         virt_["edges"] = py.concatenate([virt_["edges_1"],
@@ -253,17 +261,20 @@ class MultimodalPCSTPruning(NamedTuple):
         virt_["costs"] = py.zeros((virt_["edges"].shape[0],), dtype=real_["costs"].dtype)
 
         # Combine real and virtual edges/costs
+        logger.log(logging.INFO, "Combining real and virtual edges/costs")
         all_edges = py.concatenate([real_["edges"], virt_["edges"]], axis=0)
         all_costs = py.concatenate([real_["costs"], virt_["costs"]], axis=0)
 
         # Final prizes
+        logger.log(logging.INFO, "Getting final prizes")
         final_prizes = py.concatenate([prizes["nodes"], virt_["prizes"]], axis=0)
 
         # Mapping virtual node ID -> edge index in original graph
-        mapping_nodes = {int(nid): int(idx) for nid, idx in zip(virt_["node_ids"],
-                                                                virt_["indices"])}
+        logger.log(logging.INFO, "Creating mapping for virtual nodes")
+        mapping_nodes = dict(zip(virt_["node_ids"].tolist(), virt_["indices"].tolist()))
 
         # Build return values
+        logger.log(logging.INFO, "Building return values")
         edges_dict = {
             "edges": all_edges,
             "num_prior_edges": real_["edges"].shape[0],
@@ -336,7 +347,14 @@ class MultimodalPCSTPruning(NamedTuple):
             The selected nodes and edges of the subgraph.
         """
         # Load the collections for nodes
+        logger.log(logging.INFO, "Preparing collections")
         colls = self.prepare_collections(cfg, modality)
+
+        # Load cache edge index
+        logger.log(logging.INFO, "Loading cache edge index")
+        with open(cfg.milvus_db.cache_edge_index_path, "rb") as f:
+            edge_index = pickle.load(f)
+            edge_index = py.array(edge_index)
 
         # Assert the topk and topk_e values for subgraph retrieval
         assert self.topk > 0, "topk must be greater than or equal to 0"
@@ -345,17 +363,6 @@ class MultimodalPCSTPruning(NamedTuple):
         # Retrieve the top-k nodes and edges based on the query embedding
         logger.log(logging.INFO, "compute_prizes")
         prizes = self.compute_prizes(text_emb, query_emb, colls)
-
-        # Obtain edge_index
-        logger.log(logging.INFO, "Creating edge index")
-        edges = colls["edges"].query(
-            expr="triplet_index >= 0",
-            output_fields=["head_index", "tail_index"]
-        )
-        edge_index = py.array([
-            [r['head_index'] for r in edges],
-            [r['tail_index'] for r in edges]
-        ])
 
         # Compute costs in constructing the subgraph
         logger.log(logging.INFO, "compute_subgraph_costs")

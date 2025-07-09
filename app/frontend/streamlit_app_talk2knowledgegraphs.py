@@ -135,6 +135,11 @@ if "topk_nodes" not in st.session_state:
 if "milvus_connection" not in st.session_state:
     st.session_state.milvus_connection = streamlit_utils.setup_milvus(cfg)
     print("Milvus connection established:", st.session_state.milvus_connection)
+    # Cache edge index if it does not exist
+    if not os.path.exists(cfg.milvus_db.cache_edge_index_path):
+        print("Cache edge index does not exist. Creating it now...")
+        # Create the cache edge index
+        streamlit_utils.get_cache_edge_index(cfg)
 
 # Get the app
 app = st.session_state.app
@@ -282,9 +287,9 @@ with main_col2:
                             model=st.session_state.llm_model,
                             temperature=cfg.temperature,
                         )
-                        # emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
                         # For IBD BioBridge data, we still use Ollama embeddings
-                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                        # emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
                     else:
                         llm_model = ChatOllama(
                             model=st.session_state.llm_model,
@@ -305,9 +310,10 @@ with main_col2:
                             "topk_edges": st.session_state.topk_edges,
                             "dic_source_graph": [
                                 {
-                                    "name": st.session_state.config["kg_name"],
-                                    "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                                    "kg_text_path": st.session_state.config["kg_text_path"],
+                                    "name": cfg.milvus_db.database_name,
+                                    # "edge_index": st.session_state.edge_index,
+                                    # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+                                    # "kg_text_path": st.session_state.config["kg_text_path"],
                                 }
                             ],
                         },

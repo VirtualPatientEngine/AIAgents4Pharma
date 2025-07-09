@@ -11,6 +11,7 @@ root: -1
 num_clusters: 1
 pruning: "gw"
 verbosity_level: 0
+search_metric_type: "IP"  # Inner Product
 node_id_column: "node_id"
 node_attr_column: "node_attr"
 edge_src_column: "edge_src"
