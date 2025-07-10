@@ -121,6 +121,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         query_df = []
         prompt_df = df.DataFrame({
             'node_id': 'user_prompt',
+            'node_name': 'User Prompt',
             'node_type': 'prompt',
             'feat': prompt["text"],
             'feat_emb': prompt["emb"],
@@ -150,7 +151,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 q_node_names =  getattr(node_type_df['q_node_name'],
                                         "to_pandas",
                                         lambda: node_type_df['q_node_name'])().tolist()
-                q_columns = ["node_id", "node_type", "feat", "feat_emb", "desc", "desc_emb"]
+                q_columns = ["node_id", "node_name", "node_type", "feat", "feat_emb", "desc", "desc_emb"]
                 res = collection.query(
                     expr=f'node_name IN [{','.join(f'"{name}"' for name in q_node_names)}]',
                     output_fields=q_columns,
@@ -216,7 +217,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         # Loop over query embeddings and modalities
         for q in getattr(query_df, "to_pandas", lambda: query_df)().iterrows():
             logger.log(logging.INFO, "===========================================")
-            logger.log(logging.INFO, "Processing query: %s", q[1]['node_id'])
+            logger.log(logging.INFO, "Processing query: %s", q[1]['node_name'])
             # Prepare the PCSTPruning object and extract the subgraph
             # Parameters were set in the configuration file obtained from Hydra
             start = datetime.datetime.now()
@@ -239,7 +240,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             # Append the extracted subgraph to the dictionary
             unified_subgraph["nodes"].append(subgraph["nodes"].tolist())
             unified_subgraph["edges"].append(subgraph["edges"].tolist())
-            subgraphs.append((q[1]['node_id'],
+            subgraphs.append((q[1]['node_name'],
                               subgraph["nodes"].tolist(),
                               subgraph["edges"].tolist()))
             
@@ -300,7 +301,6 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         }
         for sub in getattr(subgraph, "to_pandas", lambda: subgraph)().itertuples(index=False):
             # Prepare the graph name
-            graph_dict["name"].append(sub.name)
             print(f"Processing subgraph: {sub.name}")
             print('---')
             print(sub.nodes)
@@ -338,6 +338,7 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             graph_edges['edge_type'] = graph_edges['edge_type'].str.split('|')
 
             # Prepare lists for visualization
+            graph_dict["name"].append(sub.name)
             graph_dict["nodes"].append([(
                 row.node_id,
                 {'hover': "Node Name : " + row.node_name + "\n" +\
@@ -367,6 +368,21 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
         return graph_dict
 
+    def normalize_vector(self, 
+                         v : list) -> list:
+        """
+        Normalize a vector using CuPy.
+        
+        Args:
+            v : Vector to normalize.
+        
+        Returns:
+            Normalized vector.
+        """
+        v = py.asarray(v)
+        norm = py.linalg.norm(v)
+        return (v / norm).tolist()
+    
     def _run(
         self,
         tool_call_id: Annotated[str, InjectedToolCallId],
@@ -412,7 +428,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         start = datetime.datetime.now()
         query_df = self._prepare_query_modalities(
             {"text": prompt,
-             "emb": [state["embedding_model"].embed_query(prompt)]
+             "emb": [self.normalize_vector(
+                 state["embedding_model"].embed_query(prompt)
+                 )]
             },
             state,
             cfg_db,

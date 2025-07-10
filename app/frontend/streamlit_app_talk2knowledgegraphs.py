@@ -150,6 +150,8 @@ streamlit_utils.apply_css()
 # Sidebar
 with st.sidebar:
     st.markdown("**⚙️ Subgraph Extraction Settings**")
+    st.empty()
+    # Top-K nodes and edges sliders
     topk_nodes = st.slider(
         "Top-K (Nodes)",
         cfg.reasoning_subgraph_topk_nodes_min,
@@ -261,7 +263,8 @@ with main_col2:
                 st.empty()
 
             # Auxiliary visualization-related variables
-            graphs_visuals = []
+            # render_flag = False
+            graph_to_be_rendered = None
             with st.chat_message("assistant", avatar="🤖"):
                 # with st.spinner("Fetching response ..."):
                 with st.spinner():
@@ -396,24 +399,23 @@ with main_col2:
                                 len(current_state.values["dic_extracted_graph"]),
                                 "subgraph_extraction",
                             )
-                            # Add the graph into the visuals list
-                            latest_graph = current_state.values["dic_extracted_graph"][
-                                -1
-                            ]
-                            if current_state.values["dic_extracted_graph"]:
-                                graphs_visuals.append(
-                                    {
-                                        "content": latest_graph["graph_dict"],
-                                        "key": "subgraph_" + uniq_msg_id,
-                                    }
-                                )
+                            # Add the graph to be rendered
+                            latest_graph = current_state.values["dic_extracted_graph"][-1]
+                            graph_to_be_rendered = {
+                                "content": latest_graph["graph_dict"],
+                                "key": "subgraph_" + uniq_msg_id,
+                            }
 
             # Visualize the graph
-            if len(graphs_visuals) > 0:
-                for count, graph in enumerate(graphs_visuals):
-                    streamlit_utils.render_graph(
-                        graph_dict=graph["content"], key=graph["key"], save_graph=True
-                    )
+            if graph_to_be_rendered:
+                streamlit_utils.render_graph(
+                    graph_dict=graph_to_be_rendered["content"], 
+                    key=graph_to_be_rendered["key"], 
+                    save_graph=True
+                )
+                st.empty()
+                # Remove the graph to be rendered
+                graph_to_be_rendered = None
 
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):
@@ -423,3 +425,4 @@ with main_col2:
                 on_submit=streamlit_utils.submit_feedback,
                 key=f"feedback_{st.session_state.run_id}",
             )
+            st.empty()

@@ -3,8 +3,8 @@ ollama_embeddings:
   - "nomic-embed-text"
 temperature: 0.1
 streaming: False
-topk: 5
-topk_e: 5
+topk: 15
+topk_e: 15
 cost_e: 0.5
 c_const: 0.01
 root: -1

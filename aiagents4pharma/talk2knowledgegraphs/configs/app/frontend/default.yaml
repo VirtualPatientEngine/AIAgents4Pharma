@@ -34,12 +34,12 @@ ollama_embeddings:
   - "nomic-embed-text"
 temperature: 0.1
 streaming: False
-reasoning_subgraph_topk_nodes: 5
+reasoning_subgraph_topk_nodes: 15
 reasoning_subgraph_topk_nodes_min: 1
-reasoning_subgraph_topk_nodes_max: 100
-reasoning_subgraph_topk_edges: 5
+reasoning_subgraph_topk_nodes_max: 50
+reasoning_subgraph_topk_edges: 15
 reasoning_subgraph_topk_edges_min: 1
-reasoning_subgraph_topk_edges_max: 100
+reasoning_subgraph_topk_edges_max: 50
 # Configuration for Milvus
 milvus_db:
   alias: "default"

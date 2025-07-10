@@ -805,15 +805,15 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
         </div>
         '''
 
-        if save_graph:
-            # Add data to the chat history
-            st.session_state.messages.append(
-                {
-                    "type": "graph",
-                    "content": graph_dict,
-                    "key": key,
-                }
-            )
+    if save_graph:
+        # Add data to the chat history
+        st.session_state.messages.append(
+            {
+                "type": "graph",
+                "content": graph_dict,
+                "key": key,
+            }
+        )
 
     full_html = f"""
     <!DOCTYPE html>
