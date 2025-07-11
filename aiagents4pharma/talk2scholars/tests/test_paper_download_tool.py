@@ -1,4 +1,5 @@
 """tests for the paper download tool."""
+# pylint: disable=redefined-outer-name
 
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -18,7 +19,7 @@ def mock_build_summary():
 
 
 @pytest.fixture
-def fake_llm_model():
+def fake_llm_model_tuple():
     """A fake LLM with structured output."""
     llm = MagicMock()
     structured = MagicMock()
@@ -27,11 +28,14 @@ def fake_llm_model():
 
 
 def make_state(llm_model):
+    """Making state"""
     return {"llm_model": llm_model}
 
 
-def test_arxiv_only_path(fake_llm_model, monkeypatch):
-    llm, structured = fake_llm_model
+def test_arxiv_only_path(fake_llm_model_tuple, monkeypatch):
+    """Test only arxiv ids"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     # only arxiv_ids
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=["arxiv:1"], dois=[], pubmed_ids=[]
@@ -61,8 +65,10 @@ def test_arxiv_only_path(fake_llm_model, monkeypatch):
     assert tm.artifact == {"1": {"from": "arxiv"}}
 
 
-def test_pubmed_only_path(fake_llm_model, monkeypatch):
-    llm, structured = fake_llm_model
+def test_pubmed_only_path(fake_llm_model_tuple, monkeypatch):
+    """Testing only pubmed ids"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=[], dois=[], pubmed_ids=["pmc:123"]
     )
@@ -80,8 +86,10 @@ def test_pubmed_only_path(fake_llm_model, monkeypatch):
     assert cmd.update["article_data"] == {"123": {"from": "pubmed"}}
 
 
-def test_biorxiv_success_path(fake_llm_model, monkeypatch):
-    llm, structured = fake_llm_model
+def test_biorxiv_success_path(fake_llm_model_tuple, monkeypatch):
+    """Testing only biorxiv papers"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=[], dois=["10.1101/ABC"], pubmed_ids=[]
     )
@@ -99,8 +107,10 @@ def test_biorxiv_success_path(fake_llm_model, monkeypatch):
     assert cmd.update["article_data"] == {"ABC": {"src": "biorxiv"}}
 
 
-def test_biorxiv_fails_then_medrxiv(fake_llm_model, monkeypatch):
-    llm, structured = fake_llm_model
+def test_biorxiv_fails_then_medrxiv(fake_llm_model_tuple, monkeypatch):
+    """Medrxiv runs if biorxiv fails"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=[], dois=["10.1101/XYZ"], pubmed_ids=[]
     )
@@ -124,8 +134,10 @@ def test_biorxiv_fails_then_medrxiv(fake_llm_model, monkeypatch):
     assert cmd.update["article_data"] == {"XYZ": {"src": "medrxiv"}}
 
 
-def test_multiple_sources_combined(fake_llm_model, monkeypatch):
-    llm, structured = fake_llm_model
+def test_multiple_sources_combined(fake_llm_model_tuple, monkeypatch):
+    """Multiple sources combined test run"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=["arxiv:9"], dois=["10.1101/DO"], pubmed_ids=["pmc:7"]
     )
@@ -154,8 +166,10 @@ def test_multiple_sources_combined(fake_llm_model, monkeypatch):
     assert art == {"9": {"A": 1}, "7": {"P": 2}, "DO": {"D": 3}}
 
 
-def test_no_ids_results_in_empty(fake_llm_model):
-    llm, structured = fake_llm_model
+def test_no_ids_results_in_empty(fake_llm_model_tuple):
+    """If llm returns no ids"""
+    llm = fake_llm_model_tuple[0]
+    structured = fake_llm_model_tuple[1]
     structured.invoke.return_value = SimpleNamespace(
         arxiv_ids=[], dois=[], pubmed_ids=[]
     )

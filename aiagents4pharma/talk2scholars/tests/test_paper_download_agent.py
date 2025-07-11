@@ -47,7 +47,7 @@ def test_paper_download_agent_initialization():
         assert mock_create_agent.called
 
 
-def test_paper_download_agent_invocation(mock_tools_fixture):
+def test_paper_download_agent_invocation():
     """Verifies agent processes queries and updates state correctly."""
     thread_id = "test_thread_paper_dl"
     mock_state = Talk2Scholars(

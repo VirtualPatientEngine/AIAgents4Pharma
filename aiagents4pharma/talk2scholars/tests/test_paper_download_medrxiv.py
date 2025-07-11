@@ -19,6 +19,8 @@ def mock_hydra(monkeypatch):
 
     @contextmanager
     def dummy_initialize(*args, **kwargs):
+        args = list(args)
+        kwargs = list(kwargs)
         yield
 
     monkeypatch.setattr(hydra, "initialize", dummy_initialize)
@@ -34,6 +36,7 @@ def mock_hydra(monkeypatch):
 
 
 def test_load_hydra_configs_returns_expected():
+    """Hydra configurations success"""
     tool = DownloadMedrxivPaperInput()
     cfg = tool.load_hydra_configs()
     assert cfg.api_url == "http://api.test/"
@@ -41,9 +44,11 @@ def test_load_hydra_configs_returns_expected():
 
 
 def test_fetch_metadata_success_and_version_stripping(monkeypatch):
+    """Fetch metadata success with version stripping"""
     seen = {}
 
     def fake_get(url, timeout):
+        _=timeout
         seen["url"] = url
         resp = mock.Mock()
         resp.raise_for_status = mock.Mock()
@@ -60,6 +65,7 @@ def test_fetch_metadata_success_and_version_stripping(monkeypatch):
 
 
 def test_fetch_metadata_raises_http_error(monkeypatch):
+    """fetch metadata raises http error"""
     resp = mock.Mock()
     resp.raise_for_status.side_effect = requests.exceptions.HTTPError("fail")
     monkeypatch.setattr(requests, "get", lambda url, timeout: resp)
@@ -69,6 +75,7 @@ def test_fetch_metadata_raises_http_error(monkeypatch):
 
 
 def test_fetch_metadata_empty_collection_raises(monkeypatch):
+    """fetch metadata finds no collection"""
     resp = mock.Mock()
     resp.raise_for_status = mock.Mock()
     resp.json = mock.Mock(return_value={"collection": []})
@@ -80,6 +87,7 @@ def test_fetch_metadata_empty_collection_raises(monkeypatch):
 
 
 def test_extract_metadata_success(monkeypatch):
+    """ectract metadata works successfully"""
     data = {
         "title": "MedRxiv Title",
         "authors": ["Dr A", "Dr B"],
@@ -108,6 +116,7 @@ def test_extract_metadata_success(monkeypatch):
 
 
 def test_extract_metadata_pdf_not_accessible(monkeypatch, capsys):
+    """Pdf not accessible in extract metadata"""
     data = {"doi": "10.1101/NOP456"}
     # simulate PDF not accessible
     monkeypatch.setattr(
@@ -122,10 +131,11 @@ def test_extract_metadata_pdf_not_accessible(monkeypatch, capsys):
         "No PDF found or access denied at https://www.medrxiv.org/content/10.1101/NOP456.full.pdf"
         in captured.out
     )
-    assert result == {}
+    assert not result
 
 
 def test_paper_retriever_happy_and_skip(monkeypatch):
+    """Paper retirver happy path test"""
     tool = DownloadMedrxivPaperInput()
     fake_cfg = SimpleNamespace(api_url="http://api.test/", request_timeout=4)
     monkeypatch.setattr(tool, "load_hydra_configs", lambda: fake_cfg)
@@ -135,6 +145,7 @@ def test_paper_retriever_happy_and_skip(monkeypatch):
 
     # extract_metadata returns non-empty for 'good', empty for 'bad'
     def fake_extract(data, pid):
+        data= list(data)
         return {"id": pid} if pid == "good" else {}
 
     monkeypatch.setattr(tool, "extract_metadata", fake_extract)

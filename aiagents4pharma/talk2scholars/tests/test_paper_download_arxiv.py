@@ -19,10 +19,13 @@ from aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input imp
 
 @pytest.fixture(autouse=True)
 def mock_hydra(monkeypatch):
-    """Prevent real Hydra from running; make initialize a no-op context manager and compose return a dummy config."""
+    """Prevent real Hydra from running; make initialize 
+    a no-op context manager and compose return a dummy config."""
 
     @contextmanager
     def dummy_initialize(*args, **kwargs):
+        args = list(args)
+        kwargs=list(kwargs)
         yield
 
     monkeypatch.setattr(hydra, "initialize", dummy_initialize)
@@ -46,6 +49,7 @@ def make_simple_feed(entry_xml: str) -> ET.Element:
 
 
 def test_load_hydra_configs_returns_expected():
+    """Hydra Configuration tests"""
     tool = DownloadArxivPaperInput()
     cfg = tool.load_hydra_configs()
     assert cfg.api_url == "http://api.test"
@@ -53,6 +57,7 @@ def test_load_hydra_configs_returns_expected():
 
 
 def test_fetch_metadata_success(monkeypatch):
+    """Success run of fetching metadata"""
     xml_body = "<feed></feed>"
     fake_resp = mock.Mock()
     fake_resp.text = xml_body
@@ -66,6 +71,7 @@ def test_fetch_metadata_success(monkeypatch):
 
 
 def test_fetch_metadata_raises_on_http_error(monkeypatch):
+    """Http error run for fectch metadata"""
     fake_resp = mock.Mock()
     fake_resp.raise_for_status.side_effect = requests.exceptions.HTTPError("boom")
     monkeypatch.setattr(requests, "get", lambda url, timeout: fake_resp)
@@ -76,6 +82,7 @@ def test_fetch_metadata_raises_on_http_error(monkeypatch):
 
 
 def test_extract_metadata_all_fields_present():
+    """Extract metadata with all the required data"""
     entry_xml = """
     <entry xmlns="http://www.w3.org/2005/Atom">
       <title>  My Title  </title>
@@ -104,6 +111,7 @@ def test_extract_metadata_all_fields_present():
 
 
 def test_extract_metadata_missing_pdf_raises():
+    """Missing pdf in extract metadata"""
     entry_xml = """
     <entry xmlns="http://www.w3.org/2005/Atom">
       <title>Title</title>
@@ -119,6 +127,7 @@ def test_extract_metadata_missing_pdf_raises():
 
 
 def test_extract_metadata_missing_optional_fields():
+    """Missign data optional data in extract metadata"""
     entry_xml = """
     <entry xmlns="http://www.w3.org/2005/Atom">
       <link href="http://example.com/foo.pdf" title="pdf"/>
@@ -129,13 +138,14 @@ def test_extract_metadata_missing_optional_fields():
     tool = DownloadArxivPaperInput()
     out = tool.extract_metadata(data, "0000.0000")
     assert out["Title"] == "N/A"
-    assert out["Authors"] == []
+    assert not out["Authors"]
     assert out["Abstract"] == "N/A"
     assert out["Publication Date"] == "N/A"
     assert out["pdf_url"] == "http://example.com/foo.pdf"
 
 
 def test_paper_retriever_happy_path(monkeypatch):
+    """Papepr retriever all success"""
     tool = DownloadArxivPaperInput()
     fake_cfg = SimpleNamespace(api_url="http://api.test", request_timeout=3)
     monkeypatch.setattr(tool, "load_hydra_configs", lambda: fake_cfg)
@@ -159,13 +169,13 @@ def test_paper_retriever_happy_path(monkeypatch):
 
 
 def test_paper_retriever_invokes_extract_when_entry_present(monkeypatch):
+    """When PMC ID exists for the paper"""
     # Arrange
     tool = DownloadArxivPaperInput()
     fake_cfg = SimpleNamespace(api_url="u", request_timeout=1)
     monkeypatch.setattr(tool, "load_hydra_configs", lambda: fake_cfg)
 
     # Build a feed with one <entry> so extract_metadata will be called
-    ns = {"atom": "http://www.w3.org/2005/Atom"}
     entry = ET.Element("{http://www.w3.org/2005/Atom}entry")
     feed = ET.Element("{http://www.w3.org/2005/Atom}feed")
     feed.append(entry)
@@ -179,6 +189,7 @@ def test_paper_retriever_invokes_extract_when_entry_present(monkeypatch):
     def fake_extract(data, pid):
         nonlocal called
         called = True
+        data = list(data)
         return {"foo": "bar", "arxiv_id": pid}
 
     monkeypatch.setattr(tool, "extract_metadata", fake_extract)
@@ -192,7 +203,7 @@ def test_paper_retriever_invokes_extract_when_entry_present(monkeypatch):
 
 
 def test_paper_retriever_calls_warning_without_entry(monkeypatch):
-
+    """Paper doesnt have PMC ID"""
     # Arrange
     tool = DownloadArxivPaperInput()
     fake_cfg = SimpleNamespace(api_url="u", request_timeout=1)

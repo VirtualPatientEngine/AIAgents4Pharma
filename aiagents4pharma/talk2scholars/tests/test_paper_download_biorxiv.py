@@ -18,7 +18,9 @@ def mock_hydra(monkeypatch):
     """Make hydra.initialize a no‐op context manager and hydra.compose return a dummy config."""
 
     @contextmanager
-    def dummy_initialize(*args, **kwargs):
+    def dummy_initialize(*args,**kwargs):
+        args = list(args)
+        kwargs = list(kwargs)
         yield
 
     monkeypatch.setattr(hydra, "initialize", dummy_initialize)
@@ -34,6 +36,7 @@ def mock_hydra(monkeypatch):
 
 
 def test_load_hydra_configs_returns_expected():
+    """Testing hydra configuratiojs"""
     tool = DownloadBiorxivPaperInput()
     cfg = tool.load_hydra_configs()
     assert cfg.api_url == "http://api.test/"
@@ -41,9 +44,11 @@ def test_load_hydra_configs_returns_expected():
 
 
 def test_fetch_metadata_success_and_version_stripping(monkeypatch):
+    """Fetch metadata success version stripping test"""
     calls = {}
 
     def fake_get(url, timeout):
+        _ = timeout
         calls["url"] = url
         # simulate a successful HTTP response with JSON payload
         resp = mock.Mock()
@@ -62,6 +67,7 @@ def test_fetch_metadata_success_and_version_stripping(monkeypatch):
 
 
 def test_fetch_metadata_no_collection_raises(monkeypatch):
+    """No collection return test run"""
     # simulate HTTP okay but empty collection
     resp = mock.Mock()
     resp.raise_for_status = mock.Mock()
@@ -75,6 +81,7 @@ def test_fetch_metadata_no_collection_raises(monkeypatch):
 
 
 def test_extract_metadata_success(monkeypatch):
+    """Extract metadata success test run"""
     # prepare a fake entry dict
     data = {
         "title": "My BioRxiv Title",
@@ -102,6 +109,7 @@ def test_extract_metadata_success(monkeypatch):
 
 
 def test_extract_metadata_pdf_not_accessible(monkeypatch, capsys):
+    """PDF not accessible test run"""
     data = {"doi": "10.1101/ZZZ"}
     # simulate PDF not accessible
     fake_pdf_resp = mock.Mock(status_code=404)
@@ -118,6 +126,7 @@ def test_extract_metadata_pdf_not_accessible(monkeypatch, capsys):
 
 
 def test_paper_retriever_happy_and_skip_paths(monkeypatch):
+    """Paper retriever happy run with skips"""
     tool = DownloadBiorxivPaperInput()
     # stub config
     fake_cfg = SimpleNamespace(api_url="u/", request_timeout=2)
@@ -127,6 +136,7 @@ def test_paper_retriever_happy_and_skip_paths(monkeypatch):
 
     # make extract_metadata return a real dict for "good" and an empty dict (falsey) for "bad"
     def fake_extract(data, doi):
+        data = list(data)
         return {} if doi == "bad" else {"val": doi}
 
     monkeypatch.setattr(tool, "extract_metadata", fake_extract)
