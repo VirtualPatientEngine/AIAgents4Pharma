@@ -8,13 +8,11 @@ import pickle
 import pandas as pd
 import pcst_fast
 from pymilvus import Collection
-# from torch_geometric.data.data import Data
-import torch
-if torch.cuda.is_available():
+try:
     import cupy as py
     import cudf
     df = cudf
-else:
+except ImportError:
     import numpy as py
     df = pd
 
@@ -84,13 +82,13 @@ class MultimodalPCSTPruning(NamedTuple):
         return colls
 
     def _compute_node_prizes(self,
-                             query_emb: torch.Tensor,
+                             query_emb: list,
                              colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
+            query_emb: The query embedding. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
@@ -125,13 +123,13 @@ class MultimodalPCSTPruning(NamedTuple):
         return n_prizes
 
     def _compute_edge_prizes(self,
-                             text_emb: torch.Tensor,
+                             text_emb: list,
                              colls: dict) -> py.ndarray:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
         Args:
-            text_emb: The textual description embedding in PyTorch Tensor format.
+            text_emb: The textual description embedding.
             colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
         Returns:
@@ -167,8 +165,8 @@ class MultimodalPCSTPruning(NamedTuple):
         return e_prizes
 
     def compute_prizes(self,
-                       text_emb: torch.Tensor,
-                       query_emb: torch.Tensor,
+                       text_emb: list,
+                       query_emb: list,
                        colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes,
@@ -177,8 +175,8 @@ class MultimodalPCSTPruning(NamedTuple):
         with the query.
 
         Args:
-            text_emb: The textual description embedding in PyTorch Tensor format.
-            query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
+            text_emb: The textual description embedding.
+            query_emb: The query embedding. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             colls: The collections of nodes, node-type specific nodes, and edges in Milvus.
 
@@ -328,16 +326,16 @@ class MultimodalPCSTPruning(NamedTuple):
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
 
     def extract_subgraph(self,
-                         text_emb: torch.Tensor,
-                         query_emb: torch.Tensor,
+                         text_emb: list,
+                         query_emb: list,
                          modality: str,
                          cfg: dict) -> dict:
         """
         Perform the Prize-Collecting Steiner Tree (PCST) algorithm to extract the subgraph.
 
         Args:
-            text_emb: The textual description embedding in PyTorch Tensor format.
-            query_emb: The query embedding in PyTorch Tensor format. This can be an embedding of
+            text_emb: The textual description embedding.
+            query_emb: The query embedding. This can be an embedding of
                 a prompt, sequence, or any other feature to be used for the subgraph extraction.
             modality: The modality to use for the subgraph extraction
                 (e.g., "text", "sequence", "smiles").
@@ -390,5 +388,6 @@ class MultimodalPCSTPruning(NamedTuple):
              "num_prior_edges": edges_dict["num_prior_edges"],
              "edge_index": edge_index},
             mapping)
+        print(subgraph)
 
         return subgraph

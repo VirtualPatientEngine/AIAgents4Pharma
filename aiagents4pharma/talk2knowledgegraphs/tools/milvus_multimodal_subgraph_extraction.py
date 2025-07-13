@@ -6,7 +6,6 @@ Tool for performing multimodal subgraph extraction.
 from typing import Type, Annotated
 import logging
 import hydra
-import torch
 import pandas as pd
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
@@ -14,14 +13,14 @@ from langchain_core.messages import ToolMessage
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from langgraph.prebuilt import InjectedState
-from pymilvus import connections, Collection, utility
+from pymilvus import Collection
 from ..utils.extractions.milvus_multimodal_pcst import MultimodalPCSTPruning
 from .load_arguments import ArgumentData
-if torch.cuda.is_available():
+try:
     import cupy as py
     import cudf
     df = cudf
-else:
+except ImportError:
     import numpy as py
     df = pd
 
@@ -66,10 +65,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                                state: Annotated[dict, InjectedState]) -> df.DataFrame:
         """
         Read the uploaded multimodal files and return a DataFrame.
-        
+
         Args:
             state: The injected state for the tool.
-        
+
         Returns:
             A DataFrame containing the multimodal files.
         """
@@ -175,7 +174,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
             # Update the state by adding the the selected node IDs
             logger.log(logging.INFO, "Updating state with selected node IDs")
-            state["selections"] = query_df.to_pandas().groupby(
+            state["selections"] = getattr(query_df,
+                                          "to_pandas",
+                                          lambda: query_df)().groupby(
                 "node_type"
             )["node_id"].apply(list).to_dict()
 
@@ -347,24 +348,26 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                     "Desc : " + row.desc,
                 'click': '$hover',
                 'color': row.color})
-                for row in graph_nodes.to_arrow().to_pandas().itertuples(index=False)])
+                for row in getattr(graph_nodes,
+                                   "to_pandas",
+                                   lambda: graph_nodes)().itertuples(index=False)])
             graph_dict["edges"].append([(
                 row.head_id,
                 row.tail_id,
                 {'label': tuple(row.edge_type)})
-                for row in graph_edges.to_arrow().to_pandas().itertuples(index=False)])
+                for row in getattr(graph_edges,
+                                   "to_pandas",
+                                   lambda: graph_edges)().itertuples(index=False)])
 
             # Prepare the textualized subgraph
             if sub.name == "Unified Subgraph":
+                graph_nodes = graph_nodes[['node_id', 'desc']]
+                graph_nodes.rename(columns={'desc': 'node_attr'}, inplace=True)
+                graph_edges = graph_edges[['head_id', 'edge_type', 'tail_id']]
                 graph_dict["text"] = (
-                    graph_nodes[
-                        ['node_id', 'desc']
-                    ].rename(columns={'desc': 'node_attr'}).to_arrow().to_pandas().\
-                        to_csv(index=False)
+                    getattr(graph_nodes, "to_pandas", lambda: graph_nodes)().to_csv(index=False)
                     + "\n"
-                    + graph_edges[
-                        ['head_id', 'edge_type', 'tail_id']
-                    ].to_arrow().to_pandas().to_csv(index=False)
+                    + getattr(graph_edges, "to_pandas", lambda: graph_edges)().to_csv(index=False)
                 )
 
         return graph_dict
@@ -373,10 +376,10 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                          v : list) -> list:
         """
         Normalize a vector using CuPy.
-        
+
         Args:
             v : Vector to normalize.
-        
+
         Returns:
             Normalized vector.
         """
@@ -414,15 +417,15 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             cfg = cfg.tools.multimodal_subgraph_extraction
 
         # Check if the Milvus connection exists
-        logger.log(logging.INFO, "Checking Milvus connection")
-        logger.log(logging.INFO, "Milvus connection name: %s", cfg_db.milvus_db.alias)
-        logger.log(logging.INFO, "Milvus connection DB: %s", cfg_db.milvus_db.database_name)
-        logger.log(logging.INFO, "Is connection established? %s",
-                   connections.has_connection(cfg_db.milvus_db.alias))
-        if connections.has_connection(cfg_db.milvus_db.alias):
-            logger.log(logging.INFO, "Milvus connection is established.")
-            for collection_name in utility.list_collections():
-                logger.log(logging.INFO, "Collection: %s", collection_name)
+        # logger.log(logging.INFO, "Checking Milvus connection")
+        # logger.log(logging.INFO, "Milvus connection name: %s", cfg_db.milvus_db.alias)
+        # logger.log(logging.INFO, "Milvus connection DB: %s", cfg_db.milvus_db.database_name)
+        # logger.log(logging.INFO, "Is connection established? %s",
+        #            connections.has_connection(cfg_db.milvus_db.alias))
+        # if connections.has_connection(cfg_db.milvus_db.alias):
+        #     logger.log(logging.INFO, "Milvus connection is established.")
+        #     for collection_name in utility.list_collections():
+        #         logger.log(logging.INFO, "Collection: %s", collection_name)
 
         # Prepare the query embeddings and modalities
         logger.log(logging.INFO, "_prepare_query_modalities")
