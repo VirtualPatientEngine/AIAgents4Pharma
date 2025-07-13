@@ -82,6 +82,10 @@ if "sbml_file_path" not in st.session_state:
 
 ## T2KG
 
+# Initialize session state for selections
+if "selections" not in st.session_state:
+    st.session_state.selections = streamlit_utils.initialize_selections()
+
 # Initialize session state for pre-clinical data package uploader
 if "data_package_key" not in st.session_state:
     st.session_state.data_package_key = 0
@@ -89,6 +93,10 @@ if "data_package_key" not in st.session_state:
 # Initialize session state for patient gene expression data uploader
 if "endotype_key" not in st.session_state:
     st.session_state.endotype_key = 0
+
+# Initialize session state for multimodal data package uploader
+if "multimodal_key" not in st.session_state:
+    st.session_state.multimodal_key = 0
 
 # Initialize session state for uploaded files
 if "uploaded_files" not in st.session_state:
@@ -309,6 +317,7 @@ with main_col2:
                             st.session_state.text_embedding_model),
                         "embedding_model": streamlit_utils.get_text_embedding_model(
                             st.session_state.text_embedding_model),
+                        "selections": st.session_state.selections,
                         "uploaded_files": st.session_state.uploaded_files,
                         "topk_nodes": st.session_state.topk_nodes,
                         "topk_edges": st.session_state.topk_edges,

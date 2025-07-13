@@ -3,8 +3,6 @@ Unit tests for main agent functionality.
 Tests the supervisor agent's routing logic and state management.
 """
 
-# pylint: disable=redefined-outer-name,too-few-public-methods
-
 from types import SimpleNamespace
 import pytest
 import hydra
@@ -49,6 +47,10 @@ class DummyWorkflow:
         self.checkpointer = checkpointer
         self.name = name
         return self
+
+    def get_supervisor_args(self):
+        """Return the supervisor arguments stored in this workflow."""
+        return self.supervisor_args
 
 
 def dummy_s2_agent(uniq_id, llm_model):
@@ -127,6 +129,10 @@ class DummyHydraCompose:
     def __getattr__(self, item):
         """Return a namespace from the dummy config."""
         return dict_to_namespace(self.config.get(item, {}))
+
+    def get_config(self):
+        """Get the raw dummy configuration dictionary."""
+        return self.config
 
 
 # --- Pytest Fixtures to Patch Dependencies ---
@@ -218,3 +224,15 @@ def test_get_app_with_other_model():
     assert supervisor_args.get("model") is dummy_llm
     assert supervisor_args.get("prompt") == "Dummy system prompt"
     assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"
+
+def test_dummy_workflow_get_supervisor_args():
+    """Test that DummyWorkflow.get_supervisor_args returns the stored args."""
+    dummy_args = {"agent": "test", "uniq_id": "id123"}
+    wf = DummyWorkflow(supervisor_args=dummy_args)
+    assert wf.get_supervisor_args() is dummy_args
+
+def test_dummy_hydra_compose_get_config():
+    """Test that DummyHydraCompose.get_config returns the raw config."""
+    config_dict = {"agents": {"test": {"key": "value"}}}
+    compose = DummyHydraCompose(config_dict)
+    assert compose.get_config() is config_dict

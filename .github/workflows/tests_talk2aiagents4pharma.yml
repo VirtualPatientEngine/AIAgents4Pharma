@@ -170,43 +170,41 @@ jobs:
           conda activate talk2aiagents4pharma
           conda install -n talk2aiagents4pharma -y pytest coverage
 
-      - name: Cache Ollama models
-        uses: actions/cache@v4
+      # Restore Ollama model cache
+      - name: Restore Ollama model cache
         id: cache_ollama
+        uses: actions/cache@v4
         with:
-          path: |
-            /usr/share/ollama/.ollama/models/*
-            test
-          key: ${{ runner.os }}-ollama
+          path: /home/runner/.ollama/models
+          key: Linux-ollama
+          restore-keys: |
+            Linux-ollama
 
-      - name: Install and Pull Ollama models
-        if: steps.cache_ollama.outputs.cache-hit != 'true'
+      - name: Ensure Ollama model directory exists
+        shell: bash -l {0}
+        run: mkdir -p /home/runner/.ollama/models
+
+      - name: Install Ollama CLI and start service
+        shell: bash -l {0}
         run: |
-          mkdir -p test
-          echo "Hello, World!" > test/hello.txt
           conda activate talk2aiagents4pharma
           curl -fsSL https://ollama.com/install.sh | sh
           ollama serve &
           sleep 10
-          ollama pull llama3.2:1b
-          ls -l ~/.ollama/
-          ls -l /usr/share/ollama/.ollama/
-        shell: bash -l {0}
 
-      - name: Reading cached Ollama models
+      - name: Pull Ollama models if not cached
+        if: steps.cache_ollama.outputs.cache-hit != 'true'
+        shell: bash -l {0}
         run: |
-          cat test/hello.txt
+          conda activate talk2aiagents4pharma
+          ollama pull llama3.2:1b
+
+      - name: List Ollama models
+        shell: bash -l {0}
+        run: |
           echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
           conda activate talk2aiagents4pharma
-          curl -fsSL https://ollama.com/install.sh | sh
-          ollama serve &
-          sleep 10
-          mkdir -p ~/.ollama/models/
-          cp -r /usr/share/ollama/.ollama/models/* ~/.ollama/models/
           ollama list
-          du -sh ~/.ollama/
-          du -sh /usr/share/ollama/.ollama/
-        shell: bash -l {0}
 
       - name: Run tests with coverage
         shell: bash -l {0}
@@ -226,6 +224,14 @@ jobs:
           fi
         env:
           COVERAGE_FILE: "./.coverage"
+
+      # Save Ollama model cache after pulling
+      - name: Save Ollama model cache
+        if: steps.cache_ollama.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /home/runner/.ollama/models
+          key: Linux-ollama
 
   # code coverage job for macos
   code-cov-macos:

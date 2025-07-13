@@ -2,9 +2,10 @@ name: RELEASE
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - aiagents4pharma/**
+      - app/**
 
 jobs:
   on-success:
@@ -15,14 +16,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-        matrix:
-            os: [ubuntu-latest]
+      matrix:
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v3
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.8.1'
+          node-version: "20.8.1"
       - run: npm ci
 
       - name: Run semantic-release
@@ -34,7 +35,7 @@ jobs:
         run: |
           RELEASE_VERSION=$(git describe --tags --abbrev=0)
           echo $RELEASE_VERSION > release_version.txt
-    
+
       - name: Build the package
         run: |
           python -m pip install --upgrade pip
@@ -44,9 +45,9 @@ jobs:
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
         with:
-            user: __token__
-            password: ${{ secrets.PYPI_API_TOKEN }}
-      
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
     #   - name: commit files
     #     run: |
     #       git config --local user.email "action@github.com"

@@ -37,7 +37,7 @@ nav:
   - Talk2Cells:
       - Talk2Cells: talk2cells/intro.md
       - Tutorials:
-          - Enrichment and cell2sentence: ./notebooks/talk2cells/tutorial_c2s.ipynb
+          - cell2sentence: ./notebooks/talk2cells/tutorial_c2s.ipynb
           - Cell Annotation: ./notebooks/talk2cells/tutorial_cell_annotation.ipynb
           - Cell Discovery: ./notebooks/talk2cells/tutorial_cell_discovery.ipynb
           - UMAP Visualization: ./notebooks/talk2cells/tutorial_UMAP_visualization.ipynb
@@ -61,7 +61,7 @@ nav:
           - Textual Embeddings (all-minilm): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm.ipynb
           - Textual Embeddings (nomic-embed-text): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text.ipynb
           - Drug Enrichments/Embeddings (SMILES/molmim): ./notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed.ipynb
-          - PrimeKG enrichments/embeddings : ./notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment.ipynb
+          - PrimeKG enrichments/embeddings: ./notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment.ipynb
           - Protein Embeddings: ./notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings.ipynb
           - Embedding Alignment: ./notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment.ipynb
           - Evaluation (VSS): ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss.ipynb
@@ -116,18 +116,29 @@ nav:
           - Query Dataframe: talk2scholars/tools/query_dataframe.md
           - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
           - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
+          - Download BioRxiv Input: talk2scholars/tools/download_biorxiv_input.md
+          - Download MedRxiv Input: talk2scholars/tools/download_medrxiv_input.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
           - Zotero Write: talk2scholars/tools/zotero_write.md
           - Zotero Review: talk2scholars/tools/zotero_review.md
           - Question and answer: talk2scholars/tools/question_and_answer.md
       - Utils:
-          - Search Helper: talk2scholars/utils/search_helper.md
-          - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
-          - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
-          - Zotero Write Helper: talk2scholars/utils/write_helper.md
-          - Zotero Read Helper: talk2scholars/utils/read_helper.md
-          - Zotero Review Helper: talk2scholars/utils/review_helper.md
-          - Zotero Path: talk2scholars/utils/zotero_path.md
+          S2 Agent:
+            - Search Helper: talk2scholars/utils/search_helper.md
+            - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
+            - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
+          Zotero Agent:
+            - Zotero Write Helper: talk2scholars/utils/write_helper.md
+            - Zotero Read Helper: talk2scholars/utils/read_helper.md
+            - Zotero Review Helper: talk2scholars/utils/review_helper.md
+            - Zotero Path: talk2scholars/utils/zotero_path.md
+            - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
+          PDF Agent:
+            - Nvidia NIM Reranker: talk2scholars/utils/nvidia_nim_reranker.md
+            - Vector Store: talk2scholars/utils/vector_store.md
+            - Retrieve Chunks: talk2scholars/utils/retrieve_chunks.md
+            - Generate Answer: talk2scholars/utils/generate_answer.md
+            - Tool Helper: talk2scholars/utils/tool_helper.md
 
   - Documentation:
       - Ops:

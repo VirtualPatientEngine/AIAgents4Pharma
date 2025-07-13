@@ -2,7 +2,6 @@
 Unit Tests for the PDF agent.
 """
 
-# pylint: disable=redefined-outer-name
 from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
@@ -36,8 +35,8 @@ def mock_tools_fixture():
         yield [mock_question_and_answer]
 
 
-@pytest.fixture
-def mock_llm():
+@pytest.fixture(name="mock_llm")
+def llm_fixture():
     """Provide a dummy language model to pass into get_app."""
     return mock.Mock()
 

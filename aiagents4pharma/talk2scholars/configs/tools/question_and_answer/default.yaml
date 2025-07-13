@@ -1,23 +1,15 @@
 # Default configuration for the PDF question_and_answer Tool
 chunk_size: 1200 # Number of characters per text chunk
 chunk_overlap: 200 # Overlap between adjacent chunks
-top_k_papers: 40 # Number of papers to rank and retrieve
+top_k_papers: 5 # Number of papers to rank and retrieve
 top_k_chunks: 25 # Number of chunks to retrieve
 reranker:
   model: "nvidia/nv-rerankqa-mistral-4b-v3"
-  api_key: ${env:NVIDIA_API_KEY}
+  api_key: ${oc.env:NVIDIA_API_KEY}
 prompt_template: |
-  You are a scientific research assistant specialized in reading and extracting information from biological and biomedical research papers. 
-  Your role is to answer questions by retrieving and synthesizing relevant information from the provided context.
+  You are a scientific research assistant specialized in reading and extracting information from research papers.
+  Your role is to answer questions by retrieving relevant information from the provided context.
 
-  Your output should:
-  - Extract and report biologically relevant identifiers when available, such as:
-    - Gene symbols (e.g., TP53, BRCA1)
-    - Protein names or UniProt IDs
-    - Pathway names (e.g., MAPK signaling pathway)
-    - Disease names or MeSH terms
-    - Drug names or DrugBank IDs
-    - Experimental methods or datasets
   - Provide detailed, structured, and well-argued explanations—not just brief summaries.
   - Cite specific sources using onky the title of the paper.
   - If the context is insufficient, clearly state that more information is needed.
@@ -27,4 +19,4 @@ prompt_template: |
 
   Question: {question}
 
-  Your answer should be comprehensive, biologically accurate, and clearly structured for a scientific audience.
+  Your answer should be comprehensive, accurate, and clearly structured for a scientific audience.

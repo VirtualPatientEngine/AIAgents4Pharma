@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "talk2scholars"
 
-description = "An agent for searching/recommending articles with zotero integration"
+description = "An agent for literature survey with zotero integration"
 
 readme = "README.md"
 requires-python = ">=3.12"

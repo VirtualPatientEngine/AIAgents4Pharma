@@ -29,10 +29,10 @@ Our toolkit currently consists of the following agents:
 - T2B and T2KG accepted at the MLGenX workshop during ICLR #2025 in Singapore. [Read More](https://openreview.net/forum?id=av4QhBNeZo)
 
 <div align="center">
-  <strong>Watch the presentation:</strong><br><br>
-  <a href="https://www.youtube.com/watch?v=3cU_OxY4HiE">
-    <img src="https://img.youtube.com/vi/3cU_OxY4HiE/0.jpg" alt="Watch the presentation" width="480">
-  </a>
+<strong>Watch the presentation:</strong><br><br>
+<a href="https://www.youtube.com/watch?v=3cU_OxY4HiE">
+<img src="https://img.youtube.com/vi/3cU_OxY4HiE/0.jpg" alt="Watch the presentation" width="480">
+</a>
 </div>
 
 ## Getting Started
@@ -47,18 +47,19 @@ _We now have all the agents available on Docker Hub._
 
 Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
 
-##### **1. Clone the repository and navigate to the agent directory**
+##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
+
+###### Talk2Agents4Pharma
 
 ```sh
-git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-
-cd AIAgents4Pharma/aiagents4pharma/<agent>
+mkdir talk2aiagents4pharma && cd talk2aiagents4pharma && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/startup.sh
 ```
 
-Replace `<agent>` with either:
+###### Talk2KnowledgeGraphs
 
-- `talk2aiagents4pharma`
-- `talk2knowledgegraphs`
+```sh
+mkdir talk2knowledgegraphs && cd talk2knowledgegraphs && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/startup.sh
+```
 
 ##### **2. Setup environment variables**
 
@@ -78,39 +79,41 @@ LANGCHAIN_TRACING_V2=true           # Optional for both agents
 LANGCHAIN_API_KEY=...               # Optional for both agents
 ```
 
-To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
-
-###### Notes for Windows Users
-
-If you are using Windows, it is recommended to install **Git Bash** for a smoother experience when running the bash commands in this guide.
-
-- For applications that use **Docker Compose**, Git Bash is **required**.
-- For applications that use **docker run** manually, Git Bash is **optional**, but recommended for consistency.
-
-You can download Git Bash here: [Git for Windows](https://git-scm.com/downloads).
-
-When using Docker on Windows, make sure you **run Docker with administrative privileges** if you face permission issues.
-
-To resolve for permission issues, you can:
-
-- Review the official Docker documentation on [Windows permission requirements](https://docs.docker.com/desktop/setup/install/windows-permission-requirements/).
-- Alternatively, follow the community discussion and solutions on [Docker Community Forums](https://forums.docker.com/t/error-when-trying-to-run-windows-containers-docker-client-must-be-run-with-elevated-privileges/136619).
-
-**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
+[Additional Notes for Windows Users](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users)
 
 ##### **3. Start the application**
-
-Run the startup script. It will:
-
-- Detect your hardware configuration (NVIDIA GPU, AMD GPU, or CPU). Apple Metal is unavailable inside Docker, and Intel SIMD optimizations are automatically handled without special configuration.
-- Choose the correct Ollama image (`latest` or `rocm`)
-- Launch the Ollama container with appropriate runtime settings
-- Pull the required embedding model (`nomic-embed-text`)
-- Start the agent **after the model is available**
 
 ```sh
 chmod +x startup.sh
 ./startup.sh        # Add --cpu flag to force CPU mode if needed
+```
+
+[More about startup script](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#about-startupsh)
+
+##### **To Run Talk2Biomodels / Talk2Scholars**
+
+###### Talk2Biomodels
+
+```docker
+docker run -d \
+--name talk2biomodels \
+-e OPENAI_API_KEY=<your_openai_api_key> \
+-e NVIDIA_API_KEY=<your_nvidia_api_key> \
+-p 8501:8501 \
+virtualpatientengine/talk2biomodels
+```
+
+###### Talk2Scholars
+
+```docker
+docker run -d \
+--name talk2scholars \
+-e OPENAI_API_KEY=<your_openai_api_key> \
+-e ZOTERO_API_KEY=<your_zotero_api_key> \
+-e ZOTERO_USER_ID=<your_zotero_user_id> \
+-e NVIDIA_API_KEY=<your_nvidia_api_key> \
+-p 8501:8501 \
+virtualpatientengine/talk2scholars
 ```
 
 ##### **4. Access the Web UI**
@@ -121,74 +124,17 @@ Once started, the agent is available at:
 http://localhost:8501
 ```
 
-##### **To Run Talk2Biomodels / Talk2Scholars**
-
-1. **Run the containers**
-
-###### Talk2Biomodels
-
-```docker
-docker run -d \
-  --name talk2biomodels \
-  -e OPENAI_API_KEY=<your_openai_api_key> \
-  -e NVIDIA_API_KEY=<your_nvidia_api_key> \
-  -p 8501:8501 \
-  virtualpatientengine/talk2biomodels
-```
-
-###### Talk2Scholars
-
-```docker
-docker run -d \
-  --name talk2scholars \
-  -e OPENAI_API_KEY=<your_openai_api_key> \
-  -e ZOTERO_API_KEY=<your_zotero_api_key> \
-  -e ZOTERO_USER_ID=<your_zotero_user_id> \
-  -e NVIDIA_API_KEY=<your_nvidia_api_key> \
-  -p 8501:8501 \
-  virtualpatientengine/talk2scholars
-```
-
-2. **Access the Web App**
-   Open your browser and go to:
-
-   ```
-   http://localhost:8501
-   ```
+To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
 To use **Talk2BioModels** or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
 Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
 
-If you are using docker on Windows, please follow these [Windows Setup Notes](#notes-for-windows-users).
+If you are using docker on Windows, please follow these [Windows Setup Notes](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users).
 
 **LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
-#### Notes
-
-- Be sure to **replace the placeholder values** with your actual credentials before running any container:
-
-  - `<your_openai_api_key>`
-  - `<your_nvidia_api_key>`
-  - `<your_zotero_api_key>`
-  - `<your_zotero_user_id>`
-
-- All agents default to **port `8501`**. If you plan to run multiple agents simultaneously, make sure to assign **different ports** to avoid conflicts.
-
-  Example (Talk2Scholars on port `8502`):
-
-  ```docker
-  docker run -d \
-    --name talk2scholars \
-    -e OPENAI_API_KEY=<your_openai_api_key> \
-    -e ZOTERO_API_KEY=<your_zotero_api_key> \
-    -e ZOTERO_USER_ID=<your_zotero_user_id> \
-    -e NVIDIA_API_KEY=<your_nvidia_api_key> \
-    -p 8502:8501 \
-    virtualpatientengine/talk2scholars
-  ```
-
-  Then access the app at: [http://localhost:8502](http://localhost:8502)
+[More on running multiple agents simultaneously](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#to-run-multiple-agents-simultaneously)
 
 #### Option 2: git (for developers and contributors)
 
@@ -197,8 +143,7 @@ If you are using docker on Windows, please follow these [Windows Setup Notes](#n
 1. **Clone the repository:**
 
 ```sh
-git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-cd AIAgents4Pharma
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma && cd AIAgents4Pharma
 ```
 
 2. **Install dependencies:**
@@ -211,14 +156,14 @@ conda create --name AIAgents4Pharma python=3.12 -y && conda activate AIAgents4Ph
 
 3. **Initialize API Keys**
 
-   ```env
-   export OPENAI_API_KEY=....          # Required for all agents
-   export NVIDIA_API_KEY=....          # Required for all agents
-   export ZOTERO_API_KEY=....          # Required for T2S
-   export ZOTERO_USER_ID=....          # Required for T2S
-   export LANGCHAIN_TRACING_V2=true    # Optional for all agents
-   export LANGCHAIN_API_KEY=...        # Optional for all agents
-   ```
+```env
+export OPENAI_API_KEY=....          # Required for all agents
+export NVIDIA_API_KEY=....          # Required for all agents
+export ZOTERO_API_KEY=....          # Required for T2S
+export ZOTERO_USER_ID=....          # Required for T2S
+export LANGCHAIN_TRACING_V2=true    # Optional for all agents
+export LANGCHAIN_API_KEY=...        # Optional for all agents
+```
 
 To use **Talk2AIAgents4Pharma**, **Talk2BioModels**, **Talk2KnowledgeGraphs**, or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
@@ -248,10 +193,12 @@ If you skip the previous step, it will default to the name `default`.
 `xxxx` will be the 4-digit ID created for the session._
 
 4. **Launch the app:**
-   ```sh
-   streamlit run app/frontend/streamlit_app_<agent>.py
-   ```
-   _Replace `<agent>` with the agent name you are interested to launch:_
+
+```sh
+streamlit run app/frontend/streamlit_app_<agent>.py
+```
+
+_Replace `<agent>` with the agent name you are interested to launch:_
 
 - `talk2aiagents4pharma`
 - `talk2biomodels`
@@ -281,17 +228,23 @@ All types of contributions are appreciated — whether you're fixing bugs, addin
 1. Star this repository to show your support.
 2. Fork the repository.
 3. Create a new branch for your work:
-   ```sh
-   git checkout -b feat/your-feature-name
-   ```
+
+```sh
+git checkout -b feat/your-feature-name
+```
+
 4. Make your changes and commit them:
-   ```sh
-   git commit -m "feat: add a brief description of your change"
-   ```
+
+```sh
+git commit -m "feat: add a brief description of your change"
+```
+
 5. Push your branch:
-   ```sh
-   git push origin feat/your-feature-name
-   ```
+
+```sh
+git push origin feat/your-feature-name
+```
+
 6. Open a Pull Request.
 
 #### Areas where you can help
@@ -301,9 +254,10 @@ All types of contributions are appreciated — whether you're fixing bugs, addin
 
 #### Contacts for contributions
 
-- **Talk2Biomodels / Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330), [@lilijap](https://github.com/lilijap), [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi), [@dmccloskey](https://github.com/dmccloskey)
-- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330), [@dmccloskey](https://github.com/dmccloskey)
+- **Talk2Biomodels**: [@lilijap](https://github.com/lilijap), [@gurdeep330](https://github.com/gurdeep330)
+- **Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330)
+- **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi)
+- **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330)
 
 Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for more detailed contribution guidelines.
 

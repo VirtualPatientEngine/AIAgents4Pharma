@@ -2,7 +2,6 @@
 Updated Unit Tests for the S2 agent (Semantic Scholar sub-agent).
 """
 
-# pylint: disable=redefined-outer-name
 from unittest import mock
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
@@ -10,7 +9,8 @@ from langchain_openai import ChatOpenAI
 from ..agents.s2_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
-LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
 
 @pytest.fixture(autouse=True)
 def mock_hydra_fixture():

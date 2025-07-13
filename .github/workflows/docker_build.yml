@@ -94,6 +94,7 @@ jobs:
           tags: |
             virtualpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
             virtualpatientengine/talk2aiagents4pharma:latest
+          platforms: linux/amd64
 
   # Separate job for talk2biomodels
   build-talk2biomodels:
@@ -118,6 +119,7 @@ jobs:
           tags: |
             virtualpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
             virtualpatientengine/talk2biomodels:latest
+          platforms: linux/amd64
 
   # Separate job for talk2scholars
   build-talk2scholars:
@@ -142,6 +144,7 @@ jobs:
           tags: |
             virtualpatientengine/talk2scholars:${{ needs.version.outputs.version }}
             virtualpatientengine/talk2scholars:latest
+          platforms: linux/amd64
 
   # Separate job for talk2knowledgegraphs
   build-talk2knowledgegraphs:
@@ -166,3 +169,4 @@ jobs:
           tags: |
             virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
             virtualpatientengine/talk2knowledgegraphs:latest
+          platforms: linux/amd64

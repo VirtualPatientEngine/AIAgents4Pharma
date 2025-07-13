@@ -2,7 +2,6 @@
 Unit tests for S2 tools functionality.
 """
 
-# pylint: disable=redefined-outer-name
 import pytest
 from langgraph.types import Command
 from ..tools.s2.display_dataframe import (
@@ -11,8 +10,8 @@ from ..tools.s2.display_dataframe import (
 )
 
 
-@pytest.fixture
-def initial_state():
+@pytest.fixture(name="initial_state")
+def initial_state_fixture():
     """Provides an empty initial state for tests."""
     return {"papers": {}, "multi_papers": {}}
 
@@ -52,7 +51,9 @@ class TestS2Tools:
             raised_error,
             match="No papers found. A search/rec needs to be performed first.",
         ):
-            display_dataframe.invoke({"state": initial_state, "tool_call_id": "test123"})
+            display_dataframe.invoke(
+                {"state": initial_state, "tool_call_id": "test123"}
+            )
 
     def test_display_dataframe_shows_papers(self, initial_state):
         """Verifies display_dataframe tool correctly returns papers from state"""
@@ -72,3 +73,20 @@ class TestS2Tools:
             "1 papers found. Papers are attached as an artifact."
             in result.update["messages"][0].content
         )
+
+    def test_display_dataframe_direct_mapping(self, initial_state):
+        """Verifies display_dataframe handles direct dict mapping in last_displayed_papers."""
+        # Prepare state with direct mapping of papers
+        state = initial_state.copy()
+        state["last_displayed_papers"] = MOCK_STATE_PAPER
+        # Invoke display tool
+        result = display_dataframe.invoke({"state": state, "tool_call_id": "test123"})
+        assert isinstance(result, Command)
+        update = result.update
+        # Artifact should be the direct mapping
+        messages = update.get("messages", [])
+        assert len(messages) == 1
+        artifact = messages[0].artifact
+        assert artifact == MOCK_STATE_PAPER
+        # Content count should match mapping length
+        assert "1 papers found" in messages[0].content

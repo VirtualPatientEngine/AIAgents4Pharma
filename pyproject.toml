@@ -103,13 +103,19 @@ aiagents4pharma = [
   "talk2scholars/configs/agents/talk2scholars/main_agent/*",
   "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
   "talk2scholars/configs/agents/talk2scholars/zotero_agent/*",
+  "talk2scholars/configs/agents/talk2scholars/paper_download_agent/*",
+  "talk2scholars/configs/agents/talk2scholars/pdf_agent/*",
   "talk2scholars/configs/app/frontend/*",
-  "talk2scholars/configs/tools/multi_paper_recommendation/*",
+  "talk2scholars/configs/tools/download_arxiv_paper/*",
+  "talk2scholars/configs/tools/download_medrxiv_paper/*",
+  "talk2scholars/configs/tools/download_biorxiv_paper/*",
+  "talk2scholars/configs/tools/question_and_answer/*",
   "talk2scholars/configs/tools/search/*",
-  "talk2scholars/configs/tools/single_paper_recommendation/*",
   "talk2scholars/configs/tools/zotero_read/*",
-  "talk2scholars/configs/tools/zotero_write/*",
+  "talk2scholars/configs/tools/multi_paper_recommendation/*",
   "talk2scholars/configs/tools/retrieve_semantic_scholar_paper_id/*",
+  "talk2scholars/configs/tools/single_paper_recommendation/*",
+  "talk2scholars/configs/tools/zotero_write/*",
 
 ]
 
