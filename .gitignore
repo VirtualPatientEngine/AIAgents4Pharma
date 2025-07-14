@@ -168,12 +168,9 @@ experiment/web/vectordb
 # macOS metadata file
 .DS_Store
 
-# Milvus volume
-aiagents4pharma/talk2knowledgegraphs/volumes/*
 # CTD chemicals file
 docs/notebooks/talk2knowledgegraphs/CTD_chemicals.tsv.gz
 
-# CTD chemicals file
-docs/notebooks/talk2knowledgegraphs/CTD_chemicals.tsv.gz
-# Milvus volume
+# Milvus volumes
+aiagents4pharma/talk2aiagents4pharma/volumes/*
 aiagents4pharma/talk2knowledgegraphs/volumes/*

@@ -47,6 +47,8 @@ _We now have all the agents available on Docker Hub._
 
 Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
 
+If your machine has NVIDIA GPU(s), please install [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
+
 ##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
 
 ###### Talk2Agents4Pharma

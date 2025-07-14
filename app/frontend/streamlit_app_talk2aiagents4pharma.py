@@ -10,7 +10,8 @@ import random
 import hydra
 import streamlit as st
 from streamlit_feedback import streamlit_feedback
-from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_ollama import OllamaEmbeddings
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -127,6 +128,16 @@ if "app" not in st.session_state:
         st.session_state.app = get_app(st.session_state.unique_id,
                             llm_model=streamlit_utils.get_base_chat_model(
                                 st.session_state.llm_model))
+
+if "t2kg_emb_model" not in st.session_state:
+    # Set the default embedding model
+    if cfg_t2kg.default_embedding_model == "ollama":
+        print("Using Ollama embeddings as default.")
+        # For IBD BioBridge data, we still use Ollama embeddings
+        st.session_state.t2kg_emb_model = OllamaEmbeddings(model=cfg_t2kg.ollama_embeddings[0])
+    else:
+        print("Using OpenAI embeddings as default.")
+        st.session_state.t2kg_emb_model = OpenAIEmbeddings(model=cfg_t2kg.openai_embeddings[0])
 
 if "topk_nodes" not in st.session_state:
     # Subgraph extraction settings
@@ -324,8 +335,7 @@ with main_col2:
                             st.session_state.llm_model),
                         "text_embedding_model": streamlit_utils.get_text_embedding_model(
                             st.session_state.text_embedding_model),
-                        "embedding_model": streamlit_utils.get_text_embedding_model(
-                            st.session_state.text_embedding_model),
+                        "embedding_model": st.session_state.t2kg_emb_model,
                         "selections": st.session_state.selections,
                         "uploaded_files": st.session_state.uploaded_files,
                         "topk_nodes": st.session_state.topk_nodes,
@@ -333,8 +343,8 @@ with main_col2:
                         "dic_source_graph": [
                             {
                                 "name": st.session_state.config["kg_name"],
-                                "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                                "kg_text_path": st.session_state.config["kg_text_path"],
+                                # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
+                                # "kg_text_path": st.session_state.config["kg_text_path"],
                             }
                         ]}
                     )

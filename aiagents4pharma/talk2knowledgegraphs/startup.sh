@@ -114,7 +114,7 @@ if [ -f "milvus_data_dump.py" ] && \
 	export MILVUS_USER="root"
 	export MILVUS_PASSWORD="Milvus"
 	export MILVUS_DATABASE="t2kg_primekg"
-	export DATA_DIR="tests/files/biobridge_multimodal/" # New env for folder-based loading
+	export DATA_DIR="tests/files/biobridge_multimodal/"
 	export BATCH_SIZE="500"
 
 	# Function to cleanup virtual environment

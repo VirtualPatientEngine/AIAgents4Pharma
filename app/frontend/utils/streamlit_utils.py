@@ -294,9 +294,7 @@ def update_state_t2b(st):
 
 def update_state_t2kg(st):
     dic = {
-        "embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model
-        ),
+        "embedding_model": st.session_state.t2kg_emb_model,
         "uploaded_files": st.session_state.uploaded_files,
         "topk_nodes": st.session_state.topk_nodes,
         "topk_edges": st.session_state.topk_edges,

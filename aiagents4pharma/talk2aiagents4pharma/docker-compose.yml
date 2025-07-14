@@ -12,7 +12,7 @@ services:
     command: >
       "ollama serve"
     networks:
-      - app-network
+      - milvus
 
   talk2aiagents4pharma:
     platform: linux/amd64
@@ -20,16 +20,19 @@ services:
     container_name: talk2aiagents4pharma
     ports:
       - "8501:8501"
+    environment:
+      - MILVUS_HOST=milvus-standalone
+      - MILVUS_PORT=19530
     env_file:
       - .env
     restart: unless-stopped
     networks:
-      - app-network
+      - milvus
 
 volumes:
   ollama_data:
 
 networks:
-  app-network:
+  milvus:
     external: true
-    name: app-network
+    name: milvus

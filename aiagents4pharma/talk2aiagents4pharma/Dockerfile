@@ -1,16 +1,31 @@
 FROM continuumio/miniconda3:latest
 
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies required for compiling packages
+# Install system dependencies required for compiling Python packages
 RUN apt-get update && apt-get install -y \
-  g++ \
-  build-essential \
-  cmake \
-  libopenblas-dev \
-  libomp-dev \
-  ninja-build \
-  && rm -rf /var/lib/apt/lists/*
+    g++ \
+    build-essential \
+    cmake \
+    libopenblas-dev \
+    libomp-dev \
+    ninja-build \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install RAPIDS into the base environment
+RUN conda install -y -n base -c rapidsai -c conda-forge -c nvidia \
+    rapids=25.06 python=3.12 "cuda-version>=12.0,<=12.8"
+
+# Set pip default timeout and retry logic to avoid download issues
+ENV PIP_DEFAULT_TIMEOUT=100
+COPY requirements.txt /app
+RUN pip install --upgrade pip wheel && \
+    pip install --retries 5 --timeout 60 --no-cache-dir -r /app/requirements.txt
+
+# Clean up conda & pip cache to reduce image size
+RUN conda clean -afy && \
+    rm -rf ~/.cache/pip
 
 # Copy necessary files
 COPY aiagents4pharma/talk2aiagents4pharma /app/aiagents4pharma/talk2aiagents4pharma
