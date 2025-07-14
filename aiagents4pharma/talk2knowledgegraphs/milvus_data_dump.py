@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-position
 #!/usr/bin/env python3
 """
 Script to load PrimeKG multimodal data into Milvus database.
@@ -8,8 +9,6 @@ import os
 import sys
 import subprocess
 import glob
-import pickle
-import time
 import logging
 from typing import Dict, Any, List
 
@@ -29,7 +28,7 @@ def install_packages():
     print("[DATA LOADER] Installing required packages...")
     for package_cmd in packages:
         print(f"[DATA LOADER] Running: {package_cmd}")
-        result = subprocess.run(package_cmd.split(), capture_output=True, text=True)
+        result = subprocess.run(package_cmd.split(), capture_output=True, text=True, check=True)
         if result.returncode != 0:
             print(f"[DATA LOADER] Error installing package: {result.stderr}")
             sys.exit(1)
@@ -40,7 +39,6 @@ install_packages()
 
 import cudf
 import cupy as cp
-import numpy as np
 from pymilvus import (
     db,
     connections,
@@ -48,8 +46,7 @@ from pymilvus import (
     CollectionSchema,
     DataType,
     Collection,
-    utility,
-    MilvusClient
+    utility
 )
 from tqdm import tqdm
 
@@ -159,7 +156,6 @@ class MilvusDataLoader:
         logger.info("Creating main nodes collection...")
 
         node_coll_name = f"{self.milvus_database}_nodes"
-        desc_emb_dim = len(nodes_df.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])
 
         node_fields = [
             FieldSchema(name="node_index",
@@ -185,7 +181,7 @@ class MilvusDataLoader:
                         enable_match=True),
             FieldSchema(name="desc_emb",
                         dtype=DataType.FLOAT_VECTOR,
-                        dim=desc_emb_dim),
+                        dim=len(nodes_df.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])),
         ]
         schema = CollectionSchema(fields=node_fields,
                                   description=f"Schema for collection {node_coll_name}")
@@ -215,9 +211,9 @@ class MilvusDataLoader:
                                 index_name="desc_emb_index")
 
         # Prepare and insert data
-        desc_emb_cp = cp.asarray(nodes_df["desc_emb"].list.leaves).astype(cp.float32).\
+        desc_emb_norm = cp.asarray(nodes_df["desc_emb"].list.leaves).astype(cp.float32).\
             reshape(nodes_df.shape[0], -1)
-        desc_emb_norm = self.normalize_matrix(desc_emb_cp, axis=1)
+        desc_emb_norm = self.normalize_matrix(desc_emb_norm, axis=1)
         data = [
             nodes_df["node_index"].to_arrow().to_pylist(),
             nodes_df["node_id"].to_arrow().to_pylist(),
@@ -244,9 +240,6 @@ class MilvusDataLoader:
                                          desc="Processing node types"):
             node_coll_name = f"{self.milvus_database}_nodes_{node_type.replace('/', '_')}"
 
-            desc_emb_dim = len(nodes_df_.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])
-            feat_emb_dim = len(nodes_df_.iloc[0]['feat_emb'].to_arrow().to_pylist()[0])
-
             node_fields = [
                 FieldSchema(name="node_index",
                             dtype=DataType.INT64,
@@ -272,7 +265,7 @@ class MilvusDataLoader:
                             enable_match=True),
                 FieldSchema(name="desc_emb",
                             dtype=DataType.FLOAT_VECTOR,
-                            dim=desc_emb_dim),
+                            dim=len(nodes_df_.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])),
                 FieldSchema(name="feat",
                             dtype=DataType.VARCHAR,
                             max_length=40960,
@@ -280,7 +273,7 @@ class MilvusDataLoader:
                             enable_match=True),
                 FieldSchema(name="feat_emb",
                             dtype=DataType.FLOAT_VECTOR,
-                            dim=feat_emb_dim),
+                            dim=len(nodes_df_.iloc[0]['feat_emb'].to_arrow().to_pylist()[0])),
             ]
             schema = CollectionSchema(fields=node_fields,
                                       description=f"schema for collection {node_coll_name}")
@@ -313,12 +306,12 @@ class MilvusDataLoader:
                                     index_name="feat_emb_index")
 
             # Prepare data
-            desc_emb_cp = cp.asarray(nodes_df_["desc_emb"].list.leaves).astype(cp.float32).\
+            desc_emb_norm = cp.asarray(nodes_df_["desc_emb"].list.leaves).astype(cp.float32).\
                 reshape(nodes_df_.shape[0], -1)
-            desc_emb_norm = self.normalize_matrix(desc_emb_cp, axis=1)
-            feat_emb_cp = cp.asarray(nodes_df_["feat_emb"].list.leaves).astype(cp.float32).\
+            desc_emb_norm = self.normalize_matrix(desc_emb_norm, axis=1)
+            feat_emb_norm = cp.asarray(nodes_df_["feat_emb"].list.leaves).astype(cp.float32).\
                 reshape(nodes_df_.shape[0], -1)
-            feat_emb_norm = self.normalize_matrix(feat_emb_cp, axis=1)
+            feat_emb_norm = self.normalize_matrix(feat_emb_norm, axis=1)
             data = [
                 nodes_df_["node_index"].to_arrow().to_pylist(),
                 nodes_df_["node_id"].to_arrow().to_pylist(),
