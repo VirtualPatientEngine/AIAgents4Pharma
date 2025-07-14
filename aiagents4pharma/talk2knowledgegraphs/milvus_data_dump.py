@@ -16,7 +16,7 @@ def install_packages():
     """Install required packages."""
     packages = [
         "pip install --extra-index-url=https://pypi.nvidia.com cudf-cu12",
-        "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12", 
+        "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12",
         "pip install pymilvus==2.5.11",
         "pip install numpy==1.26.4",
         "pip install pandas==2.1.3",
@@ -37,8 +37,13 @@ def install_packages():
 # Install packages first
 install_packages()
 
-import cudf
-import cupy as cp
+try:
+    import cudf
+    import cupy as cp
+except ImportError as e:
+    print("[DATA LOADER] cudf or cupy not found. Please ensure they are installed correctly.")
+    sys.exit(1)
+
 from pymilvus import (
     db,
     connections,
@@ -302,7 +307,7 @@ class MilvusDataLoader:
                                     index_name="desc_emb_index")
             collection.create_index(field_name="feat_emb",
                                     index_params={"index_type": "GPU_CAGRA",
-                                                  "metric_type": "IP"}, 
+                                                  "metric_type": "IP"},
                                     index_name="feat_emb_index")
 
             # Prepare data
@@ -389,7 +394,7 @@ class MilvusDataLoader:
                                 index_name="tail_index_index")
         collection.create_index(field_name="feat_emb",
                                 index_params={"index_type": "GPU_CAGRA",
-                                              "metric_type": "IP"}, 
+                                              "metric_type": "IP"},
                                 index_name="feat_emb_index")
 
         # Iterate over chunked edges embedding df
