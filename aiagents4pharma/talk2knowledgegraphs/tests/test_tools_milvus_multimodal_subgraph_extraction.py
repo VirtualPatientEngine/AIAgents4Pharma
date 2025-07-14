@@ -160,6 +160,10 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
             for e in subgraph_edges
         ))
 
+        # Another test for unknown collection
+        result = collection_side_effect("unknown")
+        self.assertIsNone(result)
+
     @patch("aiagents4pharma.talk2knowledgegraphs.tools."
            "milvus_multimodal_subgraph_extraction.Collection")
     @patch("aiagents4pharma.talk2knowledgegraphs.tools."
@@ -294,6 +298,10 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
             for e in subgraph_edges
         ))
 
+        # Another test for unknown collection
+        result = collection_side_effect("unknown")
+        self.assertIsNone(result)
+
     def test_extract_multimodal_subgraph_wo_doc_gpu(self):
         """
         Test the multimodal subgraph extraction tool for only text as modality,
@@ -359,27 +367,6 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
                 # Setup config mocks
                 tool_cls = getattr(mod, "MultimodalSubgraphExtractionTool")
                 tool = tool_cls()
-                # state = {
-                #     "uploaded_files": [],
-                #     "embedding_model": MagicMock(),
-                #     "topk_nodes": 5,
-                #     "topk_edges": 5,
-                #     "dic_source_graph": [{"name": "TestGraph"}],
-                # }
-                # prompt = "Find subgraph for test"
-                # arg_data = {"extraction_name": "subkg_12345"}
-                # cfg_db = MagicMock()
-                # cfg_db.milvus_db.database_name = "testdb"
-                # cfg_db.milvus_db.alias = "default"
-                # cfg = MagicMock()
-                # cfg.cost_e = 1.0
-                # cfg.c_const = 1.0
-                # cfg.root = 0
-                # cfg.num_clusters = 1
-                # cfg.pruning = True
-                # cfg.verbosity_level = 0
-                # cfg.search_metric_type = "L2"
-                # cfg.node_colors_dict = {"gene/protein": "red"}
 
                 # Patch hydra.compose
                 with patch(f"{module_name}.hydra.initialize"), \
@@ -420,3 +407,7 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
                     for subgraph_edges in dic_extracted_graph["graph_dict"]["edges"]
                     for e in subgraph_edges
                 ))
+
+                # Another test for unknown collection
+                result = collection_side_effect("unknown")
+                self.assertIsNone(result)
