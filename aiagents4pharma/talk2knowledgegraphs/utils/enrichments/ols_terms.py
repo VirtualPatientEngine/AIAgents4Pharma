@@ -54,13 +54,21 @@ class EnrichmentWithOLS(Enrichments):
                 descriptions.append(None)
                 continue
             # Add the description to the list
-            description = response_body['_embedded']['terms'][0]['description']
-            # Add synonyms to the description
-            description += response_body['_embedded']['terms'][0]['synonyms']
-            # Add the label to the description
-            # Label is not provided as list, so we need to convert it to a list
-            description += [response_body['_embedded']['terms'][0]['label']]
-            descriptions.append('\n'.join(description))
+            description = []
+            for term in response_body['_embedded']['terms']:
+                # If the term has a description, add it to the list
+                description += term.get('description', [])
+                # Add synonyms to the description
+                description += term.get('synonyms', [])
+                # Add the label to the description
+                # Label is not provided as list, so we need to convert it to a list
+                description += [term.get('label', [])]
+            # Make unique the description
+            description = list(set(description))
+            # Join the description with new line
+            description = '\n'.join(description)
+            # Add the description to the list
+            descriptions.append(description)
         return descriptions
 
     def enrich_documents_with_rag(self, texts, docs):

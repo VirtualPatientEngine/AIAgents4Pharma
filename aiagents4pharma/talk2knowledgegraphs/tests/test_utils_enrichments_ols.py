@@ -42,11 +42,11 @@ def test_enrich_documents(enrich_obj):
         "XYZ_0000000",
     ]
     descriptions = enrich_obj.enrich_documents(ols_terms)
-    assert descriptions[0].startswith(CL_DESC)
-    assert descriptions[1].startswith(GO_DESC)
-    assert descriptions[2].startswith(UBERON_DESC)
-    assert descriptions[3].startswith(HP_DESC)
-    assert descriptions[4].startswith(MONDO_DESC)
+    assert CL_DESC in descriptions[0]
+    assert GO_DESC in descriptions[1]
+    assert UBERON_DESC in descriptions[2]
+    assert HP_DESC in descriptions[3]
+    assert MONDO_DESC in descriptions[4]
     assert descriptions[5] is None
 
 
@@ -61,9 +61,9 @@ def test_enrich_documents_with_rag(enrich_obj):
         "XYZ_0000000",
     ]
     descriptions = enrich_obj.enrich_documents_with_rag(ols_terms, None)
-    assert descriptions[0].startswith(CL_DESC)
-    assert descriptions[1].startswith(GO_DESC)
-    assert descriptions[2].startswith(UBERON_DESC)
-    assert descriptions[3].startswith(HP_DESC)
-    assert descriptions[4].startswith(MONDO_DESC)
+    assert CL_DESC in descriptions[0]
+    assert GO_DESC in descriptions[1]
+    assert UBERON_DESC in descriptions[2]
+    assert HP_DESC in descriptions[3]
+    assert MONDO_DESC in descriptions[4]
     assert descriptions[5] is None

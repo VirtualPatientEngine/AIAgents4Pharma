@@ -4,10 +4,16 @@
 Enrichment class for enriching PubChem IDs with their STRINGS representation and descriptions.
 """
 
+import logging
 from typing import List
-import pubchempy as pcp
+import requests
+import hydra
 from .enrichments import Enrichments
 from ..pubchem_utils import pubchem_cid_description
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class EnrichmentWithPubChem(Enrichments):
     """
@@ -27,16 +33,32 @@ class EnrichmentWithPubChem(Enrichments):
         enriched_pubchem_ids_smiles = []
         enriched_pubchem_ids_descriptions = []
 
+        # Load Hydra configuration to get the base URL for PubChem
+        with hydra.initialize(version_base=None, config_path="../../configs"):
+            cfg = hydra.compose(config_name='config',
+                                overrides=['utils/pubchem_utils=default'])
+            cfg = cfg.utils.pubchem_utils
+        # Iterate over each PubChem ID in the input list
         pubchem_cids = texts
         for pubchem_cid in pubchem_cids:
-            try:
-                c = pcp.Compound.from_cid(pubchem_cid)
-            except pcp.BadRequestError:
-                enriched_pubchem_ids_smiles.append(None)
-                enriched_pubchem_ids_descriptions.append(None)
-                continue
-            enriched_pubchem_ids_smiles.append(c.isomeric_smiles)
-            enriched_pubchem_ids_descriptions.append(pubchem_cid_description(pubchem_cid))
+            # Prepare the URL
+            pubchem_url = f"{cfg.pubchem_cid2smiles_url}/{pubchem_cid}/property/smiles/JSON"
+            # Get the data
+            response = requests.get(pubchem_url, timeout=60)
+            data = response.json()
+            # Extract the PubChem CID SMILES
+            smiles = ''
+            description = ''
+            if "PropertyTable" in data:
+                for prop in data["PropertyTable"]['Properties']:
+                    smiles = prop.get("SMILES", '')
+                    description = pubchem_cid_description(pubchem_cid)
+            else:
+                # If the PubChem ID is not found, set smiles and description to None
+                smiles = None
+                description = None
+            enriched_pubchem_ids_smiles.append(smiles)
+            enriched_pubchem_ids_descriptions.append(description)
 
         return enriched_pubchem_ids_descriptions, enriched_pubchem_ids_smiles
 

@@ -1,3 +1,5 @@
 _target_: talk2knowledgegraphs.utils.pubchem_utils
 pubchem_cid_base_url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sourceid/
 pubchem_cid_description_url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/
+pubchem_casrn2cid_url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/xref/RN/
+pubchem_cid2smiles_url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/
