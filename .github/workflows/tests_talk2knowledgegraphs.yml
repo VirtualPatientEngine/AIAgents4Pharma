@@ -194,6 +194,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate talk2aiagents4pharma
+          ollama pull nomic-embed-text
           ollama pull llama3.2:1b
 
       - name: List Ollama models
@@ -282,6 +283,7 @@ jobs:
           brew install ollama
           ollama serve &
           sleep 10
+          ollama pull nomic-embed-text
           ollama pull llama3.2:1b
           ollama list
 
@@ -389,6 +391,7 @@ jobs:
 
           # Pull the model
           ./ollama_dir/ollama.exe pull llama3.2:1b
+          ./ollama_dir/ollama.exe pull nomic-embed-text
 
           # List available models
           ./ollama_dir/ollama.exe list

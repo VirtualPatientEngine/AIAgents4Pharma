@@ -94,14 +94,16 @@ nav:
               - EnrichmentWithOLS: talk2knowledgegraphs/utils/enrichments/ols_terms.md
           - Extractions:
               - PCST: talk2knowledgegraphs/utils/extractions/pcst.md
-              - PCST (Multimodal): talk2knowledgegraphs/utils/extractions/milvus_multimodal_pcst.md
+              - PCST (Multimodal): talk2knowledgegraphs/utils/extractions/multimodal_pcst.md
+              - PCST (Milvus Multimodal): talk2knowledgegraphs/utils/extractions/milvus_multimodal_pcst.md
       - Agents:
           - Talk2KG Agent: talk2knowledgegraphs/agents/t2kg_agent.md
       - States:
           - Talk2KG State: talk2knowledgegraphs/states/state_talk2knowledgegraphs.md
       - Tools:
           - Subgraph Extraction: talk2knowledgegraphs/tools/subgraph_extraction.md
-          - Subgraph Extraction (Multimodal): talk2knowledgegraphs/tools/milvus_multimodal_subgraph_extraction.md
+          - Subgraph Extraction (Multimodal): talk2knowledgegraphs/tools/multimodal_subgraph_extraction.md
+          - Subgraph Extraction (Milvus Multimodal): talk2knowledgegraphs/tools/milvus_multimodal_subgraph_extraction.md
           - Subgraph Summarization: talk2knowledgegraphs/tools/subgraph_summarization.md
           - GraphRAG Reasoning: talk2knowledgegraphs/tools/graphrag_reasoning.md
           - Load Arguments: talk2knowledgegraphs/tools/load_arguments.md
