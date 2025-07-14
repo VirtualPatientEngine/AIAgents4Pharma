@@ -43,9 +43,9 @@ reasoning_subgraph_topk_edges_max: 50
 # Configuration for Milvus
 milvus_db:
   alias: "default"
-  host: "localhost"
-  port: "19530"
-  uri: "http://localhost:19530"
+  host: ${oc.env:MILVUS_HOST,localhost}
+  port: ${oc.env:MILVUS_PORT,19530}
+  uri: "http://${oc.env:MILVUS_HOST,localhost}:${oc.env:MILVUS_PORT,19530}"
   token: "root:Milvus"
   user: "root"
   password: "Milvus"

@@ -1,33 +1,39 @@
 FROM continuumio/miniconda3:latest
 
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies required for compiling packages
+# Install system dependencies required for compiling Python packages
 RUN apt-get update && apt-get install -y \
-  g++ \
-  build-essential \
-  cmake \
-  libopenblas-dev \
-  libomp-dev \
-  ninja-build \
-  && rm -rf /var/lib/apt/lists/*
+    g++ \
+    build-essential \
+    cmake \
+    libopenblas-dev \
+    libomp-dev \
+    ninja-build \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy necessary files
+# Install RAPIDS into the base environment
+RUN conda install -y -n base -c rapidsai -c conda-forge -c nvidia \
+    rapids=25.06 python=3.12 "cuda-version>=12.0,<=12.8"
+
+# Set pip default timeout and retry logic to avoid download issues
+ENV PIP_DEFAULT_TIMEOUT=100
+COPY requirements.txt /app
+RUN pip install --upgrade pip wheel && \
+    pip install --retries 5 --timeout 60 --no-cache-dir -r /app/requirements.txt
+
+# Clean up conda & pip cache to reduce image size
+RUN conda clean -afy && \
+    rm -rf ~/.cache/pip
+
+# Copy your project files into the image
 COPY aiagents4pharma/talk2knowledgegraphs /app/aiagents4pharma/talk2knowledgegraphs
 COPY docs /app/docs
 COPY app /app/app
-COPY requirements.txt /app
 
-# Install Python dependencies and FAISS via Conda (base env)
-RUN conda update -n base -c defaults conda -y \
-  && conda install -n base python=3.12 -y \
-  && pip install --upgrade pip wheel \
-  && pip install --no-cache-dir -r requirements.txt \
-  # && conda install -n base -c pytorch faiss-cpu=1.9.0 -y \
-  && conda clean -afy
-
-# Expose the default Streamlit port
+# Expose the port used by Streamlit
 EXPOSE 8501
 
-# Run the Streamlit application
+# Run the Streamlit app using the base environment
 CMD ["streamlit", "run", "app/frontend/streamlit_app_talk2knowledgegraphs.py", "--server.port=8501", "--server.address=0.0.0.0"]
