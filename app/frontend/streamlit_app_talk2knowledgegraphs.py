@@ -290,15 +290,17 @@ with main_col2:
                             model=st.session_state.llm_model,
                             temperature=cfg.temperature,
                         )
-                        # emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
-                        # For IBD BioBridge data, we still use Ollama embeddings
-                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
                     else:
                         llm_model = ChatOllama(
                             model=st.session_state.llm_model,
                             temperature=cfg.temperature,
                         )
+
+                    if cfg.default_embedding_model == "ollama":
+                        # For IBD BioBridge data, we still use Ollama embeddings
                         emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                    else:
+                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
 
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}

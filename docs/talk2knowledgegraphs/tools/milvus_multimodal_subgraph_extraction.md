@@ -1,0 +1,1 @@
+::: aiagents4pharma.talk2knowledgegraphs.tools.milvus_multimodal_subgraph_extraction
