@@ -158,7 +158,6 @@ class MilvusDataLoader:
     def create_nodes_collection(self, nodes_df: cudf.DataFrame):
         """Create and populate the main nodes collection."""
         logger.info("Creating main nodes collection...")
-
         node_coll_name = f"{self.milvus_database}_nodes"
 
         node_fields = [
@@ -371,7 +370,7 @@ class MilvusDataLoader:
                         max_length=40960),
             FieldSchema(name="feat_emb",
                         dtype=DataType.FLOAT_VECTOR,
-                        dim=768),
+                        dim=len(edges_embedding_df[0].loc[0, 'edge_emb'])),
         ]
         edge_schema = CollectionSchema(fields=edge_fields,
                                        description="Schema for edges collection")
@@ -495,6 +494,11 @@ def main():
         'batch_size': int(os.getenv('BATCH_SIZE', '500')),
         'chunk_size': int(os.getenv('CHUNK_SIZE', '5')),
     }
+
+    # Print configuration for debugging
+    print("[DATA LOADER] Configuration:")
+    for key, value in config.items():
+        print(f"[DATA LOADER]   {key}: {value}")
 
     # Create and run data loader
     loader = MilvusDataLoader(config)
