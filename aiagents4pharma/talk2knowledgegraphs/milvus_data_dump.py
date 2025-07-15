@@ -21,8 +21,6 @@ def install_packages():
         "pip install numpy==1.26.4",
         "pip install pandas==2.1.3",
         "pip install tqdm==4.67.1",
-        "pip install torch_geometric==2.6.1",
-        "pip install torch==2.2.2"
     ]
 
     print("[DATA LOADER] Installing required packages...")

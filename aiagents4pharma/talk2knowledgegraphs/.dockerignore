@@ -1,0 +1,13 @@
+_pycache_/
+*.pyc
+*.log
+*.csv
+*.pt
+*.pkl
+models/
+data/
+env/
+.venv/
+.git/
+.env
+.cufile.log
