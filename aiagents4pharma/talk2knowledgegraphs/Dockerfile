@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install RAPIDS into the base environment
 RUN conda install -y -n base -c rapidsai -c conda-forge -c nvidia \
-    rapids=25.06 python=3.12 "cuda-version>=12.0,<=12.8"
+    python=3.12 cudf=25.06 "cuda-version>=12.0,<12.9"
 
 # Set pip default timeout and retry logic to avoid download issues
 ENV PIP_DEFAULT_TIMEOUT=100

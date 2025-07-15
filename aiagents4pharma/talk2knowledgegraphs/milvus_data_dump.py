@@ -64,6 +64,7 @@ class MilvusDataLoader:
     Class to handle loading of BioBridge-PrimeKG multimodal data into Milvus.
     """
     def __init__(self, config: Dict[str, Any]):
+        """Initialize the MilvusDataLoader with configuration parameters."""
         self.config = config
         self.milvus_host = config.get('milvus_host', 'localhost')
         self.milvus_port = config.get('milvus_port', '19530')
@@ -481,6 +482,10 @@ class MilvusDataLoader:
 
 def main():
     """Main function to run the data loader."""
+    # Resolve the fallback data path relative to this script's location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_data_dir = os.path.join(script_dir, "tests/files/biobridge_multimodal/")
+
     # Configuration
     config = {
         'milvus_host': os.getenv('MILVUS_HOST', 'localhost'),
@@ -488,7 +493,7 @@ def main():
         'milvus_user': os.getenv('MILVUS_USER', 'root'),
         'milvus_password': os.getenv('MILVUS_PASSWORD', 'Milvus'),
         'milvus_database': os.getenv('MILVUS_DATABASE', 't2kg_primekg'),
-        'data_dir': os.getenv('DATA_DIR', 'tests/files/biobridge_multimodal/'),
+        'data_dir': os.getenv('DATA_DIR', default_data_dir),
         'batch_size': int(os.getenv('BATCH_SIZE', '500')),
         'chunk_size': int(os.getenv('CHUNK_SIZE', '5')),
     }

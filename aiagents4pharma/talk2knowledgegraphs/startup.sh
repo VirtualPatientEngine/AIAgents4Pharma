@@ -90,14 +90,32 @@ fi
 # ===== DATA LOADING SECTION =====
 echo "[STARTUP] Milvus is ready. Starting data loading process..."
 
+# Load environment variables from .env if it exists
+if [ -f ".env" ]; then
+	echo "[STARTUP] Loading environment variables from .env..."
+	set -a
+	source .env
+	set +a
+else
+	echo "[STARTUP] WARNING: .env file not found. Using default values or environment fallback."
+fi
 
-# Check if data loading should be performed (using folders instead of pickle file)
+# Warn if DATA_DIR is not set
+if [ -z "${DATA_DIR}" ]; then
+ echo "[STARTUP] WARNING: DATA_DIR is not set in .env. Python will use default fallback."
+fi
+
+# Check if data loading should be performed
 if [ -f "milvus_data_dump.py" ] && \
-   [ -d "tests/files/biobridge_multimodal/nodes/enrichment" ] && \
-   [ -d "tests/files/biobridge_multimodal/nodes/embedding" ] && \
-   [ -d "tests/files/biobridge_multimodal/edges/enrichment" ] && \
-   [ -d "tests/files/biobridge_multimodal/edges/embedding" ]; then
-	echo "[STARTUP] Data loading script and required folders found. Proceeding with data loading..."
+   { [ -n "${DATA_DIR}" ] && \
+     [ -d "${DATA_DIR}/nodes/enrichment" ] && \
+     [ -d "${DATA_DIR}/nodes/embedding" ] && \
+     [ -d "${DATA_DIR}/edges/enrichment" ] && \
+     [ -d "${DATA_DIR}/edges/embedding" ]; } || \
+	 [ -z "${DATA_DIR}" ]; then
+
+ 	echo "[STARTUP] Proceeding with data loading (env: ${DATA_DIR:-<default used by Python>})"
+
 
 	# Create virtual environment for data loading
 	VENV_DIR="venv"
@@ -107,15 +125,6 @@ if [ -f "milvus_data_dump.py" ] && \
 	# Activate virtual environment
 	source $VENV_DIR/bin/activate
 	echo "[STARTUP] Virtual environment activated"
-
-	# Set environment variables for data loader
-	export MILVUS_HOST="localhost"
-	export MILVUS_PORT="19530"
-	export MILVUS_USER="root"
-	export MILVUS_PASSWORD="Milvus"
-	export MILVUS_DATABASE="t2kg_primekg"
-	export DATA_DIR="tests/files/biobridge_multimodal/"
-	export BATCH_SIZE="500"
 
 	# Function to cleanup virtual environment
 	cleanup_venv() {
@@ -143,13 +152,12 @@ if [ -f "milvus_data_dump.py" ] && \
 
 else
 	echo "[STARTUP] Data loading skipped - script or required folders not found"
-	echo "[STARTUP] Expected files/folders:"
+	echo "[STARTUP] Expected files/folders in: $DATA_DIR"
 	echo "[STARTUP]   - milvus_data_dump.py"
-	echo "[STARTUP]   - tests/files/biobridge_multimodal/nodes/enrichment"
-	echo "[STARTUP]   - tests/files/biobridge_multimodal/nodes/embedding"
-	echo "[STARTUP]   - tests/files/biobridge_multimodal/edges/enrichment"
-	echo "[STARTUP]   - tests/files/biobridge_multimodal/edges/embedding"
+	echo "[STARTUP]   - nodes/enrichment, nodes/embedding"
+	echo "[STARTUP]   - edges/enrichment, edges/embedding"
 fi
+
 
 # ===== END DATA LOADING SECTION =====
 
