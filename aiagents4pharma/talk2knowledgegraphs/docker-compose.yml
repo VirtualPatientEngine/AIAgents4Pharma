@@ -15,8 +15,6 @@ services:
     networks:
       - milvus
 
-volumes:
-
 networks:
   milvus:
     external: true

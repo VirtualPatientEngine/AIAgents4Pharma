@@ -105,7 +105,7 @@ if [ -z "${DATA_DIR}" ]; then
  echo "[STARTUP] WARNING: DATA_DIR is not set in .env. Python will use default fallback."
 fi
 
-# Check if data loading should be performed (using folders instead of pickle file)
+# Check if data loading should be performed
 if [ -f "../talk2knowledgegraphs/milvus_data_dump.py" ] && \
    { [ -n "${DATA_DIR}" ] && \
      [ -d "${DATA_DIR}/nodes/enrichment" ] && \
@@ -160,6 +160,8 @@ fi
 
 # ===== END DATA LOADING SECTION =====
 
+# Ensure Docker network exists
+docker network inspect milvus >/dev/null 2>&1 || docker network create milvus
 
 echo "[STARTUP] Starting talk2aiagents4pharma application..."
 

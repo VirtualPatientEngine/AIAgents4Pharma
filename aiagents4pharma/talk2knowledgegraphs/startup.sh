@@ -161,6 +161,9 @@ fi
 
 # ===== END DATA LOADING SECTION =====
 
+# Ensure Docker network exists
+docker network inspect milvus >/dev/null 2>&1 || docker network create milvus
+
 echo "[STARTUP] Starting talk2knowledgegraphs application..."
 
 # Configure Docker Compose for talk2knowledgegraphs based on GPU type
