@@ -45,7 +45,9 @@ _We now have all the agents available on Docker Hub._
 
 ##### **To run Talk2AIAgents4Pharma / Talk2KnowledgeGraphs**
 
-Both agents require [Ollama](https://ollama.com/) to run embedding models like `nomic-embed-text`. We use a **single startup script** that automatically detects your hardware (NVIDIA, AMD, or CPU) and handles container startup, model loading, and service orchestration.
+If your machine has NVIDIA GPU(s), please install the following this:
+- [nvidia-cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
 
 ##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
 
@@ -74,7 +76,6 @@ Then edit `.env` and add your API keys:
 ```env
 OPENAI_API_KEY=...                  # Required for both agents
 NVIDIA_API_KEY=...                  # Required for both agents
-OLLAMA_HOST=http://ollama:11434     # Required for AA4P / T2KG
 LANGCHAIN_TRACING_V2=true           # Optional for both agents
 LANGCHAIN_API_KEY=...               # Optional for both agents
 ```
@@ -136,6 +137,10 @@ If you are using docker on Windows, please follow these [Windows Setup Notes](ht
 
 [More on running multiple agents simultaneously](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#to-run-multiple-agents-simultaneously)
 
+📝 By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.  
+To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
+
+
 #### Option 2: git (for developers and contributors)
 
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
@@ -171,16 +176,6 @@ Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can ge
 
 To use **Talk2Scholars**, you must have **FAISS** installed through **Conda**. Follow installation instructions for your OS [here](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars/install.md).
 
-To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you must have **Ollama** installed. Follow installation instructions for your OS [here](https://ollama.com/download).
-
-After installing, pull the `nomic-embed-text` model and start the server by running:
-
-```sh
-ollama pull nomic-embed-text && ollama serve
-```
-
-More details about the model are available [here](https://ollama.com/library/nomic-embed-text).
-
 Additionally on **Windows**, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**.  
 You can download the **Microsoft C++ Build Tools** [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
@@ -205,6 +200,9 @@ _Replace `<agent>` with the agent name you are interested to launch:_
 - `talk2knowledgegraphs`
 - `talk2scholars`
 - `talk2cells`
+
+📝 By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.  
+To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
 
 For detailed instructions on each agent, please refer to their respective modules.
 
