@@ -1,18 +1,5 @@
+# talk2knowledgegraphs
 services:
-  ollama:
-    image: "${OLLAMA_IMAGE:-ollama/ollama:latest}"
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      "ollama serve"
-    networks:
-      - milvus
-
   talk2knowledgegraphs:
     platform: linux/amd64
     image: virtualpatientengine/talk2knowledgegraphs:latest
@@ -29,7 +16,6 @@ services:
       - milvus
 
 volumes:
-  ollama_data:
 
 networks:
   milvus:

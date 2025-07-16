@@ -32,7 +32,7 @@ ollama_llms:
   - "llama3.1"
 ollama_embeddings:
   - "nomic-embed-text"
-default_embedding_model: "ollama"
+default_embedding_model: "openai"
 temperature: 0.1
 streaming: False
 reasoning_subgraph_topk_nodes: 15
