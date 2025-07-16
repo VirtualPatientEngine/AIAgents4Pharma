@@ -1117,7 +1117,9 @@ def get_file_type_icon(file_type: str) -> str:
     Returns:
         str: The icon for the file type.
     """
-    return {"drug_data": "💊", "multimodal": "📦"}.get(file_type)
+    return {"article": "📜",
+            "drug_data": "💊",
+            "multimodal": "📦"}.get(file_type)
 
 
 @st.fragment
@@ -1139,8 +1141,9 @@ def get_t2b_uploaded_files(app):
         help="Upload a PDF article to ask questions.",
         accept_multiple_files=False,
         type=["pdf"],
-        key="article",
+        key=f"article_{st.session_state.t2b_article_key}",
     )
+    
     # Update the agent state with the uploaded article
     if article:
         # print (article.name)
@@ -1150,6 +1153,39 @@ def get_t2b_uploaded_files(app):
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
         # Update the agent state with the selected LLM model
         app.update_state(config, {"pdf_file_name": f.name})
+
+        if article.name not in [
+            uf["file_name"] for uf in st.session_state.t2b_uploaded_files
+        ]:
+            st.session_state.t2b_uploaded_files.append(
+                {
+                    "file_name": article.name,
+                    "file_path": f.name,
+                    "file_type": "article",
+                    "uploaded_by": st.session_state.current_user,
+                    "uploaded_timestamp": datetime.datetime.now().strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                }
+            )
+            article = None
+
+        # Display the uploaded article
+        for uploaded_file in st.session_state.t2b_uploaded_files:
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.write(
+                    get_file_type_icon(uploaded_file["file_type"])
+                    + uploaded_file["file_name"]
+                )
+            with col2:
+                if st.button("🗑️", key=uploaded_file["file_path"]):
+                    with st.spinner("Removing uploaded file ..."):
+                        st.session_state.t2b_uploaded_files.remove(uploaded_file)
+                        st.cache_data.clear()
+                        st.session_state.t2b_article_key += 1
+                        st.rerun(scope="fragment")
+
     # Return the uploaded file
     return uploaded_sbml_file
 

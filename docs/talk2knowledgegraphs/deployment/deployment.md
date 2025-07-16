@@ -1,128 +1,147 @@
-# 🚀 Deployment Procedure for Talk2KnowledgeGraphs (T2KG)
 
-## 📌 Overview
+# 🛠️ Deployment Guide for Talk2KnowledgeGraphs (T2KG)
 
-By default, **Talk2KnowledgeGraphs (T2KG)** includes a small subset of the **PrimeKG** knowledge graph focused on **inflammatory bowel disease (IBD)**. This subset is enriched with multimodal biomedical metadata and embedded node/edge representations, powered by [BioBridge](https://github.com/RyanWangZf/BioBridge) and [StarkQA](https://github.com/snap-stanford/stark).
+This step-by-step tutorial helps you deploy **Talk2KnowledgeGraphs (T2KG)** on your local machine.
 
-These default files are available at:
+> **Note:** This deployment guide assumes that you have access to a machine with **NVIDIA GPU(s)**.
+
+---
+
+## ✅ Step 1: Install Conda
+
+Install the Anaconda Python distribution, which simplifies package and environment management.
 
 ```bash
-aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal
+wget https://repo.anaconda.com/archive/Anaconda3-2025.06-0-Linux-x86_64.sh
+bash Anaconda3-2025.06-0-Linux-x86_64.sh
+source ~/.bashrc
 ```
 
-If you'd like to use a **different disease-specific graph** or build your own **custom PrimeKG graph**, follow the step-by-step instructions below.
-
 ---
 
-## 🧰 Preparing Your Local Environment
+## ✅ Step 2: Install NVIDIA CUDA Toolkit
 
-Before preprocessing your custom knowledge graph, you must set up your local environment.
-Please follow the general setup instructions in the repository's [main README](https://virtualpatientengine.github.io/AIAgents4Pharma/).
-
-### ✅ Prerequisites
-
-After installing the required Python packages, make sure you have the following:
-
-* ✅ **OpenAI API Key** — for generating text embeddings.
-* ✅ **NVIDIA API Key** — for creating a NIM instance.
-* ✅ **NVIDIA NIM for MolMIM** — for embedding drug SMILES representations.
-
-➡️ Refer to this notebook to enable MolMIM-based SMILES embedding:
-`AIAgents4Pharma/aiagents4pharma/docs/notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed.ipynb`
-
----
-
-## 🏗️ Constructing a Custom PrimeKG Graph
-
-T2KG supports both **disease-specific** and **full PrimeKG** multimodal knowledge graphs.
-
----
-
-### 🔹 Disease-Specific Multimodal Graph
-
-You can filter and process subgraphs from PrimeKG using:
-
-* [🧬 IBD-Specific PrimeKG Subgraph](https://virtualpatientengine.github.io/AIAgents4Pharma/notebooks/talk2knowledgegraphs/tutorial_biobridge_ibd_multimodal/)
-  → Generates a focused graph for **IBD** with enriched and embedded node/edge features.
-
-* [📤 Migrate IBD Data to Milvus](https://virtualpatientengine.github.io/AIAgents4Pharma/notebooks/talk2knowledgegraphs/tutorial_primekg_milvus_ibd_primekg_dump)
-  → Prepares and formats the dataframes for Milvus ingestion.
-  *(Tip: You only need to follow steps up to storing the dataframes as Parquet files.)*
-
----
-
-### 🔹 Full PrimeKG Multimodal Graph
-
-For processing the **complete PrimeKG**, use:
-
-* [🔬 BioBridge-PrimeKG Multimodal](https://virtualpatientengine.github.io/AIAgents4Pharma/notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_multimodal/)
-  → Utilizes preloaded multimodal BioBridge data to enrich PrimeKG.
-
-* [📚 PrimeKG Enrichment Pipeline](https://virtualpatientengine.github.io/AIAgents4Pharma/notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment/)
-  → Enriches and Embeds the entire PrimeKG using BioBridge, MolMIM, and textual embeddings.
-
-* [📤 Migrate Full PrimeKG to Milvus](https://virtualpatientengine.github.io/AIAgents4Pharma/notebooks/talk2knowledgegraphs/tutorial_primekg_milvus_primekg_dump)
-  → Formats and dumps the full graph into Milvus-ready Parquet files.
-  *(Tip: You only need to follow steps up to storing the dataframes as Parquet files.)*
----
-
-## ▶️ Running T2KG with Your Custom Graph
-
-### 1. Copy the Environment Template
+Install NVIDIA CUDA libraries to enable GPU-accelerated computation required for model inference.
 
 ```bash
-cp aiagents4pharma/talk2knowledgegraphs/.env.example .env
-```
-
-### 2. Set Environment Variables
-
-Edit the `.env` file to match your custom setup. Most importantly, set your custom data directory:
-
-```env
-...
-DATA_DIR=/absolute/path/to/your/data/
-...
+sudo apt update
+sudo apt install nvidia-cuda-toolkit
 ```
 
 ---
 
-### 3. Ensure Correct Folder Structure
+## ✅ Step 3: Install NVIDIA Container Toolkit for Docker
 
-T2KG expects the following folder structure inside your data directory:
+This allows Docker containers to access your GPU using the NVIDIA runtime.
 
-```
-project/
-├── edges/
-│   ├── embedding/
-│   │   ├── edges_0.parquet.gzip
-│   │   ├── edges_1.parquet.gzip
-│   │   └── ...
-│   └── enrichment/
-│       └── edges.parquet.gzip
-├── nodes/
-│   ├── embedding/
-│   │   ├── biological_process.parquet.gzip
-│   │   ├── cellular_component.parquet.gzip
-│   │   └── ...
-│   └── enrichment/
-│       ├── biological_process.parquet.gzip
-│       ├── cellular_component.parquet.gzip
-│       └── ...
+```bash
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 
-This layout ensures that T2KG can properly load and query your graph content using Milvus database.
+```bash
+sudo apt-get update
+```
+
+```bash
+export NVIDIA_CONTAINER_TOOLKIT_VERSION=1.17.8-1
+sudo apt-get install -y \
+    nvidia-container-toolkit=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
+    nvidia-container-toolkit-base=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
+    libnvidia-container-tools=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
+    libnvidia-container1=${NVIDIA_CONTAINER_TOOLKIT_VERSION}
+```
+
+> For more details, see the [official NVIDIA documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html).
 
 ---
 
-## 🧠 Launching the T2KG Interface
+## ✅ Step 4: Restart Docker
 
-Once your environment and data are ready, you can launch T2KG and start interacting with your graph using natural language!
+Reload Docker to apply the NVIDIA runtime settings.
 
-You can either:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
 
-* 🐳 **Use Docker** (recommended for easy deployment), or
-* 🖥️ **Run Milvus and Streamlit manually**
+---
 
-For more information, you can find various ways to launching of the app [here](https://virtualpatientengine.github.io/AIAgents4Pharma/).
+## ✅ Step 5: Install Python 3.12 Virtual Environment
 
+This is optional but recommended if you're running code outside Docker and want isolated Python environments.
 
+```bash
+sudo apt install python3.12-venv
+```
+
+---
+
+## ✅ Step 6: Clone the AIAgents4Pharma Repository
+
+Download the T2KG codebase which includes Docker configs, notebooks, and the Streamlit frontend.
+
+```bash
+mkdir repositories
+cd repositories
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
+cd AIAgents4Pharma
+```
+
+---
+
+## ✅ Step 7: Configure the `.env` File
+
+Copy the example environment file and update paths, keys, and credentials as needed.
+
+```bash
+cd aiagents4pharma/talk2knowledgegraphs
+cp .env.example .env
+```
+
+> ✏️ Make sure to fill in all fields, especially the absolute `DATA_DIR` path.
+
+---
+
+## ✅ Step 8: Launch Dockerized T2KG Pipeline
+
+This starts the backend (Milvus, API server) and frontend (Streamlit UI) in containers.
+
+```bash
+chmod +x startup.sh
+./startup.sh
+```
+
+---
+
+## 🧹 Optional: Reset and Clean Up Docker Containers
+
+If you're facing issues or want to reset your environment, these commands will stop and remove all related containers and volumes.
+
+⚠️ Use with **caution** if other Docker containers are also running.
+
+### Stop containers
+
+```bash
+sudo docker stop milvus-etcd milvus-minio milvus-standalone talk2knowledgegraphs
+```
+
+### Remove containers
+
+```bash
+sudo docker rm milvus-etcd milvus-minio milvus-standalone talk2knowledgegraphs
+```
+
+### Remove Docker network for Milvus
+
+```bash
+sudo docker network rm milvus
+```
+
+### Remove local volumes (stored graph/embedding data)
+
+```bash
+sudo rm -rf volumes
+```

@@ -87,6 +87,10 @@ if "sbml_file_path" not in st.session_state:
 if "selections" not in st.session_state:
     st.session_state.selections = streamlit_utils.initialize_selections()
 
+# Initialize session state for T2B article
+if "t2b_article_key" not in st.session_state:
+    st.session_state.t2b_article_key = 0
+
 # Initialize session state for pre-clinical data package uploader
 if "data_package_key" not in st.session_state:
     st.session_state.data_package_key = 0
@@ -98,6 +102,10 @@ if "endotype_key" not in st.session_state:
 # Initialize session state for multimodal data package uploader
 if "multimodal_key" not in st.session_state:
     st.session_state.multimodal_key = 0
+
+# Initialize session state for uploaded files
+if "t2b_uploaded_files" not in st.session_state:
+    st.session_state.t2b_uploaded_files = []
 
 # Initialize session state for uploaded files
 if "uploaded_files" not in st.session_state:

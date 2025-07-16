@@ -53,7 +53,9 @@ nav:
   - Talk2KnowledgeGraphs:
       - Introduction: talk2knowledgegraphs/intro.md
       - Deployment:
+          - Custom Data: talk2knowledgegraphs/deployment/custom_data.md
           - Deployment: talk2knowledgegraphs/deployment/deployment.md
+      - FAQ: talk2knowledgegraphs/faq.md
       - Tutorials:
           - PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_primekg_loader.ipynb
           - StarkQA-PrimeKG: ./notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader.ipynb
