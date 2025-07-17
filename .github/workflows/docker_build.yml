@@ -92,8 +92,8 @@ jobs:
           file: aiagents4pharma/talk2aiagents4pharma/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2aiagents4pharma:latest
+            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
+            vpatientengine/talk2aiagents4pharma:latest
           platforms: linux/amd64
 
   # Separate job for talk2biomodels
@@ -117,8 +117,8 @@ jobs:
           file: aiagents4pharma/talk2biomodels/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2biomodels:latest
+            vpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
+            vpatientengine/talk2biomodels:latest
           platforms: linux/amd64
 
   # Separate job for talk2scholars
@@ -142,8 +142,8 @@ jobs:
           file: aiagents4pharma/talk2scholars/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2scholars:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2scholars:latest
+            vpatientengine/talk2scholars:${{ needs.version.outputs.version }}
+            vpatientengine/talk2scholars:latest
           platforms: linux/amd64
 
   # Separate job for talk2knowledgegraphs
@@ -167,6 +167,6 @@ jobs:
           file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
           push: true
           tags: |
-            virtualpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
-            virtualpatientengine/talk2knowledgegraphs:latest
+            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
+            vpatientengine/talk2knowledgegraphs:latest
           platforms: linux/amd64
