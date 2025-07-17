@@ -9,6 +9,8 @@ from typing import Any, Dict, List
 import hydra
 from langchain_core.documents import Document
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.prompts import ChatPromptTemplate
+from pydantic import BaseModel, Field
 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
@@ -16,6 +18,17 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
+class CitedAnswer(BaseModel):
+    """Answer the user question based only on the given sources, and cite the sources used."""
+
+    answer: str = Field(
+        ...,
+        description="The answer to the user question, which is based only on the given sources.",
+    )
+    citations: List[str] = Field(
+        ...,
+        description="The IDs of the SPECIFIC sources which justify the answer.",
+    )
 
 def _build_context_and_sources(
     retrieved_chunks: List[Document],
@@ -31,7 +44,7 @@ def _build_context_and_sources(
     idx = 1
     for pid, chunks in papers.items():
         title = chunks[0].metadata.get("title", "Unknown")
-        formatted.append(f"[Document {idx}] From: '{title}' (ID: {pid})")
+        formatted.append(f"[Source {pid}] From: '{title}' (ID: {pid}) (Document {idx})")
         for chunk in chunks:
             page = chunk.metadata.get("page", "unknown")
             formatted.append(f"Page {page}: {chunk.page_content}")
@@ -42,6 +55,7 @@ def _build_context_and_sources(
         pid = doc.metadata.get("paper_id")
         if isinstance(pid, str):
             sources.add(pid)
+    context = context.replace("{","").replace("}","")
     return context, sources
 
 
@@ -82,15 +96,31 @@ def generate_answer(
         raise ValueError("Configuration for generate_answer is required.")
     if "prompt_template" not in config:
         raise ValueError("The prompt_template is missing from the configuration.")
-
     # Build context and sources, then invoke LLM
     context, paper_sources = _build_context_and_sources(retrieved_chunks)
-    prompt = config["prompt_template"].format(context=context, question=question)
-    response = llm_model.invoke(prompt)
+    prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", config['prompt_template'].format(context=context)),
+        ("human", "Based on the context: {context} answer this question {question}"),
+    ]
+)
+    try:
+        messages = prompt.invoke({"context": context, "question": question})
+        structured_llm = llm_model.with_structured_output(CitedAnswer)
+        try:
+            response = structured_llm.invoke(messages)
+        except Exception as exc:
+            raise RuntimeError("Error encountered during structured output") from exc
 
+    except Exception as exc:
+        raise RuntimeError("Error encountered during LLM RAG invocation") from exc
+    output = f"{response.answer}"
+    citations = response.citations
+    logger.info("Answer and citations generated successfully")
     # Return the response with metadata
     return {
-        "output_text": response.content,
+        "output_text": output,
+        "citations": citations,
         "sources": [doc.metadata for doc in retrieved_chunks],
         "num_sources": len(retrieved_chunks),
         "papers_used": list(paper_sources),

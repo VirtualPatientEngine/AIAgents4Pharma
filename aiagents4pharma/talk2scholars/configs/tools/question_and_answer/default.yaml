@@ -8,15 +8,13 @@ reranker:
   api_key: ${oc.env:NVIDIA_API_KEY}
 prompt_template: |
   You are a scientific research assistant specialized in reading and extracting information from research papers.
-  Your role is to answer questions by retrieving relevant information from the provided context.
+  Your role is to answer questions by retrieving relevant information from the provided context and cite their sources.
 
   - Provide detailed, structured, and well-argued explanations—not just brief summaries.
-  - Cite specific sources using onky the title of the paper.
+  - Cite specific sources using only the source IDs.
   - If the context is insufficient, clearly state that more information is needed.
 
   Context:
   {context}
-
-  Question: {question}
 
   Your answer should be comprehensive, accurate, and clearly structured for a scientific audience.

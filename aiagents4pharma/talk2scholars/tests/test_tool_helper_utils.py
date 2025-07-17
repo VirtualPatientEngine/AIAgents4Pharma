@@ -124,17 +124,17 @@ class TestQAToolHelper(unittest.TestCase):
         # With sources
         with patch(
             "aiagents4pharma.talk2scholars.tools.pdf.utils.tool_helper.generate_answer",
-            return_value={"output_text": "ans", "papers_used": ["p1", "p2"]},
+            return_value={"answer": "ans", "citations": ["p1", "p2"]},
         ):
             res = self.helper.format_answer("q", [], MagicMock(), articles)
-            self.assertIn("ans", res)
-            self.assertIn("Sources:", res)
-            self.assertIn("- T1", res)
-            self.assertIn("- T2", res)
+            self.assertIn("answer", res)
+            self.assertIn("citations", res)
+            self.assertIn("- T1", res["citations"])
+            self.assertIn("- T2", res["citations"])
         # Without sources
         with patch(
             "aiagents4pharma.talk2scholars.tools.pdf.utils.tool_helper.generate_answer",
-            return_value={"output_text": "ans", "papers_used": []},
+            return_value={"answer": "ans", "citations": []},
         ):
             res2 = self.helper.format_answer("q", [], MagicMock(), {})
-            self.assertEqual(res2, "ans")
+            self.assertEqual(res2, {'answer': 'No answer generated.', 'citations': ''})
