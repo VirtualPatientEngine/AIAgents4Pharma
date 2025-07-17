@@ -20,17 +20,6 @@ def mock_hydra_fixture():
         yield mock_compose
 
 
-@pytest.fixture
-def mock_tools_fixture():
-    """Mocks the paper_download.download_tool.download_paper function."""
-    target = "aiagents4pharma.talk2scholars.tools.paper_download.download_tool.download_paper"
-    with mock.patch(target) as mock_download_paper:
-        mock_download_paper.return_value = {
-            "article_data": {"dummy_key": "dummy_value"}
-        }
-        yield mock_download_paper
-
-
 @pytest.mark.usefixtures("mock_hydra_fixture")
 def test_paper_download_agent_initialization():
     """Ensures the paper download agent initializes properly with a prompt."""
