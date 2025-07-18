@@ -2,7 +2,7 @@
 
 **Talk2Scholars** is an AI-powered hierarchical agent system designed to revolutionize academic paper search and analysis. Through intelligent conversation, users can discover, analyze, and receive recommendations for academic papers using state-of-the-art natural language processing.
 
----
+## ![Talk2Scholars](../assets/t2scholars_diagram.png)
 
 ### Why Talk2Scholars?
 

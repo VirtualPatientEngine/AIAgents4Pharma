@@ -22,20 +22,20 @@ logger = logging.getLogger(__name__)
 class DownloadBiorxivPaperInput(BaseModel):
     """Input schema for the bioRxiv paper download tool."""
 
-    doi: str = Field(description=
-    """The bioRxiv DOI, from search_helper or multi_helper or single_helper, 
+    doi: str = Field(
+        description="""The bioRxiv DOI, from search_helper or multi_helper or single_helper,
     used to retrieve the paper details and PDF URL."""
     )
-    logger.info("DOI Received: %s", doi)
     tool_call_id: Annotated[str, InjectedToolCallId]
+
 
 def fetch_biorxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict:
     """
     Fetch metadata for a bioRxiv paper using its DOI and extract relevant fields.
-    
+
     Parameters:
         doi (str): The DOI of the bioRxiv paper.
-    
+
     Returns:
         dict: A dictionary containing the title, authors, abstract, publication date, and URLs.
     """
@@ -54,6 +54,7 @@ def fetch_biorxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict
     data = response.json()
 
     return data["collection"][0]
+
 
 def extract_metadata(paper: dict, doi: str) -> dict:
     """
@@ -75,8 +76,9 @@ def extract_metadata(paper: dict, doi: str) -> dict:
         "pdf_url": pdf_url,
         "filename": f"{doi_suffix}.pdf",
         "source": "biorxiv",
-        "biorxiv_id": doi
+        "biorxiv_id": doi,
     }
+
 
 @tool(args_schema=DownloadBiorxivPaperInput, parse_docstring=True)
 def download_biorxiv_paper(

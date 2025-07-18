@@ -1,0 +1,18 @@
+# talk2scholars
+services:
+  talk2scholars:
+    platform: linux/amd64
+    image: virtualpatientengine/talk2scholars:latest
+    container_name: talk2scholars
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - milvus
+
+networks:
+  milvus:
+    external: true
+    name: milvus

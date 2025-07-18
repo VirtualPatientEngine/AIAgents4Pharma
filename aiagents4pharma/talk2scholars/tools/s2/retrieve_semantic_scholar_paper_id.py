@@ -50,22 +50,23 @@ def retrieve_semantic_scholar_paper_id(
     tool_call_id: str,
 ) -> Command[Any]:
     """
-    Search for a paper by title on Semantic Scholar and return its unique paper ID.
+    Retrieve a Semantic Scholar paper ID using a paper title.
 
-    This tool issues a GET request to the Semantic Scholar API to find the best match
-    for the given paper title, then returns the paper's Semantic Scholar ID.
+    This tool searches Semantic Scholar for the best match to the provided paper title
+    and returns the corresponding unique paper ID. It is intended to support downstream
+    tasks such as recommendations, metadata lookups, or citation graph queries.
 
-    Use when you have a known title (full or partial) and need the Semantic Scholar ID
-    to fetch additional metadata or perform downstream lookups. Do not use this tool
-    for broad literature searches; for general search use the `search` tool.
+    Use this tool when you know the full or partial title of a paper and need its
+    Semantic Scholar ID.
+    For broad literature searches or topic-based queries, use a general `search` tool instead.
 
     Args:
-        paper_title (str): The title of the paper to look up.
+        paper_title (str): The full or partial title of the paper to look up.
         tool_call_id (str): LangGraph-injected identifier for this tool call.
 
     Returns:
         Command: A structured response containing a ToolMessage whose content is
-          the Semantic Scholar paper ID string (e.g., 'abc123xyz').
+            the Semantic Scholar paper ID string (e.g., 'abc123xyz').
 
     Raises:
         ValueError: If no matching paper is found for the given title.

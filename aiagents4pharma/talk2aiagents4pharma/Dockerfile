@@ -6,23 +6,23 @@ WORKDIR /app
 
 # Install system dependencies required for compiling Python packages
 RUN apt-get update && apt-get install -y \
-    g++ \
-    build-essential \
-    cmake \
-    libopenblas-dev \
-    libomp-dev \
-    ninja-build \
-    && rm -rf /var/lib/apt/lists/*
+  g++ \
+  build-essential \
+  cmake \
+  libopenblas-dev \
+  libomp-dev \
+  ninja-build \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install RAPIDS + cudf
 RUN conda install -y -n base -c rapidsai -c conda-forge -c nvidia \
-    python=3.12 cudf=25.06 "cuda-version>=12.0,<=12.8"
+  python=3.12 cudf=25.06 "cuda-version>=12.0,<=12.8"
 
 # Install pip packages
 COPY requirements.txt /app
 RUN pip install --upgrade pip wheel && \
-    pip install --retries 15 --timeout 180 --no-cache-dir -r /app/requirements.txt && \
-    conda clean -afy && rm -rf ~/.cache/pip
+  pip install --retries 15 --timeout 180 --no-cache-dir -r /app/requirements.txt && \
+  conda clean -afy && rm -rf ~/.cache/pip
 
 # Copy app code
 COPY aiagents4pharma/talk2aiagents4pharma /app/aiagents4pharma/talk2aiagents4pharma

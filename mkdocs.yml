@@ -151,10 +151,20 @@ nav:
             - Zotero Path: talk2scholars/utils/zotero_path.md
             - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
           PDF Agent:
-            - Nvidia NIM Reranker: talk2scholars/utils/nvidia_nim_reranker.md
             - Vector Store: talk2scholars/utils/vector_store.md
+            - Singleton Manager: talk2scholars/utils/singleton_manager.md
+            - GPU Detection: talk2scholars/utils/gpu_detection.md
+            - Collection Manager: talk2scholars/utils/collection_manager.md
+            - Get Vector Store: talk2scholars/utils/get_vectorstore.md
+            - Document Processor: talk2scholars/utils/document_processor.md
+            - Paper Loader: talk2scholars/utils/paper_loader.md
+            - Batch Processor: talk2scholars/utils/batch_processor.md
+            - Rag Pipeline: talk2scholars/utils/rag_pipeline.md
+            - Vector Normalization: talk2scholars/utils/vector_normalization.md
             - Retrieve Chunks: talk2scholars/utils/retrieve_chunks.md
+            - Nvidia NIM Reranker: talk2scholars/utils/nvidia_nim_reranker.md
             - Generate Answer: talk2scholars/utils/generate_answer.md
+            - Answer Formatter: talk2scholars/utils/answer_formatter.md
             - Tool Helper: talk2scholars/utils/tool_helper.md
 
   - Documentation:
