@@ -18,12 +18,11 @@ COPY docs /app/docs
 COPY app /app/app
 COPY requirements.txt /app
 
-# Install Python dependencies and FAISS via Conda (base env)
+# Install Python dependencies via Conda
 RUN conda update -n base -c defaults conda -y \
   && conda install -n base python=3.12 -y \
   && pip install --upgrade pip wheel \
   && pip install --no-cache-dir -r requirements.txt \
-  # && conda install -n base -c pytorch faiss-cpu=1.9.0 -y \
   && conda clean -afy
 
 # Expose the default Streamlit port

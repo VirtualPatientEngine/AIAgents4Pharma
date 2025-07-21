@@ -22,12 +22,12 @@ logger = logging.getLogger(__name__)
 class DownloadMedrxivPaperInput(BaseModel):
     """Input schema for the medRxiv paper download tool."""
 
-    doi: str = Field(description=
-    """The medRxiv DOI, from search_helper or multi_helper or single_helper, 
+    doi: str = Field(
+        description="""The medRxiv DOI, from search_helper or multi_helper or single_helper,
     used to retrieve the paper details and PDF URL."""
     )
-    logger.info("DOI Received: %s", doi)
     tool_call_id: Annotated[str, InjectedToolCallId]
+
 
 # Fetching raw metadata from medRxiv API for a given DOI
 def fetch_medrxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict:
@@ -54,6 +54,7 @@ def fetch_medrxiv_metadata(doi: str, api_url: str, request_timeout: int) -> dict
 
     return data["collection"][0]
 
+
 # Extracting relevant metadata fields from the raw data
 def extract_metadata(paper: dict, doi: str) -> dict:
     """
@@ -75,8 +76,9 @@ def extract_metadata(paper: dict, doi: str) -> dict:
         "pdf_url": pdf_url,
         "filename": f"{doi_suffix}.pdf",
         "source": "medrxiv",
-        "medrxiv_id": doi
+        "medrxiv_id": doi,
     }
+
 
 # Tool to download medRxiv paper metadata and PDF URL
 @tool(args_schema=DownloadMedrxivPaperInput, parse_docstring=True)

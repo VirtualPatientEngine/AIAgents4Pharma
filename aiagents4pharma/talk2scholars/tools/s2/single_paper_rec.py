@@ -60,17 +60,17 @@ def get_single_paper_recommendations(
     year: Optional[str] = None,
 ) -> Command[Any]:
     """
-    Return recommended papers for a single Semantic Scholar paper ID.
+    Recommend related research papers using the Semantic Scholar API for a single paper ID.
 
-    This tool accepts a single Semantic Scholar paper ID and returns related works
-    by aggregating citations and references.
+    This tool is designed to suggest relevant papers based on one input Semantic Scholar paper ID.
+    It fetches citations and references for the given paper and returns a set of recommended works.
 
     Args:
         paper_id (str): 40-character Semantic Scholar paper ID.
         tool_call_id (str): Internal tool call identifier injected by the system.
         limit (int, optional): Maximum number of recommendations to return. Defaults to 5.
-        year (str, optional): Publication year filter; supports 'YYYY', 'YYYY-',
-        '-YYYY', 'YYYY:YYYY'. Defaults to None.
+        year (str, optional): Filter recommendations by publication year.
+            Supports formats: 'YYYY', 'YYYY-', '-YYYY', or 'YYYY:YYYY'. Defaults to None.
 
     Returns:
         Command: A Command object containing:
