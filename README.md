@@ -116,13 +116,12 @@ If your machine has NVIDIA GPU(s), please install the following this:
 
 To use the **Agents**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
-**Talk2Scholars** requires Milvus to be set up as the vector database — install Milvus depending on your setup by following the official instructions for [CPU](https://milvus.io/docs/install_standalone-docker-compose.md) or [GPU](https://milvus.io/docs/install_standalone-docker-compose-gpu.md). You will also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(The Zotero key is only required for Talk2Scholars; all other agents do not need it.)_
+**Talk2Scholars** and **Talk2KnowledgeGraphs** requires Milvus to be set up as the vector database — install Milvus depending on your setup by following the official instructions for [CPU](https://milvus.io/docs/install_standalone-docker-compose.md) or [GPU](https://milvus.io/docs/install_standalone-docker-compose-gpu.md). You will also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(The Zotero key is only required for Talk2Scholars; all other agents do not need it.)_
 
+> By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.
+> To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
 > Additionally on **Windows**, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**.
 > You can download the **Microsoft C++ Build Tools** [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-
-📝 By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.  
-To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
 
 **LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
 
