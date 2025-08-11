@@ -1,5 +1,10 @@
 name: Docker Compose Release
 
+permissions:
+  contents: write
+  actions: read
+  packages: read
+
 on:
   # Trigger after Docker Build workflow completes
   workflow_run:
