@@ -112,7 +112,6 @@ nav:
           - Subgraph Summarization: talk2knowledgegraphs/tools/subgraph_summarization.md
           - GraphRAG Reasoning: talk2knowledgegraphs/tools/graphrag_reasoning.md
           - Load Arguments: talk2knowledgegraphs/tools/load_arguments.md
-          
 
   - Talk2Scholars:
       - Introduction: talk2scholars/intro.md
@@ -131,25 +130,17 @@ nav:
           - Multi Paper Recommendation: talk2scholars/tools/multi_paper_rec.md
           - Display Dataframe: talk2scholars/tools/display_dataframe.md
           - Query Dataframe: talk2scholars/tools/query_dataframe.md
-          - Retrieve ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
-          - Download Arxiv Input: talk2scholars/tools/download_arxiv_input.md
-          - Download BioRxiv Input: talk2scholars/tools/download_biorxiv_input.md
-          - Download MedRxiv Input: talk2scholars/tools/download_medrxiv_input.md
+          - Retrieve Semantic Scholar ID: talk2scholars/tools/retrieve_semantic_scholar_paper_id.md
+          - Paper Downloader: talk2scholars/tools/paper_downloader.md
+          - Question and answer: talk2scholars/tools/question_and_answer.md
           - Zotero Read: talk2scholars/tools/zotero_read.md
           - Zotero Write: talk2scholars/tools/zotero_write.md
           - Zotero Review: talk2scholars/tools/zotero_review.md
-          - Question and answer: talk2scholars/tools/question_and_answer.md
       - Utils:
           S2 Agent:
             - Search Helper: talk2scholars/utils/search_helper.md
             - Single Paper Recommendation Helper: talk2scholars/utils/single_helper.md
             - Multi Paper Recommendation Helper: talk2scholars/utils/multi_helper.md
-          Zotero Agent:
-            - Zotero Write Helper: talk2scholars/utils/write_helper.md
-            - Zotero Read Helper: talk2scholars/utils/read_helper.md
-            - Zotero Review Helper: talk2scholars/utils/review_helper.md
-            - Zotero Path: talk2scholars/utils/zotero_path.md
-            - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
           PDF Agent:
             - Vector Store: talk2scholars/utils/vector_store.md
             - Singleton Manager: talk2scholars/utils/singleton_manager.md
@@ -166,6 +157,18 @@ nav:
             - Generate Answer: talk2scholars/utils/generate_answer.md
             - Answer Formatter: talk2scholars/utils/answer_formatter.md
             - Tool Helper: talk2scholars/utils/tool_helper.md
+          Paper Download Agent:
+            - Base Paper Downloader: talk2scholars/utils/base_paper_downloader.md
+            - Arxiv Downloader: talk2scholars/utils/arxiv_downloader.md
+            - Biorxiv Downloader: talk2scholars/utils/biorxiv_downloader.md
+            - Medrxiv Downloader: talk2scholars/utils/medrxiv_downloader.md
+            - Pubmed Downloader: talk2scholars/utils/pubmed_downloader.md
+          Zotero Agent:
+            - Zotero Write Helper: talk2scholars/utils/write_helper.md
+            - Zotero Read Helper: talk2scholars/utils/read_helper.md
+            - Zotero Review Helper: talk2scholars/utils/review_helper.md
+            - Zotero Path: talk2scholars/utils/zotero_path.md
+            - Zotero PDF Downloader: talk2scholars/utils/zotero_pdf_downloader.md
 
   - Documentation:
       - Ops:

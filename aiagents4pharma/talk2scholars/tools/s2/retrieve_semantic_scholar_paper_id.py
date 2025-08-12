@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 """
-Tool for retrieving a Semantic Scholar paper ID given a paper title.
+Resolve a paper title to a Semantic Scholar paperId.
 
-This tool queries the Semantic Scholar API for the best match of the provided paper title
-and returns the unique Semantic Scholar paperId. Use when you have a known title and need its
-Semantic Scholar identifier for further metadata retrieval or pipeline integration. Do not
-use this tool for broad literature search; use the `search` tool instead.
+This module provides a tool that queries the Semantic Scholar API for the best match to a
+given paper title (full or partial) and returns the corresponding `paperId` string.
+Configuration is loaded via Hydra and the top ranked result is returned.
 """
 
 import logging
@@ -27,11 +26,14 @@ logger = logging.getLogger(__name__)
 
 class RetrieveSemanticScholarPaperIdInput(BaseModel):
     """
-    Pydantic schema for retrieving a Semantic Scholar paper ID.
+    Input schema for title→paperId resolution.
 
-    Fields:
-      paper_title: The title (full or partial) of the paper to look up on Semantic Scholar.
-      tool_call_id: LangGraph-injected identifier for tracking the tool invocation.
+    Fields
+    -------
+    paper_title : str
+        Paper title to search. Accepts full titles or informative partial titles.
+    tool_call_id : InjectedToolCallId
+        Runtime-injected identifier for tracing the tool invocation.
     """
 
     paper_title: str = Field(
@@ -50,27 +52,43 @@ def retrieve_semantic_scholar_paper_id(
     tool_call_id: str,
 ) -> Command[Any]:
     """
-    Retrieve a Semantic Scholar paper ID using a paper title.
+    Look up a Semantic Scholar paperId from a paper title.
 
-    This tool searches Semantic Scholar for the best match to the provided paper title
-    and returns the corresponding unique paper ID. It is intended to support downstream
-    tasks such as recommendations, metadata lookups, or citation graph queries.
+    Behavior
+    --------
+    - Loads Hydra config from `tools.retrieve_semantic_scholar_paper_id`.
+    - Sends a search request with `query=<paper_title>`, `limit=1`, and requested fields.
+    - Parses the top hit and returns its `paperId` as the ToolMessage content (plain string).
 
-    Use this tool when you know the full or partial title of a paper and need its
-    Semantic Scholar ID.
-    For broad literature searches or topic-based queries, use a general `search` tool instead.
+    Parameters
+    ----------
+    paper_title : str
+        Title or informative partial title to resolve.
+    tool_call_id : str
+        Runtime-injected identifier for the tool call.
 
-    Args:
-        paper_title (str): The full or partial title of the paper to look up.
-        tool_call_id (str): LangGraph-injected identifier for this tool call.
+    Returns
+    -------
+    Command
+        update = {
+          "messages": [
+            ToolMessage(
+              content="<paperId>",  # Semantic Scholar paperId string
+              tool_call_id=<tool_call_id>
+            )
+          ]
+        }
 
-    Returns:
-        Command: A structured response containing a ToolMessage whose content is
-            the Semantic Scholar paper ID string (e.g., 'abc123xyz').
+    Exceptions
+    ----------
+    ValueError
+        Raised when no match is found for the provided title.
+    requests.RequestException
+        Raised on network/HTTP errors (timeout, connection issues, etc.).
 
-    Raises:
-        ValueError: If no matching paper is found for the given title.
-        requests.RequestException: If the API request fails.
+    Examples
+    --------
+    >>> retrieve_semantic_scholar_paper_id("Attention Is All You Need", "tc_123")
     """
     # Load hydra configuration
     with hydra.initialize(version_base=None, config_path="../../configs"):
