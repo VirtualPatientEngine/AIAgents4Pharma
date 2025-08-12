@@ -269,7 +269,7 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
                        "arg_data": self.arg_data}
             )
 
-                # Check tool message
+        # Check tool message
         self.assertEqual(response.update["messages"][-1].tool_call_id, "subgraph_extraction_tool")
 
         # Check extracted subgraph dictionary
@@ -411,3 +411,208 @@ class TestMultimodalSubgraphExtractionTool(unittest.TestCase):
                 # Another test for unknown collection
                 result = collection_side_effect("unknown")
                 self.assertIsNone(result)
+
+    def test_normalize_vector_gpu_mode(self):
+        """Test normalize_vector method in GPU mode."""
+        # Mock the loader to simulate GPU mode
+        self.tool.loader.normalize_vectors = True
+        self.tool.loader.py = MagicMock()
+        # Mock the GPU array operations
+        mock_array = MagicMock()
+        mock_norm = MagicMock()
+        mock_norm.return_value = 2.0
+        mock_array.__truediv__ = MagicMock(return_value=mock_array)
+        mock_array.tolist.return_value = [0.5, 1.0, 1.5]
+        self.tool.loader.py.asarray.return_value = mock_array
+        self.tool.loader.py.linalg.norm.return_value = mock_norm
+        result = self.tool.normalize_vector([1.0, 2.0, 3.0])
+        # Verify the result
+        self.assertEqual(result, [0.5, 1.0, 1.5])
+        self.tool.loader.py.asarray.assert_called_once_with([1.0, 2.0, 3.0])
+        self.tool.loader.py.linalg.norm.assert_called_once_with(mock_array)
+
+    def test_normalize_vector_cpu_mode(self):
+        """Test normalize_vector method in CPU mode."""
+        # Mock the loader to simulate CPU mode
+        self.tool.loader.normalize_vectors = False
+        result = self.tool.normalize_vector([1.0, 2.0, 3.0])
+        # In CPU mode, should return the input as-is
+        self.assertEqual(result, [1.0, 2.0, 3.0])
+
+    @patch("aiagents4pharma.talk2knowledgegraphs.tools."
+           "milvus_multimodal_subgraph_extraction.Collection")
+    @patch("aiagents4pharma.talk2knowledgegraphs.tools."
+           "milvus_multimodal_subgraph_extraction.MultimodalPCSTPruning")
+    @patch("pymilvus.connections")
+    def test_extract_multimodal_subgraph_no_vector_processing(self,
+                                                              mock_connections,
+                                                              mock_pcst,
+                                                              mock_collection):
+        """Test when vector_processing config is not present."""
+        # Mock Milvus connection utilities
+        mock_connections.has_connection.return_value = True
+
+        self.state["uploaded_files"] = []
+        self.state["embedding_model"].embed_query.return_value = [0.1, 0.2, 0.3]
+        self.state["selections"] = {}
+
+        # Mock Collection for nodes and edges
+        colls = {}
+        colls["nodes"] = MagicMock()
+        colls["nodes"].query.return_value = [
+            {"node_index": 0, "node_id": "id1", "node_name": "JAK1",
+             "node_type": "gene/protein", "feat": "featA", "feat_emb": [0.1, 0.2, 0.3],
+             "desc": "descA", "desc_emb": [0.1, 0.2, 0.3]}
+        ]
+        colls["nodes"].load.return_value = None
+
+        colls["edges"] = MagicMock()
+        colls["edges"].query.return_value = [
+            {"triplet_index": 0, "head_id": "id1", "tail_id": "id2",
+             "edge_type": "gene/protein,ppi,gene/protein"}
+        ]
+        colls["edges"].load.return_value = None
+
+        def collection_side_effect(name):
+            if "nodes" in name:
+                return colls["nodes"]
+            if "edges" in name:
+                return colls["edges"]
+            return None
+        mock_collection.side_effect = collection_side_effect
+
+        # Mock MultimodalPCSTPruning
+        mock_pcst_instance = MagicMock()
+        mock_pcst_instance.extract_subgraph.return_value = {
+            "nodes": pd.Series([1]),
+            "edges": pd.Series([0])
+        }
+        mock_pcst.return_value = mock_pcst_instance
+
+        # Create config without vector_processing attribute
+        cfg_no_vector_processing = MagicMock()
+        cfg_no_vector_processing.cost_e = 1.0
+        cfg_no_vector_processing.c_const = 1.0
+        cfg_no_vector_processing.root = 0
+        cfg_no_vector_processing.num_clusters = 1
+        cfg_no_vector_processing.pruning = True
+        cfg_no_vector_processing.verbosity_level = 0
+        cfg_no_vector_processing.search_metric_type = "L2"
+        cfg_no_vector_processing.node_colors_dict = {"gene/protein": "red"}
+        # Remove vector_processing attribute to test the missing branch
+        del cfg_no_vector_processing.vector_processing
+
+        # Patch hydra.compose to return config without vector_processing
+        with patch("aiagents4pharma.talk2knowledgegraphs.tools."
+                   "milvus_multimodal_subgraph_extraction.hydra.initialize"), \
+             patch("aiagents4pharma.talk2knowledgegraphs.tools."
+                   "milvus_multimodal_subgraph_extraction.hydra.compose") as mock_compose:
+            mock_compose.return_value = MagicMock()
+            mock_compose.return_value.app.frontend = self.cfg_db
+            mock_compose.return_value.tools.multimodal_subgraph_extraction = \
+                cfg_no_vector_processing
+
+            response = self.tool.invoke(
+                input={"prompt": self.prompt,
+                       "tool_call_id": "subgraph_extraction_tool",
+                       "state": self.state,
+                       "arg_data": self.arg_data}
+            )
+
+        # Verify the test completed successfully
+        self.assertEqual(response.update["messages"][-1].tool_call_id, "subgraph_extraction_tool")
+
+        # Test the collection_side_effect with unknown name for final test
+        result = collection_side_effect("final_unknown_collection")
+        self.assertIsNone(result)
+
+        # Test the collection_side_effect with unknown name
+        result = collection_side_effect("unknown_collection")
+        self.assertIsNone(result)
+
+    @patch("aiagents4pharma.talk2knowledgegraphs.tools."
+           "milvus_multimodal_subgraph_extraction.Collection")
+    @patch("aiagents4pharma.talk2knowledgegraphs.tools."
+           "milvus_multimodal_subgraph_extraction.MultimodalPCSTPruning")
+    @patch("pymilvus.connections")
+    def test_extract_multimodal_subgraph_dynamic_metrics_disabled(self,
+                                                                  mock_connections,
+                                                                  mock_pcst,
+                                                                  mock_collection):
+        """Test when dynamic_metrics is disabled."""
+        # Mock Milvus connection utilities
+        mock_connections.has_connection.return_value = True
+
+        self.state["uploaded_files"] = []
+        self.state["embedding_model"].embed_query.return_value = [0.1, 0.2, 0.3]
+        self.state["selections"] = {}
+
+        # Mock Collection for nodes and edges
+        colls = {}
+        colls["nodes"] = MagicMock()
+        colls["nodes"].query.return_value = [
+            {"node_index": 0, "node_id": "id1", "node_name": "JAK1",
+             "node_type": "gene/protein", "feat": "featA", "feat_emb": [0.1, 0.2, 0.3],
+             "desc": "descA", "desc_emb": [0.1, 0.2, 0.3]}
+        ]
+        colls["nodes"].load.return_value = None
+
+        colls["edges"] = MagicMock()
+        colls["edges"].query.return_value = [
+            {"triplet_index": 0, "head_id": "id1", "tail_id": "id2",
+             "edge_type": "gene/protein,ppi,gene/protein"}
+        ]
+        colls["edges"].load.return_value = None
+
+        def collection_side_effect(name):
+            if "nodes" in name:
+                return colls["nodes"]
+            if "edges" in name:
+                return colls["edges"]
+            return None
+        mock_collection.side_effect = collection_side_effect
+
+        # Mock MultimodalPCSTPruning
+        mock_pcst_instance = MagicMock()
+        mock_pcst_instance.extract_subgraph.return_value = {
+            "nodes": pd.Series([1]),
+            "edges": pd.Series([0])
+        }
+        mock_pcst.return_value = mock_pcst_instance
+
+        # Create config with dynamic_metrics disabled
+        cfg_dynamic_disabled = MagicMock()
+        cfg_dynamic_disabled.cost_e = 1.0
+        cfg_dynamic_disabled.c_const = 1.0
+        cfg_dynamic_disabled.root = 0
+        cfg_dynamic_disabled.num_clusters = 1
+        cfg_dynamic_disabled.pruning = True
+        cfg_dynamic_disabled.verbosity_level = 0
+        cfg_dynamic_disabled.search_metric_type = "L2"
+        cfg_dynamic_disabled.node_colors_dict = {"gene/protein": "red"}
+        # Set dynamic_metrics to False
+        cfg_dynamic_disabled.vector_processing = MagicMock()
+        cfg_dynamic_disabled.vector_processing.dynamic_metrics = False
+
+        # Patch hydra.compose to return config with dynamic_metrics disabled
+        with patch("aiagents4pharma.talk2knowledgegraphs.tools."
+                   "milvus_multimodal_subgraph_extraction.hydra.initialize"), \
+             patch("aiagents4pharma.talk2knowledgegraphs.tools."
+                   "milvus_multimodal_subgraph_extraction.hydra.compose") as mock_compose:
+            mock_compose.return_value = MagicMock()
+            mock_compose.return_value.app.frontend = self.cfg_db
+            mock_compose.return_value.tools.multimodal_subgraph_extraction = cfg_dynamic_disabled
+
+            response = self.tool.invoke(
+                input={"prompt": self.prompt,
+                       "tool_call_id": "subgraph_extraction_tool",
+                       "state": self.state,
+                       "arg_data": self.arg_data}
+            )
+
+        # Verify the test completed successfully
+        self.assertEqual(response.update["messages"][-1].tool_call_id, "subgraph_extraction_tool")
+
+        # Test the collection_side_effect with unknown name for final test
+        result = collection_side_effect("final_unknown_collection")
+        self.assertIsNone(result)

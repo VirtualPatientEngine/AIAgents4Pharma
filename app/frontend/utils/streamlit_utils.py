@@ -237,6 +237,20 @@ def sample_questions_t2aa4p():
     return questions
 
 
+def sample_questions_t2kg():
+    """
+    Function to get the sample questions for Talk2KnowledgeGraphs.
+    """
+    questions = [
+        'What genes are associated with Crohn\'s disease?',
+        "List the drugs that target Interleukin-6 and show their molecular structures",
+        "Extract a subgraph for JAK1 and JAK2 genes and visualize their interactions",
+        "Find the pathway connections between TNF-alpha and inflammatory bowel disease",
+        "What are the drug targets for treating ulcerative colitis?",
+    ]
+    return questions
+
+
 def stream_response(response):
     """
     Function to stream the response from the agent.
