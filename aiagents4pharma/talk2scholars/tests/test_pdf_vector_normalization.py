@@ -38,7 +38,7 @@ def test_normalize_vectors_batch_normal_case():
         [0.6, 0.8],
         [0.6, 0.8],
     ]
-    for r, e in zip(result, expected):
+    for r, e in zip(result, expected, strict=False):
         assert pytest.approx(r) == e
 
 

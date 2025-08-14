@@ -1,6 +1,7 @@
 """pdf rag pipeline tests."""
 
 from unittest.mock import MagicMock, patch
+
 import pytest
 from langchain_core.documents import Document
 
@@ -25,18 +26,13 @@ def _base_config_fixture():
 def _mock_docs_fixture():
     """Simulates PDF document chunks."""
     return [
-        Document(page_content=f"chunk {i}", metadata={"paper_id": f"P{i % 2}"})
-        for i in range(10)
+        Document(page_content=f"chunk {i}", metadata={"paper_id": f"P{i % 2}"}) for i in range(10)
     ]
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.rerank_chunks")
-@patch(
-    "aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks"
-)
-def test_rag_pipeline_gpu_path(
-    mock_retrieve, mock_rerank, base_config_fixture, mock_docs_fixture
-):
+@patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks")
+def test_rag_pipeline_gpu_path(mock_retrieve, mock_rerank, base_config_fixture, mock_docs_fixture):
     """test RAG pipeline with GPU path."""
     mock_retrieve.return_value = mock_docs_fixture
     mock_rerank.return_value = mock_docs_fixture[:5]
@@ -55,12 +51,8 @@ def test_rag_pipeline_gpu_path(
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.rerank_chunks")
-@patch(
-    "aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks"
-)
-def test_rag_pipeline_cpu_path(
-    mock_retrieve, mock_rerank, base_config_fixture, mock_docs_fixture
-):
+@patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks")
+def test_rag_pipeline_cpu_path(mock_retrieve, mock_rerank, base_config_fixture, mock_docs_fixture):
     """rag pipeline with CPU path."""
     mock_retrieve.return_value = mock_docs_fixture
     mock_rerank.return_value = mock_docs_fixture[:5]
@@ -79,9 +71,7 @@ def test_rag_pipeline_cpu_path(
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.rerank_chunks")
-@patch(
-    "aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks"
-)
+@patch("aiagents4pharma.talk2scholars.tools.pdf.utils.rag_pipeline.retrieve_relevant_chunks")
 def test_rag_pipeline_empty_results(mock_retrieve, mock_rerank, base_config_fixture):
     """rag pipeline with no results."""
     mock_retrieve.return_value = []

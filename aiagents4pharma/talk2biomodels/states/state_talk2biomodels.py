@@ -1,33 +1,37 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This is the state file for the Talk2BioModels agent.
-'''
+"""
 
-from typing import Annotated
 import operator
-from langgraph.prebuilt.chat_agent_executor import AgentState
-from langchain_core.language_models import BaseChatModel
+from typing import Annotated
+
 from langchain_core.embeddings import Embeddings
+from langchain_core.language_models import BaseChatModel
+from langgraph.prebuilt.chat_agent_executor import AgentState
+
 
 def add_data(data1: dict, data2: dict) -> dict:
     """
     A reducer function to merge two dictionaries.
     """
-    left_idx_by_name = {data['name']: idx for idx, data in enumerate(data1)}
+    left_idx_by_name = {data["name"]: idx for idx, data in enumerate(data1)}
     merged = data1.copy()
     for data in data2:
-        idx = left_idx_by_name.get(data['name'])
+        idx = left_idx_by_name.get(data["name"])
         if idx is not None:
             merged[idx] = data
         else:
             merged.append(data)
     return merged
 
+
 class Talk2Biomodels(AgentState):
     """
     The state for the Talk2BioModels agent.
     """
+
     llm_model: BaseChatModel
     text_embedding_model: Embeddings
     pdf_file_name: str
@@ -41,4 +45,4 @@ class Talk2Biomodels(AgentState):
     dic_simulated_data: Annotated[list[dict], add_data]
     dic_scanned_data: Annotated[list[dict], add_data]
     dic_steady_state_data: Annotated[list[dict], add_data]
-    dic_annotations_data : Annotated[list[dict], add_data]
+    dic_annotations_data: Annotated[list[dict], add_data]

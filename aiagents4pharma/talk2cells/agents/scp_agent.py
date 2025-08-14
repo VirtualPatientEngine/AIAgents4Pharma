@@ -1,31 +1,35 @@
-#/usr/bin/env python3
+# /usr/bin/env python3
 
-'''
+"""
 This is the agent file for the Talk2Cells graph.
-'''
+"""
 
 import logging
 import os
+
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import create_react_agent, ToolNode
-from ..tools.scp_agent.search_studies import search_studies
-from ..tools.scp_agent.display_studies import display_studies
+from langgraph.prebuilt import ToolNode, create_react_agent
+
 from ..states.state_talk2cells import Talk2Cells
+from ..tools.scp_agent.display_studies import display_studies
+from ..tools.scp_agent.search_studies import search_studies
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_app(uniq_id):
-    '''
+    """
     This function returns the langraph app.
-    '''
+    """
+
     def agent_scp_node(state: Talk2Cells):
-        '''
+        """
         This function calls the model.
-        '''
+        """
         logger.log(logging.INFO, "Creating SCP_Agent node with thread_id %s", uniq_id)
         # Get the messages from the state
         # messages = state['messages']
@@ -48,19 +52,17 @@ def get_app(uniq_id):
     # Create an environment variable to store the LLM model
     # Check if the environment variable AIAGENTS4PHARMA_LLM_MODEL is set
     # If not, set it to 'gpt-4o-mini'
-    llm_model = os.getenv('AIAGENTS4PHARMA_LLM_MODEL', 'gpt-4o-mini')
+    llm_model = os.getenv("AIAGENTS4PHARMA_LLM_MODEL", "gpt-4o-mini")
     # print (f'LLM model: {llm_model}')
     # llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     llm = ChatOpenAI(model=llm_model, temperature=0)
     model = create_react_agent(
-                            llm,
-                            tools=tools,
-                            state_schema=Talk2Cells,
-                            state_modifier=(
-                                            "You are Talk2Cells agent."
-                                            ),
-                            checkpointer=MemorySaver()
-                        )
+        llm,
+        tools=tools,
+        state_schema=Talk2Cells,
+        state_modifier=("You are Talk2Cells agent."),
+        checkpointer=MemorySaver(),
+    )
 
     # Define a new graph
     workflow = StateGraph(Talk2Cells)

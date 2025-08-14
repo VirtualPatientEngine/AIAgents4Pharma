@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "aiagents4pharma"
@@ -13,13 +13,20 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
+  "anndata==0.11.3",
+  "cell2sentence==1.1.0",
   "copasi_basico==0.84",
   "coverage==7.6.4",
   "einops==0.8.0",
   "gdown==5.2.0",
   "gravis==0.1.0",
-  "huggingface_hub==0.26.5",
+  "gseapy==1.1.8",
+  "h5py==3.13.0",
+  "huggingface_hub>=0.34.0",
   "hydra-core==1.3.2",
+  "igraph==0.11.8",
+  "ipykernel==6.29.5",
+  "ipython==8.32.0",
   "joblib==1.4.2",
   "langchain==0.3.7",
   "langchain-community==0.3.5",
@@ -27,70 +34,84 @@ dependencies = [
   "langchain-experimental==0.3.3",
   "langchain-milvus==0.2.0",
   "langchain-nvidia-ai-endpoints==0.3.9",
-  "langchain-openai==0.2.5",
+  "langchain-openai==0.3.0",
   "langchain_ollama==0.2.3",
+  "langgraph>=0.3.5",
   "langgraph_supervisor==0.0.9",
   "matplotlib==3.9.2",
-  "openai==1.59.4",
+  "mkdocs==1.6.1",
+  "mkdocs-include-markdown-plugin==7.1.2",
+  "mkdocs-jupyter==0.25.1",
+  "mkdocs-material==9.5.47",
+  "mkdocstrings==0.27.0",
+  "mkdocstrings-python==1.12.2",
+  "nbformat==5.10.4",
+  "numpy>=1.26.0,<2.0.0",
   "ollama==0.4.7",
+  "openai==1.59.6",
+  "openpyxl==3.1.5",
   "pandas==2.2.3",
   "pcst_fast==1.0.10",
   "plotly==5.24.1",
+  "plotly-express==0.4.1",
   "pubchempy==1.0.4",
-  "pydantic==2.9.2",
+  "pydantic==2.10.5",
+  "pygeneconverter==0.3",
   "pylint==3.3.1",
-  "pypdf==5.2.0",
+  "pymilvus==2.5.11",
+  "pypdf==6.0.0",
+  "PyPDF2==3.0.1",
   "pytest==8.3.3",
   "pytest-asyncio==0.25.2",
   "pyzotero==1.6.9",
-  "pymilvus==2.5.11",
-  "streamlit==1.39.0",
-  "sentence_transformers==3.3.1",
-  "tabulate==0.9.0",
-  "torch==2.2.2",
-  "torch_geometric==2.6.1",
-  "transformers==4.48.0",
-  "mkdocs==1.6.1",
-  "mkdocs-jupyter==0.25.1",
-  "mkdocs-material==9.5.47",
-  "mkdocstrings-python==1.12.2",
-  "mkdocs-include-markdown-plugin==7.1.2",
-  "mkdocstrings==0.27.0",
-  "streamlit-feedback",
-  "anndata==0.11.3",
-  "h5py==3.13.0",
-  "igraph==0.11.8",
-  "ipykernel==6.29.5",
-  "ipython==8.32.0",
-  "nbformat==5.10.4",
-  "scipy==1.15.2",
-  "tqdm==4.67.1",
-  "umap-learn==0.5.7",
-  "plotly-express==0.4.1",
-  "seaborn==0.13.2",
+  "requests>=2.32.4",
   "scanpy==1.11.0",
-  "openpyxl==3.1.5",
+  "scipy==1.15.2",
+  "seaborn==0.13.2",
+  "setuptools>=78.1.1",
+  "sentence_transformers==3.3.1",
+  "streamlit==1.41.1",
+  "streamlit-feedback",
+  "tabulate==0.9.0",
+  "torch>=2.5.0",
+  "torch_geometric==2.6.1",
+  "tqdm==4.67.1",
+  "transformers>=4.54.0",
+  "umap-learn==0.5.7",
+  "xlsxwriter>=3.0.0,!=3.2.3",
+  "python-magic>=0.4.27",
+  "pyarrow>=14.0.0",
+  "datasets>=4.0.0",
 ]
 dynamic = ["version"]
 
-[tool.setuptools.dynamic]
-version = { file = "release_version.txt" }
-
-# find packages
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["aiagents4pharma*"]
-
-[tool.setuptools.package-data]
-aiagents4pharma = [
-  "talk2aiagents4pharma/configs/**/*",
-  "talk2biomodels/configs/**/*",
-  "talk2knowledgegraphs/configs/**/*",
-  "talk2scholars/configs/**/*",
+[project.optional-dependencies]
+dev = [
+  "black>=23.0.0",
+  "ruff>=0.1.0",
+  "mypy>=1.5.0",
+  "bandit>=1.7.0",
+  "pip-audit>=2.6.0",
+  "safety>=2.3.0",
+  "pre-commit>=3.0.0",
+  "twine>=4.0.0",
 ]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["aiagents4pharma"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"aiagents4pharma/talk2aiagents4pharma/configs" = "aiagents4pharma/talk2aiagents4pharma/configs"
+"aiagents4pharma/talk2biomodels/configs" = "aiagents4pharma/talk2biomodels/configs"
+"aiagents4pharma/talk2knowledgegraphs/configs" = "aiagents4pharma/talk2knowledgegraphs/configs"
+"aiagents4pharma/talk2scholars/configs" = "aiagents4pharma/talk2scholars/configs"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
@@ -99,3 +120,110 @@ filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.pylint.MASTER]
 extension-pkg-allow-list = ["pcst_fast"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",  # pycodestyle errors
+  "W",  # pycodestyle warnings
+  "F",  # pyflakes
+  "I",  # isort
+  "B",  # flake8-bugbear
+  "C4", # flake8-comprehensions
+  "UP", # pyupgrade
+]
+ignore = [
+  "E501", # line too long, handled by black
+  "B008", # do not perform function calls in argument defaults
+  "C901", # too complex
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["setuptools.*", "pkg_resources.*"]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "test_*"]
+skips = [
+  "B101",
+  "B601",
+  "B404",
+  "B607",
+  "B602",
+  "B403",
+  "B301",
+  "B615",
+  "B614",
+  "B603",
+  "B405",
+  "B314",
+  "B501",
+]
+
+[tool.bandit.assert_used]
+skips = ["*_test.py", "*/test_*.py"]
+
+[tool.sonarcloud]
+# SonarCloud integration settings
+projectKey = "VirtualPatientEngine_AIAgents4Pharma"
+organization = "virtualpatientengine"
+
+[tool.coverage.run]
+source = ["aiagents4pharma"]
+omit = ["*/tests/*", "*/test_*", "docs/*", "app/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "if settings.DEBUG",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "class .*\\bProtocol\\):",
+  "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"

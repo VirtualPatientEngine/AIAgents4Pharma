@@ -21,15 +21,9 @@ class TestDownloadArxivPaper(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
     )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
-    )
-    def test_download_arxiv_paper_success(
-        self, mock_get, mock_compose, mock_initialize
-    ):
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get")
+    def test_download_arxiv_paper_success(self, mock_get, mock_compose, mock_initialize):
         """test the download_arxiv_paper tool for successful retrieval of metadata and PDF URL."""
         # Set up a dummy Hydra config.
         dummy_cfg = MagicMock()
@@ -95,12 +89,8 @@ class TestDownloadArxivPaper(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
     )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get")
     def test_no_entry_found(self, mock_get, mock_compose, mock_initialize):
         """test the download_arxiv_paper tool for no entry found in XML response."""
         # Dummy config as before.
@@ -142,12 +132,8 @@ class TestDownloadArxivPaper(unittest.TestCase):
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
     )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose")
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.requests.get")
     def test_no_pdf_url_found(self, mock_get, mock_compose, mock_initialize):
         """test the download_arxiv_paper tool for no PDF URL found in XML response."""
         # Dummy config.
@@ -181,9 +167,7 @@ class TestDownloadArxivPaper(unittest.TestCase):
         tool_input = {"arxiv_ids": [arxiv_id], "tool_call_id": tool_call_id}
         with self.assertRaises(RuntimeError) as context:
             download_arxiv_paper.run(tool_input)
-        self.assertEqual(
-            str(context.exception), f"Could not find PDF URL for arXiv ID {arxiv_id}"
-        )
+        self.assertEqual(str(context.exception), f"Could not find PDF URL for arXiv ID {arxiv_id}")
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.extract_metadata"
@@ -192,9 +176,7 @@ class TestDownloadArxivPaper(unittest.TestCase):
         "aiagents4pharma.talk2scholars.tools.paper_download.download_"
         "arxiv_input.fetch_arxiv_metadata"
     )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.compose")
     @patch(
         "aiagents4pharma.talk2scholars.tools.paper_download.download_arxiv_input.hydra.initialize"
     )

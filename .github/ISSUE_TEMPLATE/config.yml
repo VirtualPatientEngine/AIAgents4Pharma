@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://virtualpatientengine.github.io/AIAgents4Pharma/
+    about: Check our comprehensive documentation first
+  - name: 💬 Discussions
+    url: https://github.com/VirtualPatientEngine/AIAgents4Pharma/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🔒 Security Issues
+    url: https://github.com/VirtualPatientEngine/AIAgents4Pharma/security/advisories/new
+    about: Report security vulnerabilities privately

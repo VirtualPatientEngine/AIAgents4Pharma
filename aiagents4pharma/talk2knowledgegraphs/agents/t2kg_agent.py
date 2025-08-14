@@ -1,34 +1,42 @@
-'''
+"""
 This is the agent file for the Talk2KnowledgeGraphs agent.
-'''
+"""
 
 import logging
 from typing import Annotated
+
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import create_react_agent, ToolNode, InjectedState
+from langgraph.prebuilt import InjectedState, ToolNode, create_react_agent
+
+from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
+from ..tools.graphrag_reasoning import GraphRAGReasoningTool
+
 # from ..tools.multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
-from ..tools.milvus_multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
+from ..tools.milvus_multimodal_subgraph_extraction import (
+    MultimodalSubgraphExtractionTool,
+)
+
 # from ..tools.cu2_multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
 # from ..tools.gsfs_multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
 from ..tools.subgraph_summarization import SubgraphSummarizationTool
-from ..tools.graphrag_reasoning import GraphRAGReasoningTool
-from ..states.state_talk2knowledgegraphs import Talk2KnowledgeGraphs
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_app(uniq_id, llm_model: BaseChatModel):
-    '''
+    """
     This function returns the langraph app.
-    '''
+    """
+
     def agent_t2kg_node(state: Annotated[dict, InjectedState]):
-        '''
+        """
         This function calls the model.
-        '''
+        """
         logger.log(logging.INFO, "Calling t2kg_agent node with thread_id %s", uniq_id)
         response = model.invoke(state, {"configurable": {"thread_id": uniq_id}})
 
@@ -37,29 +45,30 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # Load hydra configuration
     logger.log(logging.INFO, "Load Hydra configuration for Talk2KnowledgeGraphs agent.")
     with hydra.initialize(version_base=None, config_path="../configs"):
-        cfg = hydra.compose(config_name='config',
-                            overrides=['agents/t2kg_agent=default'])
+        cfg = hydra.compose(config_name="config", overrides=["agents/t2kg_agent=default"])
         cfg = cfg.agents.t2kg_agent
 
     # Define the tools
     subgraph_extraction = MultimodalSubgraphExtractionTool()
     subgraph_summarization = SubgraphSummarizationTool()
     graphrag_reasoning = GraphRAGReasoningTool()
-    tools = ToolNode([
-                    subgraph_extraction,
-                    subgraph_summarization,
-                    graphrag_reasoning,
-                    ])
+    tools = ToolNode(
+        [
+            subgraph_extraction,
+            subgraph_summarization,
+            graphrag_reasoning,
+        ]
+    )
 
     # Create the agent
     model = create_react_agent(
-                llm_model,
-                tools=tools,
-                state_schema=Talk2KnowledgeGraphs,
-                prompt=cfg.state_modifier,
-                version='v2',
-                checkpointer=MemorySaver()
-            )
+        llm_model,
+        tools=tools,
+        state_schema=Talk2KnowledgeGraphs,
+        prompt=cfg.state_modifier,
+        version="v2",
+        checkpointer=MemorySaver(),
+    )
 
     # Define a new graph
     workflow = StateGraph(Talk2KnowledgeGraphs)
@@ -79,11 +88,12 @@ def get_app(uniq_id, llm_model: BaseChatModel):
     # meaning you can use it as you would any other runnable.
     # Note that we're (optionally) passing the memory
     # when compiling the graph
-    app = workflow.compile(checkpointer=checkpointer,
-                           name="T2KG_Agent")
-    logger.log(logging.INFO,
-               "Compiled the graph with thread_id %s and llm_model %s",
-               uniq_id,
-               llm_model)
+    app = workflow.compile(checkpointer=checkpointer, name="T2KG_Agent")
+    logger.log(
+        logging.INFO,
+        "Compiled the graph with thread_id %s and llm_model %s",
+        uniq_id,
+        llm_model,
+    )
 
     return app

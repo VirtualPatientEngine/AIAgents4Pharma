@@ -75,7 +75,7 @@ jobs:
 
           # Release ONLY if compose files changed
           if [ "${{ steps.changes.outputs.compose_changed }}" == "true" ]; then
-            SHOULD_RELEASE=true  
+            SHOULD_RELEASE=true
             echo "Compose files changed, will release"
           fi
 
@@ -118,26 +118,26 @@ jobs:
           # Process each application's compose files
           for app in talk2aiagents4pharma talk2scholars talk2knowledgegraphs; do
             app_path="aiagents4pharma/$app/docker-compose"
-            
+
             if [ -d "$app_path" ]; then
               echo "Processing $app compose files"
-              
+
               # Create app directories with cpu/gpu structure
               mkdir -p "release/$app/cpu"
               mkdir -p "release/$app/gpu"
-              
+
               # Process CPU version
               if [ -f "$app_path/cpu/docker-compose.yml" ]; then
                 cp "$app_path/cpu/docker-compose.yml" "release/$app/cpu/docker-compose.yml"
                 echo "Copied CPU compose for $app"
               fi
-              
-              # Process GPU version  
+
+              # Process GPU version
               if [ -f "$app_path/gpu/docker-compose.yml" ]; then
                 cp "$app_path/gpu/docker-compose.yml" "release/$app/gpu/docker-compose.yml"
                 echo "Copied GPU compose for $app"
               fi
-              
+
               # Copy any additional files from the main docker-compose directory
               if [ -d "$app_path" ]; then
                 find "$app_path" -maxdepth 1 -name "*.yml" -o -name "*.yaml" -o -name "*.env*" -o -name "README*" | while read extra_file; do
@@ -224,7 +224,7 @@ jobs:
           - 8GB+ RAM recommended
           - 10GB+ disk space
 
-          ### GPU Version  
+          ### GPU Version
           - NVIDIA Docker runtime
           - CUDA-compatible GPU
           - 16GB+ RAM recommended
@@ -234,7 +234,7 @@ jobs:
 
           Default ports (customize in your compose file if needed):
           - **talk2aiagents4pharma**: http://localhost:8501
-          - **talk2scholars**: http://localhost:8502  
+          - **talk2scholars**: http://localhost:8502
           - **talk2knowledgegraphs**: http://localhost:8503
           - **Milvus**: localhost:19530
           - **Minio**: http://localhost:9000 (console: :9001)
@@ -293,7 +293,7 @@ jobs:
 
           BATCH_SIZE=500
           EOF
-              
+
               # Copy to GPU directory
               cp "release/$app/cpu/.env.example" "release/$app/gpu/.env.example"
             fi
@@ -324,7 +324,7 @@ jobs:
           MILVUS_DB_NAME=pdf_rag_db
           MILVUS_COLLECTION_NAME=pdf_rag_documents
           EOF
-            
+
             # Copy to GPU directory
             cp "release/talk2scholars/cpu/.env.example" "release/talk2scholars/gpu/.env.example"
           fi

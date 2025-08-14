@@ -2,11 +2,13 @@
 Exctraction of subgraph using Prize-Collecting Steiner Tree (PCST) algorithm.
 """
 
-from typing import Tuple, NamedTuple
+from typing import NamedTuple
+
 import numpy as np
-import torch
 import pcst_fast
+import torch
 from torch_geometric.data.data import Data
+
 
 class PCSTPruning(NamedTuple):
     """
@@ -26,6 +28,7 @@ class PCSTPruning(NamedTuple):
         pruning: The pruning strategy to use.
         verbosity_level: The verbosity level.
     """
+
     topk: int = 3
     topk_e: int = 3
     cost_e: float = 0.5
@@ -76,9 +79,9 @@ class PCSTPruning(NamedTuple):
         e_prizes[e_prizes < topk_e_values[-1]] = 0.0
         last_topk_e_value = topk_e
         for k in range(topk_e):
-            indices = inverse_indices == (
-                unique_prizes == topk_e_values[k]
-            ).nonzero(as_tuple=True)[0]
+            indices = (
+                inverse_indices == (unique_prizes == topk_e_values[k]).nonzero(as_tuple=True)[0]
+            )
             value = min((topk_e - k) / indices.sum().item(), last_topk_e_value)
             e_prizes[indices] = value
             last_topk_e_value = value * (1 - self.c_const)
@@ -87,7 +90,7 @@ class PCSTPruning(NamedTuple):
 
     def compute_subgraph_costs(
         self, graph: Data, prizes: dict
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
@@ -145,7 +148,11 @@ class PCSTPruning(NamedTuple):
         return edges_dict, prizes, costs, mapping
 
     def get_subgraph_nodes_edges(
-        self, graph: Data, vertices: np.ndarray, edges_dict: dict, mapping: dict,
+        self,
+        graph: Data,
+        vertices: np.ndarray,
+        edges_dict: dict,
+        mapping: dict,
     ) -> dict:
         """
         Get the selected nodes and edges of the subgraph based on the vertices and edges computed
@@ -175,9 +182,7 @@ class PCSTPruning(NamedTuple):
             subgraph_edges = np.array(subgraph_edges + virtual_edges)
         edge_index = graph.edge_index[:, subgraph_edges]
         subgraph_nodes = np.unique(
-            np.concatenate(
-                [subgraph_nodes, edge_index[0].numpy(), edge_index[1].numpy()]
-            )
+            np.concatenate([subgraph_nodes, edge_index[0].numpy(), edge_index[1].numpy()])
         )
 
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
@@ -201,9 +206,7 @@ class PCSTPruning(NamedTuple):
         prizes = self.compute_prizes(graph, query_emb)
 
         # Compute costs in constructing the subgraph
-        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
-            graph, prizes
-        )
+        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(graph, prizes)
 
         # Retrieve the subgraph using the PCST algorithm
         result_vertices, result_edges = pcst_fast.pcst_fast(
@@ -220,6 +223,7 @@ class PCSTPruning(NamedTuple):
             graph,
             result_vertices,
             {"edges": result_edges, "num_prior_edges": edges_dict["num_prior_edges"]},
-            mapping)
+            mapping,
+        )
 
         return subgraph

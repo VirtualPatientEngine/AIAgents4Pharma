@@ -2,8 +2,9 @@
 Test cases for utils/enrichments/ollama.py
 """
 
-import pytest
 import ollama
+import pytest
+
 from ..utils.enrichments.ollama import EnrichmentWithOllama
 
 
@@ -13,7 +14,7 @@ def fixture_ollama_config():
     return {
         "model_name": "llama3.2:1b",
         "prompt_enrichment": """
-            Given the input as a list of strings, please return the list of addditional information 
+            Given the input as a list of strings, please return the list of addditional information
             of each input terms using your prior knowledge.
 
             Example:

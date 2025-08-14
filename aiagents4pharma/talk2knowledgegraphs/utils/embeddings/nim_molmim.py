@@ -3,14 +3,17 @@ Embedding class using MOLMIM model from NVIDIA NIM.
 """
 
 import json
-from typing import List
+
 import requests
+
 from .embeddings import Embeddings
+
 
 class EmbeddingWithMOLMIM(Embeddings):
     """
     Embedding class using MOLMIM model from NVIDIA NIM
     """
+
     def __init__(self, base_url: str):
         """
         Initialize the EmbeddingWithMOLMIM class.
@@ -21,7 +24,7 @@ class EmbeddingWithMOLMIM(Embeddings):
         # Set base URL
         self.base_url = base_url
 
-    def embed_documents(self, texts: List[str]) -> List[float]:
+    def embed_documents(self, texts: list[str]) -> list[float]:
         """
         Generate embedding for a list of SMILES strings using MOLMIM model.
 
@@ -31,16 +34,13 @@ class EmbeddingWithMOLMIM(Embeddings):
         Returns:
             The list of embeddings for the given SMILES strings.
         """
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
+        headers = {"accept": "application/json", "Content-Type": "application/json"}
         data = json.dumps({"sequences": texts})
         response = requests.post(self.base_url, headers=headers, data=data, timeout=60)
         embeddings = response.json()["embeddings"]
         return embeddings
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         """
         Generate embeddings for an input query using MOLMIM model.
 

@@ -4,16 +4,12 @@ Unit tests for Zotero write tool in zotero_write.py.
 
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_write import zotero_write
 
-dummy_zotero_write_config = SimpleNamespace(
-    user_id="dummy", library_type="user", api_key="dummy"
-)
-dummy_cfg = SimpleNamespace(
-    tools=SimpleNamespace(zotero_write=dummy_zotero_write_config)
-)
+dummy_zotero_write_config = SimpleNamespace(user_id="dummy", library_type="user", api_key="dummy")
+dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_write=dummy_zotero_write_config))
 
 
 class TestZoteroSaveTool(unittest.TestCase):
@@ -49,9 +45,7 @@ class TestZoteroSaveTool(unittest.TestCase):
             }
         if papers is not None:
             # When papers is provided as dict, use it directly.
-            state["last_displayed_papers"] = (
-                papers if isinstance(papers, dict) else "papers"
-            )
+            state["last_displayed_papers"] = papers if isinstance(papers, dict) else "papers"
             if isinstance(papers, dict):
                 state["papers"] = papers
         return state
@@ -83,9 +77,7 @@ class TestZoteroSaveTool(unittest.TestCase):
     )
     def test_invalid_collection(self, mock_find, mock_fetch):
         """Test when collection path is invalid"""
-        self.fake_zot.collections.return_value = [
-            {"key": "k1", "data": {"name": "Existing"}}
-        ]
+        self.fake_zot.collections.return_value = [{"key": "k1", "data": {"name": "Existing"}}]
         # Provide a valid papers dict so we don't hit the no-papers error.
         state = self.make_state({"p1": {"Title": "X"}}, True)
         result = zotero_write.run(
@@ -143,9 +135,7 @@ class TestZoteroSaveTool(unittest.TestCase):
         self.fake_zot.collections.return_value = [
             {"key": "colKey", "data": {"name": "Test Collection"}}
         ]
-        self.fake_zot.create_items.return_value = {
-            "successful": {"0": {"key": "item1"}}
-        }
+        self.fake_zot.create_items.return_value = {"successful": {"0": {"key": "item1"}}}
         mock_fetch.return_value = {"p1": {"Title": "X"}}
         mock_find.return_value = "colKey"
 

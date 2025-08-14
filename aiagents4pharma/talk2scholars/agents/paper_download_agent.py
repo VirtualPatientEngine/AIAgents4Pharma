@@ -5,17 +5,19 @@ paper details and PDFs. It is part of the Talk2Scholars project.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
+
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt.chat_agent_executor import create_react_agent
 from langgraph.prebuilt.tool_node import ToolNode
-from langgraph.checkpoint.memory import MemorySaver
+
 from ..state.state_talk2scholars import Talk2Scholars
 from ..tools.paper_download.download_arxiv_input import download_arxiv_paper
-from ..tools.paper_download.download_medrxiv_input import download_medrxiv_paper
 from ..tools.paper_download.download_biorxiv_input import download_biorxiv_paper
+from ..tools.paper_download.download_medrxiv_input import download_medrxiv_paper
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -64,7 +66,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         checkpointer=MemorySaver(),
     )
 
-    def paper_download_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
+    def paper_download_agent_node(state: Talk2Scholars) -> dict[str, Any]:
         """
         Processes the current state to fetch the research paper from arXiv, BioRxiv, or MedRxiv.
         """

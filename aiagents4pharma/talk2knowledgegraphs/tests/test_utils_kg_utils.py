@@ -2,9 +2,10 @@
 Test cases for utils/kg_utils.py
 """
 
-import pytest
 import networkx as nx
 import pandas as pd
+import pytest
+
 from ..utils import kg_utils
 
 
@@ -62,9 +63,7 @@ def test_df_pandas_to_kg():
     }
     df_edges = pd.DataFrame(edges_data)
 
-    kg = kg_utils.df_pandas_to_kg(
-        df_edges, df_nodes_attrs, "node_source", "node_target"
-    )
+    kg = kg_utils.df_pandas_to_kg(df_edges, df_nodes_attrs, "node_source", "node_target")
 
     assert len(kg.nodes) == 2
     assert len(kg.edges) == 1

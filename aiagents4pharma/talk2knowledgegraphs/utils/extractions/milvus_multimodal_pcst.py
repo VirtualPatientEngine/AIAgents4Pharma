@@ -2,23 +2,28 @@
 Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) algorithm.
 """
 
-from typing import Tuple, NamedTuple
 import logging
 import pickle
+from typing import NamedTuple
+
 import pandas as pd
 import pcst_fast
 from pymilvus import Collection
+
 try:
-    import cupy as py
     import cudf
+    import cupy as py
+
     df = cudf
 except ImportError:
     import numpy as py
+
     df = pd
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class MultimodalPCSTPruning(NamedTuple):
     """
@@ -38,6 +43,7 @@ class MultimodalPCSTPruning(NamedTuple):
         pruning: The pruning strategy to use.
         verbosity_level: The verbosity level.
     """
+
     topk: int = 3
     topk_e: int = 3
     cost_e: float = 0.5
@@ -81,9 +87,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return colls
 
-    def _compute_node_prizes(self,
-                             query_emb: list,
-                             colls: dict) -> dict:
+    def _compute_node_prizes(self, query_emb: list, colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
@@ -107,7 +111,8 @@ class MultimodalPCSTPruning(NamedTuple):
                 anns_field="desc_emb",
                 param={"metric_type": self.metric_type},
                 limit=topk,
-                output_fields=["node_id"])
+                output_fields=["node_id"],
+            )
         else:
             # Search the collection with the query embedding
             res = colls["nodes_type"].search(
@@ -115,16 +120,15 @@ class MultimodalPCSTPruning(NamedTuple):
                 anns_field="feat_emb",
                 param={"metric_type": self.metric_type},
                 limit=topk,
-                output_fields=["node_id"])
+                output_fields=["node_id"],
+            )
 
         # Update the prizes based on the search results
         n_prizes[[r.id for r in res[0]]] = py.arange(topk, 0, -1).astype(py.float32)
 
         return n_prizes
 
-    def _compute_edge_prizes(self,
-                             text_emb: list,
-                             colls: dict) -> py.ndarray:
+    def _compute_edge_prizes(self, text_emb: list, colls: dict) -> py.ndarray:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
@@ -144,9 +148,10 @@ class MultimodalPCSTPruning(NamedTuple):
             data=[text_emb],
             anns_field="feat_emb",
             param={"metric_type": self.metric_type},
-            limit=topk_e, # Only retrieve the top-k edges
+            limit=topk_e,  # Only retrieve the top-k edges
             # limit=colls["edges"].num_entities,
-            output_fields=["head_id", "tail_id"])
+            output_fields=["head_id", "tail_id"],
+        )
 
         # Update the prizes based on the search results
         e_prizes[[r.id for r in res[0]]] = [r.score for r in res[0]]
@@ -164,10 +169,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return e_prizes
 
-    def compute_prizes(self,
-                       text_emb: list,
-                       query_emb: list,
-                       colls: dict) -> dict:
+    def compute_prizes(self, text_emb: list, query_emb: list, colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes,
         as well as the edge prizes based on the cosine similarity between the query and edges.
@@ -193,10 +195,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return {"nodes": n_prizes, "edges": e_prizes}
 
-    def compute_subgraph_costs(self,
-                               edge_index: py.ndarray,
-                               num_nodes: int,
-                               prizes: dict) -> Tuple[py.ndarray, py.ndarray, py.ndarray]:
+    def compute_subgraph_costs(
+        self, edge_index: py.ndarray, num_nodes: int, prizes: dict
+    ) -> tuple[py.ndarray, py.ndarray, py.ndarray]:
         """
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
@@ -236,7 +237,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         # Edge index mapping: local real edge idx -> original global index
         logger.log(logging.INFO, "Creating mapping for real edges")
-        mapping_edges = dict(zip(range(len(real_["indices"])), real_["indices"].tolist()))
+        mapping_edges = dict(
+            zip(range(len(real_["indices"])), real_["indices"].tolist(), strict=False)
+        )
 
         # Virtual edge handling
         logger.log(logging.INFO, "Computing virtual edges")
@@ -254,8 +257,7 @@ class MultimodalPCSTPruning(NamedTuple):
         logger.log(logging.INFO, "Creating virtual edges")
         virt_["edges_1"] = py.stack([virt_["src"], virt_["node_ids"]], axis=1)
         virt_["edges_2"] = py.stack([virt_["node_ids"], virt_["dst"]], axis=1)
-        virt_["edges"] = py.concatenate([virt_["edges_1"],
-                                         virt_["edges_2"]], axis=0)
+        virt_["edges"] = py.concatenate([virt_["edges_1"], virt_["edges_2"]], axis=0)
         virt_["costs"] = py.zeros((virt_["edges"].shape[0],), dtype=real_["costs"].dtype)
 
         # Combine real and virtual edges/costs
@@ -269,7 +271,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         # Mapping virtual node ID -> edge index in original graph
         logger.log(logging.INFO, "Creating mapping for virtual nodes")
-        mapping_nodes = dict(zip(virt_["node_ids"].tolist(), virt_["indices"].tolist()))
+        mapping_nodes = dict(
+            zip(virt_["node_ids"].tolist(), virt_["indices"].tolist(), strict=False)
+        )
 
         # Build return values
         logger.log(logging.INFO, "Building return values")
@@ -284,11 +288,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return edges_dict, final_prizes, all_costs, mapping
 
-    def get_subgraph_nodes_edges(self,
-                                 num_nodes: int,
-                                 vertices: py.ndarray,
-                                 edges_dict: dict,
-                                 mapping: dict) -> dict:
+    def get_subgraph_nodes_edges(
+        self, num_nodes: int, vertices: py.ndarray, edges_dict: dict, mapping: dict
+    ) -> dict:
         """
         Get the selected nodes and edges of the subgraph based on the vertices and edges computed
         by the PCST algorithm.
@@ -317,19 +319,11 @@ class MultimodalPCSTPruning(NamedTuple):
             virtual_edges = [mapping["nodes"][i.item()] for i in virtual_vertices]
             subgraph_edges = py.array(subgraph_edges + virtual_edges)
         edge_index = edges_dict["edge_index"][:, subgraph_edges]
-        subgraph_nodes = py.unique(
-            py.concatenate(
-                [subgraph_nodes, edge_index[0], edge_index[1]]
-            )
-        )
+        subgraph_nodes = py.unique(py.concatenate([subgraph_nodes, edge_index[0], edge_index[1]]))
 
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
 
-    def extract_subgraph(self,
-                         text_emb: list,
-                         query_emb: list,
-                         modality: str,
-                         cfg: dict) -> dict:
+    def extract_subgraph(self, text_emb: list, query_emb: list, modality: str, cfg: dict) -> dict:
         """
         Perform the Prize-Collecting Steiner Tree (PCST) algorithm to extract the subgraph.
 
@@ -365,7 +359,8 @@ class MultimodalPCSTPruning(NamedTuple):
         # Compute costs in constructing the subgraph
         logger.log(logging.INFO, "compute_subgraph_costs")
         edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
-            edge_index, colls["nodes"].num_entities, prizes)
+            edge_index, colls["nodes"].num_entities, prizes
+        )
 
         # Retrieve the subgraph using the PCST algorithm
         logger.log(logging.INFO, "Running PCST algorithm")
@@ -384,10 +379,13 @@ class MultimodalPCSTPruning(NamedTuple):
         subgraph = self.get_subgraph_nodes_edges(
             colls["nodes"].num_entities,
             py.asarray(result_vertices),
-            {"edges": py.asarray(result_edges),
-             "num_prior_edges": edges_dict["num_prior_edges"],
-             "edge_index": edge_index},
-            mapping)
+            {
+                "edges": py.asarray(result_edges),
+                "num_prior_edges": edges_dict["num_prior_edges"],
+                "edge_index": edge_index,
+            },
+            mapping,
+        )
         print(subgraph)
 
         return subgraph

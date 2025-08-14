@@ -2,12 +2,14 @@
 Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) algorithm.
 """
 
-from typing import Tuple, NamedTuple
+from typing import NamedTuple
+
 import numpy as np
 import pandas as pd
-import torch
 import pcst_fast
+import torch
 from torch_geometric.data.data import Data
+
 
 class MultimodalPCSTPruning(NamedTuple):
     """
@@ -27,6 +29,7 @@ class MultimodalPCSTPruning(NamedTuple):
         pruning: The pruning strategy to use.
         verbosity_level: The verbosity level.
     """
+
     topk: int = 3
     topk_e: int = 3
     cost_e: float = 0.5
@@ -37,10 +40,7 @@ class MultimodalPCSTPruning(NamedTuple):
     verbosity_level: int = 0
     use_description: bool = False
 
-    def _compute_node_prizes(self,
-                             graph: Data,
-                             query_emb: torch.Tensor,
-                             modality: str) :
+    def _compute_node_prizes(self, graph: Data, query_emb: torch.Tensor, modality: str):
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
@@ -54,25 +54,28 @@ class MultimodalPCSTPruning(NamedTuple):
             The prizes of the nodes.
         """
         # Convert PyG graph to a DataFrame
-        graph_df = pd.DataFrame({
-            "node_type": graph.node_type,
-            "desc_x": [x.tolist() for x in graph.desc_x],
-            "x": [list(x) for x in graph.x],
-            "score": [0.0 for _ in range(len(graph.node_id))],
-        })
+        graph_df = pd.DataFrame(
+            {
+                "node_type": graph.node_type,
+                "desc_x": [x.tolist() for x in graph.desc_x],
+                "x": [list(x) for x in graph.x],
+                "score": [0.0 for _ in range(len(graph.node_id))],
+            }
+        )
 
         # Calculate cosine similarity for text features and update the score
         if self.use_description:
             graph_df.loc[:, "score"] = torch.nn.CosineSimilarity(dim=-1)(
-                    query_emb,
-                    torch.tensor(list(graph_df.desc_x.values)) # Using textual description features
-                ).tolist()
+                query_emb,
+                torch.tensor(list(graph_df.desc_x.values)),  # Using textual description features
+            ).tolist()
         else:
-            graph_df.loc[graph_df["node_type"] == modality,
-                         "score"] = torch.nn.CosineSimilarity(dim=-1)(
-                    query_emb,
-                    torch.tensor(list(graph_df[graph_df["node_type"]== modality].x.values))
-                ).tolist()
+            graph_df.loc[graph_df["node_type"] == modality, "score"] = torch.nn.CosineSimilarity(
+                dim=-1
+            )(
+                query_emb,
+                torch.tensor(list(graph_df[graph_df["node_type"] == modality].x.values)),
+            ).tolist()
 
         # Set the prizes for nodes based on the similarity scores
         n_prizes = torch.tensor(graph_df.score.values, dtype=torch.float32)
@@ -84,9 +87,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return n_prizes
 
-    def _compute_edge_prizes(self,
-                             graph: Data,
-                             text_emb: torch.Tensor) :
+    def _compute_edge_prizes(self, graph: Data, text_emb: torch.Tensor):
         """
         Compute the node prizes based on the cosine similarity between the query and nodes.
 
@@ -106,20 +107,22 @@ class MultimodalPCSTPruning(NamedTuple):
         e_prizes[e_prizes < topk_e_values[-1]] = 0.0
         last_topk_e_value = topk_e
         for k in range(topk_e):
-            indices = inverse_indices == (
-                unique_prizes == topk_e_values[k]
-            ).nonzero(as_tuple=True)[0]
+            indices = (
+                inverse_indices == (unique_prizes == topk_e_values[k]).nonzero(as_tuple=True)[0]
+            )
             value = min((topk_e - k) / indices.sum().item(), last_topk_e_value)
             e_prizes[indices] = value
             last_topk_e_value = value * (1 - self.c_const)
 
         return e_prizes
 
-    def compute_prizes(self,
-                       graph: Data,
-                       text_emb: torch.Tensor,
-                       query_emb: torch.Tensor,
-                       modality: str):
+    def compute_prizes(
+        self,
+        graph: Data,
+        text_emb: torch.Tensor,
+        query_emb: torch.Tensor,
+        modality: str,
+    ):
         """
         Compute the node prizes based on the cosine similarity between the query and nodes,
         as well as the edge prizes based on the cosine similarity between the query and edges.
@@ -144,9 +147,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return {"nodes": n_prizes, "edges": e_prizes}
 
-    def compute_subgraph_costs(self,
-                               graph: Data,
-                               prizes: dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def compute_subgraph_costs(
+        self, graph: Data, prizes: dict
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Compute the costs in constructing the subgraph proposed by G-Retriever paper.
 
@@ -204,7 +207,11 @@ class MultimodalPCSTPruning(NamedTuple):
         return edges_dict, prizes, costs, mapping
 
     def get_subgraph_nodes_edges(
-        self, graph: Data, vertices: np.ndarray, edges_dict: dict, mapping: dict,
+        self,
+        graph: Data,
+        vertices: np.ndarray,
+        edges_dict: dict,
+        mapping: dict,
     ) -> dict:
         """
         Get the selected nodes and edges of the subgraph based on the vertices and edges computed
@@ -234,18 +241,18 @@ class MultimodalPCSTPruning(NamedTuple):
             subgraph_edges = np.array(subgraph_edges + virtual_edges)
         edge_index = graph.edge_index[:, subgraph_edges]
         subgraph_nodes = np.unique(
-            np.concatenate(
-                [subgraph_nodes, edge_index[0].numpy(), edge_index[1].numpy()]
-            )
+            np.concatenate([subgraph_nodes, edge_index[0].numpy(), edge_index[1].numpy()])
         )
 
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
 
-    def extract_subgraph(self,
-                         graph: Data,
-                         text_emb: torch.Tensor,
-                         query_emb: torch.Tensor,
-                         modality: str) -> dict:
+    def extract_subgraph(
+        self,
+        graph: Data,
+        text_emb: torch.Tensor,
+        query_emb: torch.Tensor,
+        modality: str,
+    ) -> dict:
         """
         Perform the Prize-Collecting Steiner Tree (PCST) algorithm to extract the subgraph.
 
@@ -268,9 +275,7 @@ class MultimodalPCSTPruning(NamedTuple):
         prizes = self.compute_prizes(graph, text_emb, query_emb, modality)
 
         # Compute costs in constructing the subgraph
-        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(
-            graph, prizes
-        )
+        edges_dict, prizes, costs, mapping = self.compute_subgraph_costs(graph, prizes)
 
         # Retrieve the subgraph using the PCST algorithm
         result_vertices, result_edges = pcst_fast.pcst_fast(
@@ -287,6 +292,7 @@ class MultimodalPCSTPruning(NamedTuple):
             graph,
             result_vertices,
             {"edges": result_edges, "num_prior_edges": edges_dict["num_prior_edges"]},
-            mapping)
+            mapping,
+        )
 
         return subgraph

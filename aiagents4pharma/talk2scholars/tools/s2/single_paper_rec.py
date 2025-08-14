@@ -8,12 +8,14 @@ Given a Semantic Scholar paper ID, this tool retrieves related works
 """
 
 import logging
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
+
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
+
 from .utils.single_helper import SinglePaperRecData
 
 # Configure logging
@@ -40,7 +42,7 @@ class SinglePaperRecInput(BaseModel):
         ge=1,
         le=500,
     )
-    year: Optional[str] = Field(
+    year: str | None = Field(
         default=None,
         description="Publication year filter; supports formats::"
         "'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
@@ -57,7 +59,7 @@ def get_single_paper_recommendations(
     paper_id: str,
     tool_call_id: Annotated[str, InjectedToolCallId],
     limit: int = 10,
-    year: Optional[str] = None,
+    year: str | None = None,
 ) -> Command[Any]:
     """
     Recommend related research papers using the Semantic Scholar API for a single paper ID.

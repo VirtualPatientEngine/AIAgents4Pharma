@@ -2,23 +2,25 @@
 Tool for performing multimodal subgraph extraction.
 """
 
-from typing import Type, Annotated
 import logging
 import pickle
-import numpy as np
-import pandas as pd
+from typing import Annotated
+
 import hydra
 import networkx as nx
-from pydantic import BaseModel, Field
-from langchain_core.tools import BaseTool
-from langchain_core.messages import ToolMessage
-from langchain_core.tools.base import InjectedToolCallId
-from langgraph.types import Command
-from langgraph.prebuilt import InjectedState
+import numpy as np
+import pandas as pd
 import torch
+from langchain_core.messages import ToolMessage
+from langchain_core.tools import BaseTool
+from langchain_core.tools.base import InjectedToolCallId
+from langgraph.prebuilt import InjectedState
+from langgraph.types import Command
+from pydantic import BaseModel, Field
 from torch_geometric.data import Data
-from ..utils.extractions.multimodal_pcst import MultimodalPCSTPruning
+
 from ..utils.embeddings.ollama import EmbeddingWithOllama
+from ..utils.extractions.multimodal_pcst import MultimodalPCSTPruning
 from .load_arguments import ArgumentData
 
 # Initialize logger
@@ -38,14 +40,10 @@ class MultimodalSubgraphExtractionInput(BaseModel):
         arg_data: Argument for analytical process over graph data.
     """
 
-    tool_call_id: Annotated[str, InjectedToolCallId] = Field(
-        description="Tool call ID."
-    )
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(description="Tool call ID.")
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
-    arg_data: ArgumentData = Field(
-        description="Experiment over graph data.", default=None
-    )
+    arg_data: ArgumentData = Field(description="Experiment over graph data.", default=None)
 
 
 class MultimodalSubgraphExtractionTool(BaseTool):
@@ -56,12 +54,11 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
     name: str = "subgraph_extraction"
     description: str = "A tool for subgraph extraction based on user's prompt."
-    args_schema: Type[BaseModel] = MultimodalSubgraphExtractionInput
+    args_schema: type[BaseModel] = MultimodalSubgraphExtractionInput
 
-    def _prepare_query_modalities(self,
-                                  prompt_emb: list,
-                                  state: Annotated[dict, InjectedState],
-                                  pyg_graph: Data) -> pd.DataFrame:
+    def _prepare_query_modalities(
+        self, prompt_emb: list, state: Annotated[dict, InjectedState], pyg_graph: Data
+    ) -> pd.DataFrame:
         """
         Prepare the modality-specific query for subgraph extraction.
 
@@ -75,77 +72,90 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         """
         # Initialize dataframes
         multimodal_df = pd.DataFrame({"name": []})
-        query_df = pd.DataFrame({"node_id": [],
-                                 "node_type": [],
-                                 "x": [],
-                                 "desc_x": [],
-                                 "use_description": []})
+        query_df = pd.DataFrame(
+            {
+                "node_id": [],
+                "node_type": [],
+                "x": [],
+                "desc_x": [],
+                "use_description": [],
+            }
+        )
 
         # Loop over the uploaded files and find multimodal files
         for i in range(len(state["uploaded_files"])):
             # Check if multimodal file is uploaded
             if state["uploaded_files"][i]["file_type"] == "multimodal":
                 # Read the Excel file
-                multimodal_df = pd.read_excel(state["uploaded_files"][i]["file_path"],
-                                              sheet_name=None)
+                multimodal_df = pd.read_excel(
+                    state["uploaded_files"][i]["file_path"], sheet_name=None
+                )
 
         # Check if the multimodal_df is empty
         if len(multimodal_df) > 0:
             # Merge all obtained dataframes into a single dataframe
             multimodal_df = pd.concat(multimodal_df).reset_index()
             multimodal_df.drop(columns=["level_1"], inplace=True)
-            multimodal_df.rename(columns={"level_0": "q_node_type",
-                                        "name": "q_node_name"}, inplace=True)
+            multimodal_df.rename(
+                columns={"level_0": "q_node_type", "name": "q_node_name"}, inplace=True
+            )
             # Since an excel sheet name could not contain a `/`,
             # but the node type can be 'gene/protein' as exists in the PrimeKG
             multimodal_df["q_node_type"] = multimodal_df.q_node_type.apply(
-                lambda x: x.replace('-', '/')
+                lambda x: x.replace("-", "/")
             )
 
             # Convert PyG graph to a DataFrame for easier filtering
-            graph_df = pd.DataFrame({
-                "node_id": pyg_graph.node_id,
-                "node_name": pyg_graph.node_name,
-                "node_type": pyg_graph.node_type,
-                "x": pyg_graph.x,
-                "desc_x": pyg_graph.desc_x.tolist(),
-            })
+            graph_df = pd.DataFrame(
+                {
+                    "node_id": pyg_graph.node_id,
+                    "node_name": pyg_graph.node_name,
+                    "node_type": pyg_graph.node_type,
+                    "x": pyg_graph.x,
+                    "desc_x": pyg_graph.desc_x.tolist(),
+                }
+            )
 
             # Make a query dataframe by merging the graph_df and multimodal_df
-            query_df = graph_df.merge(multimodal_df, how='cross')
+            query_df = graph_df.merge(multimodal_df, how="cross")
             query_df = query_df[
                 query_df.apply(
-                    lambda x:
-                    (x['q_node_name'].lower() in x['node_name'].lower()) & # node name
-                    (x['node_type'] == x['q_node_type']), # node type
-                    axis=1
+                    lambda x: (x["q_node_name"].lower() in x["node_name"].lower())  # node name
+                    & (x["node_type"] == x["q_node_type"]),  # node type
+                    axis=1,
                 )
             ]
-            query_df = query_df[['node_id', 'node_type', 'x', 'desc_x']].reset_index(drop=True)
-            query_df['use_description'] = False # set to False for modal-specific embeddings
+            query_df = query_df[["node_id", "node_type", "x", "desc_x"]].reset_index(drop=True)
+            query_df["use_description"] = False  # set to False for modal-specific embeddings
 
             # Update the state by adding the the selected node IDs
             state["selections"] = query_df.groupby("node_type")["node_id"].apply(list).to_dict()
 
         # Append a user prompt to the query dataframe
-        query_df = pd.concat([
-            query_df,
-            pd.DataFrame({
-                'node_id': 'user_prompt',
-                'node_type': 'prompt',
-                'x': prompt_emb,
-                'desc_x': prompt_emb,
-                'use_description': True # set to True for user prompt embedding
-            })
-        ]).reset_index(drop=True)
+        query_df = pd.concat(
+            [
+                query_df,
+                pd.DataFrame(
+                    {
+                        "node_id": "user_prompt",
+                        "node_type": "prompt",
+                        "x": prompt_emb,
+                        "desc_x": prompt_emb,
+                        "use_description": True,  # set to True for user prompt embedding
+                    }
+                ),
+            ]
+        ).reset_index(drop=True)
 
         return query_df
 
-    def _perform_subgraph_extraction(self,
-                                     state: Annotated[dict, InjectedState],
-                                     cfg: dict,
-                                     pyg_graph: Data,
-                                     query_df: pd.DataFrame) -> dict:
+    def _perform_subgraph_extraction(
+        self,
+        state: Annotated[dict, InjectedState],
+        cfg: dict,
+        pyg_graph: Data,
+        query_df: pd.DataFrame,
+    ) -> dict:
         """
         Perform multimodal subgraph extraction based on modal-specific embeddings.
 
@@ -176,11 +186,13 @@ class MultimodalSubgraphExtractionTool(BaseTool):
                 num_clusters=cfg.num_clusters,
                 pruning=cfg.pruning,
                 verbosity_level=cfg.verbosity_level,
-                use_description=q[1]['use_description'],
-            ).extract_subgraph(pyg_graph,
-                               torch.tensor(q[1]['desc_x']), # description embedding
-                               torch.tensor(q[1]['x']), # modal-specific embedding
-                               q[1]['node_type'])
+                use_description=q[1]["use_description"],
+            ).extract_subgraph(
+                pyg_graph,
+                torch.tensor(q[1]["desc_x"]),  # description embedding
+                torch.tensor(q[1]["x"]),  # modal-specific embedding
+                q[1]["node_type"],
+            )
 
             # Append the extracted subgraph to the dictionary
             subgraphs["nodes"].append(subgraph["nodes"].tolist())
@@ -196,11 +208,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
         return subgraphs
 
-    def _prepare_final_subgraph(self,
-                               state:Annotated[dict, InjectedState],
-                               subgraph: dict,
-                               graph: dict,
-                               cfg) -> dict:
+    def _prepare_final_subgraph(
+        self, state: Annotated[dict, InjectedState], subgraph: dict, graph: dict, cfg
+    ) -> dict:
         """
         Prepare the subgraph based on the extracted subgraph.
 
@@ -227,14 +237,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
             # Edge features
             edge_index=torch.LongTensor(
                 [
-                    [
-                        mapping[i]
-                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][0].tolist()
-                    ],
-                    [
-                        mapping[i]
-                        for i in graph["pyg"].edge_index[:, subgraph["edges"]][1].tolist()
-                    ],
+                    [mapping[i] for i in graph["pyg"].edge_index[:, subgraph["edges"]][0].tolist()],
+                    [mapping[i] for i in graph["pyg"].edge_index[:, subgraph["edges"]][1].tolist()],
                 ]
             ),
             edge_attr=graph["pyg"].edge_attr[subgraph["edges"]],
@@ -247,8 +251,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         # Networkx DiGraph construction to be visualized in the frontend
         nx_graph = nx.DiGraph()
         # Add nodes with attributes
-        node_colors = {n: cfg.node_colors_dict[k]
-                       for k, v in state["selections"].items() for n in v}
+        node_colors = {
+            n: cfg.node_colors_dict[k] for k, v in state["selections"].items() for n in v
+        }
         for n in pyg_graph.node_name:
             nx_graph.add_node(n, color=node_colors.get(n, None))
 
@@ -256,7 +261,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         edges = zip(
             pyg_graph.edge_index[0].tolist(),
             pyg_graph.edge_index[1].tolist(),
-            pyg_graph.edge_type
+            pyg_graph.edge_type,
+            strict=False,
         )
         for src, dst, edge_type in edges:
             nx_graph.add_edge(
@@ -303,7 +309,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         # Load hydra configuration
         with hydra.initialize(version_base=None, config_path="../configs"):
             cfg = hydra.compose(
-                config_name="config", overrides=["tools/multimodal_subgraph_extraction=default"]
+                config_name="config",
+                overrides=["tools/multimodal_subgraph_extraction=default"],
             )
             cfg = cfg.tools.multimodal_subgraph_extraction
 
@@ -322,20 +329,14 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         query_df = self._prepare_query_modalities(
             [EmbeddingWithOllama(model_name=cfg.ollama_embeddings[0]).embed_query(prompt)],
             state,
-            initial_graph["pyg"]
+            initial_graph["pyg"],
         )
 
         # Perform subgraph extraction
-        subgraphs = self._perform_subgraph_extraction(state,
-                                                      cfg,
-                                                      initial_graph["pyg"],
-                                                      query_df)
+        subgraphs = self._perform_subgraph_extraction(state, cfg, initial_graph["pyg"], query_df)
 
         # Prepare subgraph as a NetworkX graph and textualized graph
-        final_subgraph = self._prepare_final_subgraph(state,
-                                                      subgraphs,
-                                                      initial_graph,
-                                                      cfg)
+        final_subgraph = self._prepare_final_subgraph(state, subgraphs, initial_graph, cfg)
 
         # Prepare the dictionary of extracted graph
         dic_extracted_graph = {
@@ -362,7 +363,8 @@ class MultimodalSubgraphExtractionTool(BaseTool):
 
         # Return the updated state of the tool
         return Command(
-            update=dic_updated_state_for_model | {
+            update=dic_updated_state_for_model
+            | {
                 # update the message history
                 "messages": [
                     ToolMessage(

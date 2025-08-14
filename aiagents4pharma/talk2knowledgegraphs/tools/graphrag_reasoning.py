@@ -3,20 +3,21 @@ Tool for performing Graph RAG reasoning.
 """
 
 import logging
-from typing import Type, Annotated
-from pydantic import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import ToolMessage
-from langchain_core.tools.base import InjectedToolCallId
-from langchain_core.tools import BaseTool
-from langchain_core.vectorstores import InMemoryVectorStore
-from langchain.chains.retrieval import create_retrieval_chain
+from typing import Annotated
+
+import hydra
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langgraph.types import Command
+from langchain_core.messages import ToolMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import BaseTool
+from langchain_core.tools.base import InjectedToolCallId
+from langchain_core.vectorstores import InMemoryVectorStore
 from langgraph.prebuilt import InjectedState
-import hydra
+from langgraph.types import Command
+from pydantic import BaseModel, Field
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -33,9 +34,7 @@ class GraphRAGReasoningInput(BaseModel):
         extraction_name: Name assigned to the subgraph extraction process
     """
 
-    tool_call_id: Annotated[str, InjectedToolCallId] = Field(
-        description="Tool call ID."
-    )
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(description="Tool call ID.")
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
     extraction_name: str = Field(
@@ -53,7 +52,7 @@ class GraphRAGReasoningTool(BaseTool):
     name: str = "graphrag_reasoning"
     description: str = """A tool to perform reasoning using a Graph RAG approach
                         by considering textualized subgraph context and document context."""
-    args_schema: Type[BaseModel] = GraphRAGReasoningInput
+    args_schema: type[BaseModel] = GraphRAGReasoningInput
 
     def _run(
         self,
@@ -71,9 +70,7 @@ class GraphRAGReasoningTool(BaseTool):
             prompt: The prompt to interact with the backend.
             extraction_name: The name assigned to the subgraph extraction process.
         """
-        logger.log(
-            logging.INFO, "Invoking graphrag_reasoning tool for %s", extraction_name
-        )
+        logger.log(logging.INFO, "Invoking graphrag_reasoning tool for %s", extraction_name)
 
         # Load Hydra configuration
         with hydra.initialize(version_base=None, config_path="../configs"):
@@ -88,9 +85,7 @@ class GraphRAGReasoningTool(BaseTool):
             for uploaded_file in state["uploaded_files"]:
                 if uploaded_file["file_type"] == "drug_data":
                     # Load documents
-                    raw_documents = PyPDFLoader(
-                        file_path=uploaded_file["file_path"]
-                    ).load()
+                    raw_documents = PyPDFLoader(file_path=uploaded_file["file_path"]).load()
 
                     # Split documents
                     # May need to find an optimal chunk size and overlap configuration

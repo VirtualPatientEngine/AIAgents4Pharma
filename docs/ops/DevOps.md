@@ -73,16 +73,16 @@ In the table, you will find step-by-step instructions on how to fork a repo from
 3. Please make sure to add a prefix (feat:/fix:/chore:) and/or a suffix BREAKING CHANGE (if it's a major release) to your commit message.
 
 ![1](./devops_2.png)<br>
-For instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the minor version (e.g., 2.1.1 changes to 2.2.0). 
+For instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the minor version (e.g., 2.1.1 changes to 2.2.0).
 
 ![3](./devops_3.png)<br>
 Another instance, the commit message triggers a merge followed by the automated activation of the versioning tool (semantics-release). This tool increments the major version (e.g., 2.1.1 changes to 3.0.0).
 
-4. If the PR closes an issue(s), please make sure to state it in your commit message. 
+4. If the PR closes an issue(s), please make sure to state it in your commit message.
 
 ![4](./devops_4.png)<br>
 For instance, the commit message below triggers a merge followed by the automated activation of the versioning tool (semantics-release) and automatically closes issue #24.
- 
+
 5. Merging into main is supposed to run an automated release workflow, please make sure to check under the Actions tab to see if the workflow has been initiated and return later to verify that it has completed successfully.
 
 ## Environment
@@ -113,11 +113,11 @@ That's it! You've successfully installed a Python environment using `venv` and r
 
 ## CI/CD pipeline
 A Continuous Integration/Continuous Deployment (CI/CD) pipeline is crucial for streamlining the software development lifecycle and delivering reliable and high-quality code.
- 
+
 ![5](./devops_5.jpg)<br>
 The schema above provides an overview of the two phases of our CI/CD pipeline. It's essential to note that the CI/CD pipeline applies exclusively to code/shareable repositories.
 
-### Development: 
+### Development:
 The process begins with developers writing and committing code to GitHub
 
 ### GitHub Actions:
@@ -157,7 +157,7 @@ def __init__(self, gnn_model,
 ```
 
 ![6](./devops_6.png)<br>
-The above docstring should produce the image in the documentation. 
+The above docstring should produce the image in the documentation.
 
 #### In the docs/ folder:
 1. Create an index.md file that contains information to be shown on the index page of the documentation.

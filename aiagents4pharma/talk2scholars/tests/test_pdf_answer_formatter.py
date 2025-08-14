@@ -1,6 +1,7 @@
 """answer_formatter tests."""
 
 from unittest.mock import patch
+
 import pytest
 
 from aiagents4pharma.talk2scholars.tools.pdf.utils.answer_formatter import format_answer

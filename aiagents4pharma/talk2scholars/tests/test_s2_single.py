@@ -3,11 +3,13 @@ Unit tests for S2 tools functionality.
 """
 
 from types import SimpleNamespace
+
+import hydra
 import pytest
 import requests
-import hydra
-from langgraph.types import Command
 from langchain_core.messages import ToolMessage
+from langgraph.types import Command
+
 from aiagents4pharma.talk2scholars.tools.s2.single_paper_rec import (
     get_single_paper_recommendations,
 )
@@ -156,9 +158,7 @@ def dummy_requests_get_exception(url, params, timeout):
 @pytest.fixture(autouse=True)
 def patch_hydra(monkeypatch):
     """Patch Hydra's initialize and compose functions with dummy implementations."""
-    monkeypatch.setattr(
-        hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
-    )
+    monkeypatch.setattr(hydra, "initialize", lambda version_base, config_path: DummyHydraContext())
     # Patch hydra.compose to return our dummy config.
     monkeypatch.setattr(hydra, "compose", lambda config_name, overrides: dummy_config)
 

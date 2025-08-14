@@ -1,10 +1,11 @@
-'''
+"""
 An abstract base class for BioModels in the BioModels repository.
-'''
+"""
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Union, Optional
+
 from pydantic import BaseModel, Field, model_validator
+
 
 class SysBioModel(ABC, BaseModel):
     """
@@ -12,10 +13,11 @@ class SysBioModel(ABC, BaseModel):
     This class serves as a general structure for models, allowing
     different mathematical approaches to be implemented in subclasses.
     """
-    biomodel_id: Optional[int] = Field(None, description="BioModel ID of the model")
-    sbml_file_path: Optional[str] = Field(None, description="Path to an SBML file")
-    name: Optional[str] = Field(..., description="Name of the model")
-    description: Optional[str] = Field("", description="Description of the model")
+
+    biomodel_id: int | None = Field(None, description="BioModel ID of the model")
+    sbml_file_path: str | None = Field(None, description="Path to an SBML file")
+    name: str | None = Field(..., description="Name of the model")
+    description: str | None = Field("", description="Description of the model")
 
     @model_validator(mode="after")
     def check_biomodel_id_or_sbml_file_path(self):
@@ -27,7 +29,7 @@ class SysBioModel(ABC, BaseModel):
         return self
 
     @abstractmethod
-    def get_model_metadata(self) -> Dict[str, Union[str, int]]:
+    def get_model_metadata(self) -> dict[str, str | int]:
         """
         Abstract method to retrieve metadata of the model.
         This method should return a dictionary containing model metadata.
@@ -35,8 +37,9 @@ class SysBioModel(ABC, BaseModel):
         Returns:
             dict: Dictionary with model metadata
         """
+
     @abstractmethod
-    def update_parameters(self, parameters: Dict[str, Union[float, int]]) -> None:
+    def update_parameters(self, parameters: dict[str, float | int]) -> None:
         """
         Abstract method to update model parameters.
 
@@ -45,7 +48,7 @@ class SysBioModel(ABC, BaseModel):
         """
 
     @abstractmethod
-    def simulate(self, duration: Union[int, float]) -> List[float]:
+    def simulate(self, duration: int | float) -> list[float]:
         """
         Abstract method to run a simulation of the model.
 

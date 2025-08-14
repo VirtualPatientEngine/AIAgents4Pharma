@@ -3,7 +3,8 @@ Unit tests for Zotero human in the loop in zotero_review.py with structured outp
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_review import zotero_review
 
 
@@ -185,22 +186,16 @@ class TestZoteroReviewTool(unittest.TestCase):
 
         upd = result.update
         self.assertEqual(upd["zotero_write_approval_status"], {"approved": False})
-        self.assertIn(
-            "Human rejected saving papers to Zotero", upd["messages"][0].content
-        )
+        self.assertIn("Human rejected saving papers to Zotero", upd["messages"][0].content)
         mock_fetch.assert_called_once()
         mock_interrupt.assert_called_once()
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt")
     def test_structured_processing_failure(self, mock_interrupt, mock_fetch):
         """Test fallback when structured review processing fails."""
         # Simulate valid fetched papers with multiple entries.
-        papers = {
-            f"p{i}": {"Title": f"Title{i}", "Authors": [f"A{i}"]} for i in range(1, 8)
-        }
+        papers = {f"p{i}": {"Title": f"Title{i}", "Authors": [f"A{i}"]} for i in range(1, 8)}
         mock_fetch.return_value = papers
         mock_interrupt.return_value = "dummy_response"
         # Provide a fake llm_model whose invoke() raises an exception.
@@ -234,9 +229,7 @@ class TestZoteroReviewTool(unittest.TestCase):
 
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.fetch_papers_for_save",
-        return_value={
-            "p1": {"Title": "Test Paper", "Authors": ["Alice", "Bob", "Charlie"]}
-        },
+        return_value={"p1": {"Title": "Test Paper", "Authors": ["Alice", "Bob", "Charlie"]}},
     )
     @patch(
         "aiagents4pharma.talk2scholars.tools.zotero.zotero_review.interrupt",

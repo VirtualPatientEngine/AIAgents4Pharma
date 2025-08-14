@@ -5,7 +5,7 @@ Agent for interacting with Semantic Scholar
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 import hydra
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -54,7 +54,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
         >>> result = app.invoke(initial_state)
     """
 
-    def s2_agent_node(state: Talk2Scholars) -> Dict[str, Any]:
+    def s2_agent_node(state: Talk2Scholars) -> dict[str, Any]:
         """
         Processes the user query and retrieves relevant research papers.
 

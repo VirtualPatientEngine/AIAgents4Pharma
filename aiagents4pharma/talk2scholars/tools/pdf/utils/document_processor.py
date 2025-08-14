@@ -3,7 +3,7 @@ Document processing utilities for loading and splitting PDFs.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 def load_and_split_pdf(
     paper_id: str,
     pdf_url: str,
-    paper_metadata: Dict[str, Any],
+    paper_metadata: dict[str, Any],
     config: Any,
     **kwargs: Any,
-) -> List[Document]:
+) -> list[Document]:
     """
     Load a PDF and split it into chunks.
 
@@ -35,8 +35,8 @@ def load_and_split_pdf(
     Returns:
         A list of Document chunks, each with updated metadata.
     """
-    metadata_fields: List[str] = kwargs["metadata_fields"]
-    documents_dict: Dict[str, Document] = kwargs["documents_dict"]
+    metadata_fields: list[str] = kwargs["metadata_fields"]
+    documents_dict: dict[str, Document] = kwargs["documents_dict"]
 
     logger.info("Loading PDF for paper %s from %s", paper_id, pdf_url)
 

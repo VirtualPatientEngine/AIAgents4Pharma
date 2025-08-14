@@ -21,8 +21,7 @@ def mock_vector_store():
 def mock_chunks():
     """Fixture to simulate PDF chunks."""
     return [
-        Document(page_content=f"chunk {i}", metadata={"paper_id": f"P{i%2}"})
-        for i in range(5)
+        Document(page_content=f"chunk {i}", metadata={"paper_id": f"P{i % 2}"}) for i in range(5)
     ]
 
 
@@ -74,9 +73,7 @@ def test_retrieve_chunks_with_filter(mock_logger, request):
     mock_logger.debug = MagicMock()
     vector_store.max_marginal_relevance_search.return_value = chunks
 
-    results = retrieve_relevant_chunks(
-        vector_store, query="filter test", paper_ids=["P1"], top_k=3
-    )
+    results = retrieve_relevant_chunks(vector_store, query="filter test", paper_ids=["P1"], top_k=3)
     assert results == chunks
     args, kwargs = vector_store.max_marginal_relevance_search.call_args
     assert len(args) == 0
@@ -115,9 +112,7 @@ def test_retrieve_chunks_default_search_params(mock_logger, request):
     )
 
     assert results == chunks
-    mock_logger.debug.assert_any_call(
-        "Using default search parameters (no hardware optimization)"
-    )
+    mock_logger.debug.assert_any_call("Using default search parameters (no hardware optimization)")
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.retrieve_chunks.logger")
@@ -191,7 +186,5 @@ def test_retrieve_chunks_with_scores_not_implemented(mock_logger, request):
         retrieve_relevant_chunks_with_scores(
             vector_store=vector_store, query="fail test", top_k=1, score_threshold=0.0
         )
-    assert "Vector store does not support similarity_search_with_score" in str(
-        excinfo.value
-    )
+    assert "Vector store does not support similarity_search_with_score" in str(excinfo.value)
     mock_logger.debug.assert_called_with("GPU-accelerated similarity search enabled")

@@ -5,22 +5,22 @@ Talk2KnowledgeGraphs: A Streamlit app for the Talk2KnowledgeGraphs graph.
 """
 
 import os
-import sys
 import random
-import streamlit as st
-import pandas as pd
+import sys
+
 import hydra
-from streamlit_feedback import streamlit_feedback
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_core.messages import ChatMessage
-from langchain_core.tracers.context import collect_runs
+import streamlit as st
 from langchain.callbacks.tracers import LangChainTracer
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
+from langchain_core.tracers.context import collect_runs
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
 sys.path.append("./")
 from aiagents4pharma.talk2knowledgegraphs.agents.t2kg_agent import get_app
+
 # from talk2knowledgegraphs.agents.t2kg_agent import get_app
 
 st.set_page_config(
@@ -47,9 +47,9 @@ else:
 
 # Set the logo, detect if we're in container or local development
 def get_logo_path():
-    container_path = '/app/docs/assets/VPE.png'
-    local_path = 'docs/assets/VPE.png'
-    
+    container_path = "/app/docs/assets/VPE.png"
+    local_path = "docs/assets/VPE.png"
+
     if os.path.exists(container_path):
         return container_path
     elif os.path.exists(local_path):
@@ -57,18 +57,17 @@ def get_logo_path():
     else:
         # Fallback: try to find it relative to script location
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, '../../docs/assets/VPE.png')
+        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
         if os.path.exists(relative_path):
             return relative_path
-    
+
     return None  # File not found
+
 
 logo_path = get_logo_path()
 if logo_path:
     st.logo(
-        image=logo_path,
-        size='large',
-        link='https://github.com/VirtualPatientEngine'
+        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
     )
 
 # Check if env variable OPENAI_API_KEY exists
@@ -296,11 +295,15 @@ with main_col2:
                     ]
                     # Convert chat history to ChatMessage objects
                     chat_history = [
-                        SystemMessage(content=m[1])
-                        if m[0] == "system"
-                        else HumanMessage(content=m[1])
-                        if m[0] == "human"
-                        else AIMessage(content=m[1])
+                        (
+                            SystemMessage(content=m[1])
+                            if m[0] == "system"
+                            else (
+                                HumanMessage(content=m[1])
+                                if m[0] == "human"
+                                else AIMessage(content=m[1])
+                            )
+                        )
                         for m in history
                     ]
 
@@ -422,7 +425,9 @@ with main_col2:
                                 "subgraph_extraction",
                             )
                             # Add the graph to be rendered
-                            latest_graph = current_state.values["dic_extracted_graph"][-1]
+                            latest_graph = current_state.values["dic_extracted_graph"][
+                                -1
+                            ]
                             graph_to_be_rendered = {
                                 "content": latest_graph["graph_dict"],
                                 "key": "subgraph_" + uniq_msg_id,
@@ -431,9 +436,9 @@ with main_col2:
             # Visualize the graph
             if graph_to_be_rendered:
                 streamlit_utils.render_graph(
-                    graph_dict=graph_to_be_rendered["content"], 
-                    key=graph_to_be_rendered["key"], 
-                    save_graph=True
+                    graph_dict=graph_to_be_rendered["content"],
+                    key=graph_to_be_rendered["key"],
+                    save_graph=True,
                 )
                 st.empty()
                 # Remove the graph to be rendered

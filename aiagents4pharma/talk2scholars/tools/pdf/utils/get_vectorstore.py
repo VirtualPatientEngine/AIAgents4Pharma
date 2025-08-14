@@ -37,14 +37,10 @@ def get_vectorstore(
     with _cache_lock:
         if force_new and collection_name in _vectorstore_cache:
             del _vectorstore_cache[collection_name]
-            logger.info(
-                "Forced new Vectorstore instance for collection: %s", collection_name
-            )
+            logger.info("Forced new Vectorstore instance for collection: %s", collection_name)
 
         if collection_name not in _vectorstore_cache:
-            logger.info(
-                "Creating new Vectorstore instance for collection: %s", collection_name
-            )
+            logger.info("Creating new Vectorstore instance for collection: %s", collection_name)
             _vectorstore_cache[collection_name] = Vectorstore(
                 embedding_model=embedding_model, config=config
             )

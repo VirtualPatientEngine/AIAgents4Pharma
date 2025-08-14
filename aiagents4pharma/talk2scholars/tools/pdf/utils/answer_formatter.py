@@ -3,7 +3,7 @@ Format the final answer text with source attributions and hardware info.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from .generate_answer import generate_answer
 
@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 def format_answer(
     question: str,
-    chunks: List[Any],
+    chunks: list[Any],
     llm: Any,
-    articles: Dict[str, Any],
+    articles: dict[str, Any],
     config: Any,
     **kwargs: Any,
 ) -> str:
@@ -27,7 +27,7 @@ def format_answer(
     answer = result.get("output_text", "No answer generated.")
 
     # Get unique paper titles for source attribution
-    titles: Dict[str, str] = {}
+    titles: dict[str, str] = {}
     for pid in result.get("papers_used", []):
         if pid in articles:
             titles[pid] = articles[pid].get("Title", "Unknown paper")
