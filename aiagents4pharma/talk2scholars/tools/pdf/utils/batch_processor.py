@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Set, Tuple
 from langchain_core.documents import Document
 
 from .document_processor import load_and_split_pdf
+from . import multimodal_processor as mp
+
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +59,7 @@ def add_papers_batch(
         cfg.get("max_workers", 5),
         "GPU acceleration" if cfg["has_gpu"] else "CPU processing",
     )
-
-    chunks, ids, success = _parallel_load_and_split(
+    chunks, ids, success, multimodal_results = _parallel_load_and_split(
         to_process,
         cfg["config"],
         cfg["metadata_fields"],
@@ -72,6 +73,7 @@ def add_papers_batch(
 
     for pid, _, md in to_process:
         if pid in success:
+            md["multimodal_results"] = multimodal_results.get(pid, {})
             paper_metadata[pid] = md
 
     try:
@@ -96,11 +98,12 @@ def _parallel_load_and_split(
     metadata_fields: List[str],
     documents: Dict[str, Document],
     max_workers: int,
-) -> Tuple[List[Document], List[str], List[str]]:
-    """Load & split PDFs in parallel, preserving original logic."""
+) -> Tuple[List[Document], List[str], List[str], Dict[str, Any]]:
+    """Load & split PDFs in parallel, and collect multimodal results per paper."""
     all_chunks: List[Document] = []
     all_ids: List[str] = []
     success: List[str] = []
+    multimodal_results: Dict[str, Any] = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
@@ -112,19 +115,29 @@ def _parallel_load_and_split(
                 config,
                 metadata_fields=metadata_fields,
                 documents_dict=documents,
-            ): pid
+            ): (pid, url)
             for pid, url, md in papers
         }
         logger.info("Submitted %d PDF loading tasks", len(futures))
 
         for idx, fut in enumerate(concurrent.futures.as_completed(futures), start=1):
-            pid = futures[fut]
+            pid, url = futures[fut]
             chunks = fut.result()
             ids = [f"{pid}_{i}" for i in range(len(chunks))]
 
             all_chunks.extend(chunks)
             all_ids.extend(ids)
             success.append(pid)
+
+            # NEW: run multimodal processor at batch level (if you want separate tracking)
+            try:
+                base64_pages = mp.pdf_to_base64_compressed(url)
+                responses = mp.detect_page_elements(base64_pages)
+                categorized = mp.categorize_page_elements(responses)
+                cropped = mp.crop_categorized_elements(categorized, base64_pages)
+                multimodal_results[pid] = mp.process_all(cropped)
+            except Exception as e:
+                logger.error("Multimodal processing failed for %s: %s", pid, e)
 
             logger.info(
                 "Progress: %d/%d - Loaded paper %s (%d chunks)",
@@ -134,8 +147,7 @@ def _parallel_load_and_split(
                 len(chunks),
             )
 
-    return all_chunks, all_ids, success
-
+    return all_chunks, all_ids, success, multimodal_results
 
 def _batch_embed(
     chunks: List[Document],

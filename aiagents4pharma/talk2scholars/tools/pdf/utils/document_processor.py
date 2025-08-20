@@ -8,6 +8,8 @@ from typing import Any, Dict, List
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
+from . import multimodal_processor as mp
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,19 @@ def load_and_split_pdf(
     # Split into chunks
     chunks = splitter.split_documents(documents)
     logger.info("Split paper %s into %d chunks", paper_id, len(chunks))
+
+    try:
+        base64_pages = mp.pdf_to_base64_compressed(pdf_url)
+        responses = mp.detect_page_elements(base64_pages)
+        categorixed = mp.categorize_page_elements(responses)
+        cropped = mp.crop_page_elements(categorixed, base64_pages)
+        multimodal_results = mp.process_all(cropped)
+        if chunks:
+            chunks[0].metadata["multimodal_results"] = multimodal_results
+            logger.info("Attached multimodal results to first chunk of paper %s", paper_id)
+    except Exception as e:
+        logger.error(f"Error processing multimodal data for paper {paper_id}: {e}")
+        multimodal_results = None
 
     # Attach metadata & populate documents_dict
     for i, chunk in enumerate(chunks):

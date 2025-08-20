@@ -15,7 +15,12 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-# --------------------
+# Load configuration
+with hydra.initialize(version_base=None, config_path="../../configs"):
+    cfg = hydra.compose(
+        config_name="config", overrides=["tools/multimodal_processor=default"]
+    )
+
 # Utility Functions
 # --------------------
 def compress_image_to_target_size(image, max_bytes, min_quality=20, min_width=400):
@@ -70,10 +75,11 @@ def detect_page_elements(pdf_base64_list):
             logger.warning(f"Skipping page {page}: image too large ({len(img_b64)} bytes).")
             responses.append(None)
             continue
-
+        page_elements_url = cfg.tools.multimodal_processor.page_elements_url
+        headers_page_elements = cfg.tools.multimodal_processor.headers_page_elements
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         try:
-            r = requests.post(PAGE_ELEMENTS_URL, headers=HEADERS_PAGE_ELEMENTS, json=payload)
+            r = requests.post(page_elements_url, headers=headers_page_elements, json=payload)
             r.raise_for_status()
             res_json = r.json()
             logger.info(f"Response for page {page}: {json.dumps(res_json)[:200]}...")
@@ -171,8 +177,10 @@ def ocr_with_paddle(cropped_b64_list, metadata):
     ocr_results = []
     for img_b64, meta in zip(cropped_b64_list, metadata):
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
+        paddle_ocr_url = cfg.tools.multimodal_processor.paddle_ocr_url
+        headers_paddle = cfg.tools.multimodal_processor.headers_paddle_ocr
         try:
-            r = requests.post(PADDLE_OCR_URL, headers=HEADERS_PADDLE, json=payload)
+            r = requests.post(paddle_ocr_url, headers=headers_paddle, json=payload)
             r.raise_for_status()
             ocr_results.append({"page": meta.get("page", -1), "type": meta.get("type", ""), "ocr": r.json(), "base64_image": img_b64})
             logger.info(f"PaddleOCR processed {meta.get('type', '')} (page {meta.get('page', -1)})")
@@ -202,14 +210,17 @@ def analyze_with_nvidia(elements_list, headers, api_url, element_type):
 
 def process_all(cropped_results):
     final_results = {"charts": [], "tables": [], "infographics": []}
-
+    headers_charts = cfg.tools.multimodal_processor.headers_charts
+    headers_tables = cfg.tools.multimodal_processor.headers_tables
+    chart_api_url = cfg.tools.multimodal_processor.chart_api_url
+    table_api_url = cfg.tools.multimodal_processor.table_api_url
     for item, meta in zip(cropped_results.get("charts", {}).get("base64", []), cropped_results.get("charts", {}).get("metadata", [])):
-        chart_analysis = analyze_with_nvidia([item], HEADERS_CHARTS, CHART_API_URL, "chart")
+        chart_analysis = analyze_with_nvidia([item], headers_charts, chart_api_url, "chart")
         chart_ocr = ocr_with_paddle([item["b64"]], [meta])
         final_results["charts"].append({"nvidia": chart_analysis[0], "ocr": chart_ocr[0]})
 
     for item, meta in zip(cropped_results.get("tables", {}).get("base64", []), cropped_results.get("tables", {}).get("metadata", [])):
-        table_analysis = analyze_with_nvidia([item], HEADERS_TABLES, TABLE_API_URL, "table")
+        table_analysis = analyze_with_nvidia([item], headers_tables, table_api_url, "table")
         table_ocr = ocr_with_paddle([item["b64"]], [meta])
         final_results["tables"].append({"nvidia": table_analysis[0], "ocr": table_ocr[0]})
 
