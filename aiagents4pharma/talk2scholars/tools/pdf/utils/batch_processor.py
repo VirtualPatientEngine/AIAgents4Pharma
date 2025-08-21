@@ -103,7 +103,7 @@ def _parallel_load_and_split(
     all_chunks: List[Document] = []
     all_ids: List[str] = []
     success: List[str] = []
-    multimodal_results: Dict[str, Any] = {}
+    text_lines: Dict[str, Any] = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
@@ -129,13 +129,17 @@ def _parallel_load_and_split(
             all_ids.extend(ids)
             success.append(pid)
 
-            # NEW: run multimodal processor at batch level (if you want separate tracking)
+            # run multimodal processor at batch level (if you want separate tracking)
             try:
                 base64_pages = mp.pdf_to_base64_compressed(url)
                 responses = mp.detect_page_elements(base64_pages)
                 categorized = mp.categorize_page_elements(responses)
                 cropped = mp.crop_categorized_elements(categorized, base64_pages)
-                multimodal_results[pid] = mp.process_all(cropped)
+                final_results = mp.process_all(cropped)
+                multimodal_results[pid] = final_results
+                ocr_results = mp.collect_ocr_results(final_results)
+                text_lines = mp.extract_text_lines(ocr_results)
+
             except Exception as e:
                 logger.error("Multimodal processing failed for %s: %s", pid, e)
 
@@ -147,7 +151,7 @@ def _parallel_load_and_split(
                 len(chunks),
             )
 
-    return all_chunks, all_ids, success, multimodal_results
+    return all_chunks, all_ids, success, text_lines
 
 def _batch_embed(
     chunks: List[Document],

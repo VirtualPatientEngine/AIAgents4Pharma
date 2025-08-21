@@ -63,9 +63,11 @@ def load_and_split_pdf(
         responses = mp.detect_page_elements(base64_pages)
         categorixed = mp.categorize_page_elements(responses)
         cropped = mp.crop_page_elements(categorixed, base64_pages)
-        multimodal_results = mp.process_all(cropped)
+        final_results = mp.process_all(cropped)
+        ocr_results = mp.collect_ocr_results(final_results)
+        text_lines = mp.extract_text_lines(ocr_results)
         if chunks:
-            chunks[0].metadata["multimodal_results"] = multimodal_results
+            chunks[0].metadata["multimodal_results"] = text_lines
             logger.info("Attached multimodal results to first chunk of paper %s", paper_id)
     except Exception as e:
         logger.error(f"Error processing multimodal data for paper {paper_id}: {e}")

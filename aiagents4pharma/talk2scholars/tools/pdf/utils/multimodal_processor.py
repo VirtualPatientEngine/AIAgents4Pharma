@@ -6,21 +6,40 @@ import base64
 import logging
 import requests
 import hydra
+from typing import Any
 from PIL import Image
 from pdf2image import convert_from_path
 
-# Set up logging with configurable level
+# --------------------
+# Logging setup
+# --------------------
 log_level = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-# Load configuration
-with hydra.initialize(version_base=None, config_path="../../configs"):
-    cfg = hydra.compose(
-        config_name="config", overrides=["tools/multimodal_processor=default"]
-    )
 
+# --------------------
+# Hydra config loader
+# --------------------
+def load_hydra_config() -> Any:
+    """
+    Load the configuration using Hydra and return the configuration for the multimodal processor.
+    """
+    with hydra.initialize(version_base=None, config_path="../../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/multimodal_processor=default"],
+        )
+        config = cfg.tools.multimodal_processor
+        logger.debug("Loaded Multimodal Processor tool configuration.")
+        return config
+
+
+config = load_hydra_config()
+
+
+# --------------------
 # Utility Functions
 # --------------------
 def compress_image_to_target_size(image, max_bytes, min_quality=20, min_width=400):
@@ -75,8 +94,9 @@ def detect_page_elements(pdf_base64_list):
             logger.warning(f"Skipping page {page}: image too large ({len(img_b64)} bytes).")
             responses.append(None)
             continue
-        page_elements_url = cfg.tools.multimodal_processor.page_elements_url
-        headers_page_elements = cfg.tools.multimodal_processor.headers_page_elements
+
+        page_elements_url = config.page_elements_url
+        headers_page_elements = config.headers_page_elements
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         try:
             r = requests.post(page_elements_url, headers=headers_page_elements, json=payload)
@@ -177,8 +197,8 @@ def ocr_with_paddle(cropped_b64_list, metadata):
     ocr_results = []
     for img_b64, meta in zip(cropped_b64_list, metadata):
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
-        paddle_ocr_url = cfg.tools.multimodal_processor.paddle_ocr_url
-        headers_paddle = cfg.tools.multimodal_processor.headers_paddle_ocr
+        paddle_ocr_url = config.paddle_ocr_url
+        headers_paddle = config.headers_paddle_ocr
         try:
             r = requests.post(paddle_ocr_url, headers=headers_paddle, json=payload)
             r.raise_for_status()
@@ -210,10 +230,11 @@ def analyze_with_nvidia(elements_list, headers, api_url, element_type):
 
 def process_all(cropped_results):
     final_results = {"charts": [], "tables": [], "infographics": []}
-    headers_charts = cfg.tools.multimodal_processor.headers_charts
-    headers_tables = cfg.tools.multimodal_processor.headers_tables
-    chart_api_url = cfg.tools.multimodal_processor.chart_api_url
-    table_api_url = cfg.tools.multimodal_processor.table_api_url
+    headers_charts = config.headers_charts
+    headers_tables = config.headers_tables
+    chart_api_url = config.chart_api_url
+    table_api_url = config.table_api_url
+
     for item, meta in zip(cropped_results.get("charts", {}).get("base64", []), cropped_results.get("charts", {}).get("metadata", [])):
         chart_analysis = analyze_with_nvidia([item], headers_charts, chart_api_url, "chart")
         chart_ocr = ocr_with_paddle([item["b64"]], [meta])
@@ -229,3 +250,51 @@ def process_all(cropped_results):
         final_results["infographics"].append({"ocr": infographic_ocr[0]})
 
     return final_results
+
+# --------------------
+# OCR Post-Processing Helpers
+# --------------------
+def collect_ocr_results(final_results):
+    """Flatten final_results into a list of raw OCR results."""
+    ocr_entries = []
+    for category, items in final_results.items():
+        for item in items:
+            if item and "ocr" in item and item["ocr"]:
+                ocr_entries.append(item["ocr"])
+    return ocr_entries
+
+
+def extract_text_lines(data):
+    """
+    Extract page, type, and text from PaddleOCR output.
+    Works with both JSON string and Python dict/list.
+    """
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError:
+            raise ValueError("Input is a string but not valid JSON")
+
+    if isinstance(data, dict):
+        data = [data]
+
+    all_lines = []
+
+    for page in data:
+        if not isinstance(page, dict):
+            continue
+
+        page_num = page.get("page", -1)
+        page_type = page.get("type", "unknown")
+
+        for item in page.get("ocr", {}).get("data", []):
+            for detection in item.get("text_detections", []):
+                text = detection.get("text_prediction", {}).get("text", "")
+                if text:
+                    all_lines.append({
+                        "page": page_num,
+                        "type": page_type,
+                        "text": text
+                    })
+
+    return all_lines

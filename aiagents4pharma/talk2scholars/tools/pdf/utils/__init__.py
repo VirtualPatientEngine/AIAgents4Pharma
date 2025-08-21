@@ -16,6 +16,7 @@ from . import singleton_manager
 from . import tool_helper
 from . import vector_normalization
 from . import vector_store
+from . import multimodal_processor
 
 __all__ = [
     "answer_formatter",
@@ -32,4 +33,5 @@ __all__ = [
     "tool_helper",
     "vector_normalization",
     "vector_store",
+    "multimodal_processor",
 ]

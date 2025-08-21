@@ -16,3 +16,4 @@ defaults:
   - tools/question_and_answer: default
   - tools/zotero_read: default
   - tools/zotero_write: default
+  - tools/multimodal_processor: default

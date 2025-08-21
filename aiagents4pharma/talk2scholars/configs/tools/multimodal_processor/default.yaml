@@ -1,16 +1,28 @@
+
 api_key_page_elements: "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"
 page_elements_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-page-elements-v2"
- 
+
 api_key_paddle: "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"
 paddle_ocr_url: "https://ai.api.nvidia.com/v1/cv/baidu/paddleocr"
- 
+
 api_key_charts: "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"
 charts_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-graphic-elements-v1"
- 
+
 api_key_tables: "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"
 tables_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-table-structure-v1"
- 
-headers_page_elements: {"Authorization": f"Bearer {api_key_page_elements}", "Accept": "application/json"}
-headers_paddle: {"Authorization": f"Bearer {api_key_paddle}", "Accept": "application/json"}
-headers_charts: {"Authorization": f"Bearer {api_key_charts}", "Accept": "application/json"}
-headers_tables: {"Authorization": f"Bearer {api_key_tables}", "Accept": "application/json"}
+
+headers_page_elements:
+  Authorization: "Bearer <API_KEY_PAGE_ELEMENTS>"
+  Accept: "application/json"
+
+headers_paddle:
+  Authorization: "Bearer <API_KEY_PADDLE>"
+  Accept: "application/json"
+
+headers_charts:
+  Authorization: "Bearer <API_KEY_CHARTS>"
+  Accept: "application/json"
+
+headers_tables:
+  Authorization: "Bearer <API_KEY_TABLES>"
+  Accept: "application/json"
