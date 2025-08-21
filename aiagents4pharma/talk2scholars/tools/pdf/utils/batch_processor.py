@@ -136,7 +136,6 @@ def _parallel_load_and_split(
                 categorized = mp.categorize_page_elements(responses)
                 cropped = mp.crop_categorized_elements(categorized, base64_pages)
                 final_results = mp.process_all(cropped)
-                multimodal_results[pid] = final_results
                 ocr_results = mp.collect_ocr_results(final_results)
                 text_lines = mp.extract_text_lines(ocr_results)
 

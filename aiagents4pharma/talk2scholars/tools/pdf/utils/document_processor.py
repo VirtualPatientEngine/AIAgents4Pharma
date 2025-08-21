@@ -62,7 +62,7 @@ def load_and_split_pdf(
         base64_pages = mp.pdf_to_base64_compressed(pdf_url)
         responses = mp.detect_page_elements(base64_pages)
         categorixed = mp.categorize_page_elements(responses)
-        cropped = mp.crop_page_elements(categorixed, base64_pages)
+        cropped = mp.crop_categorized_elements(categorixed, base64_pages)
         final_results = mp.process_all(cropped)
         ocr_results = mp.collect_ocr_results(final_results)
         text_lines = mp.extract_text_lines(ocr_results)
