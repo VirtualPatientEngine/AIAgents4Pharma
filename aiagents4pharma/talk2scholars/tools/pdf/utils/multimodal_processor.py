@@ -6,38 +6,50 @@ import base64
 import logging
 import requests
 import hydra
-from typing import Any
+from typing import Any, Dict
 from PIL import Image
 from pdf2image import convert_from_path
+from langchain_nvidia_ai_endpoints import NVIDIARerank
 
-# --------------------
-# Logging setup
-# --------------------
+# Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-# --------------------
-# Hydra config loader
-# --------------------
-def load_hydra_config() -> Any:
+# # --------------------
+# # Hydra config loader
+# # --------------------
+# def load_hydra_config() -> Any:
+#     """
+#     Load the configuration using Hydra and return the configuration for the multimodal processor.
+#     """
+#     with hydra.initialize(version_base=None, config_path="../../../configs"):
+#         cfg = hydra.compose(
+#             config_name="config",
+#             overrides=["tools/multimodal_processor=default"],
+#         )
+#         config = cfg.tools.multimodal_processor
+#         logger.debug("Loaded Multimodal Processor tool configuration.")
+#         return config
+def get_nvidia_headers(config: Any) -> Dict[str, str]:
     """
-    Load the configuration using Hydra and return the configuration for the multimodal processor.
+    Build NVIDIA API headers from Hydra config.
+
+    Args:
+        config: Hydra configuration object (expects config.reranker.api_key).
+        logger: Logger instance for error/info logging.
+
+    Returns:
+        dict: Headers for NVIDIA API requests.
     """
-    with hydra.initialize(version_base=None, config_path="../../../configs"):
-        cfg = hydra.compose(
-            config_name="config",
-            overrides=["tools/multimodal_processor=default"],
-        )
-        config = cfg.tools.multimodal_processor
-        logger.debug("Loaded Multimodal Processor tool configuration.")
-        return config
-
-
-config = load_hydra_config()
-
-
+    api_key = config.reranker.api_key
+    if not api_key:
+        logger.error("No NVIDIA API key found in configuration.")
+        raise ValueError("Configuration 'reranker.api_key' must be set.")
+    headers = { "Authorization": f"Bearer {api_key}", 
+               "Accept": "application/json" }
+    return headers, api_key 
 # --------------------
 # Utility Functions
 # --------------------
@@ -134,8 +146,9 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=MAX_B64_
     return results
 
 
-def detect_page_elements(pdf_base64_list, config: Any,):
+def detect_page_elements(pdf_base64_list, config, headers):
     responses = []
+    page_elements_url = config.page_elements_url
     for item in pdf_base64_list:
         page, img_b64 = item.get("page"), item.get("base64")
         print("Processing page:", page)
@@ -150,14 +163,11 @@ def detect_page_elements(pdf_base64_list, config: Any,):
             responses.append(None)
             continue
 
-        page_elements_url = config.page_elements_url.api_key
-        print(f"Using URL: {page_elements_url}")
-        headers_page_elements = config.headers_page_elements
-        print(f"Using headers: {headers_page_elements}")
+        print(f"Using headers: {headers}")
 
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         try:
-            r = requests.post(page_elements_url, headers=headers_page_elements, json=payload)
+            r = requests.post(page_elements_url, headers=headers, json=payload)
             r.raise_for_status()
             res_json = r.json()
             logger.info(f"Response for page {page}: {json.dumps(res_json)[:200]}...")
@@ -250,15 +260,14 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=180_000,
     return results
 
 
-def ocr_with_paddle(cropped_b64_list, metadata):
+def ocr_with_paddle(config, headers, cropped_b64_list, metadata):
     logger.info("Running PaddleOCR...")
     ocr_results = []
     for img_b64, meta in zip(cropped_b64_list, metadata):
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         paddle_ocr_url = config.paddle_ocr_url
-        headers_paddle = config.headers_paddle_ocr
         try:
-            r = requests.post(paddle_ocr_url, headers=headers_paddle, json=payload)
+            r = requests.post(paddle_ocr_url, headers=headers, json=payload)
             r.raise_for_status()
             ocr_results.append({"page": meta.get("page", -1), "type": meta.get("type", ""), "ocr": r.json(), "base64_image": img_b64})
             logger.info(f"PaddleOCR processed {meta.get('type', '')} (page {meta.get('page', -1)})")
@@ -286,20 +295,18 @@ def analyze_with_nvidia(elements_list, headers, api_url, element_type):
     return analyzed
 
 
-def process_all(cropped_results):
+def process_all(cropped_results, config, headers):
     final_results = {"charts": [], "tables": [], "infographics": []}
-    headers_charts = config.headers_charts
-    headers_tables = config.headers_tables
     chart_api_url = config.chart_api_url
     table_api_url = config.table_api_url
 
     for item, meta in zip(cropped_results.get("charts", {}).get("base64", []), cropped_results.get("charts", {}).get("metadata", [])):
-        chart_analysis = analyze_with_nvidia([item], headers_charts, chart_api_url, "chart")
+        chart_analysis = analyze_with_nvidia([item], headers, chart_api_url, "chart")
         chart_ocr = ocr_with_paddle([item["b64"]], [meta])
         final_results["charts"].append({"nvidia": chart_analysis[0], "ocr": chart_ocr[0]})
 
     for item, meta in zip(cropped_results.get("tables", {}).get("base64", []), cropped_results.get("tables", {}).get("metadata", [])):
-        table_analysis = analyze_with_nvidia([item], headers_tables, table_api_url, "table")
+        table_analysis = analyze_with_nvidia([item], headers, table_api_url, "table")
         table_ocr = ocr_with_paddle([item["b64"]], [meta])
         final_results["tables"].append({"nvidia": table_analysis[0], "ocr": table_ocr[0]})
 
