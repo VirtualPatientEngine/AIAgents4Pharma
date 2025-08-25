@@ -18,7 +18,6 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-
 # --------------------
 # Hydra config loader
 # --------------------
@@ -42,27 +41,38 @@ config = load_hydra_config()
 # --------------------
 # Utility Functions
 # --------------------
-def compress_image_to_target_size(image, max_bytes, min_quality=20, min_width=400):
+MAX_B64_SIZE = 180_000
+
+def compress_image_to_target_size(image, max_bytes=MAX_B64_SIZE, min_quality=20, min_width=400):
+    """
+    Compress image to guaranteed < max_bytes base64 length.
+    Returns (b64_string, success_flag).
+    """
     quality = 85
     width, height = image.size
 
-    while quality >= min_quality:
+    while quality >= min_quality and width >= min_width:
         resized_image = image.resize((width, int(height * width / image.width)), Image.LANCZOS)
         buffer = io.BytesIO()
         resized_image.save(buffer, format="JPEG", quality=quality, optimize=True)
-        b64_encoded = base64.b64encode(buffer.getvalue())
+        b64_encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
         if len(b64_encoded) <= max_bytes:
-            return b64_encoded.decode("utf-8"), True
+            return b64_encoded, True
 
-        if width > min_width:
-            width = int(width * 0.95)
+        # Shrink dimensions and quality further
+        width = int(width * 0.95)
         quality -= 5
 
-    return b64_encoded.decode("utf-8"), False
+    # Final check – if still too large, drop
+    if len(b64_encoded) > max_bytes:
+        logger.warning(f"Compression failed: final size {len(b64_encoded)} > {max_bytes}. Returning empty string.")
+        return "", False
+
+    return b64_encoded, True
 
 
-def pdf_to_base64_compressed(pdf_path, max_b64_size=180_000, dpi=150):
+def pdf_to_base64_compressed(pdf_path, max_b64_size=MAX_B64_SIZE, dpi=150):
     images = convert_from_path(pdf_path, dpi=dpi)
     results = []
 
@@ -70,7 +80,9 @@ def pdf_to_base64_compressed(pdf_path, max_b64_size=180_000, dpi=150):
         page_num = i + 1
         try:
             b64_string, under_limit = compress_image_to_target_size(image, max_bytes=max_b64_size)
-            logger.info(f"Page {page_num} | Under limit: {under_limit} | Size: {len(b64_string)} bytes")
+            if not under_limit:
+                b64_string = ""  # enforce empty if oversized
+            logger.info(f"Page {page_num} | Under limit: {under_limit} | Size: {len(b64_string)} chars")
             results.append({"page": page_num, "base64": b64_string})
         except Exception as e:
             logger.error(f"Page {page_num} failed: {e}")
@@ -79,24 +91,70 @@ def pdf_to_base64_compressed(pdf_path, max_b64_size=180_000, dpi=150):
     return results
 
 
-def detect_page_elements(pdf_base64_list):
+def crop_categorized_elements(categorized_data, base64_pages, max_bytes=MAX_B64_SIZE, min_quality=30, min_width=100):
+    page_b64_map = {p["page"]: p["base64"] for p in base64_pages}
+
+    def crop_regions(boxes):
+        cropped_b64, metadata = [], []
+        for b in boxes:
+            page_num, coords = b.get("page"), b["box"]
+            page_b64 = page_b64_map.get(page_num)
+            if not page_b64:
+                logger.warning(f"No image found for page {page_num}")
+                continue
+            try:
+                img_data = base64.b64decode(page_b64)
+                with Image.open(io.BytesIO(img_data)) as img:
+                    w, h = img.size
+                    crop = img.crop((
+                        int(coords["x_min"] * w), int(coords["y_min"] * h),
+                        int(coords["x_max"] * w), int(coords["y_max"] * h)
+                    )).convert("RGB")
+
+                    # Always compress to guaranteed safe size
+                    b64, ok = compress_image_to_target_size(crop, max_bytes=max_bytes,
+                                                            min_quality=min_quality, min_width=min_width)
+                    if ok:
+                        cropped_b64.append({"page": page_num, "b64": b64})
+                        metadata.append({
+                            "page": page_num, "box": coords,
+                            "type": b.get("type"), "page_index": b.get("page_index")
+                        })
+                    else:
+                        logger.warning(f"Region from page {page_num} could not be compressed under {max_bytes}. Skipped.")
+            except Exception as e:
+                logger.error(f"Error processing page {page_num}: {e}")
+        return cropped_b64, metadata
+
+    results = {}
+    for key in ["charts", "tables", "infographics"]:
+        logger.info(f"Cropping {key}...")
+        b64_list, meta_list = crop_regions(categorized_data.get(key, []))
+        results[key] = {"base64": b64_list, "metadata": meta_list}
+    return results
+
+
+def detect_page_elements(pdf_base64_list, config: Any,):
     responses = []
     for item in pdf_base64_list:
-        page = item.get("page")
-        img_b64 = item.get("base64")
+        page, img_b64 = item.get("page"), item.get("base64")
+        print("Processing page:", page)
 
         if not img_b64:
             logger.warning(f"Skipping page {page}: no base64 data.")
             responses.append(None)
             continue
 
-        if len(img_b64) > 180_000:
-            logger.warning(f"Skipping page {page}: image too large ({len(img_b64)} bytes).")
+        if len(img_b64) > MAX_B64_SIZE:
+            logger.warning(f"Skipping page {page}: image too large ({len(img_b64)} chars).")
             responses.append(None)
             continue
 
-        page_elements_url = config.page_elements_url
+        page_elements_url = config.page_elements_url.api_key
+        print(f"Using URL: {page_elements_url}")
         headers_page_elements = config.headers_page_elements
+        print(f"Using headers: {headers_page_elements}")
+
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         try:
             r = requests.post(page_elements_url, headers=headers_page_elements, json=payload)
