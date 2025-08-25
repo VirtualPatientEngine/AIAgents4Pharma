@@ -13,8 +13,9 @@ def mock_hydra_fixture():
     """Mocks Hydra configuration for tests."""
     with mock.patch("hydra.initialize"), mock.patch("hydra.compose") as mock_compose:
         cfg_mock = mock.MagicMock()
-        cfg_mock.agents.talk2scholars.s2_agent.temperature = 0
-        cfg_mock.agents.talk2scholars.paper_download_agent.prompt = "Test prompt"
+        cfg_mock.agents.talk2scholars.paper_download_agent.paper_download_agent = (
+            "Test prompt"
+        )
         mock_compose.return_value = cfg_mock
         yield mock_compose
 
@@ -23,13 +24,12 @@ def mock_hydra_fixture():
 def mock_tools_fixture():
     """Mocks paper download tools to prevent real HTTP calls."""
     with mock.patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download."
-        "download_arxiv_input.download_arxiv_paper"
-    ) as mock_download_arxiv_paper:
-        mock_download_arxiv_paper.return_value = {
+        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.download_papers"
+    ) as mock_download_papers:
+        mock_download_papers.return_value = {
             "article_data": {"dummy_key": "dummy_value"}
         }
-        yield [mock_download_arxiv_paper]
+        yield [mock_download_papers]
 
 
 @pytest.mark.usefixtures("mock_hydra_fixture")
@@ -83,10 +83,12 @@ def test_paper_download_agent_invocation():
         assert "article_data" in result
 
 
-def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
-    """Checks correct tool assignment (download_arxiv_paper, query_dataframe)."""
+def test_paper_download_agent_tools_assignment(
+    request,
+):
+    """Checks correct tool assignment (download_papers tool)."""
     thread_id = "test_thread_paper_dl"
-    mock_tools = request.getfixturevalue("mock_tools_fixture")
+    request.getfixturevalue("mock_tools_fixture")
     llm_mock = mock.Mock(spec=BaseChatModel)
 
     with (
@@ -100,12 +102,20 @@ def test_paper_download_agent_tools_assignment(request):  # Keep fixture name
         mock_agent = mock.Mock()
         mock_create_agent.return_value = mock_agent
         mock_tool_instance = mock.Mock()
-        mock_tool_instance.tools = mock_tools if mock_tools else []
         mock_toolnode.return_value = mock_tool_instance
 
         get_app(thread_id, llm_mock)
+        # Verify ToolNode was called with download_papers function
         assert mock_toolnode.called
-        assert len(mock_tool_instance.tools) == 1
+        # Check that ToolNode was called with a list containing the download_papers tool
+        call_args = mock_toolnode.call_args[0][
+            0
+        ]  # Get first positional argument (the tools list)
+        assert len(call_args) == 1
+        # The tool should be a StructuredTool with name 'download_papers'
+        tool = call_args[0]
+        assert hasattr(tool, "name")
+        assert tool.name == "download_papers"
 
 
 def test_paper_download_agent_hydra_failure():
