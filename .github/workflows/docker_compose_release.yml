@@ -1,0 +1,389 @@
+name: Docker Compose Release
+
+permissions:
+  contents: write
+  actions: read
+  packages: read
+
+on:
+  # Trigger after Docker Build workflow completes
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types:
+      - completed
+    branches:
+      - main
+
+  # Manual trigger for compose-only updates
+  workflow_dispatch:
+    inputs:
+      compose_version:
+        description: "Compose version to release (leave empty for auto)"
+        required: false
+        type: string
+      force_release:
+        description: "Force release even if no compose changes detected"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # Detect compose file changes
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      compose_changed: ${{ steps.changes.outputs.compose_changed }}
+      version: ${{ steps.version.outputs.version }}
+      should_release: ${{ steps.decide.outputs.should_release }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for compose changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            compose_changed:
+              - 'aiagents4pharma/talk2aiagents4pharma/docker-compose/**'
+              - 'aiagents4pharma/talk2scholars/docker-compose/**'
+              - 'aiagents4pharma/talk2knowledgegraphs/docker-compose/**'
+
+      - name: Get version info
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.compose_version }}" ]; then
+            # Manual version provided
+            VERSION="${{ github.event.inputs.compose_version }}"
+          else
+            # Get latest app version tag (same as app releases)
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
+            # Use the same version as the app (tied to app releases)
+            VERSION="${LATEST_TAG}"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version: $VERSION"
+
+      - name: Decide if should release
+        id: decide
+        run: |
+          SHOULD_RELEASE=false
+
+          # Release ONLY if compose files changed
+          if [ "${{ steps.changes.outputs.compose_changed }}" == "true" ]; then
+            SHOULD_RELEASE=true  
+            echo "Compose files changed, will release"
+          fi
+
+          # Release if manually forced
+          if [ "${{ github.event.inputs.force_release }}" == "true" ]; then
+            SHOULD_RELEASE=true
+            echo "Force release requested"
+          fi
+
+          # Do NOT auto-release on Docker build completion unless compose files changed
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            if [ "${{ steps.changes.outputs.compose_changed }}" != "true" ]; then
+              SHOULD_RELEASE=false
+              echo "Docker build completed but no compose changes - skipping release"
+            fi
+          fi
+
+          echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
+
+  # Package and release compose files
+  release-compose:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.should_release == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup release directory
+        run: |
+          mkdir -p release/compose
+          mkdir -p release/compose/examples
+          mkdir -p release/compose/production
+
+      - name: Process compose files
+        run: |
+          VERSION="${{ needs.detect-changes.outputs.version }}"
+
+          # Process each application's compose files
+          for app in talk2aiagents4pharma talk2scholars talk2knowledgegraphs; do
+            app_path="aiagents4pharma/$app/docker-compose"
+            
+            if [ -d "$app_path" ]; then
+              echo "Processing $app compose files"
+              
+              # Create app directories with cpu/gpu structure
+              mkdir -p "release/$app/cpu"
+              mkdir -p "release/$app/gpu"
+              
+              # Process CPU version
+              if [ -f "$app_path/cpu/docker-compose.yml" ]; then
+                cp "$app_path/cpu/docker-compose.yml" "release/$app/cpu/docker-compose.yml"
+                echo "Copied CPU compose for $app"
+              fi
+              
+              # Process GPU version  
+              if [ -f "$app_path/gpu/docker-compose.yml" ]; then
+                cp "$app_path/gpu/docker-compose.yml" "release/$app/gpu/docker-compose.yml"
+                echo "Copied GPU compose for $app"
+              fi
+              
+              # Copy any additional files from the main docker-compose directory
+              if [ -d "$app_path" ]; then
+                find "$app_path" -maxdepth 1 -name "*.yml" -o -name "*.yaml" -o -name "*.env*" -o -name "README*" | while read extra_file; do
+                  filename=$(basename "$extra_file")
+                  cp "$extra_file" "release/$app/$filename"
+                  echo "Copied additional file: $filename"
+                done
+              fi
+            fi
+          done
+
+      - name: Generate compose documentation
+        run: |
+          cat > release/README.md << 'EOF'
+          # AIAgents4Pharma Docker Compose Release - ${{ needs.detect-changes.outputs.version }}
+
+          This release contains Docker Compose configurations for all AIAgents4Pharma applications.
+
+          ## Available Applications
+
+          ### talk2aiagents4pharma
+          Main pharmaceutical AI agents application with Milvus vector database.
+          - **CPU Version**: `talk2aiagents4pharma/cpu/`
+          - **GPU Version**: `talk2aiagents4pharma/gpu/`
+
+          ### talk2scholars
+          Academic paper and research interaction system.
+          - **CPU Version**: `talk2scholars/cpu/`
+          - **GPU Version**: `talk2scholars/gpu/`
+
+          ### talk2knowledgegraphs
+          Knowledge graph interaction and analysis system.
+          - **CPU Version**: `talk2knowledgegraphs/cpu/`
+          - **GPU Version**: `talk2knowledgegraphs/gpu/`
+
+          ## Quick Start
+
+          1. **Choose your application and hardware configuration**
+          2. **Navigate to the application and hardware directory**:
+             ```bash
+             cd talk2aiagents4pharma/cpu    # or gpu for GPU version
+             ```
+          3. **Set up environment variables**:
+             ```bash
+             cp .env.example .env
+             # Edit .env with your API keys and configuration
+             ```
+          4. **Run the application**:
+             ```bash
+             docker compose up -d
+             ```
+
+          ## Directory Structure
+
+          ```
+          release/
+          ├── talk2aiagents4pharma/
+          │   ├── cpu/
+          │   │   ├── docker-compose.yml
+          │   │   └── .env.example
+          │   └── gpu/
+          │       ├── docker-compose.yml
+          │       └── .env.example
+          ├── talk2scholars/
+          │   ├── cpu/
+          │   │   ├── docker-compose.yml
+          │   │   └── .env.example
+          │   └── gpu/
+          │       ├── docker-compose.yml
+          │       └── .env.example
+          └── talk2knowledgegraphs/
+              ├── cpu/
+              │   ├── docker-compose.yml
+              │   └── .env.example
+              └── gpu/
+                  ├── docker-compose.yml
+                  └── .env.example
+          ```
+
+          ## System Requirements
+
+          ### CPU Version
+          - Docker & Docker Compose
+          - 8GB+ RAM recommended
+          - 10GB+ disk space
+
+          ### GPU Version  
+          - NVIDIA Docker runtime
+          - CUDA-compatible GPU
+          - 16GB+ RAM recommended
+          - 20GB+ disk space
+
+          ## Port Mappings
+
+          Default ports (customize in your compose file if needed):
+          - **talk2aiagents4pharma**: http://localhost:8501
+          - **talk2scholars**: http://localhost:8502  
+          - **talk2knowledgegraphs**: http://localhost:8503
+          - **Milvus**: localhost:19530
+          - **Minio**: http://localhost:9000 (console: :9001)
+
+          ## Version Information
+          - Release Version: ${{ needs.detect-changes.outputs.version }}
+          - Docker Images: Using `:latest` tags from corresponding app release
+          - Milvus Version: v2.5.14
+          - Minio Version: RELEASE.2024-05-28T17-19-04Z
+
+          ## Troubleshooting
+
+          ### Common Issues
+          1. **Port conflicts**: Modify port mappings in compose files
+          2. **Permission issues**: Ensure Docker has access to volume directories
+          3. **Memory issues**: Increase Docker memory allocation
+          4. **Mac users**: See our Mac-specific setup guide
+
+          ### Getting Help
+            - Issues: https://github.com/VirtualPatientEngine/AIAgents4Pharma/issues
+            - Documentation: https://virtualpatientengine.github.io/AIAgents4Pharma/
+            - Discussions: https://github.com/VirtualPatientEngine/AIAgents4Pharma/discussions
+
+          ## License
+          See LICENSE file in the main repository.
+          EOF
+
+      - name: Create .env templates
+        run: |
+          # Create .env.example for talk2aiagents4pharma and talk2knowledgegraphs
+          for app in talk2aiagents4pharma talk2knowledgegraphs; do
+            if [ -d "release/$app" ]; then
+              # Create .env.example in both cpu and gpu directories
+              cat > "release/$app/cpu/.env.example" << 'EOF'
+          # .env.example (DO NOT put actual API keys here, read the README.md)
+
+          # OPENAI API KEY
+          OPENAI_API_KEY=your_openai_api_key_here
+
+          # LangSmith API KEY
+          LANGCHAIN_TRACING_V2=true
+          LANGCHAIN_API_KEY=your_langchain_api_key_here
+
+          # NVIDIA API KEY
+          NVIDIA_API_KEY=your_nvidia_api_key_here
+
+          # Set environment variables for data loader
+          MILVUS_HOST=localhost
+          MILVUS_PORT=19530
+          MILVUS_USER=root
+          MILVUS_PASSWORD=Milvus
+          MILVUS_DATABASE=your_database_name_here
+
+          # Specify the data directory for multimodal data to your own data directory
+          # DATA_DIR=/your_absolute_path_to_your_data_dir/
+
+          BATCH_SIZE=500
+          EOF
+              
+              # Copy to GPU directory
+              cp "release/$app/cpu/.env.example" "release/$app/gpu/.env.example"
+            fi
+          done
+
+          # Create .env.example for talk2scholars
+          if [ -d "release/talk2scholars" ]; then
+            cat > "release/talk2scholars/cpu/.env.example" << 'EOF'
+          # .env.example (DO NOT put actual API keys here, read the README.md)
+
+          # OPENAI API KEY
+          OPENAI_API_KEY=your_openai_api_key_here
+
+          # LangSmith API KEY
+          LANGCHAIN_TRACING_V2=true
+          LANGCHAIN_API_KEY=your_langchain_api_key_here
+
+          # NVIDIA API KEY
+          NVIDIA_API_KEY=your_nvidia_api_key_here
+
+          # ZOTERO API KEY
+          ZOTERO_API_KEY=your_zotero_api_key_here
+          ZOTERO_USER_ID=your_zotero_user_id_here
+
+          # Set environment variables for data loader
+          MILVUS_HOST=milvus-standalone
+          MILVUS_PORT=19530
+          MILVUS_DB_NAME=pdf_rag_db
+          MILVUS_COLLECTION_NAME=pdf_rag_documents
+          EOF
+            
+            # Copy to GPU directory
+            cp "release/talk2scholars/cpu/.env.example" "release/talk2scholars/gpu/.env.example"
+          fi
+
+      - name: Create archive
+        run: |
+          cd release
+          tar -czf "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz" .
+          zip -r "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.zip" .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.detect-changes.outputs.version }}
+          name: "Docker Compose Release ${{ needs.detect-changes.outputs.version }}"
+          body: |
+            ## Docker Compose Configuration Release
+
+            This release contains Docker Compose files and configurations for AIAgents4Pharma.
+
+            ### What's Included
+              - All Docker Compose configurations
+              - Environment file template (`.env.example`)
+              - Setup documentation
+              - Both development and production configurations
+
+            ### Quick Start
+            1. Download and extract the archive
+            2. Copy `.env.example` to `.env` and customize
+            3. Run: `docker compose up -d`
+
+            ### Changes in this release
+            ${{ github.event.head_commit.message }}
+
+          files: |
+            aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz
+            aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update latest compose tag
+        run: |
+          # Create/update a latest tag for compose files
+          git tag -f compose-latest
+          git push origin compose-latest --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Notify about the release
+  notify:
+    needs: [detect-changes, release-compose]
+    if: ${{ needs.detect-changes.outputs.should_release == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify release complete
+        run: |
+          echo "Docker Compose release ${{ needs.detect-changes.outputs.version }} completed!"
+          echo "Archive created with all compose configurations"
+          echo "Available at: https://github.com/${{ github.repository }}/releases/tag/${{ needs.detect-changes.outputs.version }}"

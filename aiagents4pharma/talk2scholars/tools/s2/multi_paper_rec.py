@@ -65,25 +65,28 @@ def get_multi_paper_recommendations(
     year: Optional[str] = None,
 ) -> Command[Any]:
     """
-    Return recommended papers based on multiple Semantic Scholar paper IDs.
+    Recommend related research papers using the Semantic Scholar API.
 
-    This tool accepts a list of Semantic Scholar paper IDs and returns a set of
-    recommended papers by aggregating related works (citations and references)
-    from each input paper.
+    This tool is designed to suggest relevant papers based on a list of
+    input Semantic Scholar paper IDs.
+
+    It fetches citations and references for each input paper and aggregates
+    them to generate a set of
+    recommended papers.
 
     Args:
         paper_ids (List[str]): List of 40-character Semantic Scholar paper IDs.
-        Provide at least two IDs.
+            Provide at least two IDs to improve the relevance of recommendations.
         tool_call_id (str): Internal tool call identifier injected by the system.
-        limit (int, optional): Maximum total number of recommendations to return. Defaults to 10.
-        year (str, optional): Publication year filter; supports formats: 'YYYY',
-        'YYYY-', '-YYYY', 'YYYY:YYYY'. Defaults to None.
+        limit (int, optional): Maximum number of recommendations to return. Defaults to 10.
+        year (str, optional): Filter recommendations by publication year.
+            Supports formats: 'YYYY', 'YYYY-', '-YYYY', or 'YYYY:YYYY'. Defaults to None.
 
     Returns:
         Command: A Command object containing:
             - multi_papers: List of recommended papers.
             - last_displayed_papers: Same list for display purposes.
-            - messages: List containing a ToolMessage with recommendations details.
+            - messages: List containing a ToolMessage with recommendation details.
     """
     # Create recommendation data object to organize variables
     rec_data = MultiPaperRecData(paper_ids, limit, year, tool_call_id)

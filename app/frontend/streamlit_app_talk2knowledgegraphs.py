@@ -45,11 +45,31 @@ else:
     cfg = st.session_state.config
 
 
-# st.logo(
-#     image='docs/VPE.png',
-#     size='large',
-#     link='https://github.com/VirtualPatientEngine'
-# )
+# Set the logo, detect if we're in container or local development
+def get_logo_path():
+    container_path = '/app/docs/assets/VPE.png'
+    local_path = 'docs/assets/VPE.png'
+    
+    if os.path.exists(container_path):
+        return container_path
+    elif os.path.exists(local_path):
+        return local_path
+    else:
+        # Fallback: try to find it relative to script location
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        relative_path = os.path.join(script_dir, '../../docs/assets/VPE.png')
+        if os.path.exists(relative_path):
+            return relative_path
+    
+    return None  # File not found
+
+logo_path = get_logo_path()
+if logo_path:
+    st.logo(
+        image=logo_path,
+        size='large',
+        link='https://github.com/VirtualPatientEngine'
+    )
 
 # Check if env variable OPENAI_API_KEY exists
 if "OPENAI_API_KEY" not in os.environ:
@@ -213,7 +233,7 @@ with main_col2:
     with st.container(border=True, height=800):
         st.write("#### 💬 Chat History")
 
-        # Display chat messages
+        # Display history of messages
         for count, message in enumerate(st.session_state.messages):
             if message["type"] == "message":
                 with st.chat_message(
@@ -221,6 +241,12 @@ with main_col2:
                     avatar="🤖" if message["content"].role != "user" else "👩🏻‍💻",
                 ):
                     st.markdown(message["content"].content)
+                    st.empty()
+            elif message["type"] == "button":
+                if st.button(message["content"],
+                             key=message["key"]):
+                    # Trigger the question
+                    prompt = message["question"]
                     st.empty()
             elif message["type"] == "plotly":
                 streamlit_utils.render_plotly(
@@ -253,6 +279,87 @@ with main_col2:
                 )
                 st.empty()
 
+        # Display intro message only the first time
+        # i.e. when there are no messages in the chat
+        if not st.session_state.messages:
+            with st.chat_message("assistant", avatar="🤖"):
+                with st.spinner("Initializing the agent ..."):
+                    config = {"configurable": {"thread_id": st.session_state.unique_id}}
+                    
+                    # Prepare LLM and embedding model for updating the agent
+                    if st.session_state.llm_model in cfg.openai_llms:
+                        llm_model = ChatOpenAI(
+                            model=st.session_state.llm_model,
+                            temperature=cfg.temperature,
+                        )
+                    else:
+                        llm_model = ChatOllama(
+                            model=st.session_state.llm_model,
+                            temperature=cfg.temperature,
+                        )
+
+                    if cfg.default_embedding_model == "ollama":
+                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                    else:
+                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+
+                    # Update the agent state with initial configuration
+                    app.update_state(
+                        config,
+                        {
+                            "llm_model": llm_model,
+                            "embedding_model": emb_model,
+                            "selections": st.session_state.selections,
+                            "uploaded_files": st.session_state.uploaded_files,
+                            "topk_nodes": st.session_state.topk_nodes,
+                            "topk_edges": st.session_state.topk_edges,
+                            "dic_source_graph": [
+                                {
+                                    "name": cfg.milvus_db.database_name,
+                                }
+                            ],
+                        },
+                    )
+                    
+                    intro_prompt = "Tell your name and about yourself. Always start with a greeting."
+                    intro_prompt += " and tell about the tools you can run to perform analysis with short description."
+                    intro_prompt += " We have provided starter questions (separately) outside your response."
+                    intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
+                    intro_prompt += " simply click on the questions to execute them."
+                    
+                    response = app.stream(
+                        {"messages": [HumanMessage(content=intro_prompt)]},
+                        config=config,
+                        stream_mode="messages"
+                    )
+                    st.write_stream(streamlit_utils.stream_response(response))
+                    current_state = app.get_state(config)
+                    # Add response to chat history
+                    assistant_msg = ChatMessage(
+                        current_state.values["messages"][-1].content,
+                        role="assistant"
+                    )
+                    st.session_state.messages.append({
+                        "type": "message",
+                        "content": assistant_msg
+                    })
+                    st.empty()
+
+        # Display sample questions when there are few messages
+        if len(st.session_state.messages) <= 1:
+            for count, question in enumerate(streamlit_utils.sample_questions_t2kg()):
+                if st.button(f'Q{count+1}. {question}',
+                             key=f'sample_question_{count+1}'):
+                    # Trigger the question
+                    prompt = question
+                # Add button click to chat history
+                st.session_state.messages.append({
+                    "type": "button",
+                    "question": question,
+                    "content": f'Q{count+1}. {question}',
+                    "key": f'sample_question_{count+1}'
+                })
+
         # When the user asks a question
         if prompt:
             # Display user prompt
@@ -263,8 +370,7 @@ with main_col2:
                 st.empty()
 
             # Auxiliary visualization-related variables
-            # render_flag = False
-            graph_to_be_rendered = None
+            graphs_visuals = []
             with st.chat_message("assistant", avatar="🤖"):
                 # with st.spinner("Fetching response ..."):
                 with st.spinner():
@@ -324,36 +430,30 @@ with main_col2:
                         },
                     )
 
-                    # Update the agent states
-                    current_state = app.get_state(config)
-
-                    ERROR_FLAG = False
+                    # Stream the response from the agent
                     with collect_runs() as cb:
                         # Add Langsmith tracer
                         tracer = LangChainTracer(
                             project_name=st.session_state.project_name
                         )
-                        # Get response from the agent
-                        response = app.invoke(
+                        # Stream response from the agent
+                        response = app.stream(
                             {"messages": [HumanMessage(content=prompt)]},
                             config=config | {"callbacks": [tracer]},
+                            stream_mode="messages"
                         )
+                        st.write_stream(streamlit_utils.stream_response(response))
                         st.session_state.run_id = cb.traced_runs[-1].id
+                    
+                    # Get final state and add response to chat history
                     current_state = app.get_state(config)
-
-                    # Add response to chat history
                     assistant_msg = ChatMessage(
-                        response["messages"][-1].content, role="assistant"
+                        current_state.values["messages"][-1].content, role="assistant"
                     )
                     st.session_state.messages.append(
                         {"type": "message", "content": assistant_msg}
                     )
-                    # Display the response in the chat
-                    st.markdown(response["messages"][-1].content)
                     st.empty()
-
-                    # Get the current state of the graph
-                    current_state = app.get_state(config)
 
                     # # Get the messages from the current state
                     # # and reverse the order
@@ -403,21 +503,20 @@ with main_col2:
                             )
                             # Add the graph to be rendered
                             latest_graph = current_state.values["dic_extracted_graph"][-1]
-                            graph_to_be_rendered = {
+                            graphs_visuals.append({
                                 "content": latest_graph["graph_dict"],
                                 "key": "subgraph_" + uniq_msg_id,
-                            }
+                            })
 
-            # Visualize the graph
-            if graph_to_be_rendered:
-                streamlit_utils.render_graph(
-                    graph_dict=graph_to_be_rendered["content"], 
-                    key=graph_to_be_rendered["key"], 
-                    save_graph=True
-                )
-                st.empty()
-                # Remove the graph to be rendered
-                graph_to_be_rendered = None
+            # Visualize the graphs
+            if len(graphs_visuals) > 0:
+                for count, graph in enumerate(graphs_visuals):
+                    streamlit_utils.render_graph(
+                        graph_dict=graph["content"], 
+                        key=graph["key"], 
+                        save_graph=True
+                    )
+                    st.empty()
 
         # Collect feedback and display the thumbs feedback
         if st.session_state.get("run_id"):

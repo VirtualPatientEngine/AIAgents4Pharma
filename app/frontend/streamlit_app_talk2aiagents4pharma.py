@@ -22,12 +22,31 @@ st.set_page_config(page_title="Talk2AIAgents4Pharma",
                    layout="wide",
                    initial_sidebar_state="collapsed",)
 
-# Set the logo
-st.logo(
-    image='docs/assets/VPE.png',
-    size='large',
-    link='https://github.com/VirtualPatientEngine'
-)
+# Set the logo, detect if we're in container or local development
+def get_logo_path():
+    container_path = '/app/docs/assets/VPE.png'
+    local_path = 'docs/assets/VPE.png'
+    
+    if os.path.exists(container_path):
+        return container_path
+    elif os.path.exists(local_path):
+        return local_path
+    else:
+        # Fallback: try to find it relative to script location
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        relative_path = os.path.join(script_dir, '../../docs/assets/VPE.png')
+        if os.path.exists(relative_path):
+            return relative_path
+    
+    return None  # File not found
+
+logo_path = get_logo_path()
+if logo_path:
+    st.logo(
+        image=logo_path,
+        size='large',
+        link='https://github.com/VirtualPatientEngine'
+    )
 
 # Check if env variables OPENAI_API_KEY and/or
 # NVIDIA_API_KEY exist

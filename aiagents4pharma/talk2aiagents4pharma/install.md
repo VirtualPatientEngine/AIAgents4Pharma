@@ -1,4 +1,116 @@
-###### Notes for Windows Users
+# Talk2AIAgents4Pharma
+
+## Installation
+
+If your machine has NVIDIA GPU(s), please install the following this:
+
+- [nvidia-cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
+
+### Docker (stable-release)
+
+_This agent is available on Docker Hub._
+
+**Prerequisites**
+
+- [Milvus](https://milvus.io) (for a vector database)
+
+---
+
+#### 1. Download files
+
+Choose the appropriate version of the `docker-compose.yml` file based on your system:
+
+**For GPU:**
+
+```sh
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose/gpu/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose/gpu/.env.example
+```
+
+**For CPU:**
+
+```sh
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose/cpu/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose/cpu/.env.example
+```
+
+#### 2. Setup environment variables
+
+```sh
+cp .env.example .env
+```
+
+Edit `.env` with your API keys:
+
+```env
+# .env.example (DO NOT put actual API keys here, read the README.md)
+
+# OPENAI API KEY
+OPENAI_API_KEY=your_openai_api_key_here
+
+# LangSmith API KEY
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=your_langchain_api_key_here
+
+# NVIDIA API KEY
+NVIDIA_API_KEY=your_nvidia_api_key_here
+
+# Set environment variables for data loader
+MILVUS_HOST=localhost
+MILVUS_PORT=19530
+MILVUS_USER=root
+MILVUS_PASSWORD=Milvus
+MILVUS_DATABASE=your_database_name_here
+
+# Specify the data directory for multimodal data to your own data directory
+# DATA_DIR=/your_absolute_path_to_your_data_dir/
+
+BATCH_SIZE=500
+```
+
+---
+
+#### 3. Start the agent
+
+```sh
+docker compose up -d
+```
+
+---
+
+### Access the Web UI
+
+Once started, open:
+
+```
+http://localhost:8501
+```
+
+> In the background, the BioBridge multimodal embeddings will be inserted into the Milvus database, and the `talk2aiagents4pharma` service will start. Once the data is fully inserted, the application will be in a healthy state and accessible at the above address.
+>
+> You can monitor the process using:
+>
+> ```sh
+> docker logs -f talk2aiagents4pharma
+> ```
+
+---
+
+## Get Key
+
+- `NVIDIA_API_KEY` – required (obtain a free key at [https://build.nvidia.com/explore/discover](https://build.nvidia.com/explore/discover))
+
+**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
+
+_Please note that this will create a new tracing project in your Langsmith
+account with the name `T2X-xxxx`, where `X` can be `KG` (KnowledgeGraphs).
+If you skip the previous step, it will default to the name `default`.
+`xxxx` will be the 4-digit ID created for the session._
+
+---
+
+## Notes for Windows Users
 
 If you are using Windows, it is recommended to install [**Git Bash**](https://git-scm.com/downloads) for a smoother experience when running the bash commands in this guide.
 
@@ -9,45 +121,7 @@ You can download Git Bash here: [Git for Windows](https://git-scm.com/downloads)
 
 When using Docker on Windows, make sure you **run Docker with administrative privileges** if you face permission issues.
 
-To resolve for permission issues, you can:
+To resolve permission issues, you can:
 
 - Review the official Docker documentation on [Windows permission requirements](https://docs.docker.com/desktop/setup/install/windows-permission-requirements/).
 - Alternatively, follow the community discussion and solutions on [Docker Community Forums](https://forums.docker.com/t/error-when-trying-to-run-windows-containers-docker-client-must-be-run-with-elevated-privileges/136619).
-
-**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
-
-###### About startup.sh
-
-Run the startup script. It will:
-
-- Detect your hardware configuration (NVIDIA GPU, AMD GPU, or CPU). Apple Metal is unavailable inside Docker, and Intel SIMD optimizations are automatically handled without special configuration.
-- Choose the correct Ollama image (`latest` or `rocm`)
-- Launch the Ollama container with appropriate runtime settings
-- Pull the required embedding model (`nomic-embed-text`)
-- Start the agent **after the model is available**
-
-###### To run multiple agents simultaneously
-
-- Be sure to **replace the placeholder values** with your actual credentials before running any container:
-
-  - `<your_openai_api_key>`
-  - `<your_nvidia_api_key>`
-  - `<your_zotero_api_key>`
-  - `<your_zotero_user_id>`
-
-- All agents default to **port `8501`**. If you plan to run multiple agents simultaneously, make sure to assign **different ports** to avoid conflicts.
-
-  Example (Talk2Scholars on port `8502`):
-
-  ```docker
-  docker run -d \
-    --name talk2scholars \
-    -e OPENAI_API_KEY=<your_openai_api_key> \
-    -e ZOTERO_API_KEY=<your_zotero_api_key> \
-    -e ZOTERO_USER_ID=<your_zotero_user_id> \
-    -e NVIDIA_API_KEY=<your_nvidia_api_key> \
-    -p 8502:8501 \
-    virtualpatientengine/talk2scholars
-  ```
-
-  Then access the app at: [http://localhost:8502](http://localhost:8502)

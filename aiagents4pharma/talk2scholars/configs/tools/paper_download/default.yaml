@@ -1,0 +1,124 @@
+# Unified Paper Download Configuration
+# Single configuration file for all paper download services
+
+# Common settings shared across all services
+defaults:
+  - _self_
+
+common:
+  # Request Configuration
+  request_timeout: 15
+  chunk_size: 8192
+
+  # Web Request Configuration
+  user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+  # Retry and Rate Limiting (for future use)
+  max_retries: 3
+  retry_delay: 2 # seconds
+  batch_size: 10 # number of papers to process before delay
+  batch_delay: 5 # seconds between batches
+
+  # Debug Configuration
+  enable_detailed_logging: true
+
+# Service-specific configurations
+services:
+  arxiv:
+    # Primary API
+    api_url: "http://export.arxiv.org/api/query"
+
+    # PDF Download
+    pdf_base_url: "https://arxiv.org/pdf"
+
+    # XML namespace configuration
+    xml_namespace:
+      atom: "http://www.w3.org/2005/Atom"
+
+    # Service-specific settings (inherit common settings)
+    service_name: "arXiv"
+    identifier_type: "arXiv ID"
+    supports_batch: true
+
+  medrxiv:
+    # Primary API
+    api_url: "https://api.medrxiv.org/details"
+
+    # PDF Download configuration
+    pdf_base_url: "https://www.medrxiv.org/content/10.1101/"
+    pdf_url_template: "https://www.medrxiv.org/content/{identifier}v{version}.full.pdf"
+
+    # Default values
+    default_version: "1"
+
+    # Service-specific settings
+    service_name: "medRxiv"
+    identifier_type: "DOI"
+    supports_batch: true
+
+  biorxiv:
+    # Primary API
+    api_url: "https://api.biorxiv.org/details"
+
+    # PDF Download configuration
+    pdf_base_url: "https://www.biorxiv.org/content/10.1101/"
+    landing_url_template: "https://www.biorxiv.org/content/{doi}v{version}"
+    pdf_url_template: "https://www.biorxiv.org/content/{doi}v{version}.full.pdf"
+
+    # Default values
+    default_version: "1"
+
+    # Cloudflare-bypass settings
+    cf_clearance_timeout: 30
+    session_reuse: true
+    browser_config:
+      type: "custom" # Used for cloudscraper browser configuration
+
+    # Service-specific settings
+    service_name: "bioRxiv"
+    identifier_type: "DOI"
+    supports_batch: true
+
+  pubmed:
+    # Primary APIs
+    id_converter_url: "https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles"
+    oa_api_url: "https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi"
+
+    # Alternative PDF Sources
+    europe_pmc_base_url: "https://europepmc.org/backend/ptpmcrender.fcgi"
+    pmc_page_base_url: "https://www.ncbi.nlm.nih.gov/pmc/articles"
+    direct_pmc_pdf_base_url: "https://pmc.ncbi.nlm.nih.gov/articles"
+
+    # URL Conversion for NCBI FTP links
+    ftp_base_url: "ftp://ftp.ncbi.nlm.nih.gov"
+    https_base_url: "https://ftp.ncbi.nlm.nih.gov"
+
+    # API configuration
+    id_converter_format: "json"
+
+    # Page scraping configuration
+    pdf_meta_name: "citation_pdf_url"
+
+    # Error handling
+    default_error_code: "unknown"
+
+    # PubMed-specific settings
+    service_name: "PubMed"
+    identifier_type: "PMID"
+    supports_batch: true
+    log_response_preview_chars: 500 # chars to log from API responses
+
+# Global configuration for all services
+supported_services: ["arxiv", "medrxiv", "biorxiv", "pubmed"]
+
+# Tool configuration
+tool:
+  name: "download_papers"
+  description: "Universal paper download tool supporting arXiv, medRxiv, bioRxiv, and PubMed"
+  supported_services: ["arxiv", "medrxiv", "biorxiv", "pubmed"]
+  default_service: "pubmed"
+
+  # Output configuration
+  max_summary_papers: 3
+  include_abstracts_in_summary: true
+  temp_file_cleanup: false # Set to true to auto-cleanup temp files

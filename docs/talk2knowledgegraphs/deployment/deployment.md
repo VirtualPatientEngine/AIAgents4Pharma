@@ -1,4 +1,3 @@
-
 # 🛠️ Deployment Guide for Talk2KnowledgeGraphs (T2KG)
 
 This step-by-step tutorial helps you deploy **Talk2KnowledgeGraphs (T2KG)** on your local machine.
@@ -79,29 +78,57 @@ sudo apt install python3.12-venv
 
 ---
 
-## ✅ Step 6: Clone the AIAgents4Pharma Repository
+## ✅ Step 6: Get the docker-compose.yml
 
-Download the T2KG codebase which includes Docker configs, notebooks, and the Streamlit frontend.
+Choose the appropriate version of the `docker-compose.yml` file based on your system:
 
-```bash
-mkdir repositories
-cd repositories
-git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma
-cd AIAgents4Pharma
+**For GPU:**
+
+```sh
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose/gpu/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose/gpu/.env.example
 ```
 
----
+**For CPU:**
 
-## ✅ Step 7: Configure the `.env` File
+```sh
+wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose/cpu/docker-compose.yml \
+     https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose/cpu/.env.example
+```
 
-Copy the example environment file and update paths, keys, and credentials as needed.
+Setup environment variables
 
-```bash
-cd aiagents4pharma/talk2knowledgegraphs
+```sh
 cp .env.example .env
 ```
 
-> ✏️ Make sure to fill in all fields, especially the absolute `DATA_DIR` path.
+Edit `.env` with your API keys:
+
+```env
+# .env.example (DO NOT put actual API keys here, read the README.md)
+
+# OPENAI API KEY
+OPENAI_API_KEY=your_openai_api_key_here
+
+# LangSmith API KEY
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=your_langchain_api_key_here
+
+# NVIDIA API KEY
+NVIDIA_API_KEY=your_nvidia_api_key_here
+
+# Set environment variables for data loader
+MILVUS_HOST=localhost
+MILVUS_PORT=19530
+MILVUS_USER=root
+MILVUS_PASSWORD=Milvus
+MILVUS_DATABASE=your_database_name_here
+
+# Specify the data directory for multimodal data to your own data directory
+# DATA_DIR=/your_absolute_path_to_your_data_dir/
+
+BATCH_SIZE=500
+```
 
 ---
 
@@ -110,34 +137,15 @@ cp .env.example .env
 This starts the backend (Milvus, API server) and frontend (Streamlit UI) in containers.
 
 ```bash
-chmod +x startup.sh
-./startup.sh
+docker compose up -d
 ```
 
----
-
 ## 🧹 Optional: Reset and Clean Up Docker Containers
-
-If you're facing issues or want to reset your environment, these commands will stop and remove all related containers and volumes.
-
-⚠️ Use with **caution** if other Docker containers are also running.
 
 ### Stop containers
 
 ```bash
-sudo docker stop milvus-etcd milvus-minio milvus-standalone talk2knowledgegraphs
-```
-
-### Remove containers
-
-```bash
-sudo docker rm milvus-etcd milvus-minio milvus-standalone talk2knowledgegraphs
-```
-
-### Remove Docker network for Milvus
-
-```bash
-sudo docker network rm milvus
+sudo docker compose down -v
 ```
 
 ### Remove local volumes (stored graph/embedding data)

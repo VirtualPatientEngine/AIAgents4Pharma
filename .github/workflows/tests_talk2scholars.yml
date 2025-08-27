@@ -162,7 +162,7 @@ jobs:
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu=1.9.0 -c pytorch
+          conda install -n talk2aiagents4pharma -y pytest coverage -c pytorch
 
       - name: Run tests with coverage
         shell: bash -l {0}
@@ -217,7 +217,7 @@ jobs:
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu=1.9.0 -c pytorch
+          conda install -n talk2aiagents4pharma -y pytest coverage -c pytorch
 
       - name: Run tests with coverage
         shell: bash -l {0}
@@ -272,7 +272,7 @@ jobs:
             pip install -r requirements.txt
           fi
           conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage faiss-cpu=1.9.0 -c pytorch
+          conda install -n talk2aiagents4pharma -y pytest coverage -c pytorch
 
       - name: Run tests with coverage
         shell: bash -l {0}

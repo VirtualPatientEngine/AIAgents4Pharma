@@ -60,4 +60,4 @@ milvus_db:
   collection_nodes_drug: "t2kg_primekg_nodes_drug"
   collection_nodes_disease: "t2kg_primekg_nodes_disease"
   query_batch_size: 1000000
-  cache_edge_index_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/t2kg_primekg_edge_index.pkl"
+  cache_edge_index_path: "${oc.env:CACHE_EDGE_INDEX_PATH,aiagents4pharma/talk2knowledgegraphs/tests/files/t2kg_primekg_edge_index.pkl}"

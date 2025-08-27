@@ -25,6 +25,7 @@ dependencies = [
   "langchain-community==0.3.5",
   "langchain-core==0.3.40",
   "langchain-experimental==0.3.3",
+  "langchain-milvus==0.2.0",
   "langchain-nvidia-ai-endpoints==0.3.9",
   "langchain-openai==0.2.5",
   "langchain_ollama==0.2.3",
@@ -42,6 +43,7 @@ dependencies = [
   "pytest==8.3.3",
   "pytest-asyncio==0.25.2",
   "pyzotero==1.6.9",
+  "pymilvus==2.5.11",
   "streamlit==1.39.0",
   "sentence_transformers==3.3.1",
   "tabulate==0.9.0",
@@ -68,7 +70,6 @@ dependencies = [
   "seaborn==0.13.2",
   "scanpy==1.11.0",
   "openpyxl==3.1.5",
-  "pymilvus==2.5.11",
 ]
 dynamic = ["version"]
 
@@ -85,38 +86,10 @@ include = ["aiagents4pharma*"]
 
 [tool.setuptools.package-data]
 aiagents4pharma = [
-  "talk2aiagents4pharma/configs/*",
-  "talk2aiagents4pharma/configs/agents/main_agent/*",
-  "talk2aiagents4pharma/configs/app/frontend/*",
-  "talk2biomodels/configs/*",
-  "talk2biomodels/configs/agents/t2b_agent/*",
-  "talk2biomodels/configs/tools/ask_question/*",
-  "talk2biomodels/configs/tools/get_annotation/*",
-  "talk2biomodels/configs/tools/custom_plotter/*",
-  "talk2knowledgegraphs/configs/*",
-  "talk2knowledgegraphs/configs/agents/t2kg_agent/*",
-  "talk2knowledgegraphs/configs/app/frontend/*",
-  "talk2knowledgegraphs/configs/tools/subgraph_extraction/*",
-  "talk2knowledgegraphs/configs/tools/subgraph_summarization/*",
-  "talk2knowledgegraphs/configs/tools/graphrag_reasoning/*",
-  "talk2scholars/configs/*",
-  "talk2scholars/configs/agents/talk2scholars/main_agent/*",
-  "talk2scholars/configs/agents/talk2scholars/s2_agent/*",
-  "talk2scholars/configs/agents/talk2scholars/zotero_agent/*",
-  "talk2scholars/configs/agents/talk2scholars/paper_download_agent/*",
-  "talk2scholars/configs/agents/talk2scholars/pdf_agent/*",
-  "talk2scholars/configs/app/frontend/*",
-  "talk2scholars/configs/tools/download_arxiv_paper/*",
-  "talk2scholars/configs/tools/download_medrxiv_paper/*",
-  "talk2scholars/configs/tools/download_biorxiv_paper/*",
-  "talk2scholars/configs/tools/question_and_answer/*",
-  "talk2scholars/configs/tools/search/*",
-  "talk2scholars/configs/tools/zotero_read/*",
-  "talk2scholars/configs/tools/multi_paper_recommendation/*",
-  "talk2scholars/configs/tools/retrieve_semantic_scholar_paper_id/*",
-  "talk2scholars/configs/tools/single_paper_recommendation/*",
-  "talk2scholars/configs/tools/zotero_write/*",
-
+  "talk2aiagents4pharma/configs/**/*",
+  "talk2biomodels/configs/**/*",
+  "talk2knowledgegraphs/configs/**/*",
+  "talk2scholars/configs/**/*",
 ]
 
 [tool.pytest.ini_options]

@@ -1,14 +1,32 @@
+<img src="assets/VPE.png" alt="Virtual Patient Engine Logo" width="150"/>
+
+<!--  Project Info -->
+
+![RELEASE](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma?label=RELEASE)
+![Docker Compose Release Version](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma?label=Docker%20Compose%20Version)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
+
+<!--  Deployment Workflows -->
+
+[![Pages Deployment](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/pages/pages-build-deployment)
+[![MkDocs Deploy](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs-deploy.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs-deploy.yml)
+[![Docker Build & Push](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_build.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_build.yml)
+[![Docker Compose Release](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_compose_release.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_compose_release.yml)
+
+<!--  Tests -->
+
+[![TESTS Talk2AIAgents4Pharma](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml)
 [![Talk2BioModels](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2biomodels.yml)
-[![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
 [![Talk2KnowledgeGraphs](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2knowledgegraphs.yml)
 [![TESTS Talk2Scholars](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2scholars.yml)
-[![TESTS Talk2AIAgents4Pharma](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2aiagents4pharma.yml)
-![GitHub Release](https://img.shields.io/github/v/release/VirtualPatientEngine/AIAgents4Pharma)
-![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
-![Talk2AIAgents4Pharma Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2aiagents4pharma?label=Talk2AIAgents4Pharma%20Pulls&color=blue&logo=docker&style=flat-square)
-![Talk2Scholars Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2scholars?label=Talk2Scholars%20Pulls&color=blue&logo=docker&style=flat-square)
-![Talk2BioModels Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2biomodels?label=Talk2BioModels%20Pulls&color=blue&logo=docker&style=flat-square)
-![Talk2KnowledgeGraphs Pulls](https://img.shields.io/docker/pulls/virtualpatientengine/talk2knowledgegraphs?label=Talk2KnowledgeGraphs%20Pulls&color=blue&logo=docker&style=flat-square)
+[![Talk2Cells](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/tests_talk2cells.yml)
+
+<!--  Docker Pulls -->
+
+![Talk2AIAgents4Pharma Pulls](https://img.shields.io/docker/pulls/vpatientengine/talk2aiagents4pharma?label=Talk2AIAgents4Pharma%20Pulls&color=blue&logo=docker&style=flat-square)
+![Talk2BioModels Pulls](https://img.shields.io/docker/pulls/vpatientengine/talk2biomodels?label=Talk2BioModels%20Pulls&color=blue&logo=docker&style=flat-square)
+![Talk2KnowledgeGraphs Pulls](https://img.shields.io/docker/pulls/vpatientengine/talk2knowledgegraphs?label=Talk2KnowledgeGraphs%20Pulls&color=blue&logo=docker&style=flat-square)
+![Talk2Scholars Pulls](https://img.shields.io/docker/pulls/vpatientengine/talk2scholars?label=Talk2Scholars%20Pulls&color=blue&logo=docker&style=flat-square)
 
 ## Introduction
 
@@ -43,103 +61,12 @@ Our toolkit currently consists of the following agents:
 
 _We now have all the agents available on Docker Hub._
 
-##### **To run Talk2AIAgents4Pharma / Talk2KnowledgeGraphs**
+Choose your agent below for detailed Docker instructions:
 
-If your machine has NVIDIA GPU(s), please install the following this:
-- [nvidia-cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)
-- [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
-
-##### **1. Download docker-compose.yml, .env.example and startup.sh from GitHub**
-
-###### Talk2Agents4Pharma
-
-```sh
-mkdir talk2aiagents4pharma && cd talk2aiagents4pharma && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2aiagents4pharma/startup.sh
-```
-
-###### Talk2KnowledgeGraphs
-
-```sh
-mkdir talk2knowledgegraphs && cd talk2knowledgegraphs && wget https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/docker-compose.yml https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/.env.example https://raw.githubusercontent.com/VirtualPatientEngine/AIAgents4Pharma/main/aiagents4pharma/talk2knowledgegraphs/startup.sh
-```
-
-##### **2. Setup environment variables**
-
-Copy and configure your `.env` file:
-
-```sh
-cp .env.example .env
-```
-
-Then edit `.env` and add your API keys:
-
-```env
-OPENAI_API_KEY=...                  # Required for both agents
-NVIDIA_API_KEY=...                  # Required for both agents
-LANGCHAIN_TRACING_V2=true           # Optional for both agents
-LANGCHAIN_API_KEY=...               # Optional for both agents
-```
-
-[Additional Notes for Windows Users](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users)
-
-##### **3. Start the application**
-
-```sh
-chmod +x startup.sh
-./startup.sh        # Add --cpu flag to force CPU mode if needed
-```
-
-[More about startup script](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#about-startupsh)
-
-##### **To Run Talk2Biomodels / Talk2Scholars**
-
-###### Talk2Biomodels
-
-```docker
-docker run -d \
---name talk2biomodels \
--e OPENAI_API_KEY=<your_openai_api_key> \
--e NVIDIA_API_KEY=<your_nvidia_api_key> \
--p 8501:8501 \
-virtualpatientengine/talk2biomodels
-```
-
-###### Talk2Scholars
-
-```docker
-docker run -d \
---name talk2scholars \
--e OPENAI_API_KEY=<your_openai_api_key> \
--e ZOTERO_API_KEY=<your_zotero_api_key> \
--e ZOTERO_USER_ID=<your_zotero_user_id> \
--e NVIDIA_API_KEY=<your_nvidia_api_key> \
--p 8501:8501 \
-virtualpatientengine/talk2scholars
-```
-
-##### **4. Access the Web UI**
-
-Once started, the agent is available at:
-
-```
-http://localhost:8501
-```
-
-To use **Talk2AIAgents4Pharma** or **Talk2KnowledgeGraphs**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
-
-To use **Talk2BioModels** or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
-
-Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
-
-If you are using docker on Windows, please follow these [Windows Setup Notes](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#notes-for-windows-users).
-
-**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
-
-[More on running multiple agents simultaneously](https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/main/aiagents4pharma/talk2aiagents4pharma/install.md#to-run-multiple-agents-simultaneously)
-
-📝 By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.  
-To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
-
+- [Talk2AIAgents4Pharma](aiagents4pharma/talk2aiagents4pharma/install.md)
+- [Talk2KnowledgeGraphs](aiagents4pharma/talk2knowledgegraphs/install.md)
+- [Talk2BioModels](aiagents4pharma/talk2biomodels/install.md)
+- [Talk2Scholars](aiagents4pharma/talk2scholars/install.md)
 
 #### Option 2: git (for developers and contributors)
 
@@ -170,23 +97,6 @@ export LANGCHAIN_TRACING_V2=true    # Optional for all agents
 export LANGCHAIN_API_KEY=...        # Optional for all agents
 ```
 
-To use **Talk2AIAgents4Pharma**, **Talk2BioModels**, **Talk2KnowledgeGraphs**, or **Talk2Scholars**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
-
-Only for **Talk2Scholars**, you also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(For all other agents, the Zotero key is not required.)_
-
-To use **Talk2Scholars**, you must have **FAISS** installed through **Conda**. Follow installation instructions for your OS [here](https://github.com/VirtualPatientEngine/AIAgents4Pharma/tree/main/aiagents4pharma/talk2scholars/install.md).
-
-Additionally on **Windows**, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**.  
-You can download the **Microsoft C++ Build Tools** [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-
-**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
-
-_Please note that this will create a new tracing project in your Langsmith
-account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
-`B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
-If you skip the previous step, it will default to the name `default`.
-`xxxx` will be the 4-digit ID created for the session._
-
 4. **Launch the app:**
 
 ```sh
@@ -201,10 +111,27 @@ _Replace `<agent>` with the agent name you are interested to launch:_
 - `talk2scholars`
 - `talk2cells`
 
-📝 By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.  
-To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
+If your machine has NVIDIA GPU(s), please install the following this:
 
-For detailed instructions on each agent, please refer to their respective modules.
+- [nvidia-cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
+
+To use the **Agents**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
+
+**Talk2Scholars** and **Talk2KnowledgeGraphs** requires Milvus to be set up as the vector database — install Milvus depending on your setup by following the official instructions for [CPU](https://milvus.io/docs/install_standalone-docker-compose.md) or [GPU](https://milvus.io/docs/install_standalone-docker-compose-gpu.md). You will also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(The Zotero key is only required for Talk2Scholars; all other agents do not need it.)_
+
+> By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.
+> To switch to a different knowledge graph or use your own, refer to the [deployment guide](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/deployment/).
+> Additionally on **Windows**, the `pcst_fast 1.0.10` library requires **Microsoft Visual C++ 14.0 or greater**.
+> You can download the **Microsoft C++ Build Tools** [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
+**LangSmith** support is optional. To enable it, create an API key [here](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key).
+
+_Please note that this will create a new tracing project in your Langsmith
+account with the name `T2X-xxxx`, where `X` can be `AA4P` (Main Agent),
+`B` (Biomodels), `S` (Scholars), `KG` (KnowledgeGraphs), or `C` (Cells).
+If you skip the previous step, it will default to the name `default`.
+`xxxx` will be the 4-digit ID created for the session._
 
 #### Option 3: pip (beta-release)
 
@@ -253,7 +180,7 @@ git push origin feat/your-feature-name
 #### Contacts for contributions
 
 - **Talk2Biomodels**: [@lilijap](https://github.com/lilijap), [@gurdeep330](https://github.com/gurdeep330)
-- **Talk2Cells**: [@gurdeep330](https://github.com/gurdeep330)
+- **Talk2Cells**: [@tAndreaniSanofi](https://github.com/tAndreaniSanofi), [@gurdeep330](https://github.com/gurdeep330)
 - **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi)
 - **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330)
 
