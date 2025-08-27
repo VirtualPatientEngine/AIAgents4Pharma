@@ -118,6 +118,8 @@ If your machine has NVIDIA GPU(s), please install the following this:
 
 To use the **Agents**, you need a free **NVIDIA API key**. Create an account and apply for free credits [here](https://build.nvidia.com/explore/discover).
 
+**Talk2Biomodels** supports integration with mutliple LLMs: gpt-4o-mini (via OpenAI API) and open-source llama (3.1 adn 3.3) models (via NVIDIA API). An **OpenAI API** key may be generated [here](https://platform.openai.com/settings/organization/api-keys). OpenAI may provide initial free credits for API calls with the API key, after which additional credits may be purchased [here](https://platform.openai.com/settings/organization/billing). More information on pricing is available [here](https://openai.com/api/pricing/).
+
 **Talk2Scholars** and **Talk2KnowledgeGraphs** requires Milvus to be set up as the vector database — install Milvus depending on your setup by following the official instructions for [CPU](https://milvus.io/docs/install_standalone-docker-compose.md) or [GPU](https://milvus.io/docs/install_standalone-docker-compose-gpu.md). You will also need a **Zotero API key**, which you can generate [here](https://www.zotero.org/user/login#applications). _(The Zotero key is only required for Talk2Scholars; all other agents do not need it.)_
 
 > By default, `talk2knowledgegraphs` includes a small subset of the PrimeKG knowledge graph, allowing users to start interacting with it out of the box.
