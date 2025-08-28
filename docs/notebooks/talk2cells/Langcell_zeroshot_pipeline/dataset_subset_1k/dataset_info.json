@@ -1,0 +1,115 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "input_ids": {
+      "feature": {
+        "dtype": "int32",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "sampleID": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "level_1_annot": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "level_2_annot": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "level_3_annot": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "n_counts": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "cell_type_ontology_term_id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "sourceID": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "study": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "donorID_unified": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "donor_category": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "donor_disease": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "organ_unified": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "age_unified": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "sample_type": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "sample_category": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "sample_retrieval": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "tissue_fraction": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "cell_fraction_unified": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "cell_sorting": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "organ_groups": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "control_vs_disease": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "technology": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "disease": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "sex": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "celltype": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
