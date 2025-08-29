@@ -180,29 +180,20 @@ def test_load_existing_papers_with_exception(mock_embedding, mock_config):
         patch(f"{MODULE}.log_index_configuration"),
     ):
         mock_singleton = MagicMock()
-        safe_store = MagicMock()
-        safe_collection = MagicMock()
-        safe_collection.num_entities = 0
-        safe_collection.flush.return_value = None
-        safe_store.col = safe_collection
-        safe_store.collection = safe_collection
-        mock_singleton.get_vector_store.return_value = safe_store
-        mock_singleton.get_connection.return_value = None
-        singleton_cls.return_value = mock_singleton
-
-        vs = Vectorstore(embedding_model=mock_embedding, config=mock_config)
-
-        # now replace with failing store
+        # Set up failing store directly for initialization
         bad_collection = MagicMock()
         bad_collection.num_entities = 0
         bad_collection.flush.side_effect = Exception("flush failed")
         bad_store = MagicMock()
         bad_store.col = bad_collection
         bad_store.collection = bad_collection
-        vs.vector_store = bad_store
+        mock_singleton.get_vector_store.return_value = bad_store
+        mock_singleton.get_connection.return_value = None
+        singleton_cls.return_value = mock_singleton
 
+        # Test error propagation through initialization that calls _load_existing_paper_ids
         with pytest.raises(Exception) as excinfo:
-            getattr(vs, "_load_existing_paper_ids")()
+            Vectorstore(embedding_model=mock_embedding, config=mock_config)
         assert "flush failed" in str(excinfo.value)
 
 
@@ -232,10 +223,8 @@ def test_ensure_collection_loaded_with_entities(mock_embedding, mock_config):
         mock_singleton.get_connection.return_value = None
         singleton_cls.return_value = mock_singleton
 
-        vs = Vectorstore(embedding_model=mock_embedding, config=mock_config)
-        vs.vector_store = mock_store
-        getattr(vs, "_ensure_collection_loaded")()
-
+        # Test through initialization which calls _ensure_collection_loaded
+        Vectorstore(embedding_model=mock_embedding, config=mock_config)
         assert mock_collection.load.called
 
 
@@ -255,29 +244,20 @@ def test_ensure_collection_loaded_handles_exception(mock_embedding, mock_config)
         patch(f"{MODULE}.log_index_configuration"),
     ):
         mock_singleton = MagicMock()
-        safe_store = MagicMock()
-        safe_collection = MagicMock()
-        safe_collection.num_entities = 0
-        safe_collection.flush.return_value = None
-        safe_store.col = safe_collection
-        safe_store.collection = safe_collection
-        mock_singleton.get_vector_store.return_value = safe_store
-        mock_singleton.get_connection.return_value = None
-        singleton_cls.return_value = mock_singleton
-
-        vs = Vectorstore(embedding_model=mock_embedding, config=mock_config)
-
-        # override with failing store
+        # Set up failing store directly for initialization
         bad_collection = MagicMock()
         bad_collection.num_entities = 0
         bad_collection.flush.side_effect = Exception("flush error")
         bad_store = MagicMock()
         bad_store.col = bad_collection
         bad_store.collection = bad_collection
-        vs.vector_store = bad_store
+        mock_singleton.get_vector_store.return_value = bad_store
+        mock_singleton.get_connection.return_value = None
+        singleton_cls.return_value = mock_singleton
 
+        # Test error propagation through initialization that calls _ensure_collection_loaded
         with pytest.raises(Exception) as excinfo:
-            getattr(vs, "_ensure_collection_loaded")()
+            Vectorstore(embedding_model=mock_embedding, config=mock_config)
         assert "flush error" in str(excinfo.value)
 
 
@@ -313,9 +293,7 @@ def test_force_cpu_mode_logs_override(mock_config, mock_embedding):
         assert not vs.has_gpu
 
 
-def test_similarity_metric_override(
-    dummy_embedding, dummy_config, dummy_vectorstore_components
-):
+def test_similarity_metric_override(dummy_embedding, dummy_config, dummy_vectorstore_components):
     """
     Test setting of use_cosine from config.similarity_metric.
     """
@@ -338,8 +316,7 @@ def test_load_existing_paper_ids_fallback_to_collection(
             delattr(mock_vector_store, attr)
 
     vs = Vectorstore(dummy_embedding, config=dummy_config)
-    vs.vector_store = mock_vector_store
-    getattr(vs, "_load_existing_paper_ids")()
+    # The loaded_papers is set during initialization via _load_existing_paper_ids
     assert isinstance(vs.loaded_papers, set)
 
 
@@ -356,8 +333,7 @@ def test_load_existing_papers_collection_empty_logs(
     mock_vector_store.col = mock_collection
 
     vs = Vectorstore(dummy_embedding, config=dummy_config)
-    vs.vector_store = mock_vector_store
-    getattr(vs, "_load_existing_paper_ids")()
+    # The loaded_papers is set during initialization via _load_existing_paper_ids
     assert len(vs.loaded_papers) == 0
 
 
@@ -382,16 +358,12 @@ def test_similarity_search_filter_paths(
     assert isinstance(result, list)
 
 
-def test_mmr_search_filter_paths(
-    dummy_embedding, dummy_config, dummy_vectorstore_components
-):
+def test_mmr_search_filter_paths(dummy_embedding, dummy_config, dummy_vectorstore_components):
     """
     Test filter expression generation in max_marginal_relevance_search.
     """
     _, mock_vector_store = dummy_vectorstore_components
-    mock_vector_store.max_marginal_relevance_search.return_value = [
-        Document(page_content="test")
-    ]
+    mock_vector_store.max_marginal_relevance_search.return_value = [Document(page_content="test")]
     vs = Vectorstore(dummy_embedding, config=dummy_config)
     vs.vector_store = mock_vector_store
 
@@ -411,10 +383,10 @@ def test_ensure_collection_loaded_no_col_and_no_collection(
         if hasattr(mock_vector_store, attr):
             delattr(mock_vector_store, attr)
 
-    vs = Vectorstore(dummy_embedding, config=dummy_config)
-    vs.vector_store = mock_vector_store
-    getattr(vs, "_ensure_collection_loaded")()
-    # no exception
+    # Test initialization succeeds without exception
+    Vectorstore(dummy_embedding, config=dummy_config)
+    # Collection loading is handled during initialization via _ensure_collection_loaded
+    # no exception if we got this far
 
 
 def test_ensure_collection_loaded_empty_logs(
@@ -428,7 +400,7 @@ def test_ensure_collection_loaded_empty_logs(
     mock_collection.num_entities = 0
     mock_vector_store.col = mock_collection
 
-    vs = Vectorstore(dummy_embedding, config=dummy_config)
-    vs.vector_store = mock_vector_store
-    getattr(vs, "_ensure_collection_loaded")()
-    # no exception
+    # Test initialization succeeds without exception
+    Vectorstore(dummy_embedding, config=dummy_config)
+    # Collection loading is handled during initialization via _ensure_collection_loaded
+    # no exception if we got this far

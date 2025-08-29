@@ -10,6 +10,7 @@ Configuration is loaded via Hydra and the top ranked result is returned.
 
 import logging
 from typing import Annotated, Any
+
 import hydra
 import requests
 from langchain_core.messages import ToolMessage
@@ -17,7 +18,6 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
-
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -36,9 +36,7 @@ class RetrieveSemanticScholarPaperIdInput(BaseModel):
         Runtime-injected identifier for tracing the tool invocation.
     """
 
-    paper_title: str = Field(
-        ..., description="The paper title to search for on Semantic Scholar."
-    )
+    paper_title: str = Field(..., description="The paper title to search for on Semantic Scholar.")
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 

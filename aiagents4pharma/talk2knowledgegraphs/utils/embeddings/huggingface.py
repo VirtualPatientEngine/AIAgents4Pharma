@@ -2,10 +2,11 @@
 Embedding class using HuggingFace model based on LangChain Embeddings class.
 """
 
-from typing import List
 import torch
-from transformers import AutoModel, AutoTokenizer, AutoConfig
+from transformers import AutoConfig, AutoModel, AutoTokenizer
+
 from .embeddings import Embeddings
+
 
 class EmbeddingWithHuggingFace(Embeddings):
     """
@@ -39,18 +40,14 @@ class EmbeddingWithHuggingFace(Embeddings):
         # Try to load the model from HuggingFace Hub
         try:
             AutoConfig.from_pretrained(self.model_name)
-        except EnvironmentError as e:
-            raise ValueError(
-                f"Model {self.model_name} is not available on HuggingFace Hub."
-            ) from e
+        except OSError as e:
+            raise ValueError(f"Model {self.model_name} is not available on HuggingFace Hub.") from e
 
         # Load HuggingFace tokenizer and model
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name, cache_dir=self.model_cache_dir
         )
-        self.model = AutoModel.from_pretrained(
-            self.model_name, cache_dir=self.model_cache_dir
-        )
+        self.model = AutoModel.from_pretrained(self.model_name, cache_dir=self.model_cache_dir)
 
     def meanpooling(self, output, mask) -> torch.Tensor:
         """
@@ -62,11 +59,11 @@ class EmbeddingWithHuggingFace(Embeddings):
             output: The output of the model.
             mask: The mask of the model.
         """
-        embeddings = output[0] # First element of model_output contains all token embeddings
+        embeddings = output[0]  # First element of model_output contains all token embeddings
         mask = mask.unsqueeze(-1).expand(embeddings.size()).float()
         return torch.sum(embeddings * mask, 1) / torch.clamp(mask.sum(1), min=1e-9)
 
-    def embed_documents(self, texts: List[str]) -> List[float]:
+    def embed_documents(self, texts: list[str]) -> list[float]:
         """
         Generate embedding for a list of input texts using HuggingFace model.
 
@@ -86,11 +83,11 @@ class EmbeddingWithHuggingFace(Embeddings):
                 return_tensors="pt",
             ).to(self.device)
             outputs = self.model.to(self.device)(**inputs)
-            embeddings = self.meanpooling(outputs, inputs['attention_mask']).cpu()
+            embeddings = self.meanpooling(outputs, inputs["attention_mask"]).cpu()
 
         return embeddings
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         """
         Generate embeddings for an input text using HuggingFace model.
 
@@ -109,6 +106,6 @@ class EmbeddingWithHuggingFace(Embeddings):
                 return_tensors="pt",
             ).to(self.device)
             outputs = self.model.to(self.device)(**inputs)
-            embeddings = self.meanpooling(outputs, inputs['attention_mask']).cpu()[0]
+            embeddings = self.meanpooling(outputs, inputs["attention_mask"]).cpu()[0]
 
         return embeddings

@@ -2,9 +2,6 @@
 Import statements
 """
 
-from . import zotero_path
-from . import read_helper
-from . import write_helper
-from . import review_helper
+from . import read_helper, review_helper, write_helper, zotero_path
 
 __all__ = ["zotero_path", "read_helper", "write_helper", "review_helper"]

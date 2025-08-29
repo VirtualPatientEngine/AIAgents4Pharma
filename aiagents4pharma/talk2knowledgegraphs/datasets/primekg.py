@@ -3,10 +3,13 @@ Class for loading PrimeKG dataset.
 """
 
 import os
+
+import pandas as pd
 import requests
 from tqdm import tqdm
-import pandas as pd
+
 from .dataset import Dataset
+
 
 class PrimeKG(Dataset):
     """
@@ -41,8 +44,7 @@ class PrimeKG(Dataset):
         # Make the directory if it doesn't exist
         os.makedirs(os.path.dirname(self.local_dir), exist_ok=True)
 
-
-    def _download_file(self, remote_url:str, local_path: str):
+    def _download_file(self, remote_url: str, local_path: str):
         """
         A helper function to download a file from remote URL to the local directory.
 
@@ -83,17 +85,18 @@ class PrimeKG(Dataset):
             print(f"Downloading node file from {self.server_path}{self.file_ids['nodes']}")
 
             # Download the file from the Harvard Dataverse with designated file_id for node
-            self._download_file(f"{self.server_path}{self.file_ids['nodes']}",
-                                os.path.join(self.local_dir, "nodes.tab"))
+            self._download_file(
+                f"{self.server_path}{self.file_ids['nodes']}",
+                os.path.join(self.local_dir, "nodes.tab"),
+            )
 
             # Load the downloaded file into a pandas DataFrame
-            nodes = pd.read_csv(os.path.join(self.local_dir, "nodes.tab"),
-                                     sep="\t", low_memory=False)
+            nodes = pd.read_csv(
+                os.path.join(self.local_dir, "nodes.tab"), sep="\t", low_memory=False
+            )
 
             # Further processing of the dataframe
-            nodes = nodes[
-                ["node_index", "node_name", "node_source", "node_id", "node_type"]
-            ]
+            nodes = nodes[["node_index", "node_name", "node_source", "node_id", "node_type"]]
 
             # Store compressed dataframe in the local directory
             nodes.to_csv(local_file, index=False, sep="\t", compression="gzip")
@@ -123,17 +126,18 @@ class PrimeKG(Dataset):
             print(f"Downloading edge file from {self.server_path}{self.file_ids['edges']}")
 
             # Download the file from the Harvard Dataverse with designated file_id for edge
-            self._download_file(f"{self.server_path}{self.file_ids['edges']}",
-                                os.path.join(self.local_dir, "edges.csv"))
+            self._download_file(
+                f"{self.server_path}{self.file_ids['edges']}",
+                os.path.join(self.local_dir, "edges.csv"),
+            )
 
             # Load the downloaded file into a pandas DataFrame
-            edges = pd.read_csv(os.path.join(self.local_dir, "edges.csv"),
-                                     sep=",", low_memory=False)
+            edges = pd.read_csv(
+                os.path.join(self.local_dir, "edges.csv"), sep=",", low_memory=False
+            )
 
             # Further processing of the dataframe
-            edges = edges.merge(
-                nodes, left_on="x_index", right_on="node_index"
-            )
+            edges = edges.merge(nodes, left_on="x_index", right_on="node_index")
             edges.drop(["x_index"], axis=1, inplace=True)
             edges.rename(
                 columns={
@@ -145,9 +149,7 @@ class PrimeKG(Dataset):
                 },
                 inplace=True,
             )
-            edges = edges.merge(
-                nodes, left_on="y_index", right_on="node_index"
-            )
+            edges = edges.merge(nodes, left_on="y_index", right_on="node_index")
             edges.drop(["y_index"], axis=1, inplace=True)
             edges.rename(
                 columns={
@@ -155,15 +157,24 @@ class PrimeKG(Dataset):
                     "node_name": "tail_name",
                     "node_source": "tail_source",
                     "node_id": "tail_id",
-                    "node_type": "tail_type"
+                    "node_type": "tail_type",
                 },
                 inplace=True,
             )
             edges = edges[
                 [
-                    "head_index", "head_name", "head_source", "head_id", "head_type",
-                    "tail_index", "tail_name", "tail_source", "tail_id", "tail_type",
-                    "display_relation", "relation",
+                    "head_index",
+                    "head_name",
+                    "head_source",
+                    "head_id",
+                    "head_type",
+                    "tail_index",
+                    "tail_name",
+                    "tail_source",
+                    "tail_id",
+                    "tail_type",
+                    "display_relation",
+                    "relation",
                 ]
             ]
 

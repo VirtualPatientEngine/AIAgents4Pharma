@@ -64,11 +64,12 @@ st.set_page_config(
     page_title=cfg.page.title, page_icon=cfg.page.icon, layout=cfg.page.layout
 )
 
+
 # Set the logo, detect if we're in container or local development
 def get_logo_path():
-    container_path = '/app/docs/assets/VPE.png'
-    local_path = 'docs/assets/VPE.png'
-    
+    container_path = "/app/docs/assets/VPE.png"
+    local_path = "docs/assets/VPE.png"
+
     if os.path.exists(container_path):
         return container_path
     elif os.path.exists(local_path):
@@ -76,18 +77,17 @@ def get_logo_path():
     else:
         # Fallback: try to find it relative to script location
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, '../../docs/assets/VPE.png')
+        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
         if os.path.exists(relative_path):
             return relative_path
-    
+
     return None  # File not found
+
 
 logo_path = get_logo_path()
 if logo_path:
     st.logo(
-        image=logo_path,
-        size='large',
-        link='https://github.com/VirtualPatientEngine'
+        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
     )
 
 
@@ -166,25 +166,31 @@ def get_pdf_hash(file_bytes):
 @st.fragment
 def process_pdf_upload():
     """
-    Upload and process multiple PDF files.
+    Upload and process multiple PDF files with security validation.
     Saves them as a nested dictionary in session state under 'article_data',
     and updates the LangGraph agent state accordingly.
     """
-    pdf_files = st.file_uploader(
+    # Use secure file upload with validation
+    pdf_files = streamlit_utils.secure_file_upload(
         "Upload articles",
-        help="Upload one or more articles in PDF format.",
-        type=["pdf"],
-        key="pdf_upload",
+        allowed_types=["pdf"],
+        help_text="Upload one or more articles in PDF format.",
+        max_size_mb=50,  # Reasonable size for academic PDFs
         accept_multiple_files=True,
+        key="secure_pdf_upload"
     )
 
     if pdf_files:
-
         # Step 1: Initialize or get existing article_data
         article_data = st.session_state.get("article_data", {})
 
-        # Step 2: Process each uploaded file
-        for pdf_file in pdf_files:
+        # Step 2: Process each uploaded file (now pre-validated)
+        files_to_process = pdf_files if isinstance(pdf_files, list) else [pdf_files]
+
+        for pdf_file in files_to_process:
+            # Sanitize filename for security
+            safe_filename = streamlit_utils.sanitize_filename(pdf_file.name)
+
             file_bytes = pdf_file.read()
 
             # Generate a stable hash-based ID
@@ -195,7 +201,7 @@ def process_pdf_upload():
             if pdf_id in article_data:
                 # Optionally skip or update existing
                 logging.info(
-                    f"Duplicate detected for: {pdf_file.name}. Skipping re-upload."
+                    f"Duplicate detected for: {safe_filename}. Skipping re-upload."
                 )
                 continue
 
@@ -204,14 +210,14 @@ def process_pdf_upload():
                 f.write(file_bytes)
                 file_path = f.name
 
-            # Create metadata dict
+            # Create metadata dict with sanitized filename
             pdf_metadata = {
-                "Title": pdf_file.name,
+                "Title": safe_filename,  # Use sanitized filename
                 "Authors": ["Uploaded by user"],
                 "Abstract": "User uploaded PDF",
                 "Publication Date": "N/A",
                 "pdf_url": file_path,
-                "filename": pdf_file.name,
+                "filename": safe_filename,  # Use sanitized filename
                 "source": "upload",
             }
 
@@ -566,7 +572,7 @@ with main_col2:
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2s()):
                 if st.button(
-                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
+                    f"Q{count + 1}. {question}", key=f"sample_question_{count + 1}"
                 ):
                     # Trigger the question
                     prompt = question
@@ -575,8 +581,8 @@ with main_col2:
                     {
                         "type": "button",
                         "question": question,
-                        "content": f"Q{count+1}. {question}",
-                        "key": f"sample_question_{count+1}",
+                        "content": f"Q{count + 1}. {question}",
+                        "key": f"sample_question_{count + 1}",
                     }
                 )
 

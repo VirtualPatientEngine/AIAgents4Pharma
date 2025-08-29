@@ -1,34 +1,33 @@
-'''
+"""
 Test cases for Talk2Biomodels.
-'''
+"""
 
 import pandas as pd
 from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_openai import ChatOpenAI
+
 from ..agents.t2b_agent import get_app
 
-LLM_MODEL = ChatOpenAI(model='gpt-4o-mini', temperature=0)
+LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
 
 def test_integration():
-    '''
+    """
     Test the integration of the tools.
-    '''
+    """
     unique_id = 1234567
     app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}
     # ##########################################
     # ## Test simulate_model tool
     # ##########################################
-    prompt = '''Simulate the model BIOMD0000000537 for 100 hours and time intervals
+    prompt = """Simulate the model BIOMD0000000537 for 100 hours and time intervals
     100 with an initial concentration of `DoseQ2W` set to 300 and `Dose`
-    set to 0. Reset the concentration of `Ab{serum}` to 100 every 25 hours.'''
+    set to 0. Reset the concentration of `Ab{serum}` to 100 every 25 hours."""
     # Test the tool get_modelinfo
-    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
+    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
     assistant_msg = response["messages"][-1].content
-    print (assistant_msg)
+    print(assistant_msg)
     # Check if the assistant message is a string
     assert isinstance(assistant_msg, str)
     ##########################################
@@ -40,14 +39,11 @@ def test_integration():
     prompt = """What is the concentration of CRP in serum after 100 hours?
     Round off the value to 2 decimal places."""
     # Test the tool get_modelinfo
-    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
+    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
     assistant_msg = response["messages"][-1].content
     # print (assistant_msg)
     # Check if the assistant message is a string
-    assert '211' in assistant_msg
+    assert "211" in assistant_msg
 
     ##########################################
     # Test the custom_plotter tool when the
@@ -59,13 +55,9 @@ def test_integration():
         know if these species were not found. Do not
         invoke any other tool."""
     # Update state
-    app.update_state(config, {"llm_model": LLM_MODEL}
-                    )
+    app.update_state(config, {"llm_model": LLM_MODEL})
     # Test the tool get_modelinfo
-    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
+    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
     assistant_msg = response["messages"][-1].content
     current_state = app.get_state(config)
     # Get the messages from the current state
@@ -92,13 +84,9 @@ def test_integration():
     prompt = "Plot only CRP related species."
 
     # Update state
-    app.update_state(config, {"llm_model": LLM_MODEL}
-                    )
+    app.update_state(config, {"llm_model": LLM_MODEL})
     # Test the tool get_modelinfo
-    response = app.invoke(
-                        {"messages": [HumanMessage(content=prompt)]},
-                        config=config
-                    )
+    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
     assistant_msg = response["messages"][-1].content
     current_state = app.get_state(config)
     # Get the messages from the current state
@@ -106,9 +94,9 @@ def test_integration():
     reversed_messages = current_state.values["messages"][::-1]
     # Loop through the reversed messages
     # until a ToolMessage is found.
-    expected_header = ['Time', 'CRP{serum}', 'CRPExtracellular']
-    expected_header += ['CRP Suppression (%)', 'CRP (% of baseline)']
-    expected_header += ['CRP{liver}']
+    expected_header = ["Time", "CRP{serum}", "CRPExtracellular"]
+    expected_header += ["CRP Suppression (%)", "CRP (% of baseline)"]
+    expected_header += ["CRP{liver}"]
     predicted_artifact = []
     for msg in reversed_messages:
         if isinstance(msg, ToolMessage):
@@ -116,7 +104,7 @@ def test_integration():
             # These may contain additional visuals that
             # need to be displayed to the user.
             if msg.name == "custom_plotter":
-                predicted_artifact = msg.artifact['dic_data']
+                predicted_artifact = msg.artifact["dic_data"]
                 break
     # Convert the artifact into a pandas dataframe
     # for easy comparison

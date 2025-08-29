@@ -5,44 +5,55 @@ Test cases for tools/utils/extractions/milvus_multimodal_pcst.py
 import importlib
 import sys
 import unittest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import MagicMock, mock_open, patch
+
 import numpy as np
 import pandas as pd
+
 from ..utils.extractions.milvus_multimodal_pcst import (
-    MultimodalPCSTPruning, SystemDetector, DynamicLibraryLoader
+    DynamicLibraryLoader,
+    MultimodalPCSTPruning,
+    SystemDetector,
 )
+
 
 class TestMultimodalPCSTPruning(unittest.TestCase):
     """
     Test cases for MultimodalPCSTPruning class (Milvus-based PCST pruning).
     """
+
     def setUp(self):
         # Patch cupy and cudf to simulate GPU environment
-        patcher_cupy = patch.dict('sys.modules', {'cupy': MagicMock(), 'cudf': MagicMock()})
+        patcher_cupy = patch.dict("sys.modules", {"cupy": MagicMock(), "cudf": MagicMock()})
         patcher_cupy.start()
         self.addCleanup(patcher_cupy.stop)
 
         # Patch pcst_fast
-        pcst_fast_patcher = patch("aiagents4pharma.talk2knowledgegraphs.utils."
-                                  "extractions.milvus_multimodal_pcst.pcst_fast")
+        pcst_fast_patcher = patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils."
+            "extractions.milvus_multimodal_pcst.pcst_fast"
+        )
         mock_pcst_fast = pcst_fast_patcher.start()
         self.addCleanup(pcst_fast_patcher.stop)
         mock_pcst_fast.pcst_fast.return_value = ([0, 1], [0])
 
         # Patch Collection
-        collection_patcher = patch("aiagents4pharma.talk2knowledgegraphs.utils."
-                                   "extractions.milvus_multimodal_pcst.Collection")
+        collection_patcher = patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils."
+            "extractions.milvus_multimodal_pcst.Collection"
+        )
         self.mock_collection = collection_patcher.start()
         self.addCleanup(collection_patcher.stop)
 
         # Patch open for cache_edge_index_path
-        open_patcher = patch('builtins.open', mock_open(read_data='[[0,1],[1,2]]'))
+        open_patcher = patch("builtins.open", mock_open(read_data="[[0,1],[1,2]]"))
         open_patcher.start()
         self.addCleanup(open_patcher.stop)
 
         # Patch pickle.load to return a numpy array for edge_index
-        pickle_patcher = patch("aiagents4pharma.talk2knowledgegraphs.utils."
-                               "extractions.milvus_multimodal_pcst.pickle")
+        pickle_patcher = patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.pickle"
+        )
         mock_pickle = pickle_patcher.start()
         self.addCleanup(pickle_patcher.stop)
         mock_pickle.load.return_value = np.array([[0, 1], [1, 2]])
@@ -59,13 +70,15 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         edge_coll = MagicMock()
         edge_coll.num_entities = 2
         edge_coll.search.return_value = [[MagicMock(id=0, score=1.0), MagicMock(id=1, score=0.5)]]
-        self.mock_collection.side_effect = lambda name: node_coll if "nodes" in name else edge_coll
+        self.mock_collection.side_effect = lambda name: (
+            node_coll if "nodes" in name else edge_coll
+        )
 
         # Setup mock loader
         self.mock_loader = MagicMock()
         self.mock_loader.py = np  # Use numpy for array operations
         self.mock_loader.df = pd  # Use pandas for dataframes
-        self.mock_loader.to_list = lambda x: x.tolist() if hasattr(x, 'tolist') else list(x)
+        self.mock_loader.to_list = lambda x: x.tolist() if hasattr(x, "tolist") else list(x)
 
     def test_extract_subgraph_use_description_true(self):
         """
@@ -73,9 +86,17 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         """
         # Create instance
         pcst = MultimodalPCSTPruning(
-            topk=3, topk_e=3, cost_e=0.5, c_const=0.01, root=-1,
-            num_clusters=1, pruning="gw", verbosity_level=0, use_description=True, metric_type="IP",
-            loader=self.mock_loader
+            topk=3,
+            topk_e=3,
+            cost_e=0.5,
+            c_const=0.01,
+            root=-1,
+            num_clusters=1,
+            pruning="gw",
+            verbosity_level=0,
+            use_description=True,
+            metric_type="IP",
+            loader=self.mock_loader,
         )
         # Dummy embeddings
         text_emb = [0.1, 0.2, 0.3]
@@ -97,10 +118,17 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         """
         # Create instance
         pcst = MultimodalPCSTPruning(
-            topk=3, topk_e=3, cost_e=0.5, c_const=0.01, root=-1,
-            num_clusters=1, pruning="gw", verbosity_level=0, use_description=False,
+            topk=3,
+            topk_e=3,
+            cost_e=0.5,
+            c_const=0.01,
+            root=-1,
+            num_clusters=1,
+            pruning="gw",
+            verbosity_level=0,
+            use_description=False,
             metric_type="IP",
-            loader=self.mock_loader
+            loader=self.mock_loader,
         )
         # Dummy embeddings
         text_emb = [0.1, 0.2, 0.3]
@@ -121,9 +149,17 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         Test get_subgraph_nodes_edges with virtual vertices present (len(virtual_vertices) > 0).
         """
         pcst = MultimodalPCSTPruning(
-            topk=3, topk_e=3, cost_e=0.5, c_const=0.01, root=-1,
-            num_clusters=1, pruning="gw", verbosity_level=0, use_description=True, metric_type="IP",
-            loader=self.mock_loader
+            topk=3,
+            topk_e=3,
+            cost_e=0.5,
+            c_const=0.01,
+            root=-1,
+            num_clusters=1,
+            pruning="gw",
+            verbosity_level=0,
+            use_description=True,
+            metric_type="IP",
+            loader=self.mock_loader,
         )
         # Simulate num_nodes = 2, vertices contains [0, 1, 2, 3] (2 and 3 are virtual)
         num_nodes = 2
@@ -133,13 +169,10 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         edges_dict = {
             "edges": np.array([0, 1, 2]),
             "num_prior_edges": 2,
-            "edge_index": np.array([[0, 1, 2, 3], [1, 2, 3, 4]])
+            "edge_index": np.array([[0, 1, 2, 3], [1, 2, 3, 4]]),
         }
         # mapping simulates mapping for edges and nodes
-        mapping = {
-            "edges": {0: 0, 1: 1},
-            "nodes": {2: 2, 3: 3}
-        }
+        mapping = {"edges": {0: 0, 1: 1}, "nodes": {2: 2, 3: 3}}
 
         # Call extract_subgraph
         result = pcst.get_subgraph_nodes_edges(num_nodes, vertices, edges_dict, mapping)
@@ -157,8 +190,9 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
         Test coverage for GPU import branch by patching sys.modules to mock cupy and
         cudf as numpy and pandas.
         """
-        module_name = "aiagents4pharma.talk2knowledgegraphs.utils" + \
-            ".extractions.milvus_multimodal_pcst"
+        module_name = (
+            "aiagents4pharma.talk2knowledgegraphs.utils" + ".extractions.milvus_multimodal_pcst"
+        )
         with patch.dict("sys.modules", {"cupy": np, "cudf": pd}):
             # Reload the module to trigger the GPU branch
             mod = importlib.reload(sys.modules[module_name])
@@ -168,14 +202,24 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
             mock_pickle = MagicMock()
             mock_pickle.load.return_value = np.array([[0, 1], [1, 2]])
             # Patch Collection, pcst_fast, and pickle after reload
-            with patch(f"{module_name}.Collection", self.mock_collection), \
-                patch(f"{module_name}.pcst_fast", mock_pcst_fast), \
-                patch(f"{module_name}.pickle", mock_pickle):
-                pcst_pruning_cls = getattr(mod, "MultimodalPCSTPruning")
+            with (
+                patch(f"{module_name}.Collection", self.mock_collection),
+                patch(f"{module_name}.pcst_fast", mock_pcst_fast),
+                patch(f"{module_name}.pickle", mock_pickle),
+            ):
+                pcst_pruning_cls = mod.MultimodalPCSTPruning
                 pcst = pcst_pruning_cls(
-                    topk=3, topk_e=3, cost_e=0.5, c_const=0.01, root=-1,
-                    num_clusters=1, pruning="gw", verbosity_level=0, use_description=True,
-                    metric_type="IP", loader=self.mock_loader
+                    topk=3,
+                    topk_e=3,
+                    cost_e=0.5,
+                    c_const=0.01,
+                    root=-1,
+                    num_clusters=1,
+                    pruning="gw",
+                    verbosity_level=0,
+                    use_description=True,
+                    metric_type="IP",
+                    loader=self.mock_loader,
                 )
                 # Dummy embeddings
                 text_emb = [0.1, 0.2, 0.3]
@@ -195,15 +239,15 @@ class TestMultimodalPCSTPruning(unittest.TestCase):
 class TestSystemDetector(unittest.TestCase):
     """Test cases for SystemDetector class."""
 
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.platform')
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.subprocess')
+    @patch("aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.platform")
+    @patch(
+        "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.subprocess"
+    )
     def test_system_detector_gpu_detected(self, mock_subprocess, mock_platform):
         """Test SystemDetector when GPU is detected."""
         # Mock platform calls
-        mock_platform.system.return_value = 'Linux'
-        mock_platform.machine.return_value = 'x86_64'
+        mock_platform.system.return_value = "Linux"
+        mock_platform.machine.return_value = "x86_64"
 
         # Mock successful nvidia-smi call
         mock_result = MagicMock()
@@ -213,20 +257,20 @@ class TestSystemDetector(unittest.TestCase):
         detector = SystemDetector()
 
         # Assertions
-        self.assertEqual(detector.os_type, 'linux')
-        self.assertEqual(detector.architecture, 'x86_64')
+        self.assertEqual(detector.os_type, "linux")
+        self.assertEqual(detector.architecture, "x86_64")
         self.assertTrue(detector.has_nvidia_gpu)
         self.assertTrue(detector.use_gpu)
 
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.platform')
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.subprocess')
+    @patch("aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.platform")
+    @patch(
+        "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.subprocess"
+    )
     def test_system_detector_no_gpu(self, mock_subprocess, mock_platform):
         """Test SystemDetector when no GPU is detected."""
         # Mock platform calls
-        mock_platform.system.return_value = 'Linux'
-        mock_platform.machine.return_value = 'x86_64'
+        mock_platform.system.return_value = "Linux"
+        mock_platform.machine.return_value = "x86_64"
 
         # Mock failed nvidia-smi call
         mock_result = MagicMock()
@@ -236,20 +280,20 @@ class TestSystemDetector(unittest.TestCase):
         detector = SystemDetector()
 
         # Assertions
-        self.assertEqual(detector.os_type, 'linux')
-        self.assertEqual(detector.architecture, 'x86_64')
+        self.assertEqual(detector.os_type, "linux")
+        self.assertEqual(detector.architecture, "x86_64")
         self.assertFalse(detector.has_nvidia_gpu)
         self.assertFalse(detector.use_gpu)
 
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.platform')
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.subprocess')
+    @patch("aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.platform")
+    @patch(
+        "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.subprocess"
+    )
     def test_system_detector_macos_no_gpu(self, mock_subprocess, mock_platform):
         """Test SystemDetector on macOS (no GPU support)."""
         # Mock platform calls
-        mock_platform.system.return_value = 'Darwin'
-        mock_platform.machine.return_value = 'arm64'
+        mock_platform.system.return_value = "Darwin"
+        mock_platform.machine.return_value = "arm64"
 
         # Mock successful nvidia-smi call (but macOS should still disable GPU)
         mock_result = MagicMock()
@@ -259,20 +303,20 @@ class TestSystemDetector(unittest.TestCase):
         detector = SystemDetector()
 
         # Assertions
-        self.assertEqual(detector.os_type, 'darwin')
-        self.assertEqual(detector.architecture, 'arm64')
+        self.assertEqual(detector.os_type, "darwin")
+        self.assertEqual(detector.architecture, "arm64")
         self.assertTrue(detector.has_nvidia_gpu)  # GPU detected
         self.assertFalse(detector.use_gpu)  # But not used on macOS
 
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.platform')
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.subprocess')
+    @patch("aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.platform")
+    @patch(
+        "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.subprocess"
+    )
     def test_system_detector_subprocess_exception(self, mock_subprocess, mock_platform):
         """Test SystemDetector when subprocess raises exception."""
         # Mock platform calls
-        mock_platform.system.return_value = 'Linux'
-        mock_platform.machine.return_value = 'x86_64'
+        mock_platform.system.return_value = "Linux"
+        mock_platform.machine.return_value = "x86_64"
 
         # Mock subprocess to raise FileNotFoundError
         mock_subprocess.run.side_effect = FileNotFoundError("nvidia-smi not found")
@@ -282,20 +326,20 @@ class TestSystemDetector(unittest.TestCase):
         detector = SystemDetector()
 
         # Assertions
-        self.assertEqual(detector.os_type, 'linux')
-        self.assertEqual(detector.architecture, 'x86_64')
+        self.assertEqual(detector.os_type, "linux")
+        self.assertEqual(detector.architecture, "x86_64")
         self.assertFalse(detector.has_nvidia_gpu)
         self.assertFalse(detector.use_gpu)
 
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.platform')
-    @patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-           'milvus_multimodal_pcst.subprocess')
+    @patch("aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.platform")
+    @patch(
+        "aiagents4pharma.talk2knowledgegraphs.utils.extractions.milvus_multimodal_pcst.subprocess"
+    )
     def test_system_detector_timeout(self, mock_subprocess, mock_platform):
         """Test SystemDetector when subprocess times out."""
         # Mock platform calls
-        mock_platform.system.return_value = 'Linux'
-        mock_platform.machine.return_value = 'x86_64'
+        mock_platform.system.return_value = "Linux"
+        mock_platform.machine.return_value = "x86_64"
 
         # Mock subprocess to raise TimeoutExpired
         mock_subprocess.TimeoutExpired = Exception
@@ -305,20 +349,25 @@ class TestSystemDetector(unittest.TestCase):
         detector = SystemDetector()
 
         # Assertions
-        self.assertEqual(detector.os_type, 'linux')
-        self.assertEqual(detector.architecture, 'x86_64')
+        self.assertEqual(detector.os_type, "linux")
+        self.assertEqual(detector.architecture, "x86_64")
         self.assertFalse(detector.has_nvidia_gpu)
         self.assertFalse(detector.use_gpu)
 
     def test_get_system_info(self):
         """Test get_system_info method."""
-        with patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.platform') as mock_platform, \
-             patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.subprocess') as mock_subprocess:
-
-            mock_platform.system.return_value = 'Linux'
-            mock_platform.machine.return_value = 'x86_64'
+        with (
+            patch(
+                "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+                "milvus_multimodal_pcst.platform"
+            ) as mock_platform,
+            patch(
+                "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+                "milvus_multimodal_pcst.subprocess"
+            ) as mock_subprocess,
+        ):
+            mock_platform.system.return_value = "Linux"
+            mock_platform.machine.return_value = "x86_64"
 
             mock_result = MagicMock()
             mock_result.returncode = 0
@@ -337,13 +386,18 @@ class TestSystemDetector(unittest.TestCase):
 
     def test_is_gpu_compatible(self):
         """Test is_gpu_compatible method."""
-        with patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.platform') as mock_platform, \
-             patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.subprocess') as mock_subprocess:
-
-            mock_platform.system.return_value = 'Linux'
-            mock_platform.machine.return_value = 'x86_64'
+        with (
+            patch(
+                "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+                "milvus_multimodal_pcst.platform"
+            ) as mock_platform,
+            patch(
+                "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+                "milvus_multimodal_pcst.subprocess"
+            ) as mock_subprocess,
+        ):
+            mock_platform.system.return_value = "Linux"
+            mock_platform.machine.return_value = "x86_64"
 
             mock_result = MagicMock()
             mock_result.returncode = 0
@@ -375,14 +429,17 @@ class TestDynamicLibraryLoader(unittest.TestCase):
         self.assertFalse(loader.normalize_vectors)
         self.assertEqual(loader.metric_type, "COSINE")
 
-    @patch.dict('sys.modules', {'cupy': MagicMock(), 'cudf': MagicMock()})
+    @patch.dict("sys.modules", {"cupy": MagicMock(), "cudf": MagicMock()})
     def test_dynamic_library_loader_gpu_mode_success(self):
         """Test DynamicLibraryLoader in GPU mode with successful imports."""
         self.mock_detector.use_gpu = True
 
         # Mock the CUDF_AVAILABLE flag
-        with patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.CUDF_AVAILABLE', True):
+        with patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+            "milvus_multimodal_pcst.CUDF_AVAILABLE",
+            True,
+        ):
             loader = DynamicLibraryLoader(self.mock_detector)
 
         # Assertions
@@ -395,8 +452,11 @@ class TestDynamicLibraryLoader(unittest.TestCase):
         self.mock_detector.use_gpu = True
 
         # Mock CUDF_AVAILABLE as False to simulate import failure
-        with patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.CUDF_AVAILABLE', False):
+        with patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+            "milvus_multimodal_pcst.CUDF_AVAILABLE",
+            False,
+        ):
             loader = DynamicLibraryLoader(self.mock_detector)
 
         # Should fallback to CPU mode
@@ -446,13 +506,16 @@ class TestDynamicLibraryLoader(unittest.TestCase):
         # Should return matrix unchanged in CPU mode even when normalize_vectors is True
         np.testing.assert_array_equal(result, matrix)
 
-    @patch.dict('sys.modules', {'cupy': MagicMock(), 'cudf': MagicMock()})
+    @patch.dict("sys.modules", {"cupy": MagicMock(), "cudf": MagicMock()})
     def test_normalize_matrix_gpu_mode(self):
         """Test normalize_matrix in GPU mode."""
         self.mock_detector.use_gpu = True
 
-        with patch('aiagents4pharma.talk2knowledgegraphs.utils.extractions.'
-                   'milvus_multimodal_pcst.CUDF_AVAILABLE', True):
+        with patch(
+            "aiagents4pharma.talk2knowledgegraphs.utils.extractions."
+            "milvus_multimodal_pcst.CUDF_AVAILABLE",
+            True,
+        ):
             loader = DynamicLibraryLoader(self.mock_detector)
 
             # Mock cupy operations

@@ -1,14 +1,18 @@
 """
 Test cases for agents/t2kg_agent.py
 """
-from unittest.mock import patch, MagicMock
+
+from unittest.mock import MagicMock, patch
+
+import pandas as pd
 import pytest
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-import pandas as pd
+
 from ..agents.t2kg_agent import get_app
 
 DATA_PATH = "aiagents4pharma/talk2knowledgegraphs/tests/files"
+
 
 @pytest.fixture(name="input_dict")
 def input_dict_fixture():
@@ -24,7 +28,7 @@ def input_dict_fixture():
             "cellular_component": [],
             "biological_process": [],
             "drug": [],
-            "disease": []
+            "disease": [],
         },
         "uploaded_files": [
             {
@@ -44,9 +48,10 @@ def input_dict_fixture():
                 "kg_text_path": f"{DATA_PATH}/biobridge_multimodal_text_graph.pkl",
             }
         ],
-        "dic_extracted_graph": []
+        "dic_extracted_graph": [],
     }
     return input_dict
+
 
 def mock_milvus_collection(name):
     """
@@ -54,32 +59,42 @@ def mock_milvus_collection(name):
     """
     nodes = MagicMock()
     nodes.query.return_value = [
-        {"node_index": 0,
-         "node_id": "id1",
-         "node_name": "Adalimumab",
-         "node_type": "drug",
-         "feat": "featA", "feat_emb": [0.1, 0.2, 0.3],
-         "desc": "descA", "desc_emb": [0.1, 0.2, 0.3]},
-        {"node_index": 1,
-         "node_id": "id2",
-         "node_name": "TNF",
-         "node_type": "gene/protein",
-         "feat": "featB", "feat_emb": [0.4, 0.5, 0.6], 
-         "desc": "descB", "desc_emb": [0.4, 0.5, 0.6]}
+        {
+            "node_index": 0,
+            "node_id": "id1",
+            "node_name": "Adalimumab",
+            "node_type": "drug",
+            "feat": "featA",
+            "feat_emb": [0.1, 0.2, 0.3],
+            "desc": "descA",
+            "desc_emb": [0.1, 0.2, 0.3],
+        },
+        {
+            "node_index": 1,
+            "node_id": "id2",
+            "node_name": "TNF",
+            "node_type": "gene/protein",
+            "feat": "featB",
+            "feat_emb": [0.4, 0.5, 0.6],
+            "desc": "descB",
+            "desc_emb": [0.4, 0.5, 0.6],
+        },
     ]
     nodes.load.return_value = None
 
     edges = MagicMock()
     edges.query.return_value = [
-        {"triplet_index": 0,
-         "head_id": "id1",
-         "head_index": 0,
-         "tail_id": "id2",
-         "tail_index": 1,
-         "edge_type": "drug,acts_on,gene/protein",
-         "display_relation": "acts_on",
-         "feat": "featC",
-         "feat_emb": [0.7, 0.8, 0.9]}
+        {
+            "triplet_index": 0,
+            "head_id": "id1",
+            "head_index": 0,
+            "tail_id": "id2",
+            "tail_index": 1,
+            "edge_type": "drug,acts_on,gene/protein",
+            "display_relation": "acts_on",
+            "feat": "featC",
+            "feat_emb": [0.7, 0.8, 0.9],
+        }
     ]
     edges.load.return_value = None
 
@@ -88,6 +103,7 @@ def mock_milvus_collection(name):
     if "edges" in name:
         return edges
     return None
+
 
 def test_t2kg_agent_openai_milvus_mock(input_dict):
     """
@@ -103,11 +119,11 @@ def test_t2kg_agent_openai_milvus_mock(input_dict):
     config = {"configurable": {"thread_id": unique_id}}
     app.update_state(config, input_dict)
     prompt = """
-    Adalimumab is a fully human monoclonal antibody (IgG1) 
+    Adalimumab is a fully human monoclonal antibody (IgG1)
     that specifically binds to tumor necrosis factor-alpha (TNF-α), a pro-inflammatory cytokine.
 
     I would like to get evidence from the knowledge graph about the mechanism of actions related to
-    Adalimumab in treating inflammatory bowel disease 
+    Adalimumab in treating inflammatory bowel disease
     (IBD). Please follow these steps:
     - Extract a subgraph from the PrimeKG that contains information about Adalimumab.
     - Summarize the extracted subgraph.
@@ -116,21 +132,31 @@ def test_t2kg_agent_openai_milvus_mock(input_dict):
     Please set the extraction name for the extraction process as `subkg_12345`.
     """
 
-    with patch("aiagents4pharma.talk2knowledgegraphs.tools."
-               "milvus_multimodal_subgraph_extraction.Collection", 
-               side_effect=mock_milvus_collection), \
-         patch("aiagents4pharma.talk2knowledgegraphs.tools."
-               "milvus_multimodal_subgraph_extraction.MultimodalPCSTPruning") as mock_pcst, \
-         patch("pymilvus.connections") as mock_connections, \
-         patch("aiagents4pharma.talk2knowledgegraphs.tools."
-               "milvus_multimodal_subgraph_extraction.hydra.initialize"), \
-         patch("aiagents4pharma.talk2knowledgegraphs.tools."
-               "milvus_multimodal_subgraph_extraction.hydra.compose") as mock_compose:
+    with (
+        patch(
+            "aiagents4pharma.talk2knowledgegraphs.tools."
+            "milvus_multimodal_subgraph_extraction.Collection",
+            side_effect=mock_milvus_collection,
+        ),
+        patch(
+            "aiagents4pharma.talk2knowledgegraphs.tools."
+            "milvus_multimodal_subgraph_extraction.MultimodalPCSTPruning"
+        ) as mock_pcst,
+        patch("pymilvus.connections") as mock_connections,
+        patch(
+            "aiagents4pharma.talk2knowledgegraphs.tools."
+            "milvus_multimodal_subgraph_extraction.hydra.initialize"
+        ),
+        patch(
+            "aiagents4pharma.talk2knowledgegraphs.tools."
+            "milvus_multimodal_subgraph_extraction.hydra.compose"
+        ) as mock_compose,
+    ):
         mock_connections.has_connection.return_value = True
         mock_pcst_instance = MagicMock()
         mock_pcst_instance.extract_subgraph.return_value = {
             "nodes": pd.Series([0, 1]),
-            "edges": pd.Series([0])
+            "edges": pd.Series([0]),
         }
         mock_pcst.return_value = mock_pcst_instance
         mock_cfg = MagicMock()
@@ -144,8 +170,7 @@ def test_t2kg_agent_openai_milvus_mock(input_dict):
         mock_cfg.node_colors_dict = {"drug": "blue", "gene/protein": "red"}
         mock_compose.return_value = MagicMock()
         mock_compose.return_value.tools.multimodal_subgraph_extraction = mock_cfg
-        mock_compose.return_value.tools.subgraph_summarization.\
-            prompt_subgraph_summarization = (
+        mock_compose.return_value.tools.subgraph_summarization.prompt_subgraph_summarization = (
             "Summarize the following subgraph: {textualized_subgraph}"
         )
 

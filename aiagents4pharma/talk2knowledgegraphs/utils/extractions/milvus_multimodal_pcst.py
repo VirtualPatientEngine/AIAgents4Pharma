@@ -16,6 +16,7 @@ from pymilvus import Collection
 try:
     import cudf
     import cupy as cp
+
     CUDF_AVAILABLE = True
 except ImportError:
     CUDF_AVAILABLE = False
@@ -34,9 +35,7 @@ class SystemDetector:
         self.os_type = platform.system().lower()  # 'windows', 'linux', 'darwin'
         self.architecture = platform.machine().lower()  # 'x86_64', 'arm64', etc.
         self.has_nvidia_gpu = self._detect_nvidia_gpu()
-        self.use_gpu = (
-            self.has_nvidia_gpu and self.os_type != "darwin"
-        )  # No CUDA on macOS
+        self.use_gpu = self.has_nvidia_gpu and self.os_type != "darwin"  # No CUDA on macOS
 
         logger.info("System Detection Results:")
         logger.info("  OS: %s", self.os_type)
@@ -232,9 +231,7 @@ class MultimodalPCSTPruning(NamedTuple):
         """
         # Initialize several variables
         topk = min(self.topk, colls["nodes"].num_entities)
-        n_prizes = self.loader.py.zeros(
-            colls["nodes"].num_entities, dtype=self.loader.py.float32
-        )
+        n_prizes = self.loader.py.zeros(colls["nodes"].num_entities, dtype=self.loader.py.float32)
 
         # Get the actual metric type to use
         actual_metric_type = self.metric_type or self.loader.metric_type
@@ -279,9 +276,7 @@ class MultimodalPCSTPruning(NamedTuple):
         """
         # Initialize several variables
         topk_e = min(self.topk_e, colls["edges"].num_entities)
-        e_prizes = self.loader.py.zeros(
-            colls["edges"].num_entities, dtype=self.loader.py.float32
-        )
+        e_prizes = self.loader.py.zeros(colls["edges"].num_entities, dtype=self.loader.py.float32)
 
         # Get the actual metric type to use
         actual_metric_type = self.metric_type or self.loader.metric_type
@@ -299,15 +294,11 @@ class MultimodalPCSTPruning(NamedTuple):
         e_prizes[[r.id for r in res[0]]] = [r.score for r in res[0]]
 
         # Further process the edge_prizes
-        unique_prizes, inverse_indices = self.loader.py.unique(
-            e_prizes, return_inverse=True
-        )
+        unique_prizes, inverse_indices = self.loader.py.unique(e_prizes, return_inverse=True)
         topk_e_values = unique_prizes[self.loader.py.argsort(-unique_prizes)[:topk_e]]
         last_topk_e_value = topk_e
         for k in range(topk_e):
-            indices = (
-                inverse_indices == (unique_prizes == topk_e_values[k]).nonzero()[0]
-            )
+            indices = inverse_indices == (unique_prizes == topk_e_values[k]).nonzero()[0]
             value = min((topk_e - k) / indices.sum().item(), last_topk_e_value)
             e_prizes[indices] = value
             last_topk_e_value = value * (1 - self.c_const)
@@ -381,7 +372,7 @@ class MultimodalPCSTPruning(NamedTuple):
         # Edge index mapping: local real edge idx -> original global index
         logger.log(logging.INFO, "Creating mapping for real edges")
         mapping_edges = dict(
-            zip(range(len(real_["indices"])), self.loader.to_list(real_["indices"]))
+            zip(range(len(real_["indices"])), self.loader.to_list(real_["indices"]), strict=False)
         )
 
         # Virtual edge handling
@@ -398,15 +389,9 @@ class MultimodalPCSTPruning(NamedTuple):
 
         # Virtual edges: (src → virtual), (virtual → dst)
         logger.log(logging.INFO, "Creating virtual edges")
-        virt_["edges_1"] = self.loader.py.stack(
-            [virt_["src"], virt_["node_ids"]], axis=1
-        )
-        virt_["edges_2"] = self.loader.py.stack(
-            [virt_["node_ids"], virt_["dst"]], axis=1
-        )
-        virt_["edges"] = self.loader.py.concatenate(
-            [virt_["edges_1"], virt_["edges_2"]], axis=0
-        )
+        virt_["edges_1"] = self.loader.py.stack([virt_["src"], virt_["node_ids"]], axis=1)
+        virt_["edges_2"] = self.loader.py.stack([virt_["node_ids"], virt_["dst"]], axis=1)
+        virt_["edges"] = self.loader.py.concatenate([virt_["edges_1"], virt_["edges_2"]], axis=0)
         virt_["costs"] = self.loader.py.zeros(
             (virt_["edges"].shape[0],), dtype=real_["costs"].dtype
         )
@@ -418,9 +403,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         # Final prizes
         logger.log(logging.INFO, "Getting final prizes")
-        final_prizes = self.loader.py.concatenate(
-            [prizes["nodes"], virt_["prizes"]], axis=0
-        )
+        final_prizes = self.loader.py.concatenate([prizes["nodes"], virt_["prizes"]], axis=0)
 
         # Mapping virtual node ID -> edge index in original graph
         logger.log(logging.INFO, "Creating mapping for virtual nodes")
@@ -428,6 +411,7 @@ class MultimodalPCSTPruning(NamedTuple):
             zip(
                 self.loader.to_list(virt_["node_ids"]),
                 self.loader.to_list(virt_["indices"]),
+                strict=False,
             )
         )
 
@@ -466,9 +450,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         # Retrieve the selected nodes and edges based on the given vertices and edges
         subgraph_nodes = vertices[vertices < num_nodes]
-        subgraph_edges = [
-            mapping["edges"][e.item()] for e in edges if e < num_prior_edges
-        ]
+        subgraph_edges = [mapping["edges"][e.item()] for e in edges if e < num_prior_edges]
         virtual_vertices = vertices[vertices >= num_nodes]
         if len(virtual_vertices) > 0:
             virtual_edges = [mapping["nodes"][i.item()] for i in virtual_vertices]
@@ -480,9 +462,7 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return {"nodes": subgraph_nodes, "edges": subgraph_edges}
 
-    def extract_subgraph(
-        self, text_emb: list, query_emb: list, modality: str, cfg: dict
-    ) -> dict:
+    def extract_subgraph(self, text_emb: list, query_emb: list, modality: str, cfg: dict) -> dict:
         """
         Perform the Prize-Collecting Steiner Tree (PCST) algorithm to extract the subgraph.
 

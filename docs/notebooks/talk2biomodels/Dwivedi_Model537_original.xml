@@ -26,7 +26,7 @@ Anti-IL6R Antibody</div>
 </ul>Possible avenues for Interleukin-6 (IL-6) inhibition in
 treating Crohn's disease are compared here. Each model refers to
 separate ligands. The system simulates differential activity of the
-ligands on the signalling of IL-6. 
+ligands on the signalling of IL-6.
 <span class="st">This affects Signal Transducer and Activator of
 Transcription 3</span> (STAT3) activity on the production of
 biomarker C-Reactive Protein (CRP) expression.
@@ -70,11 +70,11 @@ biomarker C-Reactive Protein (CRP) expression.
   </div>
 </div>
 <div class="dc:publisher">
-  <p>This model is hosted on 
+  <p>This model is hosted on
   <a href="http://www.ebi.ac.uk/biomodels/">BioModels Database</a>
-  and identified by: 
+  and identified by:
   <a href="http://identifiers.org/biomodels.db/BIOMD0000000537">BIOMD0000000537</a>.</p>
-  <p>To cite BioModels Database, please use: 
+  <p>To cite BioModels Database, please use:
   <a href="http://identifiers.org/pubmed/20587024" title="Latest BioModels Database publication">BioModels Database:
   An enhanced, curated and annotated resource for published
   quantitative kinetic models</a>.</p>
@@ -82,7 +82,7 @@ biomarker C-Reactive Protein (CRP) expression.
 <div class="dc:license">
   <p>To the extent possible under law, all copyright and related or
   neighbouring rights to this encoded model have been dedicated to
-  the public domain worldwide. Please refer to 
+  the public domain worldwide. Please refer to
   <a href="http://creativecommons.org/publicdomain/zero/1.0/" title="Access to: CC0 1.0 Universal (CC0 1.0), Public Domain Dedication">CC0
   Public Domain Dedication</a> for more information.</p>
 </div>
@@ -168,15 +168,15 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
       <listOfFunctionDefinitions>
       <functionDefinition id="Function_for_reaction_12" metaid="d89fd7f0-fe8e-4820-9a84-bd561928b97a" name="Function for reaction_12_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRint </ci>
@@ -200,7 +200,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwd77df15b_fed7_41a8_a3d6_b0f6c590c5f6" metaid="_79071507-d7b7-4a8f-b0de-fa21a7001dd4" name="Function for mwd77df15b_fed7_41a8_a3d6_b0f6c590c5f6_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -242,7 +242,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_7" metaid="f3016f78-8d95-4b40-8697-8407379b1793" name="Function for reaction_7_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRLOff </ci>
@@ -284,7 +284,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw9629d028_fcc0_4886_9e4d_36eecdb0381d" metaid="_8f30a008-0aaf-485a-a4e9-f662df9daa9c" name="Function for mw9629d028_fcc0_4886_9e4d_36eecdb0381d_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mwbd1d5bc3_d4b9_4aec_9b86_6f776da20a30 </ci>
@@ -308,7 +308,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_2" metaid="ef358a12-e689-402f-b7fb-0195c0f875f2" name="Function for reaction_2_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -350,7 +350,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwe84cc3ad_af35_43a8_aa6a_9f68a6d68185" metaid="_5aa8c54b-87da-48c4-8d1c-9c584b6e6e36" name="Function for mwe84cc3ad_af35_43a8_aa6a_9f68a6d68185_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mwbd1d5bc3_d4b9_4aec_9b86_6f776da20a30 </ci>
@@ -374,7 +374,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwfeae4233_1272_453f_a97f_70982c445b43" metaid="b0a4ae01-f445-4267-b55a-4caf05e94d6e" name="Function for mwfeae4233_1272_453f_a97f_70982c445b43_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw2ba2b802_9f07_4f4d_94c6_24c8de1a95cf </ci>
@@ -398,7 +398,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw5e1e306a_63ed_43a8_b79f_b403516e7963" metaid="_63c0429f-9428-4a0d-a0e5-12f12e6be523" name="Function for mw5e1e306a_63ed_43a8_b79f_b403516e7963_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -422,7 +422,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw4a00a3a4_778f_4952_8100_2dc3cc2b7046" metaid="cc7ae8f9-2847-4927-8ba5-92123eac5ac5" name="Function for mw4a00a3a4_778f_4952_8100_2dc3cc2b7046_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRdeg </ci>
@@ -446,7 +446,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_15" metaid="_4a9b5f1c-721d-47f7-a91b-324de23bc4f7" name="Function for reaction_15_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRdeg </ci>
@@ -470,7 +470,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_41" metaid="_5b38ba88-c724-4eb0-9a60-274c01b2618b" name="Function for reaction_41_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -512,7 +512,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw6f470e13_f0e4_4294_83d8_59dd5670d10c" metaid="_615fd0b9-8e52-4ba1-ae95-4c3e17bb0761" name="Function for mw6f470e13_f0e4_4294_83d8_59dd5670d10c_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRdeg </ci>
@@ -536,7 +536,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_45" metaid="ce097668-6b59-4ba0-b183-52b4650e60c6" name="Function for reaction_45_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw6cce2109_0e32_4dd9_98ec_41173e8ef07d </ci>
@@ -560,7 +560,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_1" metaid="_00c90f53-70fb-45ea-8490-5eb6706aaaae" name="Function for reaction_1_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRLOff </ci>
@@ -602,7 +602,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwa812f08f_1035_42bd_82d2_72d691308f88" metaid="_39b33ae7-ea1a-4c35-b2a5-0fb061909c87" name="Function for mwa812f08f_1035_42bd_82d2_72d691308f88_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRLOff </ci>
@@ -644,7 +644,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw8fb6c0a7_b05d_4c2a_8866_77eb81f063d1" metaid="cf3acdd7-45e9-481d-83f8-1e9178ddf1b6" name="Function for mw8fb6c0a7_b05d_4c2a_8866_77eb81f063d1_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1c4bc9c3_52ad_4ef7_bf7f_97b0e2101ead </ci>
@@ -686,7 +686,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwab0012ac_e5f2_4904_9893_820fd210402e" metaid="ec28f7dd-6170-4524-aaa4-25a3dbee1aee" name="Function for mwab0012ac_e5f2_4904_9893_820fd210402e_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw862f1480_c60c_4863_a565_b2c1c77e238e </ci>
@@ -710,7 +710,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw30abb016_4300_4f40_a1b3_f865d0a45707" metaid="_57cfde3e-ad81-408c-84f8-0e30b931f5f9" name="Function for mw30abb016_4300_4f40_a1b3_f865d0a45707_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1da111f2_a036_4392_8512_015005bdcbb7 </ci>
@@ -734,7 +734,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw2ae288ab_7d03_4a84_a024_c711ad2b77e6" metaid="_7896d9c4-0b1f-4275-9f71-896e07ef6b9e" name="Function for mw2ae288ab_7d03_4a84_a024_c711ad2b77e6_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw3667a5e1_02c9_44a0_acb4_b0431faa822d </ci>
@@ -758,7 +758,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw391f3b8e_5649_4851_b2e2_782cb3e015b6" metaid="_5e342cf6-c46d-46ad-8be4-6425d110a2e5" name="Function for mw391f3b8e_5649_4851_b2e2_782cb3e015b6_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRsynth </ci>
@@ -775,7 +775,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_13" metaid="_4dc2a58a-35cc-4a2f-8918-c6a4a431aa8a" name="Function for reaction_13_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw0eb6c959_d408_45a0_a450_928b8c5876bb </ci>
@@ -799,7 +799,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_6" metaid="af8caed7-fdb7-48aa-a9eb-9d458b2fd0f5" name="Function for reaction_6_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -841,7 +841,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw432fde6e_59ab_47f0_9fb1_086433a602e3" metaid="_74379726-c119-400d-bc83-bfaf97b609da" name="Function for mw432fde6e_59ab_47f0_9fb1_086433a602e3_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -858,7 +858,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw6b46c550_674f_4857_b947_d31221cd8dd3" metaid="ba03dd61-4cba-4afc-a991-3efb460852d5" name="Function for mw6b46c550_674f_4857_b947_d31221cd8dd3_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw10315fa3_6f13_4618_bda8_a8694bd3c374 </ci>
@@ -900,7 +900,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw41c27823_d7ee_4554_9eac_3d5beec8e854" metaid="_676bd34a-eafd-4302-a61f-ce9d9376d743" name="Function for mw41c27823_d7ee_4554_9eac_3d5beec8e854_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw30ae63db_6cd3_4b6f_93ad_3350cd360bcc </ci>
@@ -924,7 +924,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_3" metaid="_5a4fc854-b8a0-49f3-b331-4f48a6377efc" name="Function for reaction_3_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kIL6Synth </ci>
@@ -941,7 +941,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_5" metaid="_264eb915-e864-48e5-84be-8a637a83dfa3" name="Function for reaction_5_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kCRPDecay </ci>
@@ -965,7 +965,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwba7f4605_8571_439b_b3ab_eb0b43808db8" metaid="_2ce5816a-00fb-4c9d-a988-1e91215e5b19" name="Function for mwba7f4605_8571_439b_b3ab_eb0b43808db8_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -989,7 +989,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw4c099d5c_200f_474e_8ec1_59e9223a8afd" metaid="_5d189da9-c10b-48c2-90e9-f52b4d0f56b0" name="Function for mw4c099d5c_200f_474e_8ec1_59e9223a8afd_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRLOff </ci>
@@ -1031,7 +1031,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_14" metaid="a271a718-a040-43db-8459-82d739c2e9c3" name="Function for reaction_14_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRsynth </ci>
@@ -1048,7 +1048,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw3e76b10b_5420_4828_8c70_b91b767132d0" metaid="_88f6f2b2-4067-4def-bece-7f743547a10e" name="Function for mw3e76b10b_5420_4828_8c70_b91b767132d0_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -1072,7 +1072,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_4" metaid="_86a3c339-d0aa-421c-8022-d5efb6715ec4" name="Function for reaction_4_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kIL6Decay </ci>
@@ -1096,7 +1096,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwb1879013_5fcd_490c_8b01_eaf84df15b9a" metaid="d890dc96-c5f0-4fa8-b66a-2c6bd4d5b622" name="Function for mwb1879013_5fcd_490c_8b01_eaf84df15b9a_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1c4bc9c3_52ad_4ef7_bf7f_97b0e2101ead </ci>
@@ -1138,7 +1138,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw71d90b81_8211_4039_8807_12a7fe03206c" metaid="d1811b2e-6a96-4dc8-9dae-92376f522126" name="Function for mw71d90b81_8211_4039_8807_12a7fe03206c_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw114aa90f_5f5b_4fe8_9406_361c8489b6a1 </ci>
@@ -1162,7 +1162,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_44" metaid="_757d37a2-d334-4cfd-900e-7ffd7933be3b" name="Function for reaction_44_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRint </ci>
@@ -1186,7 +1186,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_11" metaid="_88fafa25-038c-4257-bec6-9909e92b9bc7" name="Function for reaction_11_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRint </ci>
@@ -1210,7 +1210,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw64df7c9e_35da_4c7f_be56_c5dabfb060b6" metaid="_0f18965c-a7d2-472c-8769-378ea0bdcc6e" name="Function for mw64df7c9e_35da_4c7f_be56_c5dabfb060b6_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1667a8e0_9d20_4e59_ba51_596148aba787 </ci>
@@ -1245,7 +1245,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_10" metaid="_39364dd0-8e3f-4680-a053-5cd8c30c4b53" name="Function for reaction_10_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw39c2e431_fdc3_4964_be29_6ca856620b1b </ci>
@@ -1280,7 +1280,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwa3cb4a9b_d628_4807_8847_bdcd9b40c7f1" metaid="_25b3c4a5-2c77-4211-a740-ea4a94a88d9e" name="Function for mwa3cb4a9b_d628_4807_8847_bdcd9b40c7f1_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1c4bc9c3_52ad_4ef7_bf7f_97b0e2101ead </ci>
@@ -1322,7 +1322,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_9" metaid="d39917a8-ad62-4f97-8ed0-ba160ae512e3" name="Function for reaction_9_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw0eb6c959_d408_45a0_a450_928b8c5876bb </ci>
@@ -1361,7 +1361,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwb6a99eb5_ea4c_4733_98dd_1daf5ec6b0db" metaid="_68cfa6fe-07dc-47bf-b783-3928c960b136" name="Function for mwb6a99eb5_ea4c_4733_98dd_1daf5ec6b0db_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -1385,7 +1385,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw920e142e_b2c4_42b2_88f4_9f68cc50142e" metaid="d40fabc1-96ad-4235-920f-d0874ee580ce" name="Function for mw920e142e_b2c4_42b2_88f4_9f68cc50142e_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw772cbf20_3fc1_4800_ae59_77884f1ae333 </ci>
@@ -1409,7 +1409,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_8" metaid="_68d9ddc0-02ec-496f-b215-f5ae8f6fafac" name="Function for reaction_8_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -1451,7 +1451,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw50c6744c_e883_4612_8663_e38750cbad1b" metaid="_1f817eb2-bd3c-406b-be73-396a54366d49" name="Function for mw50c6744c_e883_4612_8663_e38750cbad1b_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw1f41474c_c399_4a60_a53a_9926dd092e8d </ci>
@@ -1468,7 +1468,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw8be158f1_ea81_45bf_80d4_6e31cd83fe6c" metaid="a7a05cd6-14b9-4733-9cd3-739603bfb3cf" name="Function for mw8be158f1_ea81_45bf_80d4_6e31cd83fe6c_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kgp130Off </ci>
@@ -1510,7 +1510,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw1ce0c484_681f_4d85_8ffe_392d0c100cfa" metaid="ea68700c-a2ff-4fc0-96c0-63a26d7712b9" name="Function for mw1ce0c484_681f_4d85_8ffe_392d0c100cfa_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mwa8d72918_f6c2_4d81_bf3b_fc2b464d5e69 </ci>
@@ -1527,7 +1527,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw6db30657_4e56_4c3a_8575_9c67393dde4f" metaid="_7269d673-6de6-4035-b3ea-119023f8ad8a" name="Function for mw6db30657_4e56_4c3a_8575_9c67393dde4f_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRsynth </ci>
@@ -1544,7 +1544,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mw8b4e96ed_0bcc_4ad6_b560_366e173a6e6b" metaid="_51034bec-3bf7-41ff-8422-16c5b01d88e4" name="Function for mw8b4e96ed_0bcc_4ad6_b560_366e173a6e6b_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw5d764bb8_5693_4ac8_9557_f65992cc5eb0 </ci>
@@ -1568,7 +1568,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_43" metaid="_04e4e2cc-9bec-46d0-83c2-e8dcb5cf3813" name="Function for reaction_43_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw48867e93_f170_44e8_ac7a_185b23e1bf3b </ci>
@@ -1603,7 +1603,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_42" metaid="_718ae6d0-ef5b-4449-859d-640c17b7c245" name="Function for reaction_42_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw2b255f94_8018_4b99_bde8_918eeac45446 </ci>
@@ -1642,7 +1642,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_46" metaid="c31e75ca-1b02-411f-bcd5-c8fecbbae6d0" name="Function for reaction_46_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRAct </ci>
@@ -1666,7 +1666,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwf913ea0b_785a_4701_ac91_b18ab5dd5a89" metaid="_22073ece-b156-4ef1-adda-db5fe4b37473" name="Function for mwf913ea0b_785a_4701_ac91_b18ab5dd5a89_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw06241335_b5f2_47ed_bdcc_ef77b68a2b98 </ci>
@@ -1690,7 +1690,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwb675e13a_26c0_4b18_a8c3_0f5a62090ba4" metaid="_6befd726-6239-4089-9e09-d8650f2bb82e" name="Function for mwb675e13a_26c0_4b18_a8c3_0f5a62090ba4_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw0eb6c959_d408_45a0_a450_928b8c5876bb </ci>
@@ -1725,7 +1725,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_mwff2ebcf1_dcf1_47b9_9cac_7306fc6f7f76" metaid="f470251b-be06-438e-8ec7-af8ffdee0f23" name="Function for mwff2ebcf1_dcf1_47b9_9cac_7306fc6f7f76_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -1742,7 +1742,7 @@ biomarker C-Reactive Protein (CRP) expression.
         </math>
             </functionDefinition>
       <functionDefinition id="Function_for_reaction_16" metaid="defa6c57-e79d-4d5f-b077-497b05c2fcad" name="Function for reaction_16_2_3_2">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <lambda>
             <bvar>
               <ci> kRAct </ci>
@@ -1789,10 +1789,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </compartment>
@@ -1806,10 +1806,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </compartment>
@@ -1823,10 +1823,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:is>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </compartment>
@@ -1840,10 +1840,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </compartment>
@@ -1859,10 +1859,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1875,17 +1875,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:isVersionOf>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1900,17 +1900,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1924,10 +1924,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1940,17 +1940,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1964,17 +1964,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P05231"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -1998,17 +1998,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/fma/FMA:62871"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:52217"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2033,17 +2033,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/fma/FMA:62871"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2069,17 +2069,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/fma/FMA:62871"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2104,10 +2104,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2132,10 +2132,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2160,10 +2160,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2179,10 +2179,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2196,17 +2196,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P05231"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2220,10 +2220,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2237,10 +2237,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2255,10 +2255,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2273,7 +2273,7 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/sbo/SBO:0000286"/>
@@ -2281,10 +2281,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2298,10 +2298,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2314,17 +2314,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/sbo/SBO:0000216"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:isVersionOf>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000002089"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2338,10 +2338,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2354,17 +2354,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:isVersionOf>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2378,10 +2378,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2394,17 +2394,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2419,17 +2419,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2443,17 +2443,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/fma/FMA:62871"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2467,10 +2467,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2496,10 +2496,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2523,7 +2523,7 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:hasPart>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P05231"/>
@@ -2532,10 +2532,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2549,17 +2549,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2573,10 +2573,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2592,10 +2592,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2610,7 +2610,7 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/sbo/SBO:0000286"/>
@@ -2618,10 +2618,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2635,10 +2635,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2651,17 +2651,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000002089"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/sbo/SBO:0000216"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2686,10 +2686,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2702,17 +2702,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:isVersionOf>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2726,10 +2726,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2742,17 +2742,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pr/PR:000001868"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2765,7 +2765,7 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:hasPart>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
@@ -2774,10 +2774,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2791,10 +2791,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2808,17 +2808,17 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/fma/FMA:62871"/>
 	</rdf:Bag>
 	</bqbiol:hasPart>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2842,7 +2842,7 @@ biomarker C-Reactive Protein (CRP) expression.
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0001537"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:hasProperty>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P08887"/>
@@ -2851,10 +2851,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:hasProperty>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -2868,10 +2868,10 @@ biomarker C-Reactive Protein (CRP) expression.
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
-	
+
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -3061,7 +3061,7 @@ The actual value used may be different, as it was optimized to fit the data
         <notes>
           <body xmlns="http://www.w3.org/1999/xhtml">1/hr
 
-Slow receptor shedding driven by CRP. The parameter has been calculated, along with the basal sR synthesis rate, to get 
+Slow receptor shedding driven by CRP. The parameter has been calculated, along with the basal sR synthesis rate, to get
 sR = 1.6, when CRP = 40 (HV); and
 sR = 2.8, when CRP = 2000 (CD).</body>
         </notes>
@@ -3216,7 +3216,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
     </listOfParameters>
     <listOfInitialAssignments>
       <initialAssignment metaid="cfa66072-9549-41f0-afc3-145801d3cda6" symbol="mw640ca705_e089_4c64_a5f4_9562317e8c76">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw434adaf5_cef0_4a33_9ad2_a4e49e1fd825 </ci>
@@ -3225,7 +3225,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="d53347e4-daa9-46a6-9f71-c37a35ddc642" symbol="mw43ccad8c_cabf_4eaf_90d5_e06ae43be2cb">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw434adaf5_cef0_4a33_9ad2_a4e49e1fd825 </ci>
@@ -3234,7 +3234,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="_3cd89e91-34d6-4647-821c-c0648342769a" symbol="mw9f83bdd3_3aa1_47ff_abd6_54e5ce60704a">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw6a5e10a9_d442_4dde_8ec3_6a26c9807374 </ci>
@@ -3243,7 +3243,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="_79f0e8ec-36d6-4e50-a19c-6834635eefd0" symbol="mwa071fdbe_d498_4620_a7a4_940aa31c8161">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw6a5e10a9_d442_4dde_8ec3_6a26c9807374 </ci>
@@ -3252,7 +3252,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="f4b326a3-4ca4-4315-853d-465d5c2dd58d" symbol="mwf67caf9d_2f4b_4986_abf2_e6090bbb72ce">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw1366c3b5_e79b_44a7_93cc_ee09d383eabf </ci>
@@ -3261,7 +3261,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="_2b2d4240-1426-4b8c-89f6-1e682b52364b" symbol="mw4aea26f6_8860_414c_97f5_40d325196f2e">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <ci> mw1366c3b5_e79b_44a7_93cc_ee09d383eabf </ci>
@@ -3270,24 +3270,24 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </initialAssignment>
       <initialAssignment metaid="ee9a8d22-80fa-4e69-9236-17d705f99ba5" symbol="Metabolite_40">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> mw114aa90f_5f5b_4fe8_9406_361c8489b6a1 </ci>
         </math>
             </initialAssignment>
       <initialAssignment metaid="d225e6e2-438e-4493-b418-aa69d3228ec7" symbol="ModelValue_99">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> parameter_1 </ci>
         </math>
             </initialAssignment>
       <initialAssignment metaid="df3df035-e1e2-4a42-9d9a-32f1bcd6e512" symbol="ModelValue_98">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> Dose </ci>
         </math>
             </initialAssignment>
     </listOfInitialAssignments>
     <listOfRules>
       <assignmentRule metaid="_0deacfcc-e4b3-4314-92d4-8dddbea9e49d" variable="CRP_Suppression___">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <apply>
@@ -3307,7 +3307,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </assignmentRule>
       <assignmentRule metaid="c878a632-61d0-41de-8c16-fe5d25de9406" variable="CRP____of_baseline">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <apply>
@@ -3320,7 +3320,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </assignmentRule>
       <assignmentRule metaid="_5893f596-5c2d-4e6d-8d22-60e0590afba2" variable="mwd5313618_89eb_4c8c_bc82_66f10f966349">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <apply>
@@ -3337,7 +3337,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
         </math>
             </assignmentRule>
       <assignmentRule metaid="b69dd027-ba1c-42ca-9bc9-613d0b239f07" variable="mw0083d743_836f_4238_a17f_4602193d5bc0">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <divide/>
             <apply>
@@ -3369,7 +3369,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_0326ae53-b5b3-493d-9127-b814e512ae2f" species="mwf626e95e_543f_41e4_aad4_c6bf60ab345b"/>
         </listOfModifiers>
         <kineticLaw metaid="_4c60b723-7444-4b13-b928-185e926b5439">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -3400,7 +3400,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="e373598f-4d0b-45ca-b7cf-e5499eca892d" species="mwbbbce920_e8dd_4320_9386_fc94bfb2fc99"/>
         </listOfModifiers>
         <kineticLaw metaid="_45e2a66b-d55e-47d1-9200-b63941c681b7">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -3422,7 +3422,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="_5610df66-1135-4bcb-b6e5-37e5322f004c" species="mwf626e95e_543f_41e4_aad4_c6bf60ab345b" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="e9b90811-53b8-4b29-95f0-0e17c9f87170">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -3443,7 +3443,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_84808a52-b45a-4bf3-85bf-cc50ce7b166a" species="mwf626e95e_543f_41e4_aad4_c6bf60ab345b"/>
         </listOfModifiers>
         <kineticLaw metaid="b7bc2916-1ea4-4d0b-9f3c-d79b357ef576">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -3478,7 +3478,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_5be197ea-d6c8-4672-a6c4-86a7cffab8f4" species="mw114aa90f_5f5b_4fe8_9406_361c8489b6a1"/>
         </listOfModifiers>
         <kineticLaw metaid="a2cd36ce-695e-4474-b4da-d07b2fc6df2e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -3506,7 +3506,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="bb78651a-c0b5-4f25-9fcf-6b6fa66d9d43" species="mwd2d9d93a_3bd1_4f17_bac1_baba9ef2d55a"/>
         </listOfModifiers>
         <kineticLaw metaid="_8b2ea0e3-3670-4eba-b9c6-b007e0b4dcd0">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3537,7 +3537,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="d96778a7-1531-4352-96d9-26e317d60ee1" species="mw7d86cc23_a1af_44c3_bdb9_71e9b1bb2a83"/>
         </listOfModifiers>
         <kineticLaw metaid="_319d85c7-1c4e-42a5-9ddc-b920acbcdbbe">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3581,7 +3581,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="b449d781-a386-419e-9bf2-470606c458ec" species="mwd2d9d93a_3bd1_4f17_bac1_baba9ef2d55a"/>
         </listOfModifiers>
         <kineticLaw metaid="bb3d6f4a-fba5-42d4-bc70-fbca99cef4b0">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3609,7 +3609,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_15b0f98a-e192-4211-a8db-4d7079aefcee" species="mwd2d9d93a_3bd1_4f17_bac1_baba9ef2d55a"/>
         </listOfModifiers>
         <kineticLaw metaid="_468f7755-f67b-4a04-a57d-bfa7160e901a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3650,7 +3650,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_157fdb9f-45ca-4e54-be3a-af8c6a8324b5" species="mw42054cd7_17af_46da_970c_7f99151906ad"/>
         </listOfModifiers>
         <kineticLaw metaid="_2c1e1dbd-e1b7-4ab5-a67c-797f6db68c76">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3677,7 +3677,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_8919a45a-53de-4164-8aaa-f18964f01404" species="mw39c2e431_fdc3_4964_be29_6ca856620b1b"/>
         </listOfModifiers>
         <kineticLaw metaid="c67931f4-c276-42bf-8fbb-9714a2dbb18e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3700,7 +3700,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="aa396784-a9a5-40fd-8ea3-9c46c0150724" species="mw10315fa3_6f13_4618_bda8_a8694bd3c374"/>
         </listOfModifiers>
         <kineticLaw metaid="_603046c5-c2eb-4aff-9ad3-3b298bcc2d2d">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3722,7 +3722,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_987952b1-6266-48ea-9de8-06ddefc45b4a" species="mw7d86cc23_a1af_44c3_bdb9_71e9b1bb2a83"/>
         </listOfModifiers>
         <kineticLaw metaid="_2f3e95c0-5eb1-4f14-a16a-69a78f387670">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3744,7 +3744,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_583ae79a-7f45-484c-a19a-220c27c34bfd" species="mwd2d9d93a_3bd1_4f17_bac1_baba9ef2d55a"/>
         </listOfModifiers>
         <kineticLaw metaid="d9c3e51e-d3f1-4b3c-b17e-787d7160e5af">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3766,7 +3766,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_780fd1a3-2dcf-4f1c-8358-f838f4aa3092" species="mw0eb6c959_d408_45a0_a450_928b8c5876bb"/>
         </listOfModifiers>
         <kineticLaw metaid="_79e5e398-77ec-4c9c-bfab-419aee432788">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3785,7 +3785,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="ae6f6285-e798-4f60-8a85-3a7ce416da03" species="mw10315fa3_6f13_4618_bda8_a8694bd3c374" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="_92652c4a-bca4-4552-afcf-597ea2cb8778">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -3812,7 +3812,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="f79c8be9-664e-4b93-b6b1-20f8d99c1dcc" species="mw8c9107e6_f51d_442d_b2dc_2bfdbb8482ca"/>
         </listOfModifiers>
         <kineticLaw metaid="_6766c6fe-04fa-45dc-89b2-763b457b8b81">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3840,7 +3840,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="ae041b07-546e-4e9d-8812-250f1abfed9a" species="mw824bc3d4_1ac3_4912_9b51_8f14ff1c96b9"/>
         </listOfModifiers>
         <kineticLaw metaid="b55de72d-43e7-4e00-9fc0-7282b0769997">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3868,7 +3868,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_0598e20f-8763-477a-907c-2ee3dfc28c7c" species="mw6cce2109_0e32_4dd9_98ec_41173e8ef07d"/>
         </listOfModifiers>
         <kineticLaw metaid="_3aaf6edf-37c9-45b1-be0b-d42669c074ce">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3895,7 +3895,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_556439ca-0e36-4f58-a99f-ff2fc6546ae9" species="mw48867e93_f170_44e8_ac7a_185b23e1bf3b"/>
         </listOfModifiers>
         <kineticLaw metaid="_8f102ffd-c79f-426f-8d99-c48061590775">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3918,7 +3918,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_8d6ae531-8c44-47ee-8501-9f5e7847d0d7" species="mw824bc3d4_1ac3_4912_9b51_8f14ff1c96b9"/>
         </listOfModifiers>
         <kineticLaw metaid="_2828d73d-1f50-47a6-9058-61c957ee406f">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3953,7 +3953,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_77205e3c-57f0-4d9d-bf9e-9d2a8bf363dd" species="mw6cce2109_0e32_4dd9_98ec_41173e8ef07d"/>
         </listOfModifiers>
         <kineticLaw metaid="_55e5f69e-36da-437e-b103-a450cd7fa72e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -3978,7 +3978,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_52d7242c-4c55-4e39-9aa3-85aaebac8383" species="mw0eb6c959_d408_45a0_a450_928b8c5876bb"/>
         </listOfModifiers>
         <kineticLaw metaid="_6c0b6fcd-3ad6-4416-b0c4-e390754f5f94">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4004,7 +4004,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="c1a47c98-b9ae-4d4f-830c-ad55bca0e497" species="mw6cce2109_0e32_4dd9_98ec_41173e8ef07d"/>
         </listOfModifiers>
         <kineticLaw metaid="_40613407-e8a2-4a70-b4c1-9c23a80c6de4">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4024,7 +4024,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="d2202cad-1d34-44de-b6ab-8ac3ed2e56fe" species="mw80848184_e2dd_47ce_86d7_7a21479342bd" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="_7cd99e23-7a19-4f9d-9aeb-83fa580521ff">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4045,7 +4045,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_37b0db6f-3c4d-43f5-849a-dcc6d7e26f00" species="mw80848184_e2dd_47ce_86d7_7a21479342bd"/>
         </listOfModifiers>
         <kineticLaw metaid="_059ecdbd-c6fa-4b5e-9aed-dfa32bfaa457">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4064,7 +4064,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="_3d4cdf2c-ce21-45e5-9050-a145d210f4d9" species="mw8c9107e6_f51d_442d_b2dc_2bfdbb8482ca" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="_65cd6507-8a75-4740-9d28-877b5f44942a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4085,7 +4085,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_7da4a486-146c-420d-9fc7-64391e8dc8de" species="mw8c9107e6_f51d_442d_b2dc_2bfdbb8482ca"/>
         </listOfModifiers>
         <kineticLaw metaid="acc5c5d0-725f-4ab6-9f96-6a8fec21d1f6">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4111,7 +4111,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_06d7c32e-1b7a-4500-9bf6-edaeb2b39ead" species="mwd31f52cc_04e7_40e0_885f_c7b2d9e62215"/>
         </listOfModifiers>
         <kineticLaw metaid="_93d381e3-65c4-47e9-aae0-0994600dda60">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4140,7 +4140,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_4526a807-115e-40a0-b9a7-2f010f444bc2" species="mw2c9b0499_3325_4394_8af3_bbf653a944a0"/>
         </listOfModifiers>
         <kineticLaw metaid="_82b1be5b-20ab-425d-b237-ea1554aa7b5b">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4171,7 +4171,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_827bc741-3a2f-4bec-9c0f-717fc344a767" species="mwd31f52cc_04e7_40e0_885f_c7b2d9e62215"/>
         </listOfModifiers>
         <kineticLaw metaid="_50bef77b-03eb-4d51-8dbc-f3b5b384ebe5">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4200,7 +4200,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_3bea5de4-eaf5-496e-a9f4-67ab5c0ce614" species="mw7becb5fe_8da8_4285_a821_0d77ad811b62"/>
         </listOfModifiers>
         <kineticLaw metaid="_7abd9cba-8f56-40da-ad00-4b01c75d3ea6">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4229,7 +4229,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_61d071a7-10f6-4b2e-b830-7da376788487" species="mw2e464cf3_a09c_4b7c_9f3c_06720016a48e"/>
         </listOfModifiers>
         <kineticLaw metaid="_3b157b0e-e2c9-4c18-91ba-0d2e8a0c7204">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4258,7 +4258,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_338eada1-458a-46af-8bc9-a79d6ae42bf7" species="mw0adf3eb4_a196_4c48_b10d_4e9e9faaf9e1"/>
         </listOfModifiers>
         <kineticLaw metaid="_21468cf7-62f3-47e9-b273-7a876ab3d5cc">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4287,7 +4287,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_3aca3f6f-14bb-48a2-b5ab-e5b0a26adf74" species="mw4638f126_8cb8_4021_ab41_6ae195743ba0"/>
         </listOfModifiers>
         <kineticLaw metaid="_5450c260-075f-4449-886d-362d149da8cf">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4318,7 +4318,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="bc697e9b-1681-42a2-bf12-8acf0064156d" species="mw4638f126_8cb8_4021_ab41_6ae195743ba0"/>
         </listOfModifiers>
         <kineticLaw metaid="b2d7eacd-d30e-4129-ae7c-b01808591f93">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4346,7 +4346,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_9ca7b6ec-4437-469c-91db-58f031e252c5" species="mwd5313618_89eb_4c8c_bc82_66f10f966349"/>
         </listOfModifiers>
         <kineticLaw metaid="_4c516443-bb77-4d3b-b9e9-76a31343e52f">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4372,7 +4372,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="f25dfc6e-c5d4-40a8-8fcc-ba3a8a03c668" species="mw36ea78c1_ed71_4def_96d3_857a442d7195"/>
         </listOfModifiers>
         <kineticLaw metaid="_137d7401-6a9b-44da-9c45-1fd391ec1ed9">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4394,7 +4394,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="a18e9048-c19d-4c26-97ec-82eadf5f310a" species="mw114aa90f_5f5b_4fe8_9406_361c8489b6a1" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="_142738e2-9629-40be-947d-ae411a863759">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4419,7 +4419,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_0527b719-f7e8-4da2-84fb-f219b00b45e9" species="mwd65b5b39_dc1b_4e77_a999_67277a880e5e"/>
         </listOfModifiers>
         <kineticLaw metaid="_33ba0a97-b5ae-46ea-b2f5-54cba029ef6e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4448,7 +4448,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="b49ba71c-dd5f-45d9-92c2-4eb775165ed3" species="mw147d30ec_478e_4090_b496_128a131d29eb"/>
         </listOfModifiers>
         <kineticLaw metaid="_8725296a-0f1d-466d-af86-442bccf3a6e4">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4479,7 +4479,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_306ac3d5-ee9e-44e8-8397-be6557bd732f" species="mwd65b5b39_dc1b_4e77_a999_67277a880e5e"/>
         </listOfModifiers>
         <kineticLaw metaid="_18917515-1cfa-45a8-8045-4b470639e535">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4510,7 +4510,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="d33b5b60-5278-44e1-9a1c-3e9faf7d01ae" species="mwab41493c_6349_45f1_a226_3030cfed0e06"/>
         </listOfModifiers>
         <kineticLaw metaid="_28b948a6-9303-4b45-bf30-74cec8559e35">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4552,7 +4552,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_5067d6d5-56e3-48fa-a4da-086f3aa3e07d" species="mw6335d5d7_c7b0_4bc0_b883_f7ee4915c2c3"/>
         </listOfModifiers>
         <kineticLaw metaid="_99635e89-e367-4d59-b44b-bb9717beccf9">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4581,7 +4581,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_7c880334-d1f9-4a4d-842e-f3ab01a526d9" species="mwab41493c_6349_45f1_a226_3030cfed0e06"/>
         </listOfModifiers>
         <kineticLaw metaid="ff5ad1bd-07cc-4095-8e65-f73b9f6f48db">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4603,7 +4603,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="ae8c0ae8-b29e-4b6c-b9c2-d3c3157906c9" species="mw30ae63db_6cd3_4b6f_93ad_3350cd360bcc" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="d3059ea0-f109-4f48-bde7-685e186a89fc">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4624,7 +4624,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_5d0b2eb7-30d2-48b8-87e7-e840f1162a71" species="mw30ae63db_6cd3_4b6f_93ad_3350cd360bcc"/>
         </listOfModifiers>
         <kineticLaw metaid="e5373942-070e-4936-aa1a-e274aec5c7a4">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4643,7 +4643,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="b492b46a-c7d3-4522-a736-01e580137a98" species="mwbbbce920_e8dd_4320_9386_fc94bfb2fc99" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="_8ffdfb58-c8aa-4d16-9692-267cb59612f1">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4664,7 +4664,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="a138e514-384c-4316-9ef2-31d58dc36928" species="mwbbbce920_e8dd_4320_9386_fc94bfb2fc99"/>
         </listOfModifiers>
         <kineticLaw metaid="_648ce04e-7df1-4556-8234-e76cf30f7c60">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4683,7 +4683,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <speciesReference metaid="_7c123c37-54f5-4b59-a497-b71ca78b8ab7" species="mw2c9b0499_3325_4394_8af3_bbf653a944a0" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw metaid="e49c95ee-c144-445f-ade6-9a581ce5dcff">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4704,7 +4704,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_4665c587-d2c6-4be1-94ae-d3f167f22f73" species="mw2c9b0499_3325_4394_8af3_bbf653a944a0"/>
         </listOfModifiers>
         <kineticLaw metaid="fd861436-49be-4ddf-8a14-540670b1a380">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4730,7 +4730,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_116dd7a8-9bac-46ce-968e-ade661b582d4" species="mw114aa90f_5f5b_4fe8_9406_361c8489b6a1"/>
         </listOfModifiers>
         <kineticLaw metaid="_3c586bde-65ca-4e2d-9bf2-c6b91a3845a8">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4756,7 +4756,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_3f055ede-0059-4692-92b4-0ceecafa1881" species="mwbc2f5464_81e5_43fd_8b39_f5a2756af72f"/>
         </listOfModifiers>
         <kineticLaw metaid="eef41e0e-dbeb-4fa6-acb4-0dae51d9872e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4787,7 +4787,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_3687a155-7c11-4474-80e4-ef782f6aa8ff" species="mwf345ed7a_0622_403c_b816_c8749a2c9ded"/>
         </listOfModifiers>
         <kineticLaw metaid="d548d9da-8929-45db-b550-dfc08b27033c">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4812,7 +4812,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_15f9ae6e-6b54-437f-a1fc-eff203792360" species="mw1da111f2_a036_4392_8512_015005bdcbb7"/>
         </listOfModifiers>
         <kineticLaw metaid="_30e4715d-aea5-497a-8eee-770c7fa545dd">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4834,7 +4834,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="d30dbf36-59c8-4edc-a939-05c36f03c832" species="mwf345ed7a_0622_403c_b816_c8749a2c9ded"/>
         </listOfModifiers>
         <kineticLaw metaid="cc3fcc2b-2957-4602-b567-2471387a3b3c">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -4856,7 +4856,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="fc2afb97-6b20-45f2-a6de-455f2070457e" species="mw5d764bb8_5693_4ac8_9557_f65992cc5eb0"/>
         </listOfModifiers>
         <kineticLaw metaid="_28cbb1d3-7a2f-4267-b2cd-35d3ae3a2f2e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4884,7 +4884,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="ab5a4678-977f-418e-a0df-a0772b45f5e2" species="mwf7796221_1fea_4274_a93e_c00adbf5778c"/>
         </listOfModifiers>
         <kineticLaw metaid="_232aa995-06e3-4424-b1dc-4a476188101e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -4915,7 +4915,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_4b881e0f-f432-4e97-9674-a94bc87fb572" species="mwf405687b_7401_44ec_a0d6_4a2b35c13e8a"/>
         </listOfModifiers>
         <kineticLaw metaid="f632db52-b209-43a4-9bcb-8e3c15bb0843">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4940,7 +4940,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="ce7db39e-4e62-489d-a687-ba4296b406ec" species="mwf405687b_7401_44ec_a0d6_4a2b35c13e8a"/>
         </listOfModifiers>
         <kineticLaw metaid="_511e2a0b-977f-4172-abe8-6d31d3cd2f6c">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -4966,7 +4966,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_5e89b913-485e-45fd-88f1-7aa83ebedc4a" species="mw3667a5e1_02c9_44a0_acb4_b0431faa822d"/>
         </listOfModifiers>
         <kineticLaw metaid="_78670ebd-cfbd-4c6c-b524-9669e440f96f">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -4995,7 +4995,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_749b1cdb-e677-4825-8ded-0105a907fd72" species="mwf7796221_1fea_4274_a93e_c00adbf5778c"/>
         </listOfModifiers>
         <kineticLaw metaid="dc70dc1c-ef88-42d0-abce-a7182b0fbda6">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -5024,7 +5024,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="f4d31f5a-b443-4d86-a9bb-fdd9e5b0b2ed" species="mwf405687b_7401_44ec_a0d6_4a2b35c13e8a"/>
         </listOfModifiers>
         <kineticLaw metaid="_82ec1c44-db00-4e72-8366-fc3f1ce78b2d">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -5053,7 +5053,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_7a571f73-97b4-4e95-8f79-c538c12afbf6" species="mw5d764bb8_5693_4ac8_9557_f65992cc5eb0"/>
         </listOfModifiers>
         <kineticLaw metaid="_96d0e42f-6bef-47d9-9242-e8b18265a01d">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -5078,7 +5078,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_69b4f7fd-8376-45da-9cdc-9004e1b216fb" species="mw3667a5e1_02c9_44a0_acb4_b0431faa822d"/>
         </listOfModifiers>
         <kineticLaw metaid="b271fb5a-2e44-443b-9a7b-56d3c8cd96ea">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -5100,7 +5100,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="ba18dc1d-2205-4f58-b1d5-8875c78c5545" species="mwf7796221_1fea_4274_a93e_c00adbf5778c"/>
         </listOfModifiers>
         <kineticLaw metaid="eb2513d2-e844-4aac-a142-f79477c8df99">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -5128,7 +5128,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="c9bb7b5b-3407-466e-afa5-83a77200275d" species="mw772cbf20_3fc1_4800_ae59_77884f1ae333"/>
         </listOfModifiers>
         <kineticLaw metaid="_380f9edb-ed6c-436b-89d4-2cfea221f82c">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -5153,7 +5153,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_459b06f5-9008-4f89-ab38-edc768be2937" species="mw772cbf20_3fc1_4800_ae59_77884f1ae333"/>
         </listOfModifiers>
         <kineticLaw metaid="_4a34528d-887e-468d-a228-22c32935d348">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -5179,7 +5179,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_4a6df0c6-4df6-40f8-9e2b-b3c1762d9a53" species="mwedc1bc00_adf7_4144_a1c2_7dc1a9565dc2"/>
         </listOfModifiers>
         <kineticLaw metaid="_130fb271-e691-4dc8-88d7-caf743f69d55">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -5208,7 +5208,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="f7d5db5d-b244-4c79-911b-232a64c2ffd1" species="mw2ba2b802_9f07_4f4d_94c6_24c8de1a95cf"/>
         </listOfModifiers>
         <kineticLaw metaid="dc9659cd-192f-4eb9-8856-089fb9891c59">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <minus/>
               <apply>
@@ -5233,7 +5233,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_6308379d-79a1-4ed0-bd0f-2c3cef933d56" species="mw9947742a_0e4b_4636_9a4b_b6eef2a8f6ac"/>
         </listOfModifiers>
         <kineticLaw metaid="fa228d47-36fe-4971-b3f6-0449d26a1141">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw53ffe9e6_beef_45c4_90a5_a79197ed506e </ci>
@@ -5255,7 +5255,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_1648c64c-ab44-4a72-b859-bccdafdfeb2e" species="mw2ba2b802_9f07_4f4d_94c6_24c8de1a95cf"/>
         </listOfModifiers>
         <kineticLaw metaid="_55f1a33f-e95f-42de-a184-efeeaae9cafd">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e </ci>
@@ -5277,7 +5277,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           <modifierSpeciesReference metaid="_6b064a03-de4b-45a0-b18c-b718c695e48a" species="mwedc1bc00_adf7_4144_a1c2_7dc1a9565dc2"/>
         </listOfModifiers>
         <kineticLaw metaid="_8b21c7bb-b04b-40cc-8aec-3c4f899c5985">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mwe9501423_9fb4_494b_b5b6_288f3fcb17b5 </ci>
@@ -5295,7 +5295,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
     <listOfEvents>
       <event id="Week0" metaid="COPASI14" name="Week0" useValuesFromTriggerTime="false">
         <trigger metaid="_6754d4ed-8c5b-412f-8e65-66f4986d8f7a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5304,13 +5304,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="_90fa8a7f-7691-4103-8bd4-e4b6b1087ef0">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="_9d10da66-922b-4168-9e69-de1bc21439a9" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>
@@ -5343,7 +5343,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </COPASI>
         </annotation>
               <trigger metaid="_5b782b70-17fb-4829-bad2-62a27a697659">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5352,13 +5352,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="_06df0087-0f2f-4548-85e3-9672d80d7a9b">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="_84b6a50b-89ce-42c7-ac2b-f7ac00d94162" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>
@@ -5378,7 +5378,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
       </event>
       <event id="Week8" metaid="COPASI16" name="Week8" useValuesFromTriggerTime="false">
         <trigger metaid="_34a3042a-d007-4241-8b3d-3870011ff5aa">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5387,13 +5387,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="e617e9ab-764d-4a0d-a061-1848b10f7ab5">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="d5672426-a96e-4769-8298-7c1d3123d58e" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>
@@ -5413,7 +5413,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
       </event>
       <event id="event_1" metaid="COPASI32" name="Week2" useValuesFromTriggerTime="false">
         <trigger metaid="e354635d-eb46-4d17-a5a1-dba49d97a7de">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5422,13 +5422,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="da378c91-040e-4129-bfb6-3dc36b9040c4">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="_930c5c37-8558-4276-9a3e-bc1db3ffe1d5" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>
@@ -5457,7 +5457,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </COPASI>
         </annotation>
               <trigger metaid="b8649b0a-6ab4-4adc-ae6e-342ff132cda7">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5466,13 +5466,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="e44dd399-1e25-4a5d-8625-c7a6f147e0d2">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="a78a4129-1421-406a-af89-090c38dfb31b" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>
@@ -5488,7 +5488,7 @@ sR = 2.8, when CRP = 2000 (CD).</body>
       </event>
       <event id="event_3" metaid="COPASI34" name="Week10" useValuesFromTriggerTime="false">
         <trigger metaid="_7908b920-94d9-4016-b246-53d214c88e02">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
@@ -5497,13 +5497,13 @@ sR = 2.8, when CRP = 2000 (CD).</body>
           </math>
                 </trigger>
         <delay metaid="d5803737-9d11-4c6f-800c-b9542b59a595">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <cn> 0 </cn>
           </math>
                 </delay>
         <listOfEventAssignments>
           <eventAssignment metaid="_06855797-860c-4a83-bfca-833d68c629f1" variable="mwf345ed7a_0622_403c_b816_c8749a2c9ded">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
               <apply>
                 <plus/>
                 <ci> mwf345ed7a_0622_403c_b816_c8749a2c9ded </ci>

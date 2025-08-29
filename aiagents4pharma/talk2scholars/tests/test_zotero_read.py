@@ -17,7 +17,6 @@ from aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_pdf_downloader impo
 )
 from aiagents4pharma.talk2scholars.tools.zotero.zotero_read import zotero_read
 
-
 # Dummy Hydra configuration to be used in tests
 dummy_zotero_read_config = SimpleNamespace(
     user_id="dummy_user",
@@ -34,14 +33,10 @@ dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_
 class TestZoteroSearchTool(unittest.TestCase):
     """Tests for Zotero search tool."""
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_valid_query(
         self,
         mock_hydra_init,
@@ -111,14 +106,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("Query: test", message_content)
         self.assertIn("Number of papers found: 2", message_content)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_empty_query_fetch_all_items(
         self,
         mock_hydra_init,
@@ -159,18 +150,12 @@ class TestZoteroSearchTool(unittest.TestCase):
         update = result.update
         filtered_papers = update["article_data"]
         self.assertIn("paper1", filtered_papers)
-        fake_zot.items.assert_called_with(
-            limit=dummy_cfg.tools.zotero_read.zotero.max_limit
-        )
+        fake_zot.items.assert_called_with(limit=dummy_cfg.tools.zotero_read.zotero.max_limit)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_no_items_returned(
         self,
         mock_hydra_init,
@@ -198,17 +183,11 @@ class TestZoteroSearchTool(unittest.TestCase):
             zotero_read.run(tool_input)
         self.assertIn("No items returned from Zotero", str(context.exception))
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.download_pdfs_in_parallel"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.download_pdfs_in_parallel")
     def test_filtering_no_matching_papers(self, *mocks):
         """Testing filtering when no paper matching"""
         (
@@ -274,14 +253,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertEqual(filtered_papers["paper1"]["pdf_url"], "/tmp/fake_path.pdf")
         self.assertEqual(filtered_papers["paper1"]["source"], "zotero")
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_items_api_exception(
         self,
         mock_hydra_init,
@@ -309,14 +284,10 @@ class TestZoteroSearchTool(unittest.TestCase):
             zotero_read.run(tool_input)
         self.assertIn("Failed to fetch items from Zotero", str(context.exception))
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_missing_key_in_item(
         self,
         mock_hydra_init,
@@ -370,14 +341,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertIn("paper_valid", filtered_papers)
         self.assertEqual(len(filtered_papers), 1)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_item_not_dict(
         self,
         mock_hydra_init,
@@ -410,14 +377,10 @@ class TestZoteroSearchTool(unittest.TestCase):
             zotero_read.run(tool_input)
         self.assertIn("No matching papers returned from Zotero", str(context.exception))
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_data_not_dict(
         self,
         mock_hydra_init,
@@ -447,17 +410,11 @@ class TestZoteroSearchTool(unittest.TestCase):
             zotero_read.run(tool_input)
         self.assertIn("No matching papers returned from Zotero", str(context.exception))
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.Session.get"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.requests.Session.get")
     def test_pdf_attachment_success(self, *mocks):
         """Test for pdf attachment success"""
         (
@@ -506,9 +463,7 @@ class TestZoteroSearchTool(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.iter_content = lambda chunk_size: [b"fake pdf content"]
-        mock_response.headers = {
-            "Content-Disposition": 'attachment; filename="file1.pdf"'
-        }
+        mock_response.headers = {"Content-Disposition": 'attachment; filename="file1.pdf"'}
         mock_response.raise_for_status = lambda: None
         mock_session_get.return_value = mock_response
 
@@ -528,14 +483,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertEqual(paper["filename"], "file1.pdf")
         self.assertEqual(paper["attachment_key"], "attachment1")
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_pdf_attachment_children_exception(
         self,
         mock_hydra_init,
@@ -590,14 +541,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertNotIn("filename", filtered_papers["paper1"])
         self.assertNotIn("attachment_key", filtered_papers["paper1"])
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_pdf_attachment_missing_key(
         self,
         mock_hydra_init,
@@ -653,14 +600,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         self.assertNotIn("pdf_url", paper)
         self.assertNotIn("attachment_key", paper)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_pdf_attachment_outer_exception(
         self,
         mock_hydra_init,
@@ -739,14 +682,10 @@ class TestZoteroSearchTool(unittest.TestCase):
         # Should return None on failure
         self.assertIsNone(result)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_download_pdf_exception_logging(
         self,
         mock_hydra_init,

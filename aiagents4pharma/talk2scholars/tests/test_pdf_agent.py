@@ -3,8 +3,10 @@ Unit Tests for the PDF agent.
 """
 
 from unittest import mock
+
 import pytest
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
+
 from ..agents.pdf_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
@@ -29,9 +31,7 @@ def mock_tools_fixture():
             "aiagents4pharma.talk2scholars.agents.pdf_agent.question_and_answer"
         ) as mock_question_and_answer,
     ):
-        mock_question_and_answer.return_value = {
-            "result": "Mock Question and Answer Result"
-        }
+        mock_question_and_answer.return_value = {"result": "Mock Question and Answer Result"}
         yield [mock_question_and_answer]
 
 
@@ -58,9 +58,7 @@ def test_pdf_agent_invocation(mock_llm):
     """Test that the PDF agent processes user input and returns a valid response."""
     thread_id = "test_thread"
     # Create a sample state with a human message.
-    mock_state = Talk2Scholars(
-        messages=[HumanMessage(content="Extract key data from PDF")]
-    )
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Extract key data from PDF")])
     with mock.patch(
         "aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent"
     ) as mock_create:
@@ -95,9 +93,7 @@ def test_pdf_agent_tools_assignment(request, mock_llm):
         mock.patch(
             "aiagents4pharma.talk2scholars.agents.pdf_agent.create_react_agent"
         ) as mock_create,
-        mock.patch(
-            "aiagents4pharma.talk2scholars.agents.pdf_agent.ToolNode"
-        ) as mock_toolnode,
+        mock.patch("aiagents4pharma.talk2scholars.agents.pdf_agent.ToolNode") as mock_toolnode,
     ):
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent

@@ -19,7 +19,7 @@ def fixture_chunks():
     return [
         Document(
             page_content=f"chunk {i}",
-            metadata={"paper_id": f"P{i%2}", "relevance_score": 0.9 - 0.01 * i},
+            metadata={"paper_id": f"P{i % 2}", "relevance_score": 0.9 - 0.01 * i},
         )
         for i in range(10)
     ]
@@ -27,9 +27,7 @@ def fixture_chunks():
 
 def test_rerank_chunks_short_input(chunks_fixture):
     """rerank_chunks with fewer chunks than top_k should return original."""
-    result = rerank_chunks(
-        chunks_fixture[:3], "What is cancer?", config=MagicMock(), top_k=5
-    )
+    result = rerank_chunks(chunks_fixture[:3], "What is cancer?", config=MagicMock(), top_k=5)
     assert result == chunks_fixture[:3]
 
 
@@ -65,9 +63,7 @@ def test_rerank_chunks_success(mock_reranker_cls, chunks_fixture):
     mock_config.reranker.api_key = "test_key"
     mock_config.reranker.model = "test_model"
 
-    result = rerank_chunks(
-        chunks_fixture, "Explain mitochondria.", config=mock_config, top_k=5
-    )
+    result = rerank_chunks(chunks_fixture, "Explain mitochondria.", config=mock_config, top_k=5)
 
     assert isinstance(result, list)
     assert result == list(reversed(chunks_fixture))[:5]
@@ -77,9 +73,7 @@ def test_rerank_chunks_success(mock_reranker_cls, chunks_fixture):
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.nvidia_nim_reranker.NVIDIARerank")
-def test_rerank_chunks_reranker_fails_raises_and_calls_compress(
-    mock_reranker_cls, chunks_fixture
-):
+def test_rerank_chunks_reranker_fails_raises_and_calls_compress(mock_reranker_cls, chunks_fixture):
     """
     If NVIDIARerank.compress_documents raises RuntimeError:
       - rerank_chunks should propagate the RuntimeError
@@ -94,9 +88,7 @@ def test_rerank_chunks_reranker_fails_raises_and_calls_compress(
     mock_config.reranker.model = "reranker"
 
     with pytest.raises(RuntimeError, match="API failure"):
-        rerank_chunks(
-            chunks_fixture, "How does light affect plants?", config=mock_config, top_k=3
-        )
+        rerank_chunks(chunks_fixture, "How does light affect plants?", config=mock_config, top_k=3)
 
     reranker_instance.compress_documents.assert_called_once_with(
         query="How does light affect plants?", documents=chunks_fixture
@@ -105,9 +97,7 @@ def test_rerank_chunks_reranker_fails_raises_and_calls_compress(
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.nvidia_nim_reranker.logger")
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.nvidia_nim_reranker.NVIDIARerank")
-def test_rerank_chunks_debug_block_triggered(
-    mock_reranker_cls, mock_logger, chunks_fixture
-):
+def test_rerank_chunks_debug_block_triggered(mock_reranker_cls, mock_logger, chunks_fixture):
     """rerank_chunks should log debug info if debug logging is enabled."""
     mock_logger.isEnabledFor.return_value = True
 

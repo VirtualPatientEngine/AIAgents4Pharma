@@ -4,11 +4,13 @@ Unit tests for S2 tools functionality.
 
 import json
 from types import SimpleNamespace
+
+import hydra
 import pytest
 import requests
-from langgraph.types import Command
 from langchain_core.messages import ToolMessage
-import hydra
+from langgraph.types import Command
+
 from aiagents4pharma.talk2scholars.tools.s2.multi_paper_rec import (
     get_multi_paper_recommendations,
 )
@@ -162,9 +164,7 @@ def dummy_requests_post_exception(url, headers, params, data, timeout):
 def patch_hydra(monkeypatch):
     """Patch Hydra's initialize and compose functions to return dummy objects."""
     # Patch hydra.initialize to return our dummy context manager.
-    monkeypatch.setattr(
-        hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
-    )
+    monkeypatch.setattr(hydra, "initialize", lambda version_base, config_path: DummyHydraContext())
     # Patch hydra.compose to return our dummy config.
     monkeypatch.setattr(hydra, "compose", lambda config_name, overrides: dummy_config)
 

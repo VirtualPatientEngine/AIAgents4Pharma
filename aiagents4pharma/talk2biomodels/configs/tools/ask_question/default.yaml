@@ -13,7 +13,7 @@ steady_state_prompt: >
   1. If the user wants to know the time taken by the model to reach
   steady state, you should look at the `steady_state_transition_time`
   column of the data for the model species.
-  
+
   2. The highest value in the column `steady_state_transition_time`
   is the time taken by the model to reach steady state.
 
@@ -28,4 +28,3 @@ simulation_prompt: >
   each time point.
 
   3. Please use the units provided below to answer the questions.
-  

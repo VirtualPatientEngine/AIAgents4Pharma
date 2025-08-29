@@ -26,9 +26,8 @@ Notes
   first identifier is returned; otherwise a list is returned from all rows that have values.
 """
 
-
 import logging
-from typing import Annotated, Optional, Any
+from typing import Annotated, Any
 
 import pandas as pd
 from langchain_core.messages import ToolMessage
@@ -99,7 +98,7 @@ class QueryDataFrameInput(BaseModel):
             "extract when extract_ids=True."
         ),
     )
-    row_number: Optional[int] = Field(
+    row_number: int | None = Field(
         default=None,
         description=(
             "1-based index of the ID to extract from the list; if provided, returns only"
@@ -180,9 +179,7 @@ def query_dataframe(
     context_val = state.get("last_displayed_papers")
     if not context_val:
         logger.info("No papers displayed so far, raising NoPapersFoundError")
-        raise NoPapersFoundError(
-            "No papers found. A search needs to be performed first."
-        )
+        raise NoPapersFoundError("No papers found. A search needs to be performed first.")
 
     # Resolve the paper dictionary
     if isinstance(context_val, dict):
@@ -205,14 +202,10 @@ def query_dataframe(
         if not id_column:
             raise ValueError("Must specify 'id_column' when extract_ids=True.")
         if row_number is not None:
-            question_to_agent = (
-                f"df['{id_column}'].dropna().str[0].tolist()[{row_number-1}]"
-            )
+            question_to_agent = f"df['{id_column}'].dropna().str[0].tolist()[{row_number - 1}]"
         else:
             question_to_agent = f"df['{id_column}'].dropna().str[0].tolist()"
-        logger.info(
-            "extract_ids enabled: asking agent to run expression: %s", question_to_agent
-        )
+        logger.info("extract_ids enabled: asking agent to run expression: %s", question_to_agent)
 
     df_agent = create_pandas_dataframe_agent(
         llm_model,

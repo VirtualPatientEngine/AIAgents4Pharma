@@ -1,11 +1,11 @@
 """collection_manager for managing Milvus collections for PDF chunks."""
 
-from unittest.mock import MagicMock, patch
 from dataclasses import dataclass, field
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from aiagents4pharma.talk2scholars.tools.pdf.utils import collection_manager
-
 
 # -- Fixtures --
 
@@ -39,13 +39,20 @@ def index_params():
 
 
 def set_collection_cache(key, value):
-    """Set a mocked collection into the cache."""
-    getattr(collection_manager, "_collection_cache")[key] = value
+    """Set a mocked collection into the cache without replacing the whole attribute."""
+    cache = getattr(collection_manager, "_collection_cache", None)
+    if cache is None:
+        cache = {}
+        # Still need to attach it once if it doesn't exist
+        object.__setattr__(collection_manager, "_collection_cache", cache)
+    cache[key] = value
 
 
 def clear_collection_cache(key):
     """Remove a mocked collection from the cache."""
-    getattr(collection_manager, "_collection_cache").pop(key, None)
+    cache = getattr(collection_manager, "_collection_cache", None)
+    if cache is not None:
+        cache.pop(key, None)
 
 
 # -- Tests --
@@ -124,9 +131,7 @@ def test_debug_collection_state_failure(mock_utility, mock_collection_cls, reque
     mock_collection.indexes = []
     mock_collection.num_entities = 10
 
-    mock_collection.schema = property(
-        lambda _: (_ for _ in ()).throw(Exception("bad schema"))
-    )
+    mock_collection.schema = property(lambda _: (_ for _ in ()).throw(Exception("bad schema")))
 
     result = collection_manager.ensure_collection_exists(
         "bad_collection", config, index, has_gpu=True
@@ -145,6 +150,24 @@ def test_ensure_collection_exception(mock_utility, mock_collection_cls, request)
     mock_collection_cls.return_value = MagicMock()
 
     with pytest.raises(RuntimeError, match="milvus failure"):
-        collection_manager.ensure_collection_exists(
-            "fail_collection", config, index, has_gpu=False
-        )
+        collection_manager.ensure_collection_exists("fail_collection", config, index, has_gpu=False)
+
+
+def test_set_collection_cache_initializes_when_missing(monkeypatch):
+    """Ensure set_collection_cache initializes the cache when attribute is absent."""
+    # Remove the attribute if present (avoids W0212 and stays lint-clean)
+    monkeypatch.delattr(collection_manager, "_collection_cache", raising=False)
+
+    key = "init_case"
+    val = MagicMock()
+
+    # This should go through the None-branch and attach the cache via object.__setattr__
+    set_collection_cache(key, val)
+
+    # Verify cache got created and populated
+    cache = getattr(collection_manager, "_collection_cache", None)
+    assert isinstance(cache, dict)
+    assert cache.get(key) is val
+
+    # Cleanup
+    clear_collection_cache(key)

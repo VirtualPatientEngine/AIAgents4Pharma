@@ -59,9 +59,7 @@ class TestS2Tools:
         ):
             query_dataframe.run(tool_input)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent")
     def test_query_dataframe_with_papers(self, mock_create_agent, initial_state):
         """Tests querying papers when data is available."""
         state = initial_state.copy()
@@ -72,9 +70,7 @@ class TestS2Tools:
         mock_agent = MagicMock()
         mock_agent.invoke.return_value = {"output": "Mocked response"}
 
-        mock_create_agent.return_value = (
-            mock_agent  # Mock the function returning the agent
-        )
+        mock_create_agent.return_value = mock_agent  # Mock the function returning the agent
 
         # Ensure that the output of query_dataframe is correctly structured
         # Invoke the tool with a test tool_call_id
@@ -94,9 +90,7 @@ class TestS2Tools:
         assert isinstance(msg, ToolMessage)
         assert msg.content == "Mocked response"
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent")
     def test_query_dataframe_direct_mapping(self, mock_create_agent, initial_state):
         """Tests query_dataframe when last_displayed_papers is a direct dict mapping."""
         # Prepare state with direct mapping
@@ -143,9 +137,7 @@ class TestS2Tools:
             query_dataframe.run(tool_input)
         assert "Could not resolve a valid metadata dictionary" in str(exc.value)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.s2.query_dataframe.create_pandas_dataframe_agent")
     def test_query_dataframe_extract_ids(self, mock_create_agent):
         """Test extract_ids returns the raw list or single element correctly."""
         # Prepare state with fake paper_ids column
@@ -159,9 +151,7 @@ class TestS2Tools:
         state[state_key] = dic  # simulate indirect mapping
         # Mock agent to echo the Python expression
         mock_agent = MagicMock()
-        mock_agent.invoke.side_effect = lambda args, stream_mode=None: {
-            "output": args["input"]
-        }
+        mock_agent.invoke.side_effect = lambda args, stream_mode=None: {"output": args["input"]}
         mock_create_agent.return_value = mock_agent
         # Test full list
         tool_input = {

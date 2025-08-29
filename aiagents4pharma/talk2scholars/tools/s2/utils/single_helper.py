@@ -5,7 +5,8 @@ Utility for fetching recommendations based on a single paper.
 """
 
 import logging
-from typing import Any, Optional, Dict, List
+from typing import Any
+
 import hydra
 import requests
 
@@ -21,7 +22,7 @@ class SinglePaperRecData:
         self,
         paper_id: str,
         limit: int,
-        year: Optional[str],
+        year: str | None,
         tool_call_id: str,
     ):
         self.paper_id = paper_id
@@ -47,7 +48,7 @@ class SinglePaperRecData:
             logger.info("Loaded configuration for single paper recommendation tool")
             return cfg.tools.single_paper_recommendation
 
-    def _create_params(self) -> Dict[str, Any]:
+    def _create_params(self) -> dict[str, Any]:
         """Create parameters for the API request."""
         params = {
             "limit": min(self.limit, 500),  # Max 500 per API docs
@@ -86,9 +87,7 @@ class SinglePaperRecData:
                     ) from e
 
         if self.response is None:
-            raise RuntimeError(
-                "Failed to obtain a response from the Semantic Scholar API."
-            )
+            raise RuntimeError("Failed to obtain a response from the Semantic Scholar API.")
 
         logger.info(
             "API Response Status for recommendations of paper %s: %s",
@@ -110,9 +109,7 @@ class SinglePaperRecData:
 
         self.recommendations = self.data.get("recommendedPapers", [])
         if not self.recommendations:
-            logger.error(
-                "No recommendations returned from API for paper: %s", self.paper_id
-            )
+            logger.error("No recommendations returned from API for paper: %s", self.paper_id)
             raise RuntimeError(
                 "No recommendations were found for your query. Consider refining your search "
                 "by using more specific keywords or different terms."
@@ -121,12 +118,12 @@ class SinglePaperRecData:
     def _filter_papers(self) -> None:
         """Filter and format papers."""
         # Build filtered recommendations with unified paper_ids
-        filtered: Dict[str, Any] = {}
+        filtered: dict[str, Any] = {}
         for paper in self.recommendations:
             if not paper.get("title") or not paper.get("authors"):
                 continue
             ext = paper.get("externalIds", {}) or {}
-            ids: List[str] = []
+            ids: list[str] = []
             arxiv = ext.get("ArXiv")
             if arxiv:
                 ids.append(f"arxiv:{arxiv}")
@@ -184,7 +181,7 @@ class SinglePaperRecData:
             title = paper.get("Title", "N/A")
             year = paper.get("Year", "N/A")
             snippet = self._get_snippet(paper.get("Abstract", ""))
-            entry = f"{i+1}. {title} ({year})"
+            entry = f"{i + 1}. {title} ({year})"
             if snippet:
                 entry += f"\n   Abstract snippet: {snippet}"
             entries.append(entry)
@@ -195,13 +192,11 @@ class SinglePaperRecData:
             "Papers are attached as an artifact. "
             "Here is a summary of the recommendations:\n"
         )
-        self.content += (
-            f"Number of recommended papers found: {self.get_paper_count()}\n"
-        )
+        self.content += f"Number of recommended papers found: {self.get_paper_count()}\n"
         self.content += f"Query Paper ID: {self.paper_id}\n"
         self.content += "Here are a few of these papers:\n" + top_papers_info
 
-    def process_recommendations(self) -> Dict[str, Any]:
+    def process_recommendations(self) -> dict[str, Any]:
         """Process the recommendations request and return results."""
         self._fetch_recommendations()
         self._filter_papers()

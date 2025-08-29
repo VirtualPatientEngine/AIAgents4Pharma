@@ -139,8 +139,7 @@ class TestPubmedDownloaderBasics(unittest.TestCase):
         """<error> node -> return empty string."""
         resp = Mock()
         resp.text = (
-            '<?xml version="1.0"?><OA><error code="idDoesNotExist">'
-            "Invalid PMC ID</error></OA>"
+            '<?xml version="1.0"?><OA><error code="idDoesNotExist">Invalid PMC ID</error></OA>'
         )
         resp.raise_for_status = Mock()
         mock_get.return_value = resp
@@ -299,10 +298,7 @@ class TestPubmedDownloaderEuropePMC(unittest.TestCase):
         resp.status_code = 200
         mock_head.return_value = resp
         result = self.downloader.try_europe_pmc_public("PMC123456")
-        expected = (
-            "https://www.ebi.ac.uk/europepmc/webservices/rest"
-            "?accid=PMC123456&blobtype=pdf"
-        )
+        expected = "https://www.ebi.ac.uk/europepmc/webservices/rest?accid=PMC123456&blobtype=pdf"
         mock_head.assert_called_once_with(expected, timeout=30)
         self.assertEqual(result, expected)
 
@@ -356,18 +352,14 @@ class TestPubmedDownloaderPMCScrape(unittest.TestCase):
 
         expected_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC123456/"
         expected_headers = {"User-Agent": "Mozilla/5.0 (compatible; test-agent)"}
-        mock_get.assert_called_once_with(
-            expected_url, headers=expected_headers, timeout=30
-        )
-        self.assertEqual(
-            result, "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC123456/pdf/test.pdf"
-        )
+        mock_get.assert_called_once_with(expected_url, headers=expected_headers, timeout=30)
+        self.assertEqual(result, "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC123456/pdf/test.pdf")
 
     @patch("requests.get")
     def test_try_pmc_page_scraping_no_pdf(self, mock_get):
         """Test PMC page scraping with no PDF found."""
         resp = Mock()
-        resp.content = "<html><head></head></html>".encode()
+        resp.content = b"<html><head></head></html>"
         resp.raise_for_status = Mock()
         mock_get.return_value = resp
         self.assertEqual(self.downloader.try_pmc_page_scraping_public("PMC123456"), "")
@@ -486,17 +478,13 @@ class TestPubmedDownloaderConstructAndFallbacks(unittest.TestCase):
         """Test fallback chain through multiple sources."""
         with (
             patch.object(self.downloader, "try_oa_api_public", return_value="") as m_oa,
-            patch.object(
-                self.downloader, "try_europe_pmc_public", return_value=""
-            ) as m_eu,
+            patch.object(self.downloader, "try_europe_pmc_public", return_value="") as m_eu,
             patch.object(
                 self.downloader,
                 "try_pmc_page_scraping_public",
                 return_value="http://test.pdf",
             ) as m_scr,
-            patch.object(
-                self.downloader, "try_direct_pmc_url_public", return_value=""
-            ) as m_dir,
+            patch.object(self.downloader, "try_direct_pmc_url_public", return_value="") as m_dir,
         ):
             out = self.downloader.fetch_pdf_url_with_fallbacks_public("PMC123456")
         self.assertEqual(out, "http://test.pdf")
@@ -509,12 +497,8 @@ class TestPubmedDownloaderConstructAndFallbacks(unittest.TestCase):
         """Test fallback chain with direct PMC success."""
         with (
             patch.object(self.downloader, "try_oa_api_public", return_value="") as m_oa,
-            patch.object(
-                self.downloader, "try_europe_pmc_public", return_value=""
-            ) as m_eu,
-            patch.object(
-                self.downloader, "try_pmc_page_scraping_public", return_value=""
-            ) as m_scr,
+            patch.object(self.downloader, "try_europe_pmc_public", return_value="") as m_eu,
+            patch.object(self.downloader, "try_pmc_page_scraping_public", return_value="") as m_scr,
             patch.object(
                 self.downloader,
                 "try_direct_pmc_url_public",
@@ -532,15 +516,9 @@ class TestPubmedDownloaderConstructAndFallbacks(unittest.TestCase):
         """Test fallback chain when all sources fail."""
         with (
             patch.object(self.downloader, "try_oa_api_public", return_value="") as m_oa,
-            patch.object(
-                self.downloader, "try_europe_pmc_public", return_value=""
-            ) as m_eu,
-            patch.object(
-                self.downloader, "try_pmc_page_scraping_public", return_value=""
-            ) as m_scr,
-            patch.object(
-                self.downloader, "try_direct_pmc_url_public", return_value=""
-            ) as m_dir,
+            patch.object(self.downloader, "try_europe_pmc_public", return_value="") as m_eu,
+            patch.object(self.downloader, "try_pmc_page_scraping_public", return_value="") as m_scr,
+            patch.object(self.downloader, "try_direct_pmc_url_public", return_value="") as m_dir,
         ):
             out = self.downloader.fetch_pdf_url_with_fallbacks_public("PMC123456")
         self.assertEqual(out, "")
@@ -587,9 +565,7 @@ class TestPubmedDownloaderIntegration(unittest.TestCase):
         """Test full workflow from PMID to PDF URL."""
         metadata_response = Mock()
         metadata_response.json.return_value = {
-            "records": [
-                {"pmid": "12345678", "pmcid": "PMC123456", "doi": "10.1234/test"}
-            ]
+            "records": [{"pmid": "12345678", "pmcid": "PMC123456", "doi": "10.1234/test"}]
         }
         metadata_response.raise_for_status = Mock()
 
@@ -631,9 +607,7 @@ class TestPubmedDownloaderIntegration(unittest.TestCase):
         """Test workflow with fallback to alternative sources."""
         metadata_response = Mock()
         metadata_response.json.return_value = {
-            "records": [
-                {"pmid": "12345678", "pmcid": "PMC123456", "doi": "10.1234/test"}
-            ]
+            "records": [{"pmid": "12345678", "pmcid": "PMC123456", "doi": "10.1234/test"}]
         }
         metadata_response.raise_for_status = Mock()
 
@@ -780,9 +754,7 @@ class TestPubmedDownloaderHelpers(unittest.TestCase):
         """Test that placeholder abstracts return empty snippets."""
         self.assertEqual(self.downloader.get_snippet(""), "")
         self.assertEqual(self.downloader.get_snippet("N/A"), "")
-        self.assertEqual(
-            self.downloader.get_snippet("Abstract available in PubMed"), ""
-        )
+        self.assertEqual(self.downloader.get_snippet("Abstract available in PubMed"), "")
 
     def test_get_snippet_non_placeholder_delegates_to_base(self):
         """Test that non-placeholder abstracts delegate to base class."""
@@ -793,9 +765,7 @@ class TestPubmedDownloaderHelpers(unittest.TestCase):
 
     def test_get_paper_identifier_info_without_pmcid_line(self):
         """Test paper identifier info formatting without PMCID."""
-        info = self.downloader.get_paper_identifier_info_public(
-            {"PMID": "999", "PMCID": "N/A"}
-        )
+        info = self.downloader.get_paper_identifier_info_public({"PMID": "999", "PMCID": "N/A"})
         self.assertIn("(PMID: 999)", info)
         self.assertNotIn("PMCID:", info)
 
@@ -861,14 +831,10 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
             patch.object(self.downloader, "_try_pmc_page_scraping", return_value=""),
             patch.object(self.downloader, "_try_direct_pmc_url", return_value=""),
             patch(
-                "aiagents4pharma.talk2scholars.tools.paper_download.utils."
-                "pubmed_downloader.logger"
+                "aiagents4pharma.talk2scholars.tools.paper_download.utils.pubmed_downloader.logger"
             ) as mock_logger,
         ):
-
-            result = self.downloader.fetch_pdf_url_with_fallbacks_production(
-                "PMC123456"
-            )
+            result = self.downloader.fetch_pdf_url_with_fallbacks_production("PMC123456")
 
             self.assertEqual(result, "")
             # Verify the warning log is called
@@ -879,21 +845,15 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
     def test_fetch_pdf_url_with_fallbacks_oa_api_success_early_return(self):
         """Test _fetch_pdf_url_with_fallbacks when OA API succeeds on first try."""
         with (
-            patch.object(
-                self.downloader, "_try_oa_api", return_value="http://oa.pdf"
-            ) as mock_oa,
+            patch.object(self.downloader, "_try_oa_api", return_value="http://oa.pdf") as mock_oa,
             patch.object(self.downloader, "_try_europe_pmc") as mock_eu,
             patch.object(self.downloader, "_try_pmc_page_scraping") as mock_scr,
             patch.object(self.downloader, "_try_direct_pmc_url") as mock_dir,
             patch(
-                "aiagents4pharma.talk2scholars.tools.paper_download.utils."
-                "pubmed_downloader.logger"
+                "aiagents4pharma.talk2scholars.tools.paper_download.utils.pubmed_downloader.logger"
             ) as mock_logger,
         ):
-
-            result = self.downloader.fetch_pdf_url_with_fallbacks_production(
-                "PMC123456"
-            )
+            result = self.downloader.fetch_pdf_url_with_fallbacks_production("PMC123456")
 
             self.assertEqual(result, "http://oa.pdf")
             mock_oa.assert_called_once_with("PMC123456")
@@ -901,9 +861,7 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
             mock_scr.assert_not_called()
             mock_dir.assert_not_called()
             # Verify the initial info log is called
-            mock_logger.info.assert_called_with(
-                "Fetching PDF URL for PMCID: %s", "PMC123456"
-            )
+            mock_logger.info.assert_called_with("Fetching PDF URL for PMCID: %s", "PMC123456")
 
     def test_fetch_pdf_url_with_fallbacks_europe_pmc_success_after_oa_fail(self):
         """Test _fetch_pdf_url_with_fallbacks when Europe PMC succeeds after OA API fails."""
@@ -915,10 +873,7 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
             patch.object(self.downloader, "_try_pmc_page_scraping") as mock_scr,
             patch.object(self.downloader, "_try_direct_pmc_url") as mock_dir,
         ):
-
-            result = self.downloader.fetch_pdf_url_with_fallbacks_production(
-                "PMC123456"
-            )
+            result = self.downloader.fetch_pdf_url_with_fallbacks_production("PMC123456")
 
             self.assertEqual(result, "http://eu.pdf")
             mock_oa.assert_called_once_with("PMC123456")
@@ -932,18 +887,13 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
         """Test _fetch_pdf_url_with_fallbacks when PMC scraping succeeds."""
         with (
             patch.object(self.downloader, "_try_oa_api", return_value="") as mock_oa,
-            patch.object(
-                self.downloader, "_try_europe_pmc", return_value=""
-            ) as mock_eu,
+            patch.object(self.downloader, "_try_europe_pmc", return_value="") as mock_eu,
             patch.object(
                 self.downloader, "_try_pmc_page_scraping", return_value="http://scr.pdf"
             ) as mock_scr,
             patch.object(self.downloader, "_try_direct_pmc_url") as mock_dir,
         ):
-
-            result = self.downloader.fetch_pdf_url_with_fallbacks_production(
-                "PMC123456"
-            )
+            result = self.downloader.fetch_pdf_url_with_fallbacks_production("PMC123456")
 
             self.assertEqual(result, "http://scr.pdf")
             mock_oa.assert_called_once_with("PMC123456")
@@ -955,20 +905,13 @@ class TestPubmedDownloaderMissingLineCoverage(unittest.TestCase):
         """Test _fetch_pdf_url_with_fallbacks when direct PMC succeeds as last resort."""
         with (
             patch.object(self.downloader, "_try_oa_api", return_value="") as mock_oa,
-            patch.object(
-                self.downloader, "_try_europe_pmc", return_value=""
-            ) as mock_eu,
-            patch.object(
-                self.downloader, "_try_pmc_page_scraping", return_value=""
-            ) as mock_scr,
+            patch.object(self.downloader, "_try_europe_pmc", return_value="") as mock_eu,
+            patch.object(self.downloader, "_try_pmc_page_scraping", return_value="") as mock_scr,
             patch.object(
                 self.downloader, "_try_direct_pmc_url", return_value="http://dir.pdf"
             ) as mock_dir,
         ):
-
-            result = self.downloader.fetch_pdf_url_with_fallbacks_production(
-                "PMC123456"
-            )
+            result = self.downloader.fetch_pdf_url_with_fallbacks_production("PMC123456")
 
             self.assertEqual(result, "http://dir.pdf")
             mock_oa.assert_called_once_with("PMC123456")
@@ -1012,8 +955,7 @@ class TestPubmedDownloaderProductionConstructPdfUrl(unittest.TestCase):
         """Test production construct_pdf_url with missing pmcid key."""
         metadata = {"records": [{"doi": "10.1/x"}]}
         with patch(
-            "aiagents4pharma.talk2scholars.tools.paper_download.utils."
-            "pubmed_downloader.logger"
+            "aiagents4pharma.talk2scholars.tools.paper_download.utils.pubmed_downloader.logger"
         ) as mock_logger:
             result = self.downloader.construct_pdf_url(metadata, "12345678")
 
@@ -1027,8 +969,7 @@ class TestPubmedDownloaderProductionConstructPdfUrl(unittest.TestCase):
         """Test production construct_pdf_url with empty pmcid."""
         metadata = {"records": [{"pmcid": "", "doi": "10.1/x"}]}
         with patch(
-            "aiagents4pharma.talk2scholars.tools.paper_download.utils."
-            "pubmed_downloader.logger"
+            "aiagents4pharma.talk2scholars.tools.paper_download.utils.pubmed_downloader.logger"
         ) as mock_logger:
             result = self.downloader.construct_pdf_url(metadata, "12345678")
 
@@ -1042,8 +983,7 @@ class TestPubmedDownloaderProductionConstructPdfUrl(unittest.TestCase):
         """Test production construct_pdf_url with N/A pmcid."""
         metadata = {"records": [{"pmcid": "N/A", "doi": "10.1/x"}]}
         with patch(
-            "aiagents4pharma.talk2scholars.tools.paper_download.utils."
-            "pubmed_downloader.logger"
+            "aiagents4pharma.talk2scholars.tools.paper_download.utils.pubmed_downloader.logger"
         ) as mock_logger:
             result = self.downloader.construct_pdf_url(metadata, "12345678")
 

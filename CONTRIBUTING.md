@@ -31,7 +31,7 @@ Looking at the existing issues is a great way to find something to contribute on
 This project follows the [Apache Code of Conduct](https://www.apache.org/foundation/policies/conduct).
 
 ## Security issue notifications
-If you discover a potential security issue in this project we ask that you notify Team VPE directly: mccloskey at bio dot mx. Please do **not** create a public github issue.
+If you discover a potential security issue in this project we ask that you notify Team VPE directly. Please do **not** create a public github issue.
 
 ## Attributions
 Portions adopted from https://github.com/pytorch, https://github.com/rapidsai, and https://github.com/aws-samples/

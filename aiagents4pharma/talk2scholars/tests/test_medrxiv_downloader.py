@@ -89,9 +89,7 @@ class TestMedrxivDownloader(unittest.TestCase):
         result = self.downloader.fetch_metadata("10.1101/2023.01.01.123456")
 
         # Verify API call - should include /medrxiv/ and /na/json
-        expected_url = (
-            "https://api.medrxiv.org/details/medrxiv/10.1101/2023.01.01.123456/na/json"
-        )
+        expected_url = "https://api.medrxiv.org/details/medrxiv/10.1101/2023.01.01.123456/na/json"
         mock_get.assert_called_once_with(expected_url, timeout=30)
         mock_response.raise_for_status.assert_called_once()
 
@@ -133,9 +131,7 @@ class TestMedrxivDownloader(unittest.TestCase):
         )
         # Empty collection
         self.assertEqual(
-            self.downloader.construct_pdf_url(
-                {"collection": []}, "10.1101/2023.01.01.123456"
-            ),
+            self.downloader.construct_pdf_url({"collection": []}, "10.1101/2023.01.01.123456"),
             "",
         )
         # Custom version
@@ -179,9 +175,7 @@ class TestMedrxivDownloader(unittest.TestCase):
         """Test metadata extraction without PDF download."""
         metadata = self.sample_json_response
 
-        with patch.object(
-            self.downloader, "get_default_filename", return_value="default.pdf"
-        ):
+        with patch.object(self.downloader, "get_default_filename", return_value="default.pdf"):
             result = self.downloader.extract_paper_metadata(
                 metadata, "10.1101/2023.01.01.123456", None
             )
@@ -196,9 +190,7 @@ class TestMedrxivDownloader(unittest.TestCase):
         metadata = {}
 
         with self.assertRaises(RuntimeError) as context:
-            self.downloader.extract_paper_metadata(
-                metadata, "10.1101/2023.01.01.123456", None
-            )
+            self.downloader.extract_paper_metadata(metadata, "10.1101/2023.01.01.123456", None)
 
         self.assertIn("No collection data found", str(context.exception))
 
@@ -224,9 +216,7 @@ class TestMedrxivDownloader(unittest.TestCase):
 
         # Missing fields
         paper_missing = {"title": "Test Paper"}  # Missing others
-        got_missing = self.downloader.extract_basic_metadata_public(
-            paper_missing, "10.1101/test"
-        )
+        got_missing = self.downloader.extract_basic_metadata_public(paper_missing, "10.1101/test")
         self.assertEqual(got_missing["Title"], "Test Paper")
         self.assertEqual(got_missing["Authors"], [])
         self.assertEqual(got_missing["Abstract"], "N/A")
@@ -261,9 +251,7 @@ class TestMedrxivDownloader(unittest.TestCase):
         )
 
         # Without result
-        with patch.object(
-            self.downloader, "get_default_filename", return_value="default.pdf"
-        ):
+        with patch.object(self.downloader, "get_default_filename", return_value="default.pdf"):
             expected_without = {
                 "URL": "",
                 "pdf_url": "",
@@ -302,9 +290,7 @@ class TestMedrxivDownloader(unittest.TestCase):
     def test_add_service_identifier(self):
         """Test _add_service_identifier method."""
         entry = {}
-        self.downloader.add_service_identifier_public(
-            entry, "10.1101/2023.01.01.123456"
-        )
+        self.downloader.add_service_identifier_public(entry, "10.1101/2023.01.01.123456")
         self.assertEqual(entry["DOI"], "10.1101/2023.01.01.123456")
         self.assertEqual(entry["server"], "medrxiv")
 
@@ -368,9 +354,7 @@ class TestMedrxivDownloaderIntegration(unittest.TestCase):
         pdf_result = self.downloader.download_pdf_to_temp(pdf_url, identifier)
 
         # Step 4: Extract metadata
-        paper_data = self.downloader.extract_paper_metadata(
-            metadata, identifier, pdf_result
-        )
+        paper_data = self.downloader.extract_paper_metadata(metadata, identifier, pdf_result)
 
         # Verify the complete workflow
         self.assertEqual(paper_data["Title"], "Integration Test Paper")
@@ -384,9 +368,7 @@ class TestMedrxivDownloaderIntegration(unittest.TestCase):
             "https://api.medrxiv.org/details/medrxiv/10.1101/2023.01.01.123456/na/json",
             timeout=30,
         )
-        expected_pdf_url = (
-            "https://www.medrxiv.org/content/10.1101/2023.01.01.123456v2.full.pdf"
-        )
+        expected_pdf_url = "https://www.medrxiv.org/content/10.1101/2023.01.01.123456v2.full.pdf"
         mock_download.assert_called_once_with(expected_pdf_url, identifier)
 
     @patch("requests.get")
@@ -413,25 +395,15 @@ class TestMedrxivDownloaderIntegration(unittest.TestCase):
         with self.assertRaises(RuntimeError) as context:
             self.downloader.fetch_metadata(identifier)
 
-        self.assertIn(
-            "No collection data found in medRxiv API response", str(context.exception)
-        )
+        self.assertIn("No collection data found in medRxiv API response", str(context.exception))
 
     @patch("requests.get")
     def test_multiple_identifiers_workflow(self, mock_get):
         """Test processing multiple identifiers."""
         # Mock different responses for different DOIs
         responses = [
-            {
-                "collection": [
-                    {"title": "Paper 1", "version": "1", "authors": "Author 1"}
-                ]
-            },
-            {
-                "collection": [
-                    {"title": "Paper 2", "version": "2", "authors": "Author 2"}
-                ]
-            },
+            {"collection": [{"title": "Paper 1", "version": "1", "authors": "Author 1"}]},
+            {"collection": [{"title": "Paper 2", "version": "2", "authors": "Author 2"}]},
         ]
 
         mock_responses = []
@@ -448,12 +420,8 @@ class TestMedrxivDownloaderIntegration(unittest.TestCase):
 
         for identifier in identifiers:
             metadata = self.downloader.fetch_metadata(identifier)
-            _ = self.downloader.construct_pdf_url(
-                metadata, identifier
-            )  # ensure path covered
-            paper_data = self.downloader.extract_paper_metadata(
-                metadata, identifier, None
-            )
+            _ = self.downloader.construct_pdf_url(metadata, identifier)  # ensure path covered
+            paper_data = self.downloader.extract_paper_metadata(metadata, identifier, None)
             results[identifier] = paper_data
 
         # Verify both papers were processed
@@ -529,6 +497,4 @@ class TestMedrxivSpecialCases(unittest.TestCase):
         # Should handle Unicode properly
         self.assertEqual(result["Title"], "Título com acentos é símbolos especiais")
         self.assertEqual(result["Authors"], ["José María", "François Müller"])
-        self.assertEqual(
-            result["Abstract"], "Resumo com çaracteres especiais ñ símbolos"
-        )
+        self.assertEqual(result["Abstract"], "Resumo com çaracteres especiais ñ símbolos")

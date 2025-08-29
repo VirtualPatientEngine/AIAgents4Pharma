@@ -27,14 +27,10 @@ dummy_cfg = SimpleNamespace(tools=SimpleNamespace(zotero_read=dummy_zotero_read_
 class TestReadHelperDownloadsFalse(unittest.TestCase):
     """Tests for read_helper download_pdfs=False branches."""
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.zotero_path.get_item_collections")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.zotero.Zotero")
     @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.compose")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.zotero.utils.read_helper.hydra.initialize")
     def test_download_pdfs_false_branches(
         self,
         mock_hydra_init,

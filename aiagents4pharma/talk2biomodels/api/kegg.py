@@ -1,9 +1,11 @@
 """
 This module contains the API for fetching Kegg database
 """
+
 import re
-from typing import List, Dict
+
 import requests
+
 
 def fetch_from_api(base_url: str, query: str) -> str:
     """Fetch data from the given API endpoint."""
@@ -15,7 +17,8 @@ def fetch_from_api(base_url: str, query: str) -> str:
         print(f"Error fetching data for query {query}: {e}")
         return ""
 
-def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
+
+def fetch_kegg_names(ids: list[str], batch_size: int = 10) -> dict[str, str]:
     """
     Fetch the names of multiple KEGG entries using the KEGG REST API in batches.
 
@@ -34,7 +37,7 @@ def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
 
     # Process IDs in batches
     for i in range(0, len(ids), batch_size):
-        batch = ids[i:i + batch_size]
+        batch = ids[i : i + batch_size]
         query = "+".join(batch)
         entry_data = fetch_from_api(base_url, query)
 
@@ -45,17 +48,15 @@ def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
             if not entry.strip():
                 continue
             lines = entry.strip().split("\n")
-            entry_line = next((line for line in lines
-                                if line.startswith("ENTRY")), None)
-            name_line = next((line for line in lines
-                                if line.startswith("NAME")), None)
+            entry_line = next((line for line in lines if line.startswith("ENTRY")), None)
+            name_line = next((line for line in lines if line.startswith("NAME")), None)
 
             # if not entry_line and not name_line:
             #     continue
             entry_id = entry_line.split()[1]
             # Split multiple names in the NAME field and clean them
             names = [
-                re.sub(r'[^a-zA-Z0-9\s]', '', name).strip()
+                re.sub(r"[^a-zA-Z0-9\s]", "", name).strip()
                 for name in name_line.replace("NAME", "").strip().split(";")
             ]
             # Join cleaned names into a single string
@@ -63,8 +64,10 @@ def fetch_kegg_names(ids: List[str], batch_size: int = 10) -> Dict[str, str]:
 
     return entry_name_map
 
-def fetch_kegg_annotations(data: List[Dict[str, str]],
-                           batch_size: int = 10) -> Dict[str, Dict[str, str]]:
+
+def fetch_kegg_annotations(
+    data: list[dict[str, str]], batch_size: int = 10
+) -> dict[str, dict[str, str]]:
     """Fetch KEGG entry descriptions grouped by database type."""
     grouped_data = {}
     for entry in data:
@@ -76,6 +79,7 @@ def fetch_kegg_annotations(data: List[Dict[str, str]],
         results[db_type] = fetch_kegg_names(ids, batch_size=batch_size)
 
     return results
+
 
 # def get_protein_name_or_label(data: List[Dict[str, str]],
 #                               batch_size: int = 10) -> Dict[str, Dict[str, str]]:

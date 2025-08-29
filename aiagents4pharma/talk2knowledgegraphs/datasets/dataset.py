@@ -6,10 +6,12 @@ Abstract class for dataset.
 
 from abc import ABC, abstractmethod
 
+
 class Dataset(ABC):
     """
     Abstract class for dataset.
     """
+
     @abstractmethod
     def setup(self):
         """

@@ -122,9 +122,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         result = self.downloader.fetch_metadata("10.1101/2023.01.01.123456")
 
         # Verify API call
-        expected_url = (
-            "https://api.biorxiv.org/details/biorxiv/10.1101/2023.01.01.123456/na/json"
-        )
+        expected_url = "https://api.biorxiv.org/details/biorxiv/10.1101/2023.01.01.123456/na/json"
         mock_scraper.get.assert_called_once_with(expected_url, timeout=30)
         mock_response.raise_for_status.assert_called_once()
 
@@ -171,9 +169,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         # Default version
         meta_default = {"collection": [{"title": "Test Paper"}]}
         self.assertEqual(
-            self.downloader.construct_pdf_url(
-                meta_default, "10.1101/2023.01.01.123456"
-            ),
+            self.downloader.construct_pdf_url(meta_default, "10.1101/2023.01.01.123456"),
             "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf",
         )
 
@@ -195,9 +191,7 @@ class TestBiorxivDownloader(unittest.TestCase):
             b"PDF content chunk 1",
             b"PDF content chunk 2",
         ]
-        mock_pdf_response.headers = {
-            "Content-Disposition": 'attachment; filename="paper.pdf"'
-        }
+        mock_pdf_response.headers = {"Content-Disposition": 'attachment; filename="paper.pdf"'}
 
         mock_scraper.get.side_effect = [mock_landing_response, mock_pdf_response]
 
@@ -209,9 +203,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         mock_tempfile.return_value = mock_temp_file
 
         pdf_url = "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf"
-        result = self.downloader.download_pdf_to_temp(
-            pdf_url, "10.1101/2023.01.01.123456"
-        )
+        result = self.downloader.download_pdf_to_temp(pdf_url, "10.1101/2023.01.01.123456")
 
         # Verify result
         self.assertEqual(result, ("/tmp/test.pdf", "paper.pdf"))
@@ -263,9 +255,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         mock_scraper.get.return_value = ok
 
         # Case 1: with .full.pdf -> should visit landing
-        pdf_url_full = (
-            "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf"
-        )
+        pdf_url_full = "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf"
         self.downloader.visit_landing_page_public(
             mock_scraper, pdf_url_full, "10.1101/2023.01.01.123456"
         )
@@ -324,9 +314,7 @@ class TestBiorxivDownloader(unittest.TestCase):
             ),  # trigger exception path
         ]
         for headers, expected, raise_regex in cases:
-            with self.subTest(
-                headers=headers, expected=expected, raise_regex=raise_regex
-            ):
+            with self.subTest(headers=headers, expected=expected, raise_regex=raise_regex):
                 resp = Mock()
                 resp.headers = headers
                 if raise_regex:
@@ -339,18 +327,14 @@ class TestBiorxivDownloader(unittest.TestCase):
                             "get_default_filename",
                             return_value="default.pdf",
                         ):
-                            got = self.downloader.extract_filename_public(
-                                resp, "10.1101/test"
-                            )
+                            got = self.downloader.extract_filename_public(resp, "10.1101/test")
                 else:
                     with patch.object(
                         self.downloader,
                         "get_default_filename",
                         return_value="default.pdf",
                     ):
-                        got = self.downloader.extract_filename_public(
-                            resp, "10.1101/test"
-                        )
+                        got = self.downloader.extract_filename_public(resp, "10.1101/test")
                 self.assertEqual(got, expected)
 
     def test_extract_paper_metadata_success(self):
@@ -396,18 +380,14 @@ class TestBiorxivDownloader(unittest.TestCase):
         self.assertEqual(result["URL"], "")
         self.assertEqual(result["pdf_url"], "")
         self.assertEqual(result["temp_file_path"], "")
-        self.assertEqual(
-            result["filename"], "10_1101_2023_01_01_123456.pdf"
-        )  # Default filename
+        self.assertEqual(result["filename"], "10_1101_2023_01_01_123456.pdf")  # Default filename
 
     def test_extract_paper_metadata_no_collection(self):
         """Test metadata extraction with missing collection."""
         metadata = {}
 
         with self.assertRaises(RuntimeError) as context:
-            self.downloader.extract_paper_metadata(
-                metadata, "10.1101/2023.01.01.123456", None
-            )
+            self.downloader.extract_paper_metadata(metadata, "10.1101/2023.01.01.123456", None)
 
         self.assertIn("No collection data found", str(context.exception))
 
@@ -415,9 +395,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         """Test basic metadata extraction helper method."""
         paper = self.sample_json_response["collection"][0]
 
-        result = self.downloader.extract_basic_metadata_public(
-            paper, "10.1101/2023.01.01.123456"
-        )
+        result = self.downloader.extract_basic_metadata_public(paper, "10.1101/2023.01.01.123456")
 
         expected = {
             "Title": "Test BioRxiv Paper",
@@ -468,9 +446,7 @@ class TestBiorxivDownloader(unittest.TestCase):
         """Test _add_service_identifier method."""
         entry = {}
 
-        self.downloader.add_service_identifier_public(
-            entry, "10.1101/2023.01.01.123456"
-        )
+        self.downloader.add_service_identifier_public(entry, "10.1101/2023.01.01.123456")
 
         self.assertEqual(entry["DOI"], "10.1101/2023.01.01.123456")
         self.assertEqual(entry["server"], "biorxiv")
@@ -561,9 +537,7 @@ class TestBiorxivDownloaderIntegration(unittest.TestCase):
         pdf_result = self.downloader.download_pdf_to_temp(pdf_url, identifier)
 
         # Step 4: Extract metadata
-        paper_data = self.downloader.extract_paper_metadata(
-            metadata, identifier, pdf_result
-        )
+        paper_data = self.downloader.extract_paper_metadata(metadata, identifier, pdf_result)
 
         # Verify the complete workflow
         self.assertEqual(paper_data["Title"], "Integration Test Paper")
@@ -571,9 +545,7 @@ class TestBiorxivDownloaderIntegration(unittest.TestCase):
         self.assertEqual(paper_data["access_type"], "open_access_downloaded")
         self.assertEqual(paper_data["temp_file_path"], "/tmp/integration.pdf")
 
-        expected_pdf_url = (
-            "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf"
-        )
+        expected_pdf_url = "https://www.biorxiv.org/content/10.1101/2023.01.01.123456v1.full.pdf"
         self.assertEqual(pdf_url, expected_pdf_url)
 
         # Verify 3 calls: metadata, landing page, PDF

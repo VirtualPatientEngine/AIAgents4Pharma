@@ -167,7 +167,7 @@ def sum(a: int, b: int) -> int:
 
 *Pro-tip: Use co-pilot to automatically write a docstring for the methods/classes (though not always accurate)*
 
-11. Examples: Jupyter notebook with the following 
+11. Examples: Jupyter notebook with the following
     1. Clear API calls to the sources of all data to run the analysis.
     2. Record of all analyses and figure generation routines.
     3. Documentation of the analysis so that another team member could reproduce the results in your absence.
@@ -236,7 +236,7 @@ We use [semantic-release](https://github.com/semantic-release/semantic-release) 
 
 **Job: Bump up the release (MAJOR.MINOR.PATCH) based on the commit message**
 
-###  “feat:” 
+###  “feat:”
 will bump up the minor version (MINOR)
 
 ```
@@ -250,7 +250,7 @@ will bump up the patch version (PATCH)
 git commit –m “fix: fix bug”
 ```
 
-### “feat:” or “fix:” followed by “BREAKING CHANGE:” 
+### “feat:” or “fix:” followed by “BREAKING CHANGE:”
 will bump up the major version (MAJOR)
 
 ```

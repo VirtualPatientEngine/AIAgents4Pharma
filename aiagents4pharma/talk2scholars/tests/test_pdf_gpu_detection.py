@@ -4,7 +4,6 @@ import subprocess
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-
 from aiagents4pharma.talk2scholars.tools.pdf.utils.gpu_detection import (
     detect_nvidia_gpu,
     get_optimal_index_config,
@@ -23,9 +22,7 @@ def test_detect_nvidia_gpu_force_cpu_from_config():
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.gpu_detection.subprocess.run")
 def test_detect_nvidia_gpu_success(mock_run):
     """detect_nvidia_gpu should return True if NVIDIA GPUs are detected."""
-    mock_run.return_value = MagicMock(
-        returncode=0, stdout="NVIDIA A100\nNVIDIA RTX 3090"
-    )
+    mock_run.return_value = MagicMock(returncode=0, stdout="NVIDIA A100\nNVIDIA RTX 3090")
 
     assert detect_nvidia_gpu() is True
     mock_run.assert_called_once()
@@ -44,9 +41,7 @@ def test_detect_nvidia_gpu_no_output(mock_run):
 
 def test_get_optimal_index_config_gpu():
     """get_optimal_index_config should return GPU_CAGRA for GPU setup."""
-    index_params, search_params = get_optimal_index_config(
-        has_gpu=True, embedding_dim=768
-    )
+    index_params, search_params = get_optimal_index_config(has_gpu=True, embedding_dim=768)
 
     assert index_params["index_type"] == "GPU_CAGRA"
     assert "cache_dataset_on_device" in index_params["params"]
@@ -55,9 +50,7 @@ def test_get_optimal_index_config_gpu():
 
 def test_get_optimal_index_config_cpu():
     """get_optimal_index_config should return IVF_FLAT for CPU setup."""
-    index_params, search_params = get_optimal_index_config(
-        has_gpu=False, embedding_dim=768
-    )
+    index_params, search_params = get_optimal_index_config(has_gpu=False, embedding_dim=768)
 
     assert index_params["index_type"] == "IVF_FLAT"
     assert index_params["params"]["nlist"] == 96  # 768 / 8 = 96
@@ -121,9 +114,7 @@ def test_detect_nvidia_gpu_timeout_raises_false(mock_run, mock_logger):
 
     result = detect_nvidia_gpu()
     assert result is False
-    mock_logger.info.assert_called_with(
-        "NVIDIA GPU detection failed: %s", mock_run.side_effect
-    )
+    mock_logger.info.assert_called_with("NVIDIA GPU detection failed: %s", mock_run.side_effect)
 
 
 @patch("aiagents4pharma.talk2scholars.tools.pdf.utils.gpu_detection.logger")
@@ -135,6 +126,4 @@ def test_detect_nvidia_gpu_file_not_found_raises_false(mock_run, mock_logger):
 
     result = detect_nvidia_gpu()
     assert result is False
-    mock_logger.info.assert_called_with(
-        "NVIDIA GPU detection failed: %s", mock_run.side_effect
-    )
+    mock_logger.info.assert_called_with("NVIDIA GPU detection failed: %s", mock_run.side_effect)

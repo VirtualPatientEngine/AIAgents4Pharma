@@ -3,7 +3,9 @@ Test cases for utils/embeddings/embeddings.py
 """
 
 import pytest
+
 from ..utils.embeddings.embeddings import Embeddings
+
 
 class TestEmbeddings(Embeddings):
     """Test implementation of the Embeddings interface for testing purposes."""
@@ -13,6 +15,7 @@ class TestEmbeddings(Embeddings):
 
     def embed_query(self, text: str) -> list[float]:
         return [0.1, 0.2, 0.3]
+
 
 def test_embed_documents():
     """Test embedding documents using the Embeddings interface."""
@@ -28,6 +31,7 @@ def test_embed_query():
     text = "query"
     result = embeddings.embed_query(text)
     assert result == [0.1, 0.2, 0.3]
+
 
 @pytest.mark.asyncio
 async def test_aembed_documents():

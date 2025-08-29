@@ -27,7 +27,7 @@ Anti-IL6R Antibody</div>
                 </ul>Possible avenues for Interleukin-6 (IL-6) inhibition in
 treating Crohn&apos;s disease are compared here. Each model refers to
 separate ligands. The system simulates differential activity of the
-ligands on the signalling of IL-6. 
+ligands on the signalling of IL-6.
 <span class="st">This affects Signal Transducer and Activator of
 Transcription 3</span> (STAT3) activity on the production of
 biomarker C-Reactive Protein (CRP) expression.
@@ -71,11 +71,11 @@ biomarker C-Reactive Protein (CRP) expression.
                   </div>
                 </div>
                 <div class="dc:publisher">
-                  <p>This model is hosted on 
+                  <p>This model is hosted on
   <a href="http://www.ebi.ac.uk/biomodels/">BioModels Database</a>
-  and identified by: 
+  and identified by:
   <a href="http://identifiers.org/biomodels.db/BIOMD0000000537">BIOMD0000000537</a>.</p>
-                  <p>To cite BioModels Database, please use: 
+                  <p>To cite BioModels Database, please use:
   <a href="http://identifiers.org/pubmed/20587024" title="Latest BioModels Database publication">BioModels Database:
   An enhanced, curated and annotated resource for published
   quantitative kinetic models</a>.</p>
@@ -83,7 +83,7 @@ biomarker C-Reactive Protein (CRP) expression.
                 <div class="dc:license">
                   <p>To the extent possible under law, all copyright and related or
   neighbouring rights to this encoded model have been dedicated to
-  the public domain worldwide. Please refer to 
+  the public domain worldwide. Please refer to
   <a href="http://creativecommons.org/publicdomain/zero/1.0/" title="Access to: CC0 1.0 Universal (CC0 1.0), Public Domain Dedication">CC0
   Public Domain Dedication</a> for more information.</p>
                 </div>
@@ -4301,7 +4301,7 @@ The actual value used may be different, as it was optimized to fit the data
         <notes>
           <body xmlns="http://www.w3.org/1999/xhtml">1/hr
 
-Slow receptor shedding driven by CRP. The parameter has been calculated, along with the basal sR synthesis rate, to get 
+Slow receptor shedding driven by CRP. The parameter has been calculated, along with the basal sR synthesis rate, to get
 sR = 1.6, when CRP = 40 (HV); and
 sR = 2.8, when CRP = 2000 (CD).</body>
         </notes>

@@ -1,0 +1,80 @@
+# SonarCloud code quality analysis workflow
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Setup Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          export PATH="/usr/local/bin:$PATH"
+          echo "/usr/local/bin" >> $GITHUB_PATH
+          ollama serve &
+          sleep 10
+
+      - name: Pull Ollama models
+        run: |
+          ollama pull llama3.2:1b
+          ollama pull nomic-embed-text
+
+      - name: Verify Ollama setup
+        run: ollama list
+
+      - name: Run tests with coverage
+        run: |
+          uv run coverage run --source=aiagents4pharma -m pytest
+          uv run coverage xml
+
+      - name: Run pylint with JSON output
+        run: |
+          uv run pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma --output-format=json --reports=no > pylint-report.json || true
+        continue-on-error: true
+
+      - name: Run bandit security scan with JSON output
+        run: |
+          uv run bandit -c pyproject.toml -r aiagents4pharma -f json -o bandit-report.json || true
+        continue-on-error: true
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on Sonarcloud.io
+
+      - name: Upload analysis artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-analysis
+          path: |
+            coverage.xml
+            pylint-report.json
+            bandit-report.json
+          retention-days: 30

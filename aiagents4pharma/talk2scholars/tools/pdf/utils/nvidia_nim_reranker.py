@@ -5,7 +5,7 @@ Rerank chunks instead of papers following traditional RAG pipeline
 
 import logging
 import os
-from typing import Any, List
+from typing import Any
 
 from langchain_core.documents import Document
 from langchain_nvidia_ai_endpoints import NVIDIARerank
@@ -18,8 +18,8 @@ logger.setLevel(getattr(logging, log_level))
 
 
 def rerank_chunks(
-    chunks: List[Document], query: str, config: Any, top_k: int = 25
-) -> List[Document]:
+    chunks: list[Document], query: str, config: Any, top_k: int = 25
+) -> list[Document]:
     """
     Rerank chunks by relevance to the query using NVIDIA's reranker.
 
@@ -68,7 +68,7 @@ def rerank_chunks(
     # Log chunk metadata for debugging
     logger.debug(
         "Reranking chunks from papers: %s",
-        list(set(chunk.metadata.get("paper_id", "unknown") for chunk in chunks))[:5],
+        list({chunk.metadata.get("paper_id", "unknown") for chunk in chunks})[:5],
     )
 
     # Rerank the chunks

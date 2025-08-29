@@ -34,7 +34,7 @@ Please describe the tests you conducted to verify your changes. These may involv
 # For reviewers
 
 ## Checklist pre-approval
-- [ ] Is there enough documentation?  
+- [ ] Is there enough documentation?
 - [ ] If a new feature has been added, or a bug fixed, has a test been added to confirm good behavior?
 - [ ] Does the test(s) successfully test edge/corner cases?
 - [ ] Does the PR pass the tests? (if the repository has continuous integration)

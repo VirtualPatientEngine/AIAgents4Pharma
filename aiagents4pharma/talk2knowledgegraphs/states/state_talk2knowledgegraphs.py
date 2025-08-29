@@ -3,6 +3,7 @@ This is the state file for the Talk2KnowledgeGraphs agent.
 """
 
 from typing import Annotated
+
 # import operator
 from langchain_core.embeddings.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel

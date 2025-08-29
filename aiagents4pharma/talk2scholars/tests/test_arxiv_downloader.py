@@ -81,7 +81,10 @@ class TestArxivDownloader(unittest.TestCase):
                     <name>Jane Smith</name>
                 </author>
                 <link href="http://arxiv.org/abs/1234.5678v1" rel="alternate" type="text/html"/>
-                <link href="http://arxiv.org/pdf/1234.5678v1.pdf" rel="related" type="application/pdf" title="pdf"/>
+                <link href="http://arxiv.org/pdf/1234.5678v1.pdf"
+                    rel="related"
+                    type="application/pdf"
+                    title="pdf"/>
             </entry>
         </feed>"""
 
@@ -104,8 +107,7 @@ class TestArxivDownloader(unittest.TestCase):
 
         # Verify API call - it uses query string format, not params
         expected_url = (
-            "http://export.arxiv.org/api/query?search_query="
-            "id:1234.5678&start=0&max_results=1"
+            "http://export.arxiv.org/api/query?search_query=id:1234.5678&start=0&max_results=1"
         )
         mock_get.assert_called_once_with(expected_url, timeout=30)
         mock_response.raise_for_status.assert_called_once()
@@ -201,9 +203,7 @@ class TestArxivDownloader(unittest.TestCase):
         metadata = ET.fromstring(self.sample_xml)
         pdf_result = ("/tmp/test.pdf", "test_paper.pdf")
 
-        result = self.downloader.extract_paper_metadata(
-            metadata, "1234.5678", pdf_result
-        )
+        result = self.downloader.extract_paper_metadata(metadata, "1234.5678", pdf_result)
 
         # Verify extracted metadata
         expected_metadata = {
@@ -226,9 +226,7 @@ class TestArxivDownloader(unittest.TestCase):
         """Test metadata extraction without PDF download."""
         metadata = ET.fromstring(self.sample_xml)
 
-        with patch.object(
-            self.downloader, "get_default_filename", return_value="1234.5678.pdf"
-        ):
+        with patch.object(self.downloader, "get_default_filename", return_value="1234.5678.pdf"):
             result = self.downloader.extract_paper_metadata(metadata, "1234.5678", None)
 
         # Verify metadata without PDF
@@ -275,9 +273,7 @@ class TestArxivDownloader(unittest.TestCase):
         # Case 1: Title present
         metadata1 = ET.fromstring(self.sample_xml)
         entry1 = metadata1.find("atom:entry", ns)
-        self.assertEqual(
-            self.downloader.extract_title_public(entry1, ns), "Test Paper Title"
-        )
+        self.assertEqual(self.downloader.extract_title_public(entry1, ns), "Test Paper Title")
 
         # Case 2: Title missing
         xml_no_title = """<?xml version="1.0" encoding="UTF-8"?>
@@ -346,9 +342,7 @@ class TestArxivDownloader(unittest.TestCase):
         )
 
         # Without result
-        with patch.object(
-            self.downloader, "get_default_filename", return_value="default.pdf"
-        ):
+        with patch.object(self.downloader, "get_default_filename", return_value="default.pdf"):
             expected_without = {
                 "URL": "",
                 "pdf_url": "",
@@ -365,9 +359,7 @@ class TestArxivDownloader(unittest.TestCase):
         """Service name, identifier name, and default filename helpers."""
         self.assertEqual(self.downloader.get_service_name(), "arXiv")
         self.assertEqual(self.downloader.get_identifier_name(), "arXiv ID")
-        self.assertEqual(
-            self.downloader.get_default_filename("1234.5678"), "1234.5678.pdf"
-        )
+        self.assertEqual(self.downloader.get_default_filename("1234.5678"), "1234.5678.pdf")
 
     def test_get_paper_identifier_info(self):
         """Test _get_paper_identifier_info method."""
@@ -411,7 +403,10 @@ class TestArxivDownloaderIntegration(unittest.TestCase):
                 <author>
                     <name>Test Author</name>
                 </author>
-                <link href="http://arxiv.org/pdf/1234.5678v1.pdf" rel="related" type="application/pdf" title="pdf"/>
+                <link href="http://arxiv.org/pdf/1234.5678v1.pdf"
+                    rel="related"
+                    type="application/pdf"
+                    title="pdf"/>
             </entry>
         </feed>"""
 
@@ -446,9 +441,7 @@ class TestArxivDownloaderIntegration(unittest.TestCase):
             pdf_result = self.downloader.download_pdf_to_temp(pdf_url, identifier)
 
             # Step 4: Extract metadata
-            paper_data = self.downloader.extract_paper_metadata(
-                metadata, identifier, pdf_result
-            )
+            paper_data = self.downloader.extract_paper_metadata(metadata, identifier, pdf_result)
 
             results[identifier] = paper_data
 
@@ -464,9 +457,7 @@ class TestArxivDownloaderIntegration(unittest.TestCase):
 
         # Verify method calls
         mock_get.assert_called_once()
-        mock_download.assert_called_once_with(
-            "http://arxiv.org/pdf/1234.5678v1.pdf", "1234.5678"
-        )
+        mock_download.assert_called_once_with("http://arxiv.org/pdf/1234.5678v1.pdf", "1234.5678")
 
     @patch("requests.get")
     def test_error_handling_workflow(self, mock_get):

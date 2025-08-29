@@ -6,7 +6,7 @@ BioRxiv paper downloader implementation.
 import logging
 import re
 import tempfile
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import cloudscraper
 import requests
@@ -43,9 +43,7 @@ class BiorxivDownloader(BasePaperDownloader):
         # CloudScraper specific settings
         self.cf_clearance_timeout = getattr(config, "cf_clearance_timeout", 30)
         self.session_reuse = getattr(config, "session_reuse", True)
-        self.browser_config_type = getattr(config, "browser_config", {}).get(
-            "type", "custom"
-        )
+        self.browser_config_type = getattr(config, "browser_config", {}).get("type", "custom")
 
         # Initialize shared CloudScraper session if enabled
         self._scraper = None
@@ -55,7 +53,7 @@ class BiorxivDownloader(BasePaperDownloader):
                 delay=self.cf_clearance_timeout,
             )
 
-    def fetch_metadata(self, identifier: str) -> Dict[str, Any]:
+    def fetch_metadata(self, identifier: str) -> dict[str, Any]:
         """
         Fetch paper metadata from bioRxiv API.
 
@@ -88,7 +86,7 @@ class BiorxivDownloader(BasePaperDownloader):
 
         return paper_data
 
-    def construct_pdf_url(self, metadata: Dict[str, Any], identifier: str) -> str:
+    def construct_pdf_url(self, metadata: dict[str, Any], identifier: str) -> str:
         """
         Construct PDF URL from bioRxiv metadata and DOI.
 
@@ -111,9 +109,7 @@ class BiorxivDownloader(BasePaperDownloader):
 
         return pdf_url
 
-    def download_pdf_to_temp(
-        self, pdf_url: str, identifier: str
-    ) -> Optional[Tuple[str, str]]:
+    def download_pdf_to_temp(self, pdf_url: str, identifier: str) -> tuple[str, str] | None:
         """
         Override base method to use CloudScraper for bioRxiv PDF downloads.
         Includes landing page visit to handle CloudFlare protection.
@@ -188,9 +184,7 @@ class BiorxivDownloader(BasePaperDownloader):
                     r'filename[*]?=(?:"([^"]+)"|([^;]+))', content_disposition
                 )
                 if filename_match:
-                    extracted_filename = filename_match.group(
-                        1
-                    ) or filename_match.group(2)
+                    extracted_filename = filename_match.group(1) or filename_match.group(2)
                     extracted_filename = extracted_filename.strip().strip('"')
                     if extracted_filename and extracted_filename.endswith(".pdf"):
                         filename = extracted_filename
@@ -202,10 +196,10 @@ class BiorxivDownloader(BasePaperDownloader):
 
     def extract_paper_metadata(
         self,
-        metadata: Dict[str, Any],
+        metadata: dict[str, Any],
         identifier: str,
-        pdf_result: Optional[Tuple[str, str]],
-    ) -> Dict[str, Any]:
+        pdf_result: tuple[str, str] | None,
+    ) -> dict[str, Any]:
         """
         Extract structured metadata from bioRxiv API response.
 
@@ -234,9 +228,7 @@ class BiorxivDownloader(BasePaperDownloader):
             **pdf_metadata,
         }
 
-    def _extract_basic_metadata(
-        self, paper: Dict[str, Any], identifier: str
-    ) -> Dict[str, Any]:
+    def _extract_basic_metadata(self, paper: dict[str, Any], identifier: str) -> dict[str, Any]:
         """Extract basic metadata from paper data."""
         # Extract basic fields
         title = paper.get("title", "N/A").strip()
@@ -267,8 +259,8 @@ class BiorxivDownloader(BasePaperDownloader):
         return [author.strip() for author in authors_str.split(";") if author.strip()]
 
     def _extract_pdf_metadata(
-        self, pdf_result: Optional[Tuple[str, str]], identifier: str
-    ) -> Dict[str, Any]:
+        self, pdf_result: tuple[str, str] | None, identifier: str
+    ) -> dict[str, Any]:
         """Extract PDF-related metadata."""
         if pdf_result:
             temp_file_path, filename = pdf_result
@@ -301,7 +293,7 @@ class BiorxivDownloader(BasePaperDownloader):
         # Sanitize DOI for filename use
         return f"{identifier.replace('/', '_').replace('.', '_')}.pdf"
 
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """Get bioRxiv-specific identifier info for paper summary."""
         doi = paper.get("DOI", "N/A")
         pub_date = paper.get("Publication Date", "N/A")
@@ -313,7 +305,7 @@ class BiorxivDownloader(BasePaperDownloader):
 
         return info
 
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """Add DOI and bioRxiv-specific fields to entry."""
         entry["DOI"] = identifier
         entry["Category"] = "N/A"

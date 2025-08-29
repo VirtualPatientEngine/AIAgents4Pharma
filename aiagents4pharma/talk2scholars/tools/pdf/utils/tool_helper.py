@@ -3,8 +3,7 @@ Helper class for question and answer tool in PDF processing.
 """
 
 import logging
-from typing import Any, Dict
-
+from typing import Any
 
 from .get_vectorstore import get_vectorstore
 
@@ -29,7 +28,7 @@ class QAToolHelper:
         self.call_id = call_id
         logger.debug("QAToolHelper started call %s", call_id)
 
-    def get_state_models_and_data(self, state: dict) -> tuple[Any, Any, Dict[str, Any]]:
+    def get_state_models_and_data(self, state: dict) -> tuple[Any, Any, dict[str, Any]]:
         """Retrieve embedding model, LLM, and article data from agent state."""
         text_emb = state.get("text_embedding_model")
         if not text_emb:
@@ -78,7 +77,7 @@ class QAToolHelper:
 
         return vs
 
-    def get_hardware_stats(self) -> Dict[str, Any]:
+    def get_hardware_stats(self) -> dict[str, Any]:
         """Get current hardware configuration stats for monitoring."""
         return {
             "gpu_available": self.has_gpu,

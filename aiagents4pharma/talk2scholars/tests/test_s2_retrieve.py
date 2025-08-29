@@ -3,12 +3,13 @@ Unit tests for S2 tools functionality.
 """
 
 from unittest.mock import patch
+
 import pytest
 from langgraph.types import Command
+
 from ..tools.s2.retrieve_semantic_scholar_paper_id import (
     retrieve_semantic_scholar_paper_id,
 )
-
 
 # Fixed test data for deterministic results
 MOCK_SEARCH_RESPONSE = {

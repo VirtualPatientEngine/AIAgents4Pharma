@@ -33,12 +33,14 @@ from aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader import 
 # --- tiny helpers to manipulate factory state without protected-access lint ---
 def _set_cached_config(value):
     """set cached config in the factory for testing purposes."""
-    setattr(PaperDownloaderFactory, "_cached_config", value)
+    attr_name = "_cached_config"
+    setattr(PaperDownloaderFactory, attr_name, value)
 
 
 def _set_config_lock(lock_obj):
     """set the config lock object in the factory for testing purposes."""
-    setattr(PaperDownloaderFactory, "_config_lock", lock_obj)
+    attr_name = "_config_lock"
+    setattr(PaperDownloaderFactory, attr_name, lock_obj)
 
 
 class PaperDownloaderFactoryTestShim(PaperDownloaderFactory):
@@ -121,16 +123,10 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         """tear down after each test."""
         PaperDownloaderFactory.clear_cache()
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.ArxivDownloader"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.ArxivDownloader")
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
-    def test_create_arxiv_and_cached_config(
-        self, mock_global_hydra, mock_hydra, mock_arxiv
-    ):
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
+    def test_create_arxiv_and_cached_config(self, mock_global_hydra, mock_hydra, mock_arxiv):
         """First create loads config, second create returns cached config (no re-init)."""
         # First call: GlobalHydra not initialized
         mock_global_hydra.return_value.is_initialized.return_value = False
@@ -156,16 +152,10 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         mock_hydra.initialize.assert_not_called()
         mock_hydra.compose.assert_not_called()
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.MedrxivDownloader"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.MedrxivDownloader")
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.OmegaConf"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.OmegaConf")
     def test_create_medrxiv_omegaconf_and_clear_existing(
         self, mock_omegaconf, mock_global_hydra, mock_hydra, mock_medrxiv
     ):
@@ -195,16 +185,10 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         self.assertEqual(cfg_d["api_url"], "https://med")
         self.assertEqual(cfg_d["pdf_url_template"], "T")
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.BiorxivDownloader"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.BiorxivDownloader")
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
-    def test_create_biorxiv_dir_fallback(
-        self, mock_global_hydra, mock_hydra, mock_biorxiv
-    ):
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
+    def test_create_biorxiv_dir_fallback(self, mock_global_hydra, mock_hydra, mock_biorxiv):
         """dir() fallback path with __slots__ object should populate public, skip private."""
         mock_global_hydra.return_value.is_initialized.return_value = False
         common_obj = _SlotsSource(public_val=30, private_val="hide")
@@ -221,13 +205,9 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         # Ensure private key not present
         self.assertNotIn("_private", cfg_d)
 
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.PubmedDownloader"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.PubmedDownloader")
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
     def test_create_pubmed_apply_config_warning_path(
         self, mock_global_hydra, mock_hydra, mock_pubmed
     ):
@@ -236,9 +216,7 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         # First (common) will raise inside _extract_from_items -> warning
         common_obj = _ExplodingItemsSlots()
         # Service path is sane to still build config
-        svc_obj = SimpleNamespace(
-            api_url="https://pubmed", request_timeout=55, chunk_size=1024
-        )
+        svc_obj = SimpleNamespace(api_url="https://pubmed", request_timeout=55, chunk_size=1024)
         mock_hydra.compose.return_value = _cfg_obj(common_obj, {"pubmed": svc_obj})
 
         with patch(
@@ -255,26 +233,18 @@ class TestPaperDownloaderFactory(unittest.TestCase):
         self.assertEqual(cfg_d["chunk_size"], 1024)
 
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
     def test_create_missing_service_error_message(self, mock_global_hydra, mock_hydra):
         """Missing service should raise ValueError with 'Service ... not found' message."""
         mock_global_hydra.return_value.is_initialized.return_value = False
         mock_hydra.compose.return_value = _cfg_obj(SimpleNamespace(), {"arxiv": {}})
         with self.assertRaises(ValueError) as ctx:
             PaperDownloaderFactory.create("unsupported")
-        self.assertIn(
-            "Service 'unsupported' not found in configuration", str(ctx.exception)
-        )
+        self.assertIn("Service 'unsupported' not found in configuration", str(ctx.exception))
 
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
-    def test_get_unified_config_failure_raises_runtimeerror(
-        self, mock_global_hydra, mock_hydra
-    ):
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
+    def test_get_unified_config_failure_raises_runtimeerror(self, mock_global_hydra, mock_hydra):
         """Hydra initialize failure should surface as RuntimeError from create()."""
         PaperDownloaderFactory.clear_cache()
         mock_global_hydra.return_value.is_initialized.return_value = False
@@ -400,9 +370,7 @@ class TestDownloadPapersFunction(unittest.TestCase):
         self.assertTrue(result.update["ok"])
 
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
     def test_get_default_service_functionality(self, mock_global_hydra, mock_hydra):
         """Test get_default_service method with various configurations."""
         mock_global_hydra.return_value.is_initialized.return_value = False
@@ -411,14 +379,12 @@ class TestDownloadPapersFunction(unittest.TestCase):
         common_cfg = SimpleNamespace(request_timeout=30, chunk_size=8192)
         services = {
             "arxiv": SimpleNamespace(api_url="https://arxiv.org"),
-            "pubmed": SimpleNamespace(id_converter_url="https://pmc.ncbi.nlm.nih.gov")
+            "pubmed": SimpleNamespace(id_converter_url="https://pmc.ncbi.nlm.nih.gov"),
         }
         tool_cfg = SimpleNamespace(default_service="arxiv")
         mock_hydra.compose.return_value = SimpleNamespace(
             tools=SimpleNamespace(
-                paper_download=SimpleNamespace(
-                    tool=tool_cfg, common=common_cfg, services=services
-                )
+                paper_download=SimpleNamespace(tool=tool_cfg, common=common_cfg, services=services)
             )
         )
 
@@ -449,9 +415,7 @@ class TestDownloadPapersFunction(unittest.TestCase):
         tool_cfg.default_service = "medrxiv"
         mock_hydra.compose.return_value = SimpleNamespace(
             tools=SimpleNamespace(
-                paper_download=SimpleNamespace(
-                    tool=tool_cfg, common=common_cfg, services=services
-                )
+                paper_download=SimpleNamespace(tool=tool_cfg, common=common_cfg, services=services)
             )
         )
         PaperDownloaderFactory.clear_cache()
@@ -469,9 +433,7 @@ class TestUnifiedConfigDoubleCheck(unittest.TestCase):
     """Covers the double-check return branch in _get_unified_config."""
 
     @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.hydra")
-    @patch(
-        "aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra"
-    )
+    @patch("aiagents4pharma.talk2scholars.tools.paper_download.paper_downloader.GlobalHydra")
     def test_double_check_inside_lock(self, mock_global_hydra, _mock_hydra):
         """tests the double-check branch in _get_unified_config using public create()."""
         # avoid real hydra init path if we accidentally go there

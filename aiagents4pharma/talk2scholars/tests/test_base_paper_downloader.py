@@ -3,11 +3,11 @@ Unit tests for BasePaperDownloader.
 Tests the abstract base class functionality and common methods.
 """
 
+import inspect
 import unittest
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 from unittest.mock import Mock, patch
 
-import inspect
 import requests
 
 from aiagents4pharma.talk2scholars.tools.paper_download.utils.base_paper_downloader import (
@@ -31,8 +31,8 @@ class ConcretePaperDownloader(BasePaperDownloader):
         return f"https://test.com/{identifier}.pdf"
 
     def extract_paper_metadata(
-        self, metadata: Any, identifier: str, pdf_result: Optional[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, metadata: Any, identifier: str, pdf_result: tuple[str, str] | None
+    ) -> dict[str, Any]:
         """Concrete implementation for testing."""
         return {
             "Title": f"Test Paper {identifier}",
@@ -53,21 +53,19 @@ class ConcretePaperDownloader(BasePaperDownloader):
         """Concrete implementation for testing."""
         return f"test_{identifier}.pdf"
 
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """Concrete implementation for testing."""
         return f" ({paper.get('identifier', 'unknown')})"
 
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """Concrete implementation for testing."""
         entry["test_id"] = identifier
 
-    def get_paper_identifier_info_public(self, paper: Dict[str, Any]) -> str:
+    def get_paper_identifier_info_public(self, paper: dict[str, Any]) -> str:
         """Public wrapper to access protected identifier info for tests."""
         return self._get_paper_identifier_info(paper)
 
-    def add_service_identifier_public(
-        self, entry: Dict[str, Any], identifier: str
-    ) -> None:
+    def add_service_identifier_public(self, entry: dict[str, Any], identifier: str) -> None:
         """Public wrapper to access protected service identifier for tests."""
         self._add_service_identifier(entry, identifier)
 
@@ -109,9 +107,7 @@ class TestBasePaperDownloader(unittest.TestCase):
         mock_response = Mock()
         mock_response.raise_for_status = Mock()
         mock_response.iter_content.return_value = [b"PDF chunk 1", b"PDF chunk 2"]
-        mock_response.headers = {
-            "Content-Disposition": 'attachment; filename="paper.pdf"'
-        }
+        mock_response.headers = {"Content-Disposition": 'attachment; filename="paper.pdf"'}
         mock_get.return_value = mock_response
 
         # Mock temporary file
@@ -121,9 +117,7 @@ class TestBasePaperDownloader(unittest.TestCase):
         mock_temp_file.__exit__ = Mock(return_value=None)
         mock_tempfile.return_value = mock_temp_file
 
-        result = self.downloader.download_pdf_to_temp(
-            "https://test.com/paper.pdf", "12345"
-        )
+        result = self.downloader.download_pdf_to_temp("https://test.com/paper.pdf", "12345")
 
         # Verify result
         self.assertEqual(result, ("/tmp/test.pdf", "paper.pdf"))
@@ -153,9 +147,7 @@ class TestBasePaperDownloader(unittest.TestCase):
         """Test PDF download with network error."""
         mock_get.side_effect = requests.RequestException("Network error")
 
-        result = self.downloader.download_pdf_to_temp(
-            "https://test.com/paper.pdf", "12345"
-        )
+        result = self.downloader.download_pdf_to_temp("https://test.com/paper.pdf", "12345")
 
         self.assertIsNone(result)
 
@@ -235,12 +227,8 @@ class TestBasePaperDownloader(unittest.TestCase):
                 raise requests.RequestException("Fetch failed")
             return {"test": identifier}
 
-        with patch.object(
-            self.downloader, "fetch_metadata", side_effect=mock_fetch_metadata
-        ):
-            with patch.object(
-                self.downloader, "download_pdf_to_temp", return_value=None
-            ):
+        with patch.object(self.downloader, "fetch_metadata", side_effect=mock_fetch_metadata):
+            with patch.object(self.downloader, "download_pdf_to_temp", return_value=None):
                 result = self.downloader.process_identifiers(identifiers)
 
         # Valid identifier should succeed
@@ -316,11 +304,11 @@ class TestBasePaperDownloader(unittest.TestCase):
         """Test building summary with long list (should show only top 3)."""
         article_data = {}
         for i in range(5):  # More than 3
-            article_data[f"{i+1}"] = {
-                "Title": f"Paper {i+1}",
-                "identifier": f"{i+1}",
+            article_data[f"{i + 1}"] = {
+                "Title": f"Paper {i + 1}",
+                "identifier": f"{i + 1}",
                 "access_type": "open_access_downloaded",
-                "Abstract": f"Abstract {i+1}",
+                "Abstract": f"Abstract {i + 1}",
             }
 
         result = self.downloader.build_summary(article_data)
@@ -388,9 +376,7 @@ class TestBasePaperDownloader(unittest.TestCase):
             BasePaperDownloader.construct_pdf_url(self.downloader, {}, "test")
 
         with self.assertRaises(NotImplementedError):
-            BasePaperDownloader.extract_paper_metadata(
-                self.downloader, {}, "test", None
-            )
+            BasePaperDownloader.extract_paper_metadata(self.downloader, {}, "test", None)
 
         with self.assertRaises(NotImplementedError):
             BasePaperDownloader.get_service_name(self.downloader)
@@ -402,15 +388,13 @@ class TestBasePaperDownloader(unittest.TestCase):
             BasePaperDownloader.get_default_filename(self.downloader, "test")
 
         # Protected abstract methods: call via getattr to avoid W0212 while still executing code.
+        method_name_1 = "_get_paper_identifier_info"
         with self.assertRaises(NotImplementedError):
-            getattr(BasePaperDownloader, "_get_paper_identifier_info")(
-                self.downloader, {}
-            )
+            getattr(BasePaperDownloader, method_name_1)(self.downloader, {})
 
+        method_name_2 = "_add_service_identifier"
         with self.assertRaises(NotImplementedError):
-            getattr(BasePaperDownloader, "_add_service_identifier")(
-                self.downloader, {}, "test"
-            )
+            getattr(BasePaperDownloader, method_name_2)(self.downloader, {}, "test")
 
     @patch("tempfile.NamedTemporaryFile")
     @patch("requests.get")
@@ -420,9 +404,7 @@ class TestBasePaperDownloader(unittest.TestCase):
         mock_response = Mock()
         mock_response.raise_for_status = Mock()
         mock_response.iter_content.return_value = [b"PDF data"]
-        mock_response.headers = {
-            "Content-Disposition": 'attachment; filename="paper.pdf"'
-        }
+        mock_response.headers = {"Content-Disposition": 'attachment; filename="paper.pdf"'}
         mock_get.return_value = mock_response
 
         # Mock temporary file
@@ -434,9 +416,7 @@ class TestBasePaperDownloader(unittest.TestCase):
 
         # Patch re.search to raise an exception during filename extraction
         with patch("re.search", side_effect=requests.RequestException("Regex error")):
-            result = self.downloader.download_pdf_to_temp(
-                "https://test.com/paper.pdf", "12345"
-            )
+            result = self.downloader.download_pdf_to_temp("https://test.com/paper.pdf", "12345")
 
         # Should still succeed but use default filename due to exception
         self.assertEqual(result, ("/tmp/test.pdf", "test_12345.pdf"))
@@ -507,9 +487,7 @@ class TestBasePaperDownloaderEdgeCases(unittest.TestCase):
         mock_temp_file.__exit__ = Mock(return_value=None)
         mock_tempfile.return_value = mock_temp_file
 
-        with patch.object(
-            self.downloader, "get_default_filename", return_value="default.pdf"
-        ):
+        with patch.object(self.downloader, "get_default_filename", return_value="default.pdf"):
             # Call without assigning to avoid 'unused-variable'
             self.downloader.download_pdf_to_temp("https://test.com/paper.pdf", "12345")
 

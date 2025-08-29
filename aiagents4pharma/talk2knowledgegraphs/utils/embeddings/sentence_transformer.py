@@ -4,8 +4,8 @@
 Embedding class using SentenceTransformer model based on LangChain Embeddings class.
 """
 
-from typing import List
 from sentence_transformers import SentenceTransformer
+
 from .embeddings import Embeddings
 
 
@@ -35,11 +35,13 @@ class EmbeddingWithSentenceTransformer(Embeddings):
         self.trust_remote_code = trust_remote_code
 
         # Load the model
-        self.model = SentenceTransformer(self.model_name,
-                                         cache_folder=self.model_cache_dir,
-                                         trust_remote_code=self.trust_remote_code)
+        self.model = SentenceTransformer(
+            self.model_name,
+            cache_folder=self.model_cache_dir,
+            trust_remote_code=self.trust_remote_code,
+        )
 
-    def embed_documents(self, texts: List[str]) -> List[float]:
+    def embed_documents(self, texts: list[str]) -> list[float]:
         """
         Generate embedding for a list of input texts using SentenceTransformer model.
 
@@ -55,7 +57,7 @@ class EmbeddingWithSentenceTransformer(Embeddings):
 
         return embeddings
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         """
         Generate embeddings for an input text using SentenceTransformer model.
 

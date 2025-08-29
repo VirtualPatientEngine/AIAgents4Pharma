@@ -176,3 +176,6 @@ docs/notebooks/talk2knowledgegraphs/CTD_chemicals.tsv.gz
 
 # Cache edge index pkl file
 t2kg_primekg_edge_index.pkl
+
+# npm packages
+node_modules/

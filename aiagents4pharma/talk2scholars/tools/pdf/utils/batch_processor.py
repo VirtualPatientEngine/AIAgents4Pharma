@@ -5,7 +5,7 @@ Batch processing utilities for adding multiple papers to vector store.
 import concurrent.futures
 import logging
 import time
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 def add_papers_batch(
-    papers_to_add: List[Tuple[str, str, Dict[str, Any]]],
+    papers_to_add: list[tuple[str, str, dict[str, Any]]],
     vector_store: Any,
-    loaded_papers: Set[str],
-    paper_metadata: Dict[str, Dict[str, Any]],
-    documents: Dict[str, Document],
+    loaded_papers: set[str],
+    paper_metadata: dict[str, dict[str, Any]],
+    documents: dict[str, Document],
     **kwargs: Any,
 ) -> None:
     """
@@ -43,9 +43,7 @@ def add_papers_batch(
         logger.info("No papers to add")
         return
 
-    to_process = [
-        (pid, url, md) for pid, url, md in papers_to_add if pid not in loaded_papers
-    ]
+    to_process = [(pid, url, md) for pid, url, md in papers_to_add if pid not in loaded_papers]
     if not to_process:
         logger.info("Skipping %d already-loaded papers", len(papers_to_add))
         logger.info("All %d papers are already loaded", len(papers_to_add))
@@ -91,16 +89,16 @@ def add_papers_batch(
 
 
 def _parallel_load_and_split(
-    papers: List[Tuple[str, str, Dict[str, Any]]],
+    papers: list[tuple[str, str, dict[str, Any]]],
     config: Any,
-    metadata_fields: List[str],
-    documents: Dict[str, Document],
+    metadata_fields: list[str],
+    documents: dict[str, Document],
     max_workers: int,
-) -> Tuple[List[Document], List[str], List[str]]:
+) -> tuple[list[Document], list[str], list[str]]:
     """Load & split PDFs in parallel, preserving original logic."""
-    all_chunks: List[Document] = []
-    all_ids: List[str] = []
-    success: List[str] = []
+    all_chunks: list[Document] = []
+    all_ids: list[str] = []
+    success: list[str] = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
@@ -138,8 +136,8 @@ def _parallel_load_and_split(
 
 
 def _batch_embed(
-    chunks: List[Document],
-    ids: List[str],
+    chunks: list[Document],
+    ids: list[str],
     store: Any,
     batch_size: int,
     has_gpu: bool,

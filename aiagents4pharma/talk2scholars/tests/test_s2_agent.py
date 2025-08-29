@@ -3,9 +3,11 @@ Updated Unit Tests for the S2 agent (Semantic Scholar sub-agent).
 """
 
 from unittest import mock
+
 import pytest
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
+
 from ..agents.s2_agent import get_app
 from ..state.state_talk2scholars import Talk2Scholars
 
@@ -27,9 +29,7 @@ def mock_hydra_fixture():
 def mock_tools_fixture():
     """Mock tools to prevent execution of real API calls."""
     with (
-        mock.patch(
-            "aiagents4pharma.talk2scholars.tools.s2.search.search_tool"
-        ) as mock_s2_search,
+        mock.patch("aiagents4pharma.talk2scholars.tools.s2.search.search_tool") as mock_s2_search,
         mock.patch(
             "aiagents4pharma.talk2scholars.tools.s2.display_dataframe.display_dataframe"
         ) as mock_s2_display,
@@ -115,9 +115,7 @@ def test_s2_agent_tools_assignment(request):
         mock.patch(
             "aiagents4pharma.talk2scholars.agents.s2_agent.create_react_agent"
         ) as mock_create,
-        mock.patch(
-            "aiagents4pharma.talk2scholars.agents.s2_agent.ToolNode"
-        ) as mock_toolnode,
+        mock.patch("aiagents4pharma.talk2scholars.agents.s2_agent.ToolNode") as mock_toolnode,
     ):
         mock_agent = mock.Mock()
         mock_create.return_value = mock_agent
@@ -132,9 +130,7 @@ def test_s2_agent_tools_assignment(request):
 def test_s2_query_dataframe_tool():
     """Test if the query_dataframe tool is correctly utilized by the agent."""
     thread_id = "test_thread"
-    mock_state = Talk2Scholars(
-        messages=[HumanMessage(content="Query results for AI papers")]
-    )
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Query results for AI papers")])
     with mock.patch(
         "aiagents4pharma.talk2scholars.agents.s2_agent.create_react_agent"
     ) as mock_create:
@@ -166,9 +162,7 @@ def test_s2_query_dataframe_tool():
 def test_s2_retrieve_id_tool():
     """Test if the retrieve_semantic_scholar_paper_id tool is correctly utilized by the agent."""
     thread_id = "test_thread"
-    mock_state = Talk2Scholars(
-        messages=[HumanMessage(content="Retrieve paper ID for AI research")]
-    )
+    mock_state = Talk2Scholars(messages=[HumanMessage(content="Retrieve paper ID for AI research")])
     with mock.patch(
         "aiagents4pharma.talk2scholars.agents.s2_agent.create_react_agent"
     ) as mock_create:
@@ -177,9 +171,7 @@ def test_s2_retrieve_id_tool():
         mock_agent.invoke.return_value = {
             "messages": [HumanMessage(content="Retrieve paper ID for AI research")],
             "last_displayed_papers": {},
-            "papers": {
-                "paper_id": "MockPaper123"
-            },  # Ensure 'paper_id' is inside 'papers'
+            "papers": {"paper_id": "MockPaper123"},  # Ensure 'paper_id' is inside 'papers'
             "multi_papers": {},
         }
         app = get_app(thread_id, llm_model=LLM_MODEL)

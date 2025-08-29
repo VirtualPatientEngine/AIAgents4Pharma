@@ -4,11 +4,15 @@ Tests the supervisor agent's routing logic and state management.
 """
 
 from types import SimpleNamespace
-import pytest
+
 import hydra
+import pytest
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_openai import ChatOpenAI
 from pydantic import Field
+
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 
 # --- Dummy LLM Implementation ---
@@ -19,15 +23,22 @@ class DummyLLM(BaseChatModel):
 
     model_name: str = Field(...)
 
-    def _generate(self, prompt, stop=None):
-        """Generate a response given a prompt."""
-        DummyLLM.called_prompt = prompt
-        return "dummy output"
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        """generate a dummy response based on the input messages."""
+        DummyLLM.called_prompt = messages[0].content
+        message = AIMessage(content="dummy output")
+        generation = ChatGeneration(message=message)
+        return ChatResult(generations=[generation])
 
     @property
     def _llm_type(self):
         """Return the type of the language model."""
         return "dummy"
+
+    # NEW: public shim to avoid protected access in tests
+    def public_llm_type(self) -> str:
+        """public method to access the LLM type."""
+        return self._llm_type
 
 
 # --- Dummy Workflow and Sub-agent Functions ---
@@ -105,17 +116,12 @@ class DummyHydraContext:
 def dict_to_namespace(d):
     """Convert a dictionary to a SimpleNamespace object."""
     return SimpleNamespace(
-        **{
-            key: dict_to_namespace(val) if isinstance(val, dict) else val
-            for key, val in d.items()
-        }
+        **{key: dict_to_namespace(val) if isinstance(val, dict) else val for key, val in d.items()}
     )
 
 
 dummy_config = {
-    "agents": {
-        "talk2scholars": {"main_agent": {"system_prompt": "Dummy system prompt"}}
-    }
+    "agents": {"talk2scholars": {"main_agent": {"system_prompt": "Dummy system prompt"}}}
 }
 
 
@@ -141,9 +147,7 @@ class DummyHydraCompose:
 @pytest.fixture(autouse=True)
 def patch_hydra(monkeypatch):
     """Patch the hydra.initialize and hydra.compose functions to return dummy objects."""
-    monkeypatch.setattr(
-        hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
-    )
+    monkeypatch.setattr(hydra, "initialize", lambda version_base, config_path: DummyHydraContext())
     monkeypatch.setattr(
         hydra, "compose", lambda config_name, overrides: DummyHydraCompose(dummy_config)
     )
@@ -153,9 +157,7 @@ def dummy_paper_download_agent(uniq_id, llm_model):
     """Return a DummyWorkflow for the paper download agent."""
     dummy_paper_download_agent.called_uniq_id = uniq_id
     dummy_paper_download_agent.called_llm_model = llm_model
-    return DummyWorkflow(
-        supervisor_args={"agent": "paper_download", "uniq_id": uniq_id}
-    )
+    return DummyWorkflow(supervisor_args={"agent": "paper_download", "uniq_id": uniq_id})
 
 
 @pytest.fixture(autouse=True)
@@ -186,16 +188,30 @@ def patch_sub_agents_and_supervisor(monkeypatch):
 
 
 def test_dummy_llm_generate():
-    """Test the dummy LLM's generate function."""
+    """Test the dummy LLM's generate function through public interface."""
     dummy = DummyLLM(model_name="test-model")
-    output = getattr(dummy, "_generate")("any prompt")
-    assert output == "dummy output"
+    # Test that the dummy LLM can be used (testing the class works)
+    assert dummy.model_name == "test-model"
+    # Test through public interface that internally calls _generate (covers lines 26-27)
+    # Use invoke which internally calls _generate
+    messages = [HumanMessage(content="test prompt")]
+    result = dummy.invoke(messages)
+    # Verify the internal state was set
+    assert hasattr(DummyLLM, "called_prompt")
+    assert result is not None
+    assert DummyLLM.called_prompt == "test prompt"
 
 
 def test_dummy_llm_llm_type():
-    """Test the dummy LLM's _llm_type property."""
+    """Test the dummy LLM's type identification."""
     dummy = DummyLLM(model_name="test-model")
-    assert getattr(dummy, "_llm_type") == "dummy"
+
+    # Use public shim instead of protected attribute access
+    llm_type = dummy.public_llm_type()
+    assert llm_type == "dummy"
+
+    # Also test the public string representation
+    assert "DummyLLM" in str(dummy.__class__.__name__)
 
 
 def test_get_app_with_gpt4o_mini():
@@ -225,11 +241,13 @@ def test_get_app_with_other_model():
     assert supervisor_args.get("prompt") == "Dummy system prompt"
     assert getattr(app, "name", "") == "Talk2Scholars_MainAgent"
 
+
 def test_dummy_workflow_get_supervisor_args():
     """Test that DummyWorkflow.get_supervisor_args returns the stored args."""
     dummy_args = {"agent": "test", "uniq_id": "id123"}
     wf = DummyWorkflow(supervisor_args=dummy_args)
     assert wf.get_supervisor_args() is dummy_args
+
 
 def test_dummy_hydra_compose_get_config():
     """Test that DummyHydraCompose.get_config returns the raw config."""

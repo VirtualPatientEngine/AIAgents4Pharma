@@ -29,9 +29,7 @@ def get_item_collections(zot):
 
     # Create mappings: collection key → name and collection key → parent key
     collection_map = {col["key"]: col["data"]["name"] for col in collections}
-    parent_map = {
-        col["key"]: col["data"].get("parentCollection") for col in collections
-    }
+    parent_map = {col["key"]: col["data"].get("parentCollection") for col in collections}
 
     # Build full paths for collections
     def build_collection_path(col_key):
@@ -49,9 +47,7 @@ def get_item_collections(zot):
 
     for collection in collections:
         collection_key = collection["key"]
-        collection_items = zot.collection_items(
-            collection_key
-        )  # Fetch items in the collection
+        collection_items = zot.collection_items(collection_key)  # Fetch items in the collection
 
         for item in collection_items:
             item_key = item["data"]["key"]
@@ -67,9 +63,7 @@ def get_item_collections(zot):
 
 def find_or_create_collection(zot, path, create_missing=False):
     """find collection or create if missing"""
-    logger.info(
-        "Finding collection for path: %s (create_missing=%s)", path, create_missing
-    )
+    logger.info("Finding collection for path: %s (create_missing=%s)", path, create_missing)
     # Normalize path: remove leading/trailing slashes and convert to lowercase
     normalized = path.strip("/").lower()
     path_parts = normalized.split("/") if normalized else []
@@ -136,9 +130,7 @@ def get_all_collection_paths(zot):
 
     # Create mappings: collection key → name and collection key → parent key
     collection_map = {col["key"]: col["data"]["name"] for col in collections}
-    parent_map = {
-        col["key"]: col["data"].get("parentCollection") for col in collections
-    }
+    parent_map = {col["key"]: col["data"].get("parentCollection") for col in collections}
 
     # Build full paths for collections
     def build_collection_path(col_key):

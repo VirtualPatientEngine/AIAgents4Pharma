@@ -179,4 +179,3 @@
     Compare the concentration of Pyruvate in both experiments at steady state.
     ```
 </details>
-

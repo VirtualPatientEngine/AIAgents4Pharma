@@ -4,12 +4,15 @@ Test cases for datasets/primekg_loader.py
 
 import os
 import shutil
+
 import pytest
+
 from ..datasets.primekg import PrimeKG
 
 # Remove the data folder for testing if it exists
 LOCAL_DIR = "../data/primekg_test/"
 shutil.rmtree(LOCAL_DIR, ignore_errors=True)
+
 
 @pytest.fixture(name="primekg")
 def primekg_fixture():
@@ -17,6 +20,7 @@ def primekg_fixture():
     Fixture for creating an instance of PrimeKG.
     """
     return PrimeKG(local_dir=LOCAL_DIR)
+
 
 def test_download_primekg(primekg):
     """
@@ -30,8 +34,12 @@ def test_download_primekg(primekg):
     # Check if the local directory exists
     assert os.path.exists(primekg.local_dir)
     # Check if downloaded and processed files exist
-    files = ["nodes.tab", f"{primekg.name}_nodes.tsv.gz",
-             "edges.csv", f"{primekg.name}_edges.tsv.gz"]
+    files = [
+        "nodes.tab",
+        f"{primekg.name}_nodes.tsv.gz",
+        "edges.csv",
+        f"{primekg.name}_edges.tsv.gz",
+    ]
     for file in files:
         path = f"{primekg.local_dir}/{file}"
         assert os.path.exists(path)
@@ -45,6 +53,7 @@ def test_download_primekg(primekg):
     assert len(primekg_edges) > 0
     assert primekg_edges.shape[0] == 8100498
 
+
 def test_load_existing_primekg(primekg):
     """
     Test the loading method of the PrimeKG class by loading existing PrimeKG in local.
@@ -57,8 +66,12 @@ def test_load_existing_primekg(primekg):
     # Check if the local directory exists
     assert os.path.exists(primekg.local_dir)
     # Check if downloaded and processed files exist
-    files = ["nodes.tab", f"{primekg.name}_nodes.tsv.gz",
-             "edges.csv", f"{primekg.name}_edges.tsv.gz"]
+    files = [
+        "nodes.tab",
+        f"{primekg.name}_nodes.tsv.gz",
+        "edges.csv",
+        f"{primekg.name}_edges.tsv.gz",
+    ]
     for file in files:
         path = f"{primekg.local_dir}/{file}"
         assert os.path.exists(path)

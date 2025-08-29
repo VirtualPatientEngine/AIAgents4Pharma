@@ -3,8 +3,7 @@ RAG pipeline for retrieving and reranking chunks from a vector store.
 """
 
 import logging
-from typing import Any, List
-
+from typing import Any
 
 # Import our GPU detection utility
 from .nvidia_nim_reranker import rerank_chunks
@@ -15,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def retrieve_and_rerank_chunks(
     vector_store: Any, query: str, config: Any, call_id: str, has_gpu: bool
-) -> List[Any]:
+) -> list[Any]:
     """
     Traditional RAG pipeline: retrieve chunks from all papers, then rerank.
     Optimized for GPU/CPU hardware.
@@ -38,12 +37,8 @@ def retrieve_and_rerank_chunks(
     # Adjust initial retrieval count based on hardware
     if has_gpu:
         # GPU can handle larger initial retrieval efficiently
-        initial_chunks_count = config.get(
-            "initial_retrieval_k", 150
-        )  # Increased for GPU
-        mmr_diversity = config.get(
-            "mmr_diversity", 0.75
-        )  # Slightly more diverse for larger sets
+        initial_chunks_count = config.get("initial_retrieval_k", 150)  # Increased for GPU
+        mmr_diversity = config.get("mmr_diversity", 0.75)  # Slightly more diverse for larger sets
     else:
         # CPU - use conservative settings
         initial_chunks_count = config.get("initial_retrieval_k", 100)  # Original
@@ -72,9 +67,7 @@ def retrieve_and_rerank_chunks(
         "%s: Retrieved %d chunks from %d unique papers using %s",
         call_id,
         len(retrieved_chunks),
-        len(
-            set(chunk.metadata.get("paper_id", "unknown") for chunk in retrieved_chunks)
-        ),
+        len({chunk.metadata.get("paper_id", "unknown") for chunk in retrieved_chunks}),
         hardware_mode,
     )
 
@@ -95,9 +88,7 @@ def retrieve_and_rerank_chunks(
     )
 
     # Log final results with hardware info
-    final_papers = len(
-        set(chunk.metadata.get("paper_id", "unknown") for chunk in reranked_chunks)
-    )
+    final_papers = len({chunk.metadata.get("paper_id", "unknown") for chunk in reranked_chunks})
 
     logger.info(
         "%s: Reranking complete using %s. Final %d chunks from %d unique papers",

@@ -49,9 +49,7 @@ def patch_hydra(monkeypatch):
             ),
         )
     )
-    monkeypatch.setattr(
-        hydra, "initialize", lambda version_base, config_path: DummyHydraContext()
-    )
+    monkeypatch.setattr(hydra, "initialize", lambda version_base, config_path: DummyHydraContext())
     monkeypatch.setattr(hydra, "compose", lambda config_name, overrides: dummy_cfg)
 
 
@@ -69,9 +67,7 @@ def test_multi_helper_pmc_and_doi_ids(monkeypatch):
             }
         ]
     }
-    response = SimpleNamespace(
-        status_code=200, json=lambda: data, raise_for_status=lambda: None
-    )
+    response = SimpleNamespace(status_code=200, json=lambda: data, raise_for_status=lambda: None)
     monkeypatch.setattr(requests, "post", lambda *args, **kwargs: response)
     results = rec.process_recommendations()
     ids_list = results["papers"]["p1"]["paper_ids"]
@@ -91,9 +87,7 @@ def test_search_helper_pmc_and_doi_ids(monkeypatch):
             }
         ]
     }
-    response = SimpleNamespace(
-        status_code=200, json=lambda: data, raise_for_status=lambda: None
-    )
+    response = SimpleNamespace(status_code=200, json=lambda: data, raise_for_status=lambda: None)
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: response)
     results = sd.process_search()
     ids_list = results["papers"]["s1"]["paper_ids"]
@@ -113,9 +107,7 @@ def test_single_helper_pmc_and_doi_ids(monkeypatch):
             }
         ]
     }
-    response = SimpleNamespace(
-        status_code=200, json=lambda: data, raise_for_status=lambda: None
-    )
+    response = SimpleNamespace(status_code=200, json=lambda: data, raise_for_status=lambda: None)
     monkeypatch.setattr(requests, "get", lambda *args, **kwargs: response)
     results = sp.process_recommendations()
     ids_list = results["papers"]["x1"]["paper_ids"]
@@ -395,9 +387,7 @@ def test_single_helper_create_content_snippet(monkeypatch):
 
 def test_multi_helper_create_content_snippet(monkeypatch):
     """Test that MultiPaperRecData._create_content includes snippets appropriately."""
-    mr = MultiPaperRecData(
-        paper_ids=["a", "b"], limit=2, year="2021", tool_call_id="tid"
-    )
+    mr = MultiPaperRecData(paper_ids=["a", "b"], limit=2, year="2021", tool_call_id="tid")
     mr.filtered_papers = {
         "m1": {"Title": "MTitle1", "Year": "2017", "Abstract": "MOne. MTwo. MThree."},
         "m2": {"Title": "MTitle2", "Year": "2016", "Abstract": ""},

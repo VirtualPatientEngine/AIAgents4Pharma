@@ -4,20 +4,23 @@
 Enrichment class using Ollama model based on LangChain Enrichment class.
 """
 
-import time
-from typing import List
-import subprocess
 import ast
+import subprocess
+import time
+
 import ollama
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+
 from .enrichments import Enrichments
+
 
 class EnrichmentWithOllama(Enrichments):
     """
     Enrichment class using Ollama model based on the Enrichment abstract class.
     """
+
     def __init__(
         self,
         model_name: str,
@@ -67,18 +70,21 @@ class EnrichmentWithOllama(Enrichments):
         """
         try:
             models_list = ollama.list()["models"]
-            if model_name not in [m['model'].replace(":latest", "") for m in models_list]:
+            if model_name not in [m["model"].replace(":latest", "") for m in models_list]:
                 ollama.pull(model_name)
                 time.sleep(30)
                 raise ValueError(f"Pulled {model_name} model")
         except Exception as e:
             with subprocess.Popen(
-                "ollama serve", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                "ollama serve",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             ):
                 time.sleep(10)
             raise ValueError(f"Error: {e} and restarted Ollama server.") from e
 
-    def enrich_documents(self, texts: List[str]) -> List[str]:
+    def enrich_documents(self, texts: list[str]) -> list[str]:
         """
         Enrich a list of input texts with additional textual features using OLLAMA model.
         Important: Make sure the input is a list of texts based on the defined prompt template
@@ -116,7 +122,7 @@ class EnrichmentWithOllama(Enrichments):
         Args:
             texts: The list of texts to be enriched.
             docs: The list of reference documents to enrich the input texts.
-        
+
         Returns:
             The list of enriched texts
         """
