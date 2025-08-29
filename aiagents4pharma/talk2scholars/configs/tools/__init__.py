@@ -6,6 +6,7 @@ from . import search
 from . import single_paper_recommendation
 from . import multi_paper_recommendation
 from . import question_and_answer
+from . import multimodal_processor
 from . import zotero_read
 from . import zotero_write
 
@@ -16,4 +17,5 @@ __all__ = [
     "question_and_answer",
     "zotero_read",
     "zotero_write",
+    "multimodal_processor"
 ]
