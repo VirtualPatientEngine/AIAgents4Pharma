@@ -5,22 +5,23 @@ Talk2KnowledgeGraphs: A Streamlit app for the Talk2KnowledgeGraphs graph.
 """
 
 import os
-import sys
 import random
-import streamlit as st
-import pandas as pd
+import sys
+
 import hydra
-from streamlit_feedback import streamlit_feedback
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_core.messages import ChatMessage
-from langchain_core.tracers.context import collect_runs
+import streamlit as st
 from langchain.callbacks.tracers import LangChainTracer
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
+from langchain_core.tracers.context import collect_runs
+from langchain_ollama import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from streamlit_feedback import streamlit_feedback
+
 from utils import streamlit_utils
 
 sys.path.append("./")
 from aiagents4pharma.talk2knowledgegraphs.agents.t2kg_agent import get_app
+
 # from talk2knowledgegraphs.agents.t2kg_agent import get_app
 
 st.set_page_config(
@@ -38,8 +39,10 @@ if "config" not in st.session_state:
         version_base=None,
         config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
     ):
-        cfg = hydra.compose(config_name="config", overrides=["app/frontend=default"])
-        cfg = cfg.app.frontend
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["app/frontend=default", "utils/database/milvus=default"],
+        )
         st.session_state.config = cfg
 else:
     cfg = st.session_state.config
@@ -47,9 +50,9 @@ else:
 
 # Set the logo, detect if we're in container or local development
 def get_logo_path():
-    container_path = '/app/docs/assets/VPE.png'
-    local_path = 'docs/assets/VPE.png'
-    
+    container_path = "/app/docs/assets/VPE.png"
+    local_path = "docs/assets/VPE.png"
+
     if os.path.exists(container_path):
         return container_path
     elif os.path.exists(local_path):
@@ -57,18 +60,17 @@ def get_logo_path():
     else:
         # Fallback: try to find it relative to script location
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, '../../docs/assets/VPE.png')
+        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
         if os.path.exists(relative_path):
             return relative_path
-    
+
     return None  # File not found
+
 
 logo_path = get_logo_path()
 if logo_path:
     st.logo(
-        image=logo_path,
-        size='large',
-        link='https://github.com/VirtualPatientEngine'
+        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
     )
 
 # Check if env variable OPENAI_API_KEY exists
@@ -79,87 +81,19 @@ if "OPENAI_API_KEY" not in os.environ:
     )
     st.stop()
 
-# Initialize current user
-if "current_user" not in st.session_state:
-    st.session_state.current_user = cfg.default_user
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Initialize session state for SBML file uploader
-# if "sbml_key" not in st.session_state:
-#     st.session_state.sbml_key = 0
-
-# Initialize session state for selections
-if "selections" not in st.session_state:
-    st.session_state.selections = streamlit_utils.initialize_selections()
-
-# Initialize session state for pre-clinical data package uploader
-if "data_package_key" not in st.session_state:
-    st.session_state.data_package_key = 0
-
-# Initialize session state for multimodal data package uploader
-if "multimodal_key" not in st.session_state:
-    st.session_state.multimodal_key = 0
-
-# Initialize session state for uploaded files
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = []
-
-    # Make directories if not exists
-    os.makedirs(cfg.upload_data_dir, exist_ok=True)
-
-# Initialize project_name for Langsmith
-if "project_name" not in st.session_state:
-    # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = "T2KG-" + str(random.randint(1000, 9999))
-
-# Initialize run_id for Langsmith
-if "run_id" not in st.session_state:
-    st.session_state.run_id = None
-
-# Initialize graph
-if "unique_id" not in st.session_state:
-    st.session_state.unique_id = random.randint(1, 1000)
-
-# Initialize the LLM model
-if "llm_model" not in st.session_state:
-    st.session_state.llm_model = tuple(cfg.openai_llms + cfg.ollama_llms)[0]
+# Initialize unified session state
+streamlit_utils.initialize_session_state(cfg, agent_type="T2KG")
 
 # Initialize the app with default LLM model for the first time
 if "app" not in st.session_state:
     # Initialize the app
-    if st.session_state.llm_model in cfg.openai_llms:
-        print("Using OpenAI LLM model")
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=ChatOpenAI(
-                model=st.session_state.llm_model, temperature=cfg.temperature
-            ),
-        )
-    else:
-        print("Using Ollama LLM model")
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=ChatOllama(
-                model=st.session_state.llm_model, temperature=cfg.temperature
-            ),
-        )
+    st.session_state.app = get_app(
+        st.session_state.unique_id,
+        llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
+    )
 
-if "topk_nodes" not in st.session_state:
-    # Subgraph extraction settings
-    st.session_state.topk_nodes = cfg.reasoning_subgraph_topk_nodes
-    st.session_state.topk_edges = cfg.reasoning_subgraph_topk_edges
-
-if "milvus_connection" not in st.session_state:
-    st.session_state.milvus_connection = streamlit_utils.setup_milvus(cfg)
-    print("Milvus connection established:", st.session_state.milvus_connection)
-    # Cache edge index if it does not exist
-    if not os.path.exists(cfg.milvus_db.cache_edge_index_path):
-        print("Cache edge index does not exist. Creating it now...")
-        # Create the cache edge index
-        streamlit_utils.get_cache_edge_index(cfg)
+# Milvus connection is now handled by backend tools automatically
+# No frontend connection management needed
 
 # Get the app
 app = st.session_state.app
@@ -174,16 +108,16 @@ with st.sidebar:
     # Top-K nodes and edges sliders
     topk_nodes = st.slider(
         "Top-K (Nodes)",
-        cfg.reasoning_subgraph_topk_nodes_min,
-        cfg.reasoning_subgraph_topk_nodes_max,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_min,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_max,
         st.session_state.topk_nodes,
         key="st_slider_topk_nodes",
     )
     st.session_state.topk_nodes = topk_nodes
     topk_edges = st.slider(
         "Top-K (Edges)",
-        cfg.reasoning_subgraph_topk_nodes_min,
-        cfg.reasoning_subgraph_topk_nodes_max,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_min,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_max,
         st.session_state.topk_edges,
         key="st_slider_topk_edges",
     )
@@ -205,8 +139,7 @@ with main_col1:
         )
 
         # LLM panel (Only at the front-end for now)
-        # llms = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
-        llms = tuple(cfg.openai_llms + cfg.ollama_llms)
+        llms = tuple(streamlit_utils.get_all_available_llms(cfg))
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
@@ -243,8 +176,7 @@ with main_col2:
                     st.markdown(message["content"].content)
                     st.empty()
             elif message["type"] == "button":
-                if st.button(message["content"],
-                             key=message["key"]):
+                if st.button(message["content"], key=message["key"]):
                     # Trigger the question
                     prompt = message["question"]
                     st.empty()
@@ -285,23 +217,20 @@ with main_col2:
             with st.chat_message("assistant", avatar="🤖"):
                 with st.spinner("Initializing the agent ..."):
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
-                    
-                    # Prepare LLM and embedding model for updating the agent
-                    if st.session_state.llm_model in cfg.openai_llms:
-                        llm_model = ChatOpenAI(
-                            model=st.session_state.llm_model,
-                            temperature=cfg.temperature,
-                        )
-                    else:
-                        llm_model = ChatOllama(
-                            model=st.session_state.llm_model,
-                            temperature=cfg.temperature,
-                        )
 
-                    if cfg.default_embedding_model == "ollama":
-                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                    # Prepare LLM and embedding model for updating the agent
+                    llm_model = streamlit_utils.get_base_chat_model(
+                        st.session_state.llm_model
+                    )
+
+                    if cfg.app.frontend.default_embedding_model == "ollama":
+                        emb_model = OllamaEmbeddings(
+                            model=cfg.app.frontend.ollama_embeddings[0]
+                        )
                     else:
-                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        emb_model = OpenAIEmbeddings(
+                            model=cfg.app.frontend.openai_embeddings[0]
+                        )
 
                     # Update the agent state with initial configuration
                     app.update_state(
@@ -315,50 +244,51 @@ with main_col2:
                             "topk_edges": st.session_state.topk_edges,
                             "dic_source_graph": [
                                 {
-                                    "name": cfg.milvus_db.database_name,
+                                    "name": cfg.utils.database.milvus.milvus_db.database_name,
                                 }
                             ],
                         },
                     )
-                    
+
                     intro_prompt = "Tell your name and about yourself. Always start with a greeting."
                     intro_prompt += " and tell about the tools you can run to perform analysis with short description."
                     intro_prompt += " We have provided starter questions (separately) outside your response."
                     intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
                     intro_prompt += " simply click on the questions to execute them."
-                    
+
                     response = app.stream(
                         {"messages": [HumanMessage(content=intro_prompt)]},
                         config=config,
-                        stream_mode="messages"
+                        stream_mode="messages",
                     )
                     st.write_stream(streamlit_utils.stream_response(response))
                     current_state = app.get_state(config)
                     # Add response to chat history
                     assistant_msg = ChatMessage(
-                        current_state.values["messages"][-1].content,
-                        role="assistant"
+                        current_state.values["messages"][-1].content, role="assistant"
                     )
-                    st.session_state.messages.append({
-                        "type": "message",
-                        "content": assistant_msg
-                    })
+                    st.session_state.messages.append(
+                        {"type": "message", "content": assistant_msg}
+                    )
                     st.empty()
 
         # Display sample questions when there are few messages
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2kg()):
-                if st.button(f'Q{count+1}. {question}',
-                             key=f'sample_question_{count+1}'):
+                if st.button(
+                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
+                ):
                     # Trigger the question
                     prompt = question
                 # Add button click to chat history
-                st.session_state.messages.append({
-                    "type": "button",
-                    "question": question,
-                    "content": f'Q{count+1}. {question}',
-                    "key": f'sample_question_{count+1}'
-                })
+                st.session_state.messages.append(
+                    {
+                        "type": "button",
+                        "question": question,
+                        "content": f"Q{count+1}. {question}",
+                        "key": f"sample_question_{count+1}",
+                    }
+                )
 
         # When the user asks a question
         if prompt:
@@ -382,31 +312,32 @@ with main_col2:
                     ]
                     # Convert chat history to ChatMessage objects
                     chat_history = [
-                        SystemMessage(content=m[1])
-                        if m[0] == "system"
-                        else HumanMessage(content=m[1])
-                        if m[0] == "human"
-                        else AIMessage(content=m[1])
+                        (
+                            SystemMessage(content=m[1])
+                            if m[0] == "system"
+                            else (
+                                HumanMessage(content=m[1])
+                                if m[0] == "human"
+                                else AIMessage(content=m[1])
+                            )
+                        )
                         for m in history
                     ]
 
                     # Prepare LLM and embedding model for updating the agent
-                    if st.session_state.llm_model in cfg.openai_llms:
-                        llm_model = ChatOpenAI(
-                            model=st.session_state.llm_model,
-                            temperature=cfg.temperature,
-                        )
-                    else:
-                        llm_model = ChatOllama(
-                            model=st.session_state.llm_model,
-                            temperature=cfg.temperature,
-                        )
+                    llm_model = streamlit_utils.get_base_chat_model(
+                        st.session_state.llm_model
+                    )
 
-                    if cfg.default_embedding_model == "ollama":
+                    if cfg.app.frontend.default_embedding_model == "ollama":
                         # For IBD BioBridge data, we still use Ollama embeddings
-                        emb_model = OllamaEmbeddings(model=cfg.ollama_embeddings[0])
+                        emb_model = OllamaEmbeddings(
+                            model=cfg.app.frontend.ollama_embeddings[0]
+                        )
                     else:
-                        emb_model = OpenAIEmbeddings(model=cfg.openai_embeddings[0])
+                        emb_model = OpenAIEmbeddings(
+                            model=cfg.app.frontend.openai_embeddings[0]
+                        )
 
                     # Create config for the agent
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
@@ -421,10 +352,7 @@ with main_col2:
                             "topk_edges": st.session_state.topk_edges,
                             "dic_source_graph": [
                                 {
-                                    "name": cfg.milvus_db.database_name,
-                                    # "edge_index": st.session_state.edge_index,
-                                    # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                                    # "kg_text_path": st.session_state.config["kg_text_path"],
+                                    "name": cfg.utils.database.milvus.milvus_db.database_name,
                                 }
                             ],
                         },
@@ -440,11 +368,11 @@ with main_col2:
                         response = app.stream(
                             {"messages": [HumanMessage(content=prompt)]},
                             config=config | {"callbacks": [tracer]},
-                            stream_mode="messages"
+                            stream_mode="messages",
                         )
                         st.write_stream(streamlit_utils.stream_response(response))
                         st.session_state.run_id = cb.traced_runs[-1].id
-                    
+
                     # Get final state and add response to chat history
                     current_state = app.get_state(config)
                     assistant_msg = ChatMessage(
@@ -501,20 +429,56 @@ with main_col2:
                                 len(current_state.values["dic_extracted_graph"]),
                                 "subgraph_extraction",
                             )
+                            # Debug logging
+                            print(
+                                f"DEBUG: dic_extracted_graph keys: {current_state.values.keys()}"
+                            )
+                            if "dic_extracted_graph" in current_state.values:
+                                print(
+                                    f"DEBUG: dic_extracted_graph length: {len(current_state.values['dic_extracted_graph'])}"
+                                )
+                                for i, graph in enumerate(
+                                    current_state.values["dic_extracted_graph"]
+                                ):
+                                    print(
+                                        f"DEBUG: Graph {i} keys: {graph.keys() if isinstance(graph, dict) else 'not dict'}"
+                                    )
+
                             # Add the graph to be rendered
-                            latest_graph = current_state.values["dic_extracted_graph"][-1]
-                            graphs_visuals.append({
-                                "content": latest_graph["graph_dict"],
-                                "key": "subgraph_" + uniq_msg_id,
-                            })
+                            if current_state.values.get("dic_extracted_graph"):
+                                latest_graph = current_state.values[
+                                    "dic_extracted_graph"
+                                ][-1]
+                                print(
+                                    f"DEBUG: Latest graph structure: {type(latest_graph)}"
+                                )
+                                if (
+                                    isinstance(latest_graph, dict)
+                                    and "graph_dict" in latest_graph
+                                ):
+                                    print(
+                                        f"DEBUG: graph_dict keys: {latest_graph['graph_dict'].keys()}"
+                                    )
+                                    graphs_visuals.append(
+                                        {
+                                            "content": latest_graph["graph_dict"],
+                                            "key": "subgraph_" + uniq_msg_id,
+                                        }
+                                    )
+                                else:
+                                    print(
+                                        f"ERROR: graph_dict not found in latest_graph: {latest_graph}"
+                                    )
+                            else:
+                                print(
+                                    "ERROR: No dic_extracted_graph found in current_state.values"
+                                )
 
             # Visualize the graphs
             if len(graphs_visuals) > 0:
                 for count, graph in enumerate(graphs_visuals):
                     streamlit_utils.render_graph(
-                        graph_dict=graph["content"], 
-                        key=graph["key"], 
-                        save_graph=True
+                        graph_dict=graph["content"], key=graph["key"], save_graph=True
                     )
                     st.empty()
 

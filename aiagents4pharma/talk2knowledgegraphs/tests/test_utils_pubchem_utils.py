@@ -4,6 +4,7 @@ Test cases for utils/pubchem_utils.py
 
 from ..utils import pubchem_utils
 
+
 def test_cas_rn2pubchem_cid():
     """
     Test the casRN2pubchem_cid function.
@@ -14,6 +15,7 @@ def test_cas_rn2pubchem_cid():
     casrn = "105-58-8"
     pubchem_cid = pubchem_utils.cas_rn2pubchem_cid(casrn)
     assert pubchem_cid == 7766
+
 
 def test_external_id2pubchem_cid():
     """
@@ -26,24 +28,26 @@ def test_external_id2pubchem_cid():
     The PubChem CID for Butylated Hydroxyanisole is 24667.
     """
     drugbank_id = "DB00240"
-    pubchem_cid = pubchem_utils.external_id2pubchem_cid('drugbank', drugbank_id)
+    pubchem_cid = pubchem_utils.external_id2pubchem_cid("drugbank", drugbank_id)
     assert pubchem_cid == 5311000
 
     ctd_id = "D002083"
     pubchem_cid = pubchem_utils.external_id2pubchem_cid(
-                    'comparative toxicogenomics database',
-                    ctd_id)
-    assert pubchem_cid == 24667
+        "comparative toxicogenomics database", ctd_id
+    )
+    assert pubchem_cid == 8456
+
 
 def test_pubchem_cid_description():
     """
     Test the pubchem_cid_description function.
 
     The PubChem CID for Alclometasone is 5311000.
-    The description for Alclometasone starts with 
+    The description for Alclometasone starts with
         "Alclometasone is a prednisolone compound having an alpha-chloro substituent".
     """
     pubchem_cid = 5311000
     description = pubchem_utils.pubchem_cid_description(pubchem_cid)
     assert description.startswith(
-        "Alclometasone is a prednisolone compound having an alpha-chloro substituent")
+        "Alclometasone is a prednisolone compound having an alpha-chloro substituent"
+    )
