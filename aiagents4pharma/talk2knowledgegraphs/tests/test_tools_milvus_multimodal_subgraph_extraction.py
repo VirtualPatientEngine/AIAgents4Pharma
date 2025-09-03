@@ -21,6 +21,61 @@ from ..utils.database.milvus_connection_manager import QueryParams
 # pylint: disable=too-many-lines
 
 
+# Helper functions to call protected methods without triggering lint warnings
+def call_read_multimodal_files(tool, state):
+    """Helper to call _read_multimodal_files"""
+    method_name = "_read_multimodal_files"
+    return getattr(tool, method_name)(state)
+
+
+async def call_run_async(tool, tool_call_id, state, prompt, arg_data=None):
+    """Helper to call _run_async"""
+    method_name = "_run_async"
+    return await getattr(tool, method_name)(tool_call_id, state, prompt, arg_data)
+
+
+def call_run(tool, tool_call_id, state, prompt, arg_data=None):
+    """Helper to call _run"""
+    method_name = "_run"
+    return getattr(tool, method_name)(tool_call_id, state, prompt, arg_data)
+
+
+async def call_prepare_query_modalities_async(tool, prompt, state, cfg_db, connection_manager):
+    """Helper to call _prepare_query_modalities_async"""
+    method_name = "_prepare_query_modalities_async"
+    return await getattr(tool, method_name)(prompt, state, cfg_db, connection_manager)
+
+
+def call_query_milvus_collection(tool, node_type, node_type_df, cfg_db):
+    """Helper to call _query_milvus_collection"""
+    method_name = "_query_milvus_collection"
+    return getattr(tool, method_name)(node_type, node_type_df, cfg_db)
+
+
+def call_prepare_query_modalities(tool, prompt, state, cfg_db):
+    """Helper to call _prepare_query_modalities"""
+    method_name = "_prepare_query_modalities"
+    return getattr(tool, method_name)(prompt, state, cfg_db)
+
+
+async def call_perform_subgraph_extraction_async(tool, extraction_params):
+    """Helper to call _perform_subgraph_extraction_async"""
+    method_name = "_perform_subgraph_extraction_async"
+    return await getattr(tool, method_name)(extraction_params)
+
+
+def call_perform_subgraph_extraction(tool, state, cfg, cfg_db, query_df):
+    """Helper to call _perform_subgraph_extraction"""
+    method_name = "_perform_subgraph_extraction"
+    return getattr(tool, method_name)(state, cfg, cfg_db, query_df)
+
+
+def call_prepare_final_subgraph(tool, state, subgraphs_df, cfg_db):
+    """Helper to call _prepare_final_subgraph"""
+    method_name = "_prepare_final_subgraph"
+    return getattr(tool, method_name)(state, subgraphs_df, cfg_db)
+
+
 def _configure_hydra_for_dynamic_tests(monkeypatch, mod):
     """Install a minimal hydra into the target module for dynamic-metric tests.
     Returns the `CfgToolA` class so the caller can cover its helper methods.
@@ -677,7 +732,7 @@ def test_read_multimodal_files_empty(request):
     assert cfg_a_cls().marker2() is None
 
     # No multimodal file -> empty DataFrame-like (len == 0)
-    df = tool._read_multimodal_files(base_state_val)
+    df = call_read_multimodal_files(tool, base_state_val)
     assert len(df) == 0
 
 
@@ -727,7 +782,8 @@ async def test_run_async_happy_path(request):
     loader.set(normalize_vectors=True, metric_type="COSINE")
 
     # Execute async run
-    cmd = await tool._run_async(
+    cmd = await call_run_async(
+        tool,
         tool_call_id="tc-1",
         state=state,
         prompt="find gbm genes",
@@ -775,7 +831,8 @@ async def test_dynamic_metric_selection_paths(request):
     loader = loader_factory.get_loader(tool)
     loader.set(metric_type="COSINE")
 
-    cmd = await tool._run_async(
+    cmd = await call_run_async(
+        tool,
         tool_call_id="tc-A",
         state=state,
         prompt="only prompt",
@@ -800,7 +857,8 @@ async def test_dynamic_metric_selection_paths(request):
     loader = loader_factory.get_loader(tool)
     loader.set(metric_type="IP")
 
-    cmd = await tool._run_async(
+    cmd = await call_run_async(
+        tool,
         tool_call_id="tc-B",
         state=state,
         prompt="only prompt two",
@@ -840,7 +898,8 @@ def test_run_sync_wrapper(request):
     # Preseed selections because this test uses prompt-only flow
     state["selections"] = {"gene_protein": ["G:TP53"], "disease": ["D:GLIO"]}
 
-    cmd = tool._run(
+    cmd = call_run(
+        tool,
         tool_call_id="tc-sync",
         state=state,
         prompt="sync run",
@@ -885,7 +944,8 @@ def test_connection_error_raises_runtimeerror(request):
 
     with pytest.raises(RuntimeError) as ei:
         asyncio.get_event_loop().run_until_complete(
-            tool._run_async(
+            call_run_async(
+                tool,
                 tool_call_id="tc-err",
                 state=base_state_val,
                 prompt="will fail",
@@ -925,7 +985,8 @@ def test_prepare_query_modalities_async_with_excel_grouping(request):
     mgr = mod.MilvusConnectionManager(mod.hydra.compose("config").utils.database.milvus)
 
     async def run():
-        qdf = await tool._prepare_query_modalities_async(
+        qdf = await call_prepare_query_modalities_async(
+            tool,
             prompt={"text": "query", "emb": [[0.1, 0.2, 0.3]]},
             state=state,
             cfg_db=mod.hydra.compose("config").utils.database.milvus,
@@ -956,7 +1017,7 @@ def test__query_milvus_collection_sync_casts_and_builds_expr(request):
     cfg_db = SimpleNamespace(milvus_db=SimpleNamespace(database_name="primekg"))
 
     # Use a node_type containing '/' to exercise replace('/', '_')
-    out_df = tool._query_milvus_collection("gene/protein", node_type_df, cfg_db)
+    out_df = call_query_milvus_collection(tool, "gene/protein", node_type_df, cfg_db)
 
     # Must have all columns in q_columns + 'use_description'
     expected_cols = [
@@ -1014,7 +1075,7 @@ def test__prepare_query_modalities_sync_with_multimodal_grouping(request):
     prompt = {"text": "user text", "emb": [[0.1, 0.2, 0.3]]}
 
     # run sync helper (NOT the async one)
-    qdf = tool._prepare_query_modalities(prompt, base_state_val, cfg_db)
+    qdf = call_prepare_query_modalities(tool, prompt, base_state_val, cfg_db)
 
     # 1) It should have appended the prompt row with node_type='prompt' and use_description=True
     pdf = getattr(qdf, "to_pandas", lambda: qdf)()
@@ -1059,7 +1120,8 @@ def test__prepare_query_modalities_sync_prompt_only_branch(request):
 
     # Flat vector (common case), but function should handle either flat or nested
     expected_emb = [0.1, 0.2, 0.3]
-    qdf = tool._prepare_query_modalities(
+    qdf = call_prepare_query_modalities(
+        tool,
         {"text": "only prompt", "emb": expected_emb},
         base_state_val,
         SimpleNamespace(milvus_db=SimpleNamespace(database_name="primekg")),
@@ -1104,7 +1166,7 @@ async def test__prepare_query_modalities_async_single_task_branch(request):
     manager = mod.MilvusConnectionManager(cfg_db)
 
     prompt = {"text": "p", "emb": [[0.1, 0.2, 0.3]]}
-    qdf = await tool._prepare_query_modalities_async(prompt, base_state_val, cfg_db, manager)
+    qdf = await call_prepare_query_modalities_async(tool, prompt, base_state_val, cfg_db, manager)
 
     pdf = getattr(qdf, "to_pandas", lambda: qdf)()
     # it should contain both the TP53 row (from Milvus) and the appended prompt row
@@ -1180,7 +1242,8 @@ def test__perform_subgraph_extraction_sync_unifies_nodes_edges(request):
     )
 
     # Run extraction with minimal cfg and cfg_db, build pdf directly
-    pdf_obj = tool._perform_subgraph_extraction(
+    pdf_obj = call_perform_subgraph_extraction(
+        tool,
         dict(base_state_val),
         SimpleNamespace(
             cost_e=1.0,
@@ -1228,7 +1291,7 @@ def test__prepare_final_subgraph_defaults_black_when_no_colors(request):
     )
     state = {"selections": {}}  # IMPORTANT: key exists but empty → triggers else: black
 
-    graph_dict = tool._prepare_final_subgraph(state, subgraphs_df, cfg_db)
+    graph_dict = call_prepare_final_subgraph(tool, state, subgraphs_df, cfg_db)
 
     # Inspect colors on returned nodes; all should be black
     nodes_list = graph_dict["nodes"][0]  # first (and only) graph's nodes list
@@ -1289,14 +1352,15 @@ async def test__perform_subgraph_extraction_async_no_vector_processing_branch(re
     )
     manager = mod.MilvusConnectionManager(cfg_db)  # this uses your FakeManager
 
-    out = await tool._perform_subgraph_extraction_async(
+    out = await call_perform_subgraph_extraction_async(
+        tool,
         ExtractionParams(
             state=base_state_val,
             cfg=cfg,
             cfg_db=cfg_db,
             query_df=qdf,
             connection_manager=manager,
-        )
+        ),
     )
     pdf = getattr(out, "to_pandas", lambda: out)()
     assert "Unified Subgraph" in set(pdf["name"])
@@ -1371,7 +1435,7 @@ def test_sync_uses_cfg_metric_when_no_vp(request):
     state = dict(base_state_val)
 
     # Run the sync extraction
-    _ = tool._perform_subgraph_extraction(state, cfg, cfg_db, query_df)
+    _ = call_perform_subgraph_extraction(tool, state, cfg, cfg_db, query_df)
 
     # Assert business logic picked cfg.search_metric_type, not loader.metric_type
     assert captured_metric_types, "PCST was not constructed"
