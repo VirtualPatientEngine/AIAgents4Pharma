@@ -46,7 +46,7 @@ dependencies = [
   "mkdocstrings==0.27.0",
   "mkdocstrings-python==1.12.2",
   "nbformat==5.10.4",
-  "numpy==1.26.4",
+  "numpy==2.3.2",
   "ollama==0.4.7",
   "openai==1.59.6",
   "openpyxl==3.1.5",
