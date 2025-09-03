@@ -4,17 +4,17 @@ name: Dependency Security Audit
 on:
   schedule:
     # Run weekly on Sundays at 2 AM UTC
-    - cron: '0 2 * * 0'
+    - cron: "0 2 * * 0"
   push:
     branches: [main]
     paths:
-      - 'pyproject.toml'
-      - 'uv.lock'
+      - "pyproject.toml"
+      - "uv.lock"
   pull_request:
     branches: [main]
     paths:
-      - 'pyproject.toml'
-      - 'uv.lock'
+      - "pyproject.toml"
+      - "uv.lock"
   workflow_dispatch:
 
 jobs:
@@ -62,7 +62,6 @@ jobs:
         with:
           name: safety-report
           path: safety-report.json
-
 
   # SARIF upload for GitHub Security tab
   upload-sarif:
@@ -147,41 +146,3 @@ jobs:
         with:
           name: security-summary
           path: security-summary.md
-
-  # Integration with SonarCloud (dependency security focus)
-  sonarcloud-security:
-    name: SonarCloud Security Integration
-    needs: [dependency-scan]
-    runs-on: ubuntu-latest
-    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download security reports
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "*-report*"
-          merge-multiple: true
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Set up Python
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync --frozen --extra dev
-
-      - name: Generate coverage for SonarCloud
-        run: |
-          uv run coverage run --source=aiagents4pharma -m pytest || true
-          uv run coverage xml
-
-      - name: SonarCloud Security Analysis
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

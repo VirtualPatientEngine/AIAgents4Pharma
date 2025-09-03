@@ -46,19 +46,23 @@ updates:
     open-pull-requests-limit: 5
 
   # Docker
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    target-branch: "main"
-    assignees:
-      - "gurdeep330"
-    commit-message:
-      prefix: "docker"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "docker"
-    open-pull-requests-limit: 3
+  # Disabled for now: repo has no Dockerfiles or Kubernetes manifests
+  # in the root directory, causing Dependabot's Docker updater to fail
+  # with "No Dockerfiles nor Kubernetes YAML found". Re-enable when
+  # Dockerfiles are added, or point `directory` at paths that contain them.
+  # - package-ecosystem: "docker"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #     time: "09:00"
+  #   target-branch: "main"
+  #   assignees:
+  #     - "gurdeep330"
+  #   commit-message:
+  #     prefix: "docker"
+  #     include: "scope"
+  #   labels:
+  #     - "dependencies"
+  #     - "docker"
+  #   open-pull-requests-limit: 3
