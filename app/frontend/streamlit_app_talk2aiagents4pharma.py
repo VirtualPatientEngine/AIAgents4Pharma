@@ -5,17 +5,15 @@ A Streamlit app for the Talk2AIAgents4Pharma graph.
 """
 
 import os
-import random
 import sys
 
 import hydra
 import streamlit as st
-from langchain_openai import OpenAIEmbeddings
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from streamlit_feedback import streamlit_feedback
-
 from utils import streamlit_utils
 
 st.set_page_config(

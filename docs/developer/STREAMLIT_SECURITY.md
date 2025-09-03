@@ -141,24 +141,20 @@ The system automatically blocks files containing:
 
 ## Application Integration
 
-### Talk2Scholars - PDF Upload
+### Talk2AIAgents4Pharma (Combined) — T2AA4P
+
+T2AA4P integrates both T2B and T2KG secure uploads via shared utilities, so no additional per-app code is needed beyond calling the helpers.
 
 ```python
-def process_pdf_upload():
-    pdf_files = secure_file_upload(
-        "Upload articles",
-        allowed_types=["pdf"],
-        help_text="Upload one or more articles in PDF format.",
-        max_size_mb=50,
-        accept_multiple_files=True,
-        key="secure_pdf_upload"
-    )
+# In app/frontend/streamlit_app_talk2aiagents4pharma.py
 
-    if pdf_files:
-        files_to_process = pdf_files if isinstance(pdf_files, list) else [pdf_files]
-        for pdf_file in files_to_process:
-            safe_filename = sanitize_filename(pdf_file.name)
-            # Process securely validated file...
+# SBML/PDF (T2B side)
+uploaded_sbml_file = streamlit_utils.get_t2b_uploaded_files(app)
+
+# Data packages and multimodal files (T2KG side)
+streamlit_utils.get_uploaded_files(cfg)
+
+# Both helpers use secure_file_upload() under the hood.
 ```
 
 ### Talk2BioModels - XML/SBML Upload

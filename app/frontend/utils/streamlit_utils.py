@@ -28,6 +28,269 @@ from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langsmith import Client
 
+# -----------------------------------------------
+# Secure Uploads: Validation and Sanitization
+# -----------------------------------------------
+
+# Global upload security configuration
+UPLOAD_SECURITY_CONFIG = {
+    "max_file_size_mb": 50,  # Global default cap
+    "max_filename_length": 255,
+    "allowed_extensions": {
+        "pdf": ["pdf"],
+        "xml": ["xml", "sbml"],
+        "spreadsheet": ["xlsx", "xls", "csv"],
+        "text": ["txt", "md"],
+    },
+    "dangerous_extensions": [
+        "exe",
+        "bat",
+        "cmd",
+        "com",
+        "pif",
+        "scr",
+        "vbs",
+        "js",
+        "jar",
+        "app",
+        "deb",
+        "pkg",
+        "dmg",
+        "rpm",
+        "msi",
+        "dll",
+        "sys",
+        "drv",
+        "sh",
+        "bash",
+        "ps1",
+        "py",
+        "pl",
+        "rb",
+        "php",
+        "asp",
+        "jsp",
+    ],
+}
+
+
+def _detect_mime(file_name: str, content: bytes | None) -> str | None:
+    """Best-effort MIME detection using python-magic if available.
+
+    Falls back to mimetypes based on file extension if libmagic is unavailable.
+    """
+    try:
+        import magic  # type: ignore
+
+        if content is not None:
+            m = magic.Magic(mime=True)
+            return m.from_buffer(content[:4096])  # use header bytes
+    except Exception:
+        pass
+    import mimetypes
+
+    mime, _ = mimetypes.guess_type(file_name)
+    return mime
+
+
+def sanitize_filename(filename: str) -> str:
+    """Sanitize a filename to prevent traversal and unsafe chars.
+
+    - Remove path components
+    - Replace unsafe chars with underscore
+    - Enforce max length
+    """
+    # Strip directory components
+    base = os.path.basename(filename)
+    # Remove Windows drive letters and colons
+    base = re.sub(r"^[A-Za-z]:\\", "", base)
+    # Replace dangerous characters
+    base = re.sub(r"[^A-Za-z0-9._-]", "_", base)
+    # Collapse repeated underscores
+    base = re.sub(r"_+", "_", base).strip("._-")
+    # Enforce max length
+    max_len = UPLOAD_SECURITY_CONFIG["max_filename_length"]
+    if len(base) > max_len:
+        name, ext = os.path.splitext(base)
+        base = name[: max_len - len(ext)] + ext
+    # Avoid empty name
+    return base or "file"
+
+
+def validate_uploaded_file(
+    uploaded_file, allowed_types: list[str], max_size_mb: int | None = None
+) -> dict:
+    """Validate a file against security policy.
+
+    Returns a dict with keys: valid: bool, error: str|None, warnings: list[str]
+    """
+    result = {"valid": True, "error": None, "warnings": []}
+
+    # Derive extension
+    original_name = getattr(uploaded_file, "name", "")
+    ext = original_name.split(".")[-1].lower() if "." in original_name else ""
+
+    # Block obviously dangerous extensions regardless of allowlist
+    if ext in UPLOAD_SECURITY_CONFIG["dangerous_extensions"]:
+        result["valid"] = False
+        result["error"] = f"File extension '{ext}' is not allowed."
+        return result
+
+    # Build master allowed extension list from categories
+    allowed_exts = set()
+    for t in allowed_types:
+        allowed_exts.update(UPLOAD_SECURITY_CONFIG["allowed_extensions"].get(t, []))
+
+    if ext not in allowed_exts:
+        result["valid"] = False
+        result["error"] = (
+            f"File extension '{ext}' not allowed. Allowed: {sorted(allowed_exts)}"
+        )
+        return result
+
+    # Size check
+    max_size = (max_size_mb or UPLOAD_SECURITY_CONFIG["max_file_size_mb"]) * 1024 * 1024
+    size_bytes = getattr(uploaded_file, "size", None)
+    if size_bytes is None:
+        try:
+            pos = uploaded_file.tell()
+            uploaded_file.seek(0, os.SEEK_END)
+            size_bytes = uploaded_file.tell()
+            uploaded_file.seek(pos)
+        except Exception:
+            size_bytes = 0
+    if size_bytes and size_bytes > max_size:
+        result["valid"] = False
+        mb = size_bytes / (1024 * 1024)
+        result["error"] = (
+            f"File too large ({mb:.1f}MB). Max: {max_size_mb or UPLOAD_SECURITY_CONFIG['max_file_size_mb']}MB"
+        )
+        return result
+
+    # Read small header/body for scanning and MIME detection
+    content = None
+    try:
+        pos = uploaded_file.tell()
+        content = uploaded_file.read(min(size_bytes or (512 * 1024), 512 * 1024))
+        uploaded_file.seek(pos)
+    except Exception:
+        content = None
+
+    # MIME verification
+    mime = _detect_mime(original_name, content)
+    expected_mimes_by_type = {
+        "pdf": {"application/pdf"},
+        "xml": {"application/xml", "text/xml"},
+        "spreadsheet": {
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel",
+            "text/csv",
+            "application/csv",
+        },
+        "text": {"text/plain", "text/markdown"},
+    }
+    expected_mimes = set()
+    for t in allowed_types:
+        expected_mimes |= expected_mimes_by_type.get(t, set())
+    # Only warn if we couldn't reliably detect
+    if mime and expected_mimes and mime not in expected_mimes:
+        result["warnings"].append(
+            f"MIME type mismatch: detected '{mime}', expected one of {sorted(expected_mimes)}"
+        )
+
+    # Content scanning for dangerous patterns
+    if content:
+        lower = content[:65536].decode(errors="ignore").lower()
+        # Common dangerous patterns
+        dangerous_patterns = [
+            r"<script",
+            r"javascript:",
+            r"vbscript:",
+            r"<\?php",
+            r"#!/bin/",
+            r"shell_exec\(",
+            r"\beval\(",
+            r"\bexec\(",
+            r"\bsystem\(",
+        ]
+        # Additional template/server code marker, but avoid false positives for PDFs
+        if "pdf" not in allowed_types:
+            dangerous_patterns.append(r"<%")
+        else:
+            # PDFs: allow <% generally but block explicit code injections
+            dangerous_patterns += [r"<%\s*eval", r"<%\s*system"]
+
+        for pat in dangerous_patterns:
+            if re.search(pat, lower):
+                result["valid"] = False
+                result["error"] = f"File contains suspicious content pattern: {pat}"
+                return result
+
+        # Light-weight header validation
+        if "pdf" in allowed_types and not lower.lstrip().startswith("%pdf-"):
+            result["warnings"].append("Missing expected PDF header (%PDF-)")
+        if "xml" in allowed_types and "<?xml" not in lower[:200]:
+            result["warnings"].append("Missing expected XML header (<?xml)")
+
+    return result
+
+
+def secure_file_upload(
+    label: str,
+    allowed_types: list[str],
+    help_text: str | None = None,
+    max_size_mb: int | None = None,
+    accept_multiple_files: bool = False,
+    key: str | None = None,
+    override_extensions: list[str] | None = None,
+):
+    """Wrapper around st.file_uploader with validation and sanitization.
+
+    Returns a single UploadedFile, a list of UploadedFile, or None.
+    Adds attribute 'sanitized_name' to returned file objects for safe saving.
+    """
+    # Build extension whitelist for Streamlit uploader
+    if override_extensions is not None:
+        ext_whitelist = override_extensions
+    else:
+        ext_whitelist = []
+        for t in allowed_types:
+            ext_whitelist += UPLOAD_SECURITY_CONFIG["allowed_extensions"].get(t, [])
+
+    files = st.file_uploader(
+        label,
+        help=help_text,
+        accept_multiple_files=accept_multiple_files,
+        type=ext_whitelist if ext_whitelist else None,
+        key=key,
+    )
+
+    if not files:
+        return None
+
+    files_list = files if accept_multiple_files else [files]
+    accepted = []
+
+    for f in files_list:
+        result = validate_uploaded_file(f, allowed_types, max_size_mb)
+        if not result["valid"]:
+            st.error(f"❌ {getattr(f, 'name', 'file')}: {result['error']}")
+            continue
+        for w in result["warnings"]:
+            st.warning(f"⚠️ {getattr(f, 'name', 'file')}: {w}")
+        # Attach sanitized name for downstream use
+        try:
+            f.sanitized_name = sanitize_filename(getattr(f, "name", "file"))
+        except Exception:
+            pass
+        accepted.append(f)
+
+    if not accepted:
+        return None
+    if accept_multiple_files:
+        return accepted
+    return accepted[0]
+
 
 def resolve_logo(cfg) -> str | None:
     """
@@ -848,7 +1111,7 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     figures_inner_html = ""
 
     for name, subgraph_nodes, subgraph_edges in zip(
-        graph_dict["name"], graph_dict["nodes"], graph_dict["edges"]
+        graph_dict["name"], graph_dict["nodes"], graph_dict["edges"], strict=False
     ):
         # Create a directed graph
         graph = nx.DiGraph()
@@ -1358,29 +1621,33 @@ def get_file_type_icon(file_type: str) -> str:
 @st.fragment
 def get_t2b_uploaded_files(app):
     """
-    Upload files for T2B agent.
+    Upload files for T2B agent with secure validation.
     """
-    # Upload the XML/SBML file
-    uploaded_sbml_file = st.file_uploader(
+    # Upload the XML/SBML file securely
+    uploaded_sbml_file = secure_file_upload(
         "Upload an XML/SBML file",
+        allowed_types=["xml"],
+        help_text="Upload a QSP as an XML/SBML file",
+        max_size_mb=25,
         accept_multiple_files=False,
-        type=["xml", "sbml"],
-        help="Upload a QSP as an XML/SBML file",
+        key="secure_sbml_upload",
     )
 
-    # Upload the article
-    article = st.file_uploader(
+    # Upload the article securely
+    article = secure_file_upload(
         "Upload an article",
-        help="Upload a PDF article to ask questions.",
+        allowed_types=["pdf"],
+        help_text="Upload a PDF article to ask questions.",
+        max_size_mb=50,
         accept_multiple_files=False,
-        type=["pdf"],
-        key=f"article_{st.session_state.t2b_article_key}",
+        key=f"secure_article_upload_{st.session_state.t2b_article_key}",
     )
 
     # Update the agent state with the uploaded article
     if article:
         # print (article.name)
-        with tempfile.NamedTemporaryFile(delete=False) as f:
+        safe_name = getattr(article, "sanitized_name", sanitize_filename(article.name))
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{safe_name}") as f:
             f.write(article.read())
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
@@ -1398,12 +1665,13 @@ def get_t2b_uploaded_files(app):
         # Persist PDF path in session for subsequent turns
         st.session_state.pdf_file_path = f.name
 
-        if article.name not in [
+        display_name = safe_name
+        if display_name not in [
             uf["file_name"] for uf in st.session_state.t2b_uploaded_files
         ]:
             st.session_state.t2b_uploaded_files.append(
                 {
-                    "file_name": article.name,
+                    "file_name": display_name,
                     "file_path": f.name,
                     "file_type": "article",
                     "uploaded_by": st.session_state.current_user,
@@ -1509,26 +1777,54 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     Args:
         cfg: The configuration object.
     """
-    data_package_files = st.file_uploader(
+
+    def _exts_to_categories(exts: list[str]) -> list[str]:
+        categories = set()
+        for e in exts:
+            e = e.lower()
+            for cat, cat_exts in UPLOAD_SECURITY_CONFIG["allowed_extensions"].items():
+                if e in cat_exts:
+                    categories.add(cat)
+        return list(categories) if categories else []
+
+    data_exts = cfg.app.frontend.data_package_allowed_file_types
+    data_categories = _exts_to_categories(data_exts)
+    data_package_files = secure_file_upload(
         "💊 Upload pre-clinical drug data",
-        help="Free-form text. Must contain atleast drug targets and kinetic parameters",
+        allowed_types=data_categories or ["text", "spreadsheet", "pdf"],
+        help_text="Free-form text. Must contain atleast drug targets and kinetic parameters",
+        max_size_mb=25,
         accept_multiple_files=True,
-        type=cfg.app.frontend.data_package_allowed_file_types,
         key=f"uploader_{st.session_state.data_package_key}",
+        override_extensions=data_exts,
     )
 
-    multimodal_files = st.file_uploader(
+    multimodal_exts = cfg.app.frontend.multimodal_allowed_file_types
+    multimodal_categories = _exts_to_categories(multimodal_exts)
+    multimodal_files = secure_file_upload(
         "📦 Upload multimodal endotype/phenotype data package",
-        help="A spread sheet containing multimodal endotype/phenotype data package (e.g., genes, drugs, etc.)",
+        allowed_types=multimodal_categories or ["spreadsheet"],
+        help_text="A spread sheet containing multimodal endotype/phenotype data package (e.g., genes, drugs, etc.)",
+        max_size_mb=50,
         accept_multiple_files=True,
-        type=cfg.app.frontend.multimodal_allowed_file_types,
         key=f"uploader_multimodal_{st.session_state.multimodal_key}",
+        override_extensions=multimodal_exts,
     )
 
     # Merge the uploaded files
-    uploaded_files = data_package_files.copy()
+    uploaded_files = []
+    if data_package_files:
+        uploaded_files += (
+            data_package_files
+            if isinstance(data_package_files, list)
+            else [data_package_files]
+        )
     if multimodal_files:
-        uploaded_files += multimodal_files.copy()
+        uploaded_files += (
+            multimodal_files
+            if isinstance(multimodal_files, list)
+            else [multimodal_files]
+        )
 
     with st.spinner("Storing uploaded file(s) ..."):
         # for uploaded_file in data_package_files:
@@ -1539,16 +1835,35 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                 current_timestamp = datetime.datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
-                uploaded_file.file_name = uploaded_file.name
+                safe_name = getattr(
+                    uploaded_file,
+                    "sanitized_name",
+                    sanitize_filename(uploaded_file.name),
+                )
+                uploaded_file.file_name = safe_name
                 uploaded_file.file_path = (
                     f"{cfg.app.frontend.upload_data_dir}/{uploaded_file.file_name}"
                 )
                 uploaded_file.current_user = st.session_state.current_user
                 uploaded_file.timestamp = current_timestamp
-                if uploaded_file.name in [uf.name for uf in data_package_files]:
+                # Determine file_type by source list membership when lists are present
+                try:
+                    if data_package_files and uploaded_file in (
+                        data_package_files
+                        if isinstance(data_package_files, list)
+                        else [data_package_files]
+                    ):
+                        uploaded_file.file_type = "drug_data"
+                    elif multimodal_files and uploaded_file in (
+                        multimodal_files
+                        if isinstance(multimodal_files, list)
+                        else [multimodal_files]
+                    ):
+                        uploaded_file.file_type = "multimodal"
+                    else:
+                        uploaded_file.file_type = "drug_data"
+                except Exception:
                     uploaded_file.file_type = "drug_data"
-                elif uploaded_file.name in [uf.name for uf in multimodal_files]:
-                    uploaded_file.file_type = "multimodal"
                 st.session_state.uploaded_files.append(
                     {
                         "file_name": uploaded_file.file_name,
@@ -1564,6 +1879,11 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     ),
                     "wb",
                 ) as f:
+                    # Ensure buffer is read from start
+                    try:
+                        uploaded_file.seek(0)
+                    except Exception:
+                        pass
                     f.write(uploaded_file.getbuffer())
                 uploaded_file = None
 
@@ -1645,8 +1965,9 @@ def initialize_session_state(cfg, agent_type="T2B"):
         cfg: Hydra configuration object
         agent_type: str: Type of agent ("T2B", "T2KG", "T2S", "T2AA4P")
     """
-    import random
     import os
+    import random
+
     import streamlit as st
 
     # Core configuration
@@ -1685,8 +2006,8 @@ def initialize_session_state(cfg, agent_type="T2B"):
 
     if "text_embedding_model" not in st.session_state:
         all_embeddings = get_all_available_embeddings(cfg)
-        # Default to NVIDIA embedding as per current T2B app
-        default_embedding = "NVIDIA/llama-3.2-nv-embedqa-1b-v2"
+        # Default to OpenAI text-embedding-ada-002 unless config overrides
+        default_embedding = "OpenAI/text-embedding-ada-002"
         if default_embedding in all_embeddings:
             st.session_state.text_embedding_model = default_embedding
         else:

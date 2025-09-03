@@ -5,14 +5,12 @@ Talk2KnowledgeGraphs: A Streamlit app for the Talk2KnowledgeGraphs graph.
 """
 
 import os
-import random
 import sys
 
 import hydra
 import streamlit as st
 from langchain_core.messages import ChatMessage, HumanMessage
 from streamlit_feedback import streamlit_feedback
-
 from utils import streamlit_utils
 
 sys.path.append("./")

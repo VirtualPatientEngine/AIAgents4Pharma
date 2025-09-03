@@ -13,12 +13,11 @@ import tempfile
 
 import hydra
 import streamlit as st
-from hydra.core.global_hydra import GlobalHydra
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
@@ -72,6 +71,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+
 # Set the logo using config
 def get_logo_path():
     container_path = cfg_frontend.logo_paths.container
@@ -93,9 +93,7 @@ def get_logo_path():
 
 logo_path = get_logo_path()
 if logo_path:
-    st.logo(
-        image=logo_path, size="large", link=cfg_frontend.logo_link
-    )
+    st.logo(image=logo_path, size="large", link=cfg_frontend.logo_link)
 
 
 # Check required environment variables based on config
@@ -173,7 +171,7 @@ def process_pdf_upload():
         help_text="Upload one or more articles in PDF format.",
         max_size_mb=50,  # Reasonable size for academic PDFs
         accept_multiple_files=True,
-        key="secure_pdf_upload"
+        key="secure_pdf_upload",
     )
 
     if pdf_files:

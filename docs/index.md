@@ -103,6 +103,14 @@ export LANGCHAIN_API_KEY=...        # Optional for all agents
 
 4. **Launch the app:**
 
+> System Dependency: libmagic (for secure uploads)
+> For accurate file MIME-type detection used by our secure upload validation, install the libmagic system library. This is recommended across all providers (OpenAI, Azure OpenAI, NVIDIA) because it runs locally in the Streamlit apps.
+>
+> - Linux (Debian/Ubuntu): `sudo apt-get install libmagic1`
+> - macOS (Homebrew): `brew install libmagic`
+> - Windows: Use the `python-magic`/`python-magic-bin` package; libmagic is bundled
+>   If libmagic is not available, the apps fall back to extension-based detection. For best security, keep libmagic installed.
+
 **Option A: Using UV (recommended)**
 
 ```sh

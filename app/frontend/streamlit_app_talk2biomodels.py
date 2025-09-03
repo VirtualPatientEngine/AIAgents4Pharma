@@ -5,12 +5,12 @@ Talk2Biomodels: A Streamlit app for the Talk2Biomodels graph.
 """
 
 import os
-import random
+import sys
+
 import hydra
 import streamlit as st
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_openai import ChatOpenAI
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
@@ -100,7 +100,6 @@ app = st.session_state.app
 # Use shared upload utility for T2B (SBML + PDF)
 def _get_uploaded_files_wrapper():
     return streamlit_utils.get_t2b_uploaded_files(app)
-
 
 
 # Main layout of the app split into two columns
