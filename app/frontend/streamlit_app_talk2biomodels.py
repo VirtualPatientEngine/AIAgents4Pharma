@@ -6,8 +6,7 @@ Talk2Biomodels: A Streamlit app for the Talk2Biomodels graph.
 
 import os
 import random
-import sys
-
+import hydra
 import streamlit as st
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -17,46 +16,64 @@ from utils import streamlit_utils
 
 st.set_page_config(page_title="Talk2Biomodels", page_icon="🤖", layout="wide")
 
-
-# Set the logo, detect if we're in container or local development
-def get_logo_path():
-    container_path = "/app/docs/assets/VPE.png"
-    local_path = "docs/assets/VPE.png"
-
-    if os.path.exists(container_path):
-        return container_path
-    elif os.path.exists(local_path):
-        return local_path
-    else:
-        # Fallback: try to find it relative to script location
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
-        if os.path.exists(relative_path):
-            return relative_path
-
-    return None  # File not found
+# Initialize configuration
+hydra.core.global_hydra.GlobalHydra.instance().clear()
+if "config" not in st.session_state:
+    # Load Hydra configuration
+    with hydra.initialize(
+        version_base=None,
+        config_path="../../aiagents4pharma/talk2biomodels/configs",
+    ):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["app/frontend=default"],
+        )
+        st.session_state.config = cfg
+else:
+    cfg = st.session_state.config
 
 
-logo_path = get_logo_path()
+# Resolve logo via shared utility
+logo_path = streamlit_utils.resolve_logo(cfg)
 if logo_path:
-    st.logo(
-        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
-    )
+    if hasattr(st, "logo"):
+        st.logo(image=logo_path, size="large", link=cfg.app.frontend.logo_link)
+    else:
+        st.image(image=logo_path, use_column_width=False)
 
-# Check if env variables OPENAI_API_KEY and/or
-# NVIDIA_API_KEY exist
-if "OPENAI_API_KEY" not in os.environ or "NVIDIA_API_KEY" not in os.environ:
-    st.error(
-        "Please set the OPENAI_API_KEY and NVIDIA_API_KEY "
-        "environment variables in the terminal where you run "
-        "the app. For more information, please refer to our "
-        "[documentation](https://virtualpatientengine.github.io/AIAgents4Pharma/#option-2-git)."
-    )
-    st.stop()
+# Defer provider-aware environment checks until after session initialization
 
 # Import the agent
 sys.path.append("./")
 from aiagents4pharma.talk2biomodels.agents.t2b_agent import get_app
+
+# Initialize unified session state
+streamlit_utils.initialize_session_state(cfg, agent_type="T2B")
+
+# Provider-aware environment checks (warn-only)
+needed_env = set()
+llm_choice = st.session_state.get("llm_model", "")
+emb_choice = st.session_state.get("text_embedding_model", "")
+
+
+def needs(prefix: str) -> bool:
+    return llm_choice.startswith(prefix) or emb_choice.startswith(prefix)
+
+
+if needs("OpenAI/"):
+    needed_env.add("OPENAI_API_KEY")
+if needs("Azure/"):
+    for var in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT"):
+        needed_env.add(var)
+if needs("NVIDIA/"):
+    needed_env.add("NVIDIA_API_KEY")
+
+missing = [var for var in needed_env if var not in os.environ]
+if missing:
+    st.warning(
+        "Missing environment settings for the selected provider(s): "
+        + ", ".join(missing)
+    )
 
 ########################################################################################
 # Streamlit app
@@ -70,80 +87,20 @@ prompt = ChatPromptTemplate.from_messages(
         ("placeholder", "{agent_scratchpad}"),
     ]
 )
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Initialize sbml_file_path
-if "sbml_file_path" not in st.session_state:
-    st.session_state.sbml_file_path = None
-
-# Initialize project_name for Langsmith
-if "project_name" not in st.session_state:
-    # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = "T2B-" + str(random.randint(1000, 9999))
-
-# Initialize run_id for Langsmith
-if "run_id" not in st.session_state:
-    st.session_state.run_id = None
-
-# Initialize graph
-if "unique_id" not in st.session_state:
-    st.session_state.unique_id = random.randint(1, 1000)
 if "app" not in st.session_state:
-    if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        )
-    else:
-        print(st.session_state.llm_model)
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
-        )
+    st.session_state.app = get_app(
+        st.session_state.unique_id,
+        llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
+    )
 
 # Get the app
 app = st.session_state.app
 
 
-@st.fragment
-def get_uploaded_files():
-    """
-    Upload files.
-    """
-    # Upload the XML/SBML file
-    uploaded_sbml_file = st.file_uploader(
-        "Upload an XML/SBML file",
-        accept_multiple_files=False,
-        type=["xml", "sbml"],
-        help="Upload a QSP as an XML/SBML file",
-    )
+# Use shared upload utility for T2B (SBML + PDF)
+def _get_uploaded_files_wrapper():
+    return streamlit_utils.get_t2b_uploaded_files(app)
 
-    # Upload the article
-    article = st.file_uploader(
-        "Upload an article",
-        help="Upload a PDF article to ask questions.",
-        accept_multiple_files=False,
-        type=["pdf"],
-        key="article",
-    )
-    # print (article)
-    # Update the agent state with the uploaded article
-    if article:
-        import tempfile
-
-        print(article.name)
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            f.write(article.read())
-            # print (f.name)
-        # Create config for the agent
-        config = {"configurable": {"thread_id": st.session_state.unique_id}}
-        # Update the agent state with the selected LLM model
-        app.update_state(config, {"pdf_file_name": f.name})
-    # Return the uploaded file
-    return uploaded_sbml_file
 
 
 # Main layout of the app split into two columns
@@ -162,12 +119,7 @@ with main_col1:
         )
 
         # LLM model panel
-        llms = [
-            "OpenAI/gpt-4o-mini",
-            "NVIDIA/llama-3.3-70b-instruct",
-            "NVIDIA/llama-3.1-70b-instruct",
-            "NVIDIA/llama-3.1-405b-instruct",
-        ]
+        llms = tuple(streamlit_utils.get_all_available_llms(cfg))
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
@@ -178,10 +130,7 @@ with main_col1:
         )
 
         # Text embedding model panel
-        text_models = [
-            "NVIDIA/llama-3.2-nv-embedqa-1b-v2",
-            "OpenAI/text-embedding-ada-002",
-        ]
+        text_models = tuple(streamlit_utils.get_all_available_embeddings(cfg))
         st.selectbox(
             "Pick a text embedding model",
             text_models,
@@ -192,8 +141,8 @@ with main_col1:
             help="Used for Retrival Augmented Generation (RAG) and other tasks.",
         )
 
-        # Upload files
-        uploaded_sbml_file = get_uploaded_files()
+        # Upload files (SBML + PDF)
+        uploaded_sbml_file = _get_uploaded_files_wrapper()
 
         # Help text
         st.button(
@@ -349,7 +298,7 @@ with main_col2:
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions()):
                 if st.button(
-                    f"Q{count + 1}. {question}", key=f"sample_question_{count + 1}"
+                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
                 ):
                     # Trigger the question
                     prompt = question
@@ -358,8 +307,8 @@ with main_col2:
                     {
                         "type": "button",
                         "question": question,
-                        "content": f"Q{count + 1}. {question}",
-                        "key": f"sample_question_{count + 1}",
+                        "content": f"Q{count+1}. {question}",
+                        "key": f"sample_question_{count+1}",
                     }
                 )
 

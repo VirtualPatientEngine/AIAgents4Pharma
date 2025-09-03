@@ -2,8 +2,8 @@
 Exctraction of multimodal subgraph using Prize-Collecting Steiner Tree (PCST) algorithm.
 """
 
+import asyncio
 import logging
-import pickle
 import platform
 import subprocess
 from typing import NamedTuple
@@ -14,8 +14,8 @@ import pcst_fast
 from pymilvus import Collection
 
 try:
-    import cudf
-    import cupy as cp
+    import cudf  # type: ignore
+    import cupy as cp  # type: ignore
 
     CUDF_AVAILABLE = True
 except ImportError:
@@ -217,6 +217,110 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return colls
 
+    async def load_edge_index_async(self, cfg: dict, _connection_manager=None) -> np.ndarray:
+        """
+        Load edge index using hybrid async/sync approach to avoid event loop issues.
+
+        This method queries the edges collection to get head_index and tail_index,
+        eliminating the need for pickle caching and reducing memory usage.
+
+        Args:
+            cfg: The configuration dictionary containing the Milvus setup.
+            _connection_manager: Unused parameter for interface compatibility.
+
+        Returns:
+            numpy.ndarray: Edge index array with shape [2, num_edges]
+        """
+        logger.log(logging.INFO, "Loading edge index from Milvus collection (hybrid)")
+
+        def load_edges_sync():
+            """Load edges synchronously to avoid event loop issues."""
+
+            collection_name = f"{cfg.milvus_db.database_name}_edges"
+            edges_collection = Collection(name=collection_name)
+            edges_collection.load()
+
+            # Query all edges in batches
+            batch_size = getattr(cfg.milvus_db, "query_batch_size", 10000)
+            total_entities = edges_collection.num_entities
+            logger.log(logging.INFO, "Total edges to process: %d", total_entities)
+
+            head_list = []
+            tail_list = []
+
+            for start in range(0, total_entities, batch_size):
+                end = min(start + batch_size, total_entities)
+                logger.debug("Processing edge batch: %d to %d", start, end)
+
+                batch = edges_collection.query(
+                    expr=f"triplet_index >= {start} and triplet_index < {end}",
+                    output_fields=["head_index", "tail_index"],
+                )
+
+                head_list.extend([r["head_index"] for r in batch])
+                tail_list.extend([r["tail_index"] for r in batch])
+
+            # Convert to numpy array format expected by PCST
+            edge_index = self.loader.py.array([head_list, tail_list])
+            logger.log(
+                logging.INFO,
+                "Edge index loaded (hybrid): shape %s",
+                str(edge_index.shape),
+            )
+
+            return edge_index
+
+        # Run in thread to avoid event loop conflicts
+        return await asyncio.to_thread(load_edges_sync)
+
+    def load_edge_index(self, cfg: dict) -> np.ndarray:
+        """
+        Load edge index synchronously from Milvus collection.
+
+        This method queries the edges collection to get head_index and tail_index.
+
+        Args:
+            cfg: The configuration dictionary containing the Milvus setup.
+
+        Returns:
+            numpy.ndarray: Edge index array with shape [2, num_edges]
+        """
+        logger.log(logging.INFO, "Loading edge index from Milvus collection (sync)")
+
+        collection_name = f"{cfg.milvus_db.database_name}_edges"
+        edges_collection = Collection(name=collection_name)
+        edges_collection.load()
+
+        # Query all edges in batches
+        batch_size = getattr(cfg.milvus_db, "query_batch_size", 10000)
+        total_entities = edges_collection.num_entities
+        logger.log(logging.INFO, "Total edges to process: %d", total_entities)
+
+        head_list = []
+        tail_list = []
+
+        for start in range(0, total_entities, batch_size):
+            end = min(start + batch_size, total_entities)
+            logger.debug("Processing edge batch: %d to %d", start, end)
+
+            batch = edges_collection.query(
+                expr=f"triplet_index >= {start} and triplet_index < {end}",
+                output_fields=["head_index", "tail_index"],
+            )
+
+            head_list.extend([r["head_index"] for r in batch])
+            tail_list.extend([r["tail_index"] for r in batch])
+
+        # Convert to numpy array format expected by PCST
+        edge_index = self.loader.py.array([head_list, tail_list])
+        logger.log(
+            logging.INFO,
+            "Edge index loaded (sync): shape %s",
+            str(edge_index.shape),
+        )
+
+        return edge_index
+
     def _compute_node_prizes(self, query_emb: list, colls: dict) -> dict:
         """
         Compute the node prizes based on the similarity between the query and nodes.
@@ -263,6 +367,56 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return n_prizes
 
+    async def _compute_node_prizes_async(
+        self,
+        query_emb: list,
+        collection_name: str,
+        connection_manager,
+        use_description: bool = False,
+    ) -> dict:
+        """
+        Compute the node prizes asynchronously using connection manager.
+
+        Args:
+            query_emb: The query embedding
+            collection_name: Name of the collection to search
+            connection_manager: The MilvusConnectionManager instance
+            use_description: Whether to use description embeddings
+
+        Returns:
+            The prizes of the nodes
+        """
+        # Get collection stats for initialization
+        stats = await connection_manager.async_get_collection_stats(collection_name)
+        num_entities = stats["num_entities"]
+
+        # Initialize prizes array
+        topk = min(self.topk, num_entities)
+        n_prizes = self.loader.py.zeros(num_entities, dtype=self.loader.py.float32)
+
+        # Get the actual metric type to use
+        actual_metric_type = self.metric_type or self.loader.metric_type
+
+        # Determine search field based on use_description
+        anns_field = "desc_emb" if use_description else "feat_emb"
+
+        # Perform async search
+        results = await connection_manager.async_search(
+            collection_name=collection_name,
+            data=[query_emb],
+            anns_field=anns_field,
+            param={"metric_type": actual_metric_type},
+            limit=topk,
+            output_fields=["node_id"],
+        )
+
+        # Update the prizes based on the search results
+        if results and len(results) > 0:
+            result_ids = [hit["id"] for hit in results[0]]
+            n_prizes[result_ids] = self.loader.py.arange(topk, 0, -1).astype(self.loader.py.float32)
+
+        return n_prizes
+
     def _compute_edge_prizes(self, text_emb: list, colls: dict):
         """
         Compute the edge prizes based on the similarity between the query and edges.
@@ -305,6 +459,65 @@ class MultimodalPCSTPruning(NamedTuple):
 
         return e_prizes
 
+    async def _compute_edge_prizes_async(
+        self, text_emb: list, collection_name: str, connection_manager
+    ) -> dict:
+        """
+        Compute the edge prizes asynchronously using connection manager.
+
+        Args:
+            text_emb: The textual description embedding
+            collection_name: Name of the edges collection
+            connection_manager: The MilvusConnectionManager instance
+
+        Returns:
+            The prizes of the edges
+        """
+        # Get collection stats for initialization
+        stats = await connection_manager.async_get_collection_stats(collection_name)
+        num_entities = stats["num_entities"]
+
+        # Initialize prizes array
+        topk_e = min(self.topk_e, num_entities)
+        e_prizes = self.loader.py.zeros(num_entities, dtype=self.loader.py.float32)
+
+        # Get the actual metric type to use
+        actual_metric_type = self.metric_type or self.loader.metric_type
+
+        # Perform async search
+        results = await connection_manager.async_search(
+            collection_name=collection_name,
+            data=[text_emb],
+            anns_field="feat_emb",
+            param={"metric_type": actual_metric_type},
+            limit=topk_e,
+            output_fields=["head_id", "tail_id"],
+        )
+
+        # Update the prizes based on the search results
+        if results and len(results) > 0:
+            result_ids = [hit["id"] for hit in results[0]]
+            result_scores = [hit["distance"] for hit in results[0]]  # Use distance/score
+            e_prizes[result_ids] = result_scores
+
+        # Process edge prizes using helper method
+        return self._process_edge_prizes(e_prizes, topk_e)
+
+    def _process_edge_prizes(self, e_prizes, topk_e):
+        """Helper method to process edge prizes and reduce complexity."""
+        unique_prizes, inverse_indices = self.loader.py.unique(e_prizes, return_inverse=True)
+        sorted_indices = self.loader.py.argsort(-unique_prizes)[:topk_e]
+        topk_e_values = unique_prizes[sorted_indices]
+        last_topk_e_value = topk_e
+
+        for k in range(topk_e):
+            indices = inverse_indices == (unique_prizes == topk_e_values[k]).nonzero()[0]
+            value = min((topk_e - k) / indices.sum().item(), last_topk_e_value)
+            e_prizes[indices] = value
+            last_topk_e_value = value * (1 - self.c_const)
+
+        return e_prizes
+
     def compute_prizes(self, text_emb: list, query_emb: list, colls: dict) -> dict:
         """
         Compute the node prizes based on the cosine similarity between the query and nodes,
@@ -330,6 +543,27 @@ class MultimodalPCSTPruning(NamedTuple):
         e_prizes = self._compute_edge_prizes(text_emb, colls)
 
         return {"nodes": n_prizes, "edges": e_prizes}
+
+    async def compute_prizes_async(
+        self, text_emb: list, query_emb: list, cfg: dict, modality: str
+    ) -> dict:
+        """
+        Compute node and edge prizes asynchronously in parallel using sync fallback.
+
+        Args:
+            text_emb: The textual description embedding
+            query_emb: The query embedding
+            cfg: The configuration dictionary containing the Milvus setup
+            modality: The modality to use for the subgraph extraction
+
+        Returns:
+            The prizes of the nodes and edges
+        """
+        logger.log(logging.INFO, "Computing prizes in parallel (hybrid async/sync)")
+
+        # Use existing sync method wrapped in asyncio.to_thread
+        colls = self.prepare_collections(cfg, modality)
+        return await asyncio.to_thread(self.compute_prizes, text_emb, query_emb, colls)
 
     def compute_subgraph_costs(self, edge_index, num_nodes: int, prizes: dict):
         """
@@ -481,11 +715,9 @@ class MultimodalPCSTPruning(NamedTuple):
         logger.log(logging.INFO, "Preparing collections")
         colls = self.prepare_collections(cfg, modality)
 
-        # Load cache edge index
-        logger.log(logging.INFO, "Loading cache edge index")
-        with open(cfg.milvus_db.cache_edge_index_path, "rb") as f:
-            edge_index = pickle.load(f)
-            edge_index = self.loader.py.array(edge_index)
+        # Load edge index directly from Milvus (replaces pickle cache)
+        logger.log(logging.INFO, "Loading edge index from Milvus")
+        edge_index = self.load_edge_index(cfg)
 
         # Assert the topk and topk_e values for subgraph retrieval
         assert self.topk > 0, "topk must be greater than or equal to 0"

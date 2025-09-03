@@ -5,13 +5,9 @@ Utils for Streamlit.
 """
 
 import datetime
-import hashlib
-import magic
 import os
-import pickle
 import re
 import tempfile
-from typing import Dict, List, Optional, Union
 
 import gravis
 import hydra
@@ -20,352 +16,67 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import streamlit.components.v1 as components
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from langchain.callbacks.tracers import LangChainTracer
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk, ChatMessage, HumanMessage
 from langchain_core.tracers.context import collect_runs
 from langchain_nvidia_ai_endpoints import ChatNVIDIA, NVIDIAEmbeddings
-from langchain_ollama import ChatOllama
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langsmith import Client
-from pymilvus import Collection, connections, db
 
 
-# Security configuration for file uploads
-UPLOAD_SECURITY_CONFIG = {
-    "max_file_size_mb": 50,  # Maximum file size in MB
-    "allowed_extensions": {
-        "pdf": ["pdf"],
-        "xml": ["xml", "sbml"],
-        "spreadsheet": ["xlsx", "xls", "csv"],
-        "text": ["txt", "md"],
-    },
-    "allowed_mime_types": {
-        "pdf": ["application/pdf"],
-        "xml": ["application/xml", "text/xml", "application/x-xml"],
-        "spreadsheet": [
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.ms-excel",
-            "text/csv",
-        ],
-        "text": ["text/plain", "text/markdown"],
-    },
-    "dangerous_extensions": [
-        "exe", "bat", "cmd", "com", "pif", "scr", "vbs", "js", "jar",
-        "app", "deb", "pkg", "dmg", "rpm", "msi", "dll", "sys", "drv",
-        "sh", "bash", "ps1", "py", "pl", "rb", "php", "asp", "jsp"
-    ],
-    "max_filename_length": 255,
-}
-
-
-class FileUploadError(Exception):
-    """Custom exception for file upload validation errors."""
-    pass
-
-
-def validate_uploaded_file(
-    uploaded_file,
-    allowed_types: List[str],
-    max_size_mb: Optional[int] = None
-) -> Dict[str, Union[bool, str]]:
+def resolve_logo(cfg) -> str | None:
     """
-    Comprehensive security validation for uploaded files.
+    Resolve a logo path from config with safe fallbacks.
 
     Args:
-        uploaded_file: Streamlit uploaded file object
-        allowed_types: List of allowed file type categories (e.g., ['pdf', 'xml'])
-        max_size_mb: Maximum file size in MB (overrides default if provided)
+        cfg: Hydra configuration object with app.frontend.logo_paths
 
     Returns:
-        Dict with validation results: {'valid': bool, 'error': str, 'warnings': List[str]}
-
-    Raises:
-        FileUploadError: If validation fails critically
+        str | None: Path to logo image if found, else None
     """
-    if not uploaded_file:
-        return {"valid": False, "error": "No file provided", "warnings": []}
-
-    warnings = []
-    max_size = (max_size_mb or UPLOAD_SECURITY_CONFIG["max_file_size_mb"]) * 1024 * 1024
-
-    # 1. File name validation
-    if len(uploaded_file.name) > UPLOAD_SECURITY_CONFIG["max_filename_length"]:
-        return {
-            "valid": False,
-            "error": f"Filename too long (max {UPLOAD_SECURITY_CONFIG['max_filename_length']} chars)",
-            "warnings": warnings
-        }
-
-    # Check for dangerous characters in filename
-    dangerous_chars = ['<', '>', ':', '"', '|', '?', '*', '\\', '/', '\0']
-    if any(char in uploaded_file.name for char in dangerous_chars):
-        return {
-            "valid": False,
-            "error": "Filename contains dangerous characters",
-            "warnings": warnings
-        }
-
-    # 2. File extension validation
-    file_ext = uploaded_file.name.split('.')[-1].lower() if '.' in uploaded_file.name else ""
-
-    if file_ext in UPLOAD_SECURITY_CONFIG["dangerous_extensions"]:
-        return {
-            "valid": False,
-            "error": f"Dangerous file extension '{file_ext}' not allowed",
-            "warnings": warnings
-        }
-
-    # Check if extension is in allowed types
-    allowed_extensions = []
-    for file_type in allowed_types:
-        if file_type in UPLOAD_SECURITY_CONFIG["allowed_extensions"]:
-            allowed_extensions.extend(UPLOAD_SECURITY_CONFIG["allowed_extensions"][file_type])
-
-    if file_ext not in allowed_extensions:
-        return {
-            "valid": False,
-            "error": f"File extension '{file_ext}' not allowed. Allowed: {allowed_extensions}",
-            "warnings": warnings
-        }
-
-    # 3. File size validation
-    file_size = uploaded_file.size
-    if file_size > max_size:
-        return {
-            "valid": False,
-            "error": f"File too large ({file_size/1024/1024:.1f}MB). Max: {max_size/1024/1024}MB",
-            "warnings": warnings
-        }
-
-    if file_size == 0:
-        return {"valid": False, "error": "File is empty", "warnings": warnings}
-
-    # 4. MIME type validation (read first bytes to check)
     try:
-        file_content = uploaded_file.read()
-        uploaded_file.seek(0)  # Reset file pointer
+        container_path = cfg.app.frontend.logo_paths.container
+        local_path = cfg.app.frontend.logo_paths.local
+        relative_cfg = cfg.app.frontend.logo_paths.relative
+    except Exception:
+        # Minimal fallback if config paths are missing
+        container_path = "/app/docs/assets/VPE.png"
+        local_path = "docs/assets/VPE.png"
+        relative_cfg = "../../docs/assets/VPE.png"
 
-        # Use python-magic to detect MIME type
-        detected_mime = magic.from_buffer(file_content, mime=True)
+    if os.path.exists(container_path):
+        return container_path
+    if os.path.exists(local_path):
+        return local_path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # __file__ is utils dir; adjust to app dir for relative
+    # Go up one to frontend
+    script_dir = os.path.dirname(script_dir)
+    relative_path = os.path.join(script_dir, relative_cfg)
+    if os.path.exists(relative_path):
+        return relative_path
+    return None
 
-        # Check if detected MIME type matches allowed types
-        allowed_mimes = []
-        for file_type in allowed_types:
-            if file_type in UPLOAD_SECURITY_CONFIG["allowed_mime_types"]:
-                allowed_mimes.extend(UPLOAD_SECURITY_CONFIG["allowed_mime_types"][file_type])
 
-        if detected_mime not in allowed_mimes:
-            warnings.append(f"MIME type mismatch: detected '{detected_mime}', expected one of {allowed_mimes}")
-            # Don't fail on MIME mismatch for now, just warn
+def get_azure_token_provider():
+    """
+    Get Azure AD token provider for Azure OpenAI authentication.
 
-    except Exception as e:
-        warnings.append(f"Could not verify MIME type: {str(e)}")
-
-    # 5. Content-based validation
+    Returns:
+        token provider for Azure AD authentication
+    """
     try:
-        uploaded_file.seek(0)
-        file_content = uploaded_file.read()
-        uploaded_file.seek(0)  # Reset file pointer again
-
-        # Check for suspicious content patterns
-        # Note: We exclude '<%' from PDFs as it's part of legitimate PDF syntax
-        suspicious_patterns = [
-            b'<script', b'javascript:', b'vbscript:', b'onload=', b'onerror=',
-            b'<?php', b'#!/bin/', b'#!/usr/bin/', b'eval(',
-            b'exec(', b'system(', b'shell_exec(', b'passthru(',
-        ]
-
-        # Additional patterns that are suspicious only in non-PDF files
-        if 'pdf' not in allowed_types:
-            suspicious_patterns.extend([b'<%'])  # Only block <% in non-PDF files
-
-        content_lower = file_content.lower()
-        for pattern in suspicious_patterns:
-            if pattern in content_lower:
-                return {
-                    "valid": False,
-                    "error": f"File contains suspicious content pattern: {pattern.decode('utf-8', errors='ignore')}",
-                    "warnings": warnings
-                }
-
-        # Additional validation for specific file types
-        if 'pdf' in allowed_types and file_ext == 'pdf':
-            if not file_content.startswith(b'%PDF-'):
-                warnings.append("File extension is PDF but content doesn't match PDF format")
-            else:
-                # For PDFs, check for truly suspicious patterns (not normal PDF syntax)
-                pdf_suspicious_patterns = [
-                    b'<script>', b'javascript:', b'vbscript:',
-                    b'<?php', b'<% eval', b'<% system', b'<% exec'
-                ]
-                for pattern in pdf_suspicious_patterns:
-                    if pattern in content_lower:
-                        return {
-                            "valid": False,
-                            "error": f"PDF contains suspicious code pattern: {pattern.decode('utf-8', errors='ignore')}",
-                            "warnings": warnings
-                        }
-
-        elif any(xml_type in allowed_types for xml_type in ['xml']) and file_ext in ['xml', 'sbml']:
-            if b'<?xml' not in file_content[:100] and b'<' not in file_content[:10]:
-                warnings.append("File extension is XML/SBML but content doesn't appear to be XML")
-
+        return get_bearer_token_provider(
+            DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+        )
     except Exception as e:
-        warnings.append(f"Content validation error: {str(e)}")
-
-    return {"valid": True, "error": "", "warnings": warnings}
-
-
-def secure_file_upload(
-    label: str,
-    allowed_types: List[str],
-    help_text: str = "",
-    max_size_mb: Optional[int] = None,
-    accept_multiple_files: bool = False,
-    key: Optional[str] = None
-):
-    """
-    Secure wrapper for st.file_uploader with comprehensive validation.
-
-    Args:
-        label: Display label for the file uploader
-        allowed_types: List of allowed file type categories
-        help_text: Help text to display
-        max_size_mb: Maximum file size in MB
-        accept_multiple_files: Whether to accept multiple files
-        key: Unique key for the uploader widget
-
-    Returns:
-        Validated uploaded file(s) or None if validation fails
-    """
-    # Generate type list for Streamlit
-    streamlit_types = []
-    for file_type in allowed_types:
-        if file_type in UPLOAD_SECURITY_CONFIG["allowed_extensions"]:
-            streamlit_types.extend(UPLOAD_SECURITY_CONFIG["allowed_extensions"][file_type])
-
-    # Enhanced help text with security info
-    enhanced_help = f"{help_text}\n\n🔒 Security: Max {max_size_mb or UPLOAD_SECURITY_CONFIG['max_file_size_mb']}MB, Types: {streamlit_types}"
-
-    uploaded_files = st.file_uploader(
-        label,
-        type=streamlit_types,
-        help=enhanced_help,
-        accept_multiple_files=accept_multiple_files,
-        key=key
-    )
-
-    if not uploaded_files:
+        st.error(f"Failed to create Azure token provider: {e}")
         return None
-
-    # Handle single vs multiple files
-    files_to_validate = uploaded_files if accept_multiple_files else [uploaded_files]
-    validated_files = []
-
-    for uploaded_file in files_to_validate:
-        # Validate the file
-        validation_result = validate_uploaded_file(uploaded_file, allowed_types, max_size_mb)
-
-        if not validation_result["valid"]:
-            st.error(f"❌ {uploaded_file.name}: {validation_result['error']}")
-
-            # Show helpful tips for the file type
-            primary_file_type = allowed_types[0] if allowed_types else "general"
-            with st.expander("💡 Upload Tips", expanded=False):
-                st.info(get_file_validation_help(primary_file_type))
-            continue
-
-        # Show warnings if any
-        if validation_result["warnings"]:
-            for warning in validation_result["warnings"]:
-                st.warning(f"⚠️ {uploaded_file.name}: {warning}")
-
-        # File passed validation
-        st.success(f"✅ {uploaded_file.name} validated successfully")
-        validated_files.append(uploaded_file)
-
-    # Return single file or list based on accept_multiple_files
-    if not validated_files:
-        return None
-
-    return validated_files if accept_multiple_files else validated_files[0]
-
-
-def get_file_validation_help(file_type: str) -> str:
-    """
-    Get help text for file validation errors.
-
-    Args:
-        file_type: The file type that failed validation
-
-    Returns:
-        Help text explaining common validation issues
-    """
-    help_texts = {
-        "pdf": """
-        📋 PDF Upload Tips:
-        • Ensure the file is a legitimate PDF (starts with %PDF-)
-        • Some PDF creation tools may embed unexpected content
-        • Try re-exporting your PDF from the original source
-        • Scanned PDFs are usually safer than text-based PDFs
-        """,
-        "xml": """
-        📋 XML/SBML Upload Tips:
-        • Ensure the file starts with <?xml or has XML content
-        • Check that the file isn't corrupted
-        • SBML files should have proper XML structure
-        """,
-        "spreadsheet": """
-        📋 Spreadsheet Upload Tips:
-        • Ensure file is saved in proper Excel/CSV format
-        • Avoid files with embedded macros or scripts
-        • CSV files should use standard delimiters
-        """,
-        "general": """
-        📋 General Upload Tips:
-        • Keep file sizes under the specified limit
-        • Use clean, descriptive filenames
-        • Avoid files from untrusted sources
-        • Contact support if legitimate files are being rejected
-        """
-    }
-
-    return help_texts.get(file_type, help_texts["general"])
-
-
-def sanitize_filename(filename: str) -> str:
-    """
-    Sanitize filename to prevent directory traversal and other attacks.
-
-    Args:
-        filename: Original filename
-
-    Returns:
-        Sanitized filename safe for filesystem operations
-    """
-    # Remove or replace dangerous characters
-    filename = re.sub(r'[<>:"|?*\\\/\0]', '_', filename)
-
-    # Remove leading/trailing whitespace and dots
-    filename = filename.strip(' .')
-
-    # Prevent directory traversal
-    filename = os.path.basename(filename)
-
-    # Ensure filename isn't too long
-    max_length = UPLOAD_SECURITY_CONFIG["max_filename_length"]
-    if len(filename) > max_length:
-        name, ext = os.path.splitext(filename)
-        filename = name[:max_length - len(ext)] + ext
-
-    # Ensure it's not empty
-    if not filename or filename in ['.', '..']:
-        filename = f"uploaded_file_{hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest()[:8]}"
-
-    return filename
 
 
 def submit_feedback(user_response):
@@ -468,7 +179,7 @@ def render_plotly(
         save_chart: bool: Flag to save the chart to the chat history
     """
     # toggle_state = st.session_state[f'toggle_plotly_{tool_name}_{key.split("_")[-1]}']\
-    toggle_state = st.session_state[f"toggle_plotly_{key.split('plotly_')[1]}"]
+    toggle_state = st.session_state[f'toggle_plotly_{key.split("plotly_")[1]}']
     if toggle_state:
         df_simulation_results = df.melt(
             id_vars="Time", var_name="Species", value_name="Concentration"
@@ -514,7 +225,7 @@ def render_table(df: pd.DataFrame, key: str, save_table: bool = False):
     """
     # print (st.session_state['toggle_simulate_model_'+key.split("_")[-1]])
     # toggle_state = st.session_state[f'toggle_table_{tool_name}_{key.split("_")[-1]}']
-    toggle_state = st.session_state[f"toggle_table_{key.split('dataframe_')[1]}"]
+    toggle_state = st.session_state[f'toggle_table_{key.split("dataframe_")[1]}']
     if toggle_state:
         st.dataframe(df, use_container_width=True, key=key)
     if save_table:
@@ -578,7 +289,7 @@ def sample_questions_t2kg():
     Function to get the sample questions for Talk2KnowledgeGraphs.
     """
     questions = [
-        'What genes are associated with Crohn\'s disease?',
+        "What genes are associated with Crohn's disease?",
         "List the drugs that target Interleukin-6 and show their molecular structures",
         "Extract a subgraph for JAK1 and JAK2 genes and visualize their interactions",
         "Find the pathway connections between TNF-alpha and inflammatory bowel disease",
@@ -636,13 +347,30 @@ def update_state_t2b(st):
     dic = {
         "sbml_file_path": [st.session_state.sbml_file_path],
         "text_embedding_model": get_text_embedding_model(
-            st.session_state.text_embedding_model
+            st.session_state.text_embedding_model, st.session_state.config
         ),
     }
+    # If a PDF has been uploaded in this session, include it every turn
+    pdf_path = st.session_state.get("pdf_file_path")
+    if pdf_path:
+        dic["pdf_file_name"] = pdf_path
     return dic
 
 
 def update_state_t2kg(st):
+    # Get the config from session state
+    cfg = st.session_state.config
+
+    # For T2AA4P, database config is stored separately in t2kg_config
+    # For T2KG, it's in the main config
+    if hasattr(st.session_state, "t2kg_config"):
+        # T2AA4P case - use the separate T2KG config for database info
+        db_config = st.session_state.t2kg_config
+        database_name = db_config.utils.database.milvus.milvus_db.database_name
+    else:
+        # T2KG case - use main config
+        database_name = cfg.utils.database.milvus.milvus_db.database_name
+
     dic = {
         "embedding_model": st.session_state.t2kg_emb_model,
         "uploaded_files": st.session_state.uploaded_files,
@@ -650,11 +378,10 @@ def update_state_t2kg(st):
         "topk_edges": st.session_state.topk_edges,
         "dic_source_graph": [
             {
-                "name": st.session_state.config["kg_name"],
-                "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                "kg_text_path": st.session_state.config["kg_text_path"],
+                "name": database_name,
             }
         ],
+        "selections": st.session_state.selections,
     }
     return dic
 
@@ -710,7 +437,12 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     #     {"sbml_file_path": [st.session_state.sbml_file_path]}
     # )
     app.update_state(
-        config, {"llm_model": get_base_chat_model(st.session_state.llm_model)}
+        config,
+        {
+            "llm_model": get_base_chat_model(
+                st.session_state.llm_model, st.session_state.config
+            )
+        },
     )
     # app.update_state(
     #     config,
@@ -736,7 +468,6 @@ def get_response(agent, graphs_visuals, app, st, prompt):
     elif agent == "T2KG":
         app.update_state(config, update_state_t2kg(st))
 
-    ERROR_FLAG = False
     with collect_runs() as cb:
         # Add Langsmith tracer
         tracer = LangChainTracer(project_name=st.session_state.project_name)
@@ -977,8 +708,7 @@ def get_response(agent, graphs_visuals, app, st, prompt):
             )
             # print (df_selected)
             df_selected["Id"] = df_selected.apply(
-                lambda row: row["Link"],
-                axis=1,  # Ensure "Id" has the correct links
+                lambda row: row["Link"], axis=1  # Ensure "Id" has the correct links
             )
             df_selected = df_selected.drop(columns=["Link"])
             # Directly use the "Link" column for the "Id" column
@@ -1118,7 +848,7 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
     figures_inner_html = ""
 
     for name, subgraph_nodes, subgraph_edges in zip(
-        graph_dict["name"], graph_dict["nodes"], graph_dict["edges"], strict=False
+        graph_dict["name"], graph_dict["nodes"], graph_dict["edges"]
     ):
         # Create a directed graph
         graph = nx.DiGraph()
@@ -1285,46 +1015,188 @@ def render_graph(graph_dict: dict, key: str, save_graph: bool = False):
 #         )
 
 
-def get_text_embedding_model(model_name) -> Embeddings:
+def get_text_embedding_model(model_name, cfg=None) -> Embeddings:
     """
     Function to get the text embedding model.
 
     Args:
         model_name: str: The name of the model
+        cfg: Optional[DictConfig]: Configuration object containing retry/timeout settings
 
     Returns:
         Embeddings: The text embedding model
     """
+    # Get retry and timeout settings from config or use defaults
+    max_retries = 3  # Default for embeddings
+    timeout = 30  # Default for embeddings
+
+    if cfg and hasattr(cfg, "app") and hasattr(cfg.app, "frontend"):
+        max_retries = getattr(cfg.app.frontend, "embedding_max_retries", 3)
+        timeout = getattr(cfg.app.frontend, "embedding_timeout", 30)
     dic_text_embedding_models = {
         "NVIDIA/llama-3.2-nv-embedqa-1b-v2": "nvidia/llama-3.2-nv-embedqa-1b-v2",
         "OpenAI/text-embedding-ada-002": "text-embedding-ada-002",
+        "Azure/text-embedding-ada-002": "text-embedding-ada-002",
+        "nomic-embed-text": "nomic-embed-text",
     }
+
     if model_name.startswith("NVIDIA"):
         return NVIDIAEmbeddings(model=dic_text_embedding_models[model_name])
-    return OpenAIEmbeddings(model=dic_text_embedding_models[model_name])
+    elif model_name.startswith("Azure/"):
+        # Azure OpenAI Embeddings configuration
+        azure_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+        azure_deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT")
+        api_version = os.environ.get("AZURE_OPENAI_API_VERSION", "2024-02-01")
+
+        if not azure_endpoint or not azure_deployment:
+            st.error(
+                "Azure OpenAI requires AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT environment variables"
+            )
+            return OpenAIEmbeddings(
+                model=dic_text_embedding_models[model_name],
+                max_retries=max_retries,
+                timeout=timeout,
+            )  # Fallback to regular OpenAI
+
+        # Get Azure token provider
+        token_provider = get_azure_token_provider()
+        if not token_provider:
+            st.error("Failed to get Azure token provider")
+            return OpenAIEmbeddings(
+                model=dic_text_embedding_models[model_name],
+                max_retries=max_retries,
+                timeout=timeout,
+            )  # Fallback to regular OpenAI
+
+        from langchain_openai.embeddings import AzureOpenAIEmbeddings
+
+        return AzureOpenAIEmbeddings(
+            azure_endpoint=azure_endpoint,
+            azure_deployment=azure_deployment,
+            api_version=api_version,
+            azure_ad_token_provider=token_provider,
+            max_retries=max_retries,
+            timeout=timeout,
+        )
+    elif model_name in dic_text_embedding_models and not model_name.startswith(
+        ("OpenAI/", "NVIDIA/", "Azure/")
+    ):
+        # Ollama embeddings (models without provider prefix)
+        return OllamaEmbeddings(model=dic_text_embedding_models[model_name])
+    else:
+        # Default to OpenAI
+        model_key = (
+            model_name if model_name.startswith("OpenAI/") else f"OpenAI/{model_name}"
+        )
+        return OpenAIEmbeddings(
+            model=dic_text_embedding_models.get(
+                model_key, model_name.replace("OpenAI/", "")
+            ),
+            max_retries=max_retries,
+            timeout=timeout,
+        )
 
 
-def get_base_chat_model(model_name) -> BaseChatModel:
+def get_base_chat_model(model_name, cfg=None) -> BaseChatModel:
     """
     Function to get the base chat model.
 
     Args:
         model_name: str: The name of the model
+        cfg: Optional[DictConfig]: Configuration object containing retry/timeout settings
 
     Returns:
         BaseChatModel: The base chat model
     """
+    # Get retry and timeout settings from config or use defaults
+    max_retries = 5  # Default
+    timeout = 60  # Default
+
+    if cfg and hasattr(cfg, "app") and hasattr(cfg.app, "frontend"):
+        max_retries = getattr(cfg.app.frontend, "llm_max_retries", 5)
+        timeout = getattr(cfg.app.frontend, "llm_timeout", 60)
     dic_llm_models = {
         "NVIDIA/llama-3.3-70b-instruct": "meta/llama-3.3-70b-instruct",
         "NVIDIA/llama-3.1-405b-instruct": "meta/llama-3.1-405b-instruct",
         "NVIDIA/llama-3.1-70b-instruct": "meta/llama-3.1-70b-instruct",
         "OpenAI/gpt-4o-mini": "gpt-4o-mini",
+        "Azure/gpt-4o-mini": "gpt-4o-mini",  # Azure model mapping
+        "Ollama/llama3.1:8b": "llama3.1:8b",  # Ollama model mapping
     }
+
     if model_name.startswith("Llama"):
-        return ChatOllama(model=dic_llm_models[model_name], temperature=0)
+        return ChatOllama(
+            model=dic_llm_models[model_name], temperature=0, timeout=timeout
+        )
+    elif model_name.startswith("Ollama/"):
+        return ChatOllama(
+            model=dic_llm_models[model_name], temperature=0, timeout=timeout
+        )
     elif model_name.startswith("NVIDIA"):
-        return ChatNVIDIA(model=dic_llm_models[model_name], temperature=0)
-    return ChatOpenAI(model=dic_llm_models[model_name], temperature=0)
+        return ChatNVIDIA(
+            model=dic_llm_models[model_name], temperature=0, timeout=timeout
+        )
+    elif model_name.startswith("Azure/"):
+        # Azure OpenAI configuration
+        azure_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+        azure_deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT")
+        api_version = os.environ.get("AZURE_OPENAI_API_VERSION", "2024-02-01")
+        model_name_env = os.environ.get(
+            "AZURE_OPENAI_MODEL_NAME", dic_llm_models[model_name]
+        )
+        model_version = os.environ.get("AZURE_OPENAI_MODEL_VERSION")
+
+        if not azure_endpoint or not azure_deployment:
+            st.error(
+                "Azure OpenAI requires AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT environment variables"
+            )
+            return ChatOpenAI(
+                model=dic_llm_models[model_name],
+                temperature=0,
+                max_retries=max_retries,
+                timeout=timeout,
+            )  # Fallback to regular OpenAI
+
+        # Get Azure token provider
+        token_provider = get_azure_token_provider()
+        if not token_provider:
+            st.error("Failed to get Azure token provider")
+            return ChatOpenAI(
+                model=dic_llm_models[model_name],
+                temperature=0,
+                max_retries=max_retries,
+                timeout=timeout,
+            )  # Fallback to regular OpenAI
+
+        return AzureChatOpenAI(
+            azure_endpoint=azure_endpoint,
+            azure_deployment=azure_deployment,
+            api_version=api_version,
+            model_name=model_name_env,
+            model_version=model_version,
+            azure_ad_token_provider=token_provider,
+            temperature=0,
+            max_retries=max_retries,
+            timeout=timeout,
+        )
+    elif model_name.startswith("OpenAI/"):
+        # Regular OpenAI with optional custom base URL
+        base_url = os.environ.get("OPENAI_BASE_URL")
+        return ChatOpenAI(
+            model=dic_llm_models[model_name],
+            temperature=0,
+            base_url=base_url if base_url else None,
+            max_retries=max_retries,
+            timeout=timeout,
+        )
+
+    # Default fallback
+    return ChatOpenAI(
+        model=dic_llm_models.get(model_name, model_name),
+        temperature=0,
+        max_retries=max_retries,
+        timeout=timeout,
+    )
 
 
 @st.dialog("Warning ⚠️")
@@ -1363,9 +1235,18 @@ def update_text_embedding_model(app):
         config,
         {
             "text_embedding_model": get_text_embedding_model(
-                st.session_state.text_embedding_model
+                st.session_state.text_embedding_model, st.session_state.config
             )
         },
+    )
+
+
+def update_t2kg_embedding_model():
+    """
+    Update the T2KG embedding model in session from the selected text embedding model.
+    """
+    st.session_state.t2kg_emb_model = get_text_embedding_model(
+        st.session_state.text_embedding_model, st.session_state.config
     )
 
 
@@ -1477,46 +1358,52 @@ def get_file_type_icon(file_type: str) -> str:
 @st.fragment
 def get_t2b_uploaded_files(app):
     """
-    Upload files for T2B agent with security validation.
+    Upload files for T2B agent.
     """
-    # Upload the XML/SBML file with security validation
-    uploaded_sbml_file = secure_file_upload(
+    # Upload the XML/SBML file
+    uploaded_sbml_file = st.file_uploader(
         "Upload an XML/SBML file",
-        allowed_types=["xml"],
-        help_text="Upload a QSP as an XML/SBML file",
-        max_size_mb=25,  # Reasonable size for SBML files
         accept_multiple_files=False,
-        key="secure_sbml_upload"
+        type=["xml", "sbml"],
+        help="Upload a QSP as an XML/SBML file",
     )
 
-    # Upload the article with security validation
-    article = secure_file_upload(
+    # Upload the article
+    article = st.file_uploader(
         "Upload an article",
-        allowed_types=["pdf"],
-        help_text="Upload a PDF article to ask questions.",
-        max_size_mb=50,  # PDFs can be larger
+        help="Upload a PDF article to ask questions.",
         accept_multiple_files=False,
-        key=f"secure_article_{st.session_state.t2b_article_key}"
+        type=["pdf"],
+        key=f"article_{st.session_state.t2b_article_key}",
     )
 
     # Update the agent state with the uploaded article
     if article:
-        # Sanitize filename for security
-        safe_filename = sanitize_filename(article.name)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{safe_filename}") as f:
+        # print (article.name)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
             f.write(article.read())
         # Create config for the agent
         config = {"configurable": {"thread_id": st.session_state.unique_id}}
-        # Update the agent state with the selected LLM model
-        app.update_state(config, {"pdf_file_name": f.name})
+        # Update the agent state with the PDF file name and text embedding model
+        app.update_state(
+            config,
+            {
+                "pdf_file_name": f.name,
+                "text_embedding_model": get_text_embedding_model(
+                    st.session_state.text_embedding_model, st.session_state.config
+                ),
+            },
+        )
+
+        # Persist PDF path in session for subsequent turns
+        st.session_state.pdf_file_path = f.name
 
         if article.name not in [
             uf["file_name"] for uf in st.session_state.t2b_uploaded_files
         ]:
             st.session_state.t2b_uploaded_files.append(
                 {
-                    "file_name": safe_filename,  # Use sanitized filename
+                    "file_name": article.name,
                     "file_path": f.name,
                     "file_type": "article",
                     "uploaded_by": st.session_state.current_user,
@@ -1539,6 +1426,13 @@ def get_t2b_uploaded_files(app):
                 if st.button("🗑️", key=uploaded_file["file_path"]):
                     with st.spinner("Removing uploaded file ..."):
                         st.session_state.t2b_uploaded_files.remove(uploaded_file)
+                        # Clear PDF reference if this was the active one
+                        if (
+                            st.session_state.get("pdf_file_path")
+                            and st.session_state.pdf_file_path
+                            == uploaded_file["file_path"]
+                        ):
+                            del st.session_state.pdf_file_path
                         st.cache_data.clear()
                         st.session_state.t2b_article_key += 1
                         st.rerun(scope="fragment")
@@ -1548,96 +1442,130 @@ def get_t2b_uploaded_files(app):
 
 
 @st.fragment
-def initialize_selections() -> None:
+def initialize_selections() -> dict:
     """
-    Initialize the selections.
+    Initialize the selections based on configured node types.
 
-    Args:
-        cfg: The configuration object.
+    Returns:
+        dict: Dictionary of node types with empty lists for selections
     """
-    # with open(st.session_state.config["kg_pyg_path"], "rb") as f:
-    # pyg_graph = pickle.load(f)
-    # graph_nodes = pd.read_parquet(st.session_state.config["kg_nodes_path"])
-    node_types = st.session_state.config["kg_node_types"]
+    try:
+        # Load configuration from the session state
+        cfg = st.session_state.config
 
-    # Populate the selections based on the node type from the graph
-    selections = {}
-    for i in node_types:
-        selections[i] = []
+        # For T2AA4P, database config is stored separately in t2kg_config
+        # For T2KG, it's in the main config
+        if hasattr(st.session_state, "t2kg_config"):
+            # T2AA4P case - use the separate T2KG config for database info
+            db_config = st.session_state.t2kg_config
+            if hasattr(db_config.utils.database.milvus, "kg_node_types"):
+                node_types = db_config.utils.database.milvus.kg_node_types
+            else:
+                node_types = None
+        else:
+            # T2KG case - use main config
+            if hasattr(cfg, "utils") and hasattr(
+                cfg.utils.database.milvus, "kg_node_types"
+            ):
+                node_types = cfg.utils.database.milvus.kg_node_types
+            else:
+                node_types = None
 
-    return selections
+        # If no node types found in config, use fallback
+        if node_types is None:
+            # Fallback to default node types from PrimeKG
+            node_types = [
+                "anatomy",
+                "biological_process",
+                "cellular_component",
+                "compound",
+                "disease",
+                "drug",
+                "effect_phenotype",
+                "gene_protein",
+                "molecular_function",
+                "pathway",
+                "side_effect",
+            ]
+
+        # Populate the selections based on the node type from the configuration
+        selections = {}
+        for node_type in node_types:
+            selections[node_type] = []
+
+        return selections
+
+    except Exception as e:
+        st.error(f"Failed to initialize selections: {str(e)}")
+        # Return empty selections as fallback
+        return {}
 
 
 @st.fragment
 def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
     """
     Upload files to a directory set in cfg.upload_data_dir, and display them in the UI.
-    Now with comprehensive security validation.
 
     Args:
         cfg: The configuration object.
     """
-    data_package_files = secure_file_upload(
+    data_package_files = st.file_uploader(
         "💊 Upload pre-clinical drug data",
-        allowed_types=["text", "spreadsheet", "pdf"],  # Allow common data formats
-        help_text="Free-form text. Must contain atleast drug targets and kinetic parameters",
-        max_size_mb=25,
+        help="Free-form text. Must contain atleast drug targets and kinetic parameters",
         accept_multiple_files=True,
-        key=f"secure_uploader_{st.session_state.data_package_key}",
+        type=cfg.app.frontend.data_package_allowed_file_types,
+        key=f"uploader_{st.session_state.data_package_key}",
     )
 
-    multimodal_files = secure_file_upload(
+    multimodal_files = st.file_uploader(
         "📦 Upload multimodal endotype/phenotype data package",
-        allowed_types=["spreadsheet"],  # Spreadsheets for structured data
-        help_text="A spread sheet containing multimodal endotype/phenotype data package (e.g., genes, drugs, etc.)",
-        max_size_mb=50,  # Larger for data packages
+        help="A spread sheet containing multimodal endotype/phenotype data package (e.g., genes, drugs, etc.)",
         accept_multiple_files=True,
-        key=f"secure_uploader_multimodal_{st.session_state.multimodal_key}",
+        type=cfg.app.frontend.multimodal_allowed_file_types,
+        key=f"uploader_multimodal_{st.session_state.multimodal_key}",
     )
 
-    # Merge the uploaded files (handle None values)
-    uploaded_files = []
-    if data_package_files:
-        uploaded_files = data_package_files if isinstance(data_package_files, list) else [data_package_files]
+    # Merge the uploaded files
+    uploaded_files = data_package_files.copy()
     if multimodal_files:
-        additional_files = multimodal_files if isinstance(multimodal_files, list) else [multimodal_files]
-        uploaded_files.extend(additional_files)
+        uploaded_files += multimodal_files.copy()
 
-    if uploaded_files:
-        with st.spinner("Storing uploaded file(s) ..."):
-            for uploaded_file in uploaded_files:
-                # Sanitize filename for security
-                safe_filename = sanitize_filename(uploaded_file.name)
-
-                if safe_filename not in [
-                    uf["file_name"] for uf in st.session_state.uploaded_files
-                ]:
-                    current_timestamp = datetime.datetime.now().strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-
-                    # Determine file type based on which uploader it came from
-                    file_type = "drug_data"  # Default
-                    if data_package_files and uploaded_file in (data_package_files if isinstance(data_package_files, list) else [data_package_files]):
-                        file_type = "drug_data"
-                    elif multimodal_files and uploaded_file in (multimodal_files if isinstance(multimodal_files, list) else [multimodal_files]):
-                        file_type = "multimodal"
-
-                    safe_file_path = os.path.join(cfg.upload_data_dir, safe_filename)
-
-                    st.session_state.uploaded_files.append(
-                        {
-                            "file_name": safe_filename,  # Use sanitized filename
-                            "file_path": safe_file_path,
-                            "file_type": file_type,
-                            "uploaded_by": st.session_state.current_user,
-                            "uploaded_timestamp": current_timestamp,
-                        }
-                    )
-
-                    # Write file securely
-                    with open(safe_file_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
+    with st.spinner("Storing uploaded file(s) ..."):
+        # for uploaded_file in data_package_files:
+        for uploaded_file in uploaded_files:
+            if uploaded_file.name not in [
+                uf["file_name"] for uf in st.session_state.uploaded_files
+            ]:
+                current_timestamp = datetime.datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+                uploaded_file.file_name = uploaded_file.name
+                uploaded_file.file_path = (
+                    f"{cfg.app.frontend.upload_data_dir}/{uploaded_file.file_name}"
+                )
+                uploaded_file.current_user = st.session_state.current_user
+                uploaded_file.timestamp = current_timestamp
+                if uploaded_file.name in [uf.name for uf in data_package_files]:
+                    uploaded_file.file_type = "drug_data"
+                elif uploaded_file.name in [uf.name for uf in multimodal_files]:
+                    uploaded_file.file_type = "multimodal"
+                st.session_state.uploaded_files.append(
+                    {
+                        "file_name": uploaded_file.file_name,
+                        "file_path": uploaded_file.file_path,
+                        "file_type": uploaded_file.file_type,
+                        "uploaded_by": uploaded_file.current_user,
+                        "uploaded_timestamp": uploaded_file.timestamp,
+                    }
+                )
+                with open(
+                    os.path.join(
+                        cfg.app.frontend.upload_data_dir, uploaded_file.file_name
+                    ),
+                    "wb",
+                ) as f:
+                    f.write(uploaded_file.getbuffer())
+                uploaded_file = None
 
     # Display uploaded files and provide a remove button
     for uploaded_file in st.session_state.uploaded_files:
@@ -1651,9 +1579,11 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
             if st.button("🗑️", key=uploaded_file["file_name"]):
                 with st.spinner("Removing uploaded file ..."):
                     if os.path.isfile(
-                        f"{cfg.upload_data_dir}/{uploaded_file['file_name']}"
+                        f"{cfg.app.frontend.upload_data_dir}/{uploaded_file['file_name']}"
                     ):
-                        os.remove(f"{cfg.upload_data_dir}/{uploaded_file['file_name']}")
+                        os.remove(
+                            f"{cfg.app.frontend.upload_data_dir}/{uploaded_file['file_name']}"
+                        )
                     st.session_state.uploaded_files.remove(uploaded_file)
                     st.cache_data.clear()
                     st.session_state.data_package_key += 1
@@ -1661,64 +1591,227 @@ def get_uploaded_files(cfg: hydra.core.config_store.ConfigStore) -> None:
                     st.rerun(scope="fragment")
 
 
-def setup_milvus(cfg: dict):
+def get_all_available_llms(cfg):
     """
-    Function to connect to the Milvus database.
+    Get all available LLM models from configuration.
 
     Args:
-        cfg: The configuration dictionary containing Milvus connection details.
-    """
-    # Check if the connection already exists
-    if not connections.has_connection(cfg.milvus_db.alias):
-        # Create a new connection to Milvus
-        # Connect to Milvus
-        connections.connect(
-            alias=cfg.milvus_db.alias,
-            host=cfg.milvus_db.host,
-            port=cfg.milvus_db.port,
-            user=cfg.milvus_db.user,
-            password=cfg.milvus_db.password,
-        )
-        print("Connected to Milvus database.")
-    else:
-        print("Already connected to Milvus database.")
-
-    # Use a predefined Milvus database
-    db.using_database(cfg.milvus_db.database_name)
-
-    return connections.get_connection_addr(cfg.milvus_db.alias)
-
-
-def get_cache_edge_index(cfg: dict):
-    """
-    Function to get the edge index of the knowledge graph in the Milvus collection.
-    Due to massive records that we should query to get edge index from the Milvus database,
-    we pre-loaded this information when the app is started and stored it in a state.
-
-    Args:
-        cfg: The configuration dictionary containing the path to the edge index file.
+        cfg: Hydra configuration object
 
     Returns:
-        The edge index.
+        list: List of all available LLM model names
     """
-    # Load collection
-    coll = Collection(f"{cfg.milvus_db.database_name}_edges")
-    coll.load()
+    azure_llms = cfg.app.frontend.get("azure_openai_llms", [])
+    ollama_llms = cfg.app.frontend.get("ollama_llms", [])
 
-    batch_size = cfg.milvus_db.query_batch_size
-    head_list = []
-    tail_list = []
-    for start in range(0, coll.num_entities, batch_size):
-        end = min(start + batch_size, coll.num_entities)
-        print(f"Processing triplet_index range: {start} to {end}")
-        batch = coll.query(
-            expr=f"triplet_index >= {start} and triplet_index < {end}",
-            output_fields=["head_index", "tail_index"],
+    all_llms = (
+        cfg.app.frontend.get("openai_llms", [])
+        + cfg.app.frontend.get("nvidia_llms", [])
+        + azure_llms
+        + ollama_llms
+    )
+
+    return all_llms
+
+
+def get_all_available_embeddings(cfg):
+    """
+    Get all available embedding models from configuration.
+
+    Args:
+        cfg: Hydra configuration object
+
+    Returns:
+        list: List of all available embedding model names
+    """
+    azure_embeddings = cfg.app.frontend.get("azure_openai_embeddings", [])
+    ollama_embeddings = cfg.app.frontend.get("ollama_embeddings", [])
+
+    all_embeddings = (
+        cfg.app.frontend.get("openai_embeddings", [])
+        + cfg.app.frontend.get("nvidia_embeddings", [])
+        + azure_embeddings
+        + ollama_embeddings
+    )
+
+    return all_embeddings
+
+
+def initialize_session_state(cfg, agent_type="T2B"):
+    """
+    Initialize unified session state for all AI Agents 4 Pharma apps.
+
+    Args:
+        cfg: Hydra configuration object
+        agent_type: str: Type of agent ("T2B", "T2KG", "T2S", "T2AA4P")
+    """
+    import random
+    import os
+    import streamlit as st
+
+    # Core configuration
+    if "config" not in st.session_state:
+        st.session_state.config = cfg
+
+    if "current_user" not in st.session_state:
+        st.session_state.current_user = cfg.app.frontend.default_user
+
+    # Chat and messaging
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    if "project_name" not in st.session_state:
+        st.session_state.project_name = f"{agent_type}-" + str(
+            random.randint(1000, 9999)
         )
-        head_list.extend([r["head_index"] for r in batch])
-        tail_list.extend([r["tail_index"] for r in batch])
-    edge_index = [head_list, tail_list]
 
-    # Save the edge index to a file
-    with open(cfg.milvus_db.cache_edge_index_path, "wb") as f:
-        pickle.dump(edge_index, f)
+    if "run_id" not in st.session_state:
+        st.session_state.run_id = None
+
+    if "unique_id" not in st.session_state:
+        st.session_state.unique_id = random.randint(1, 1000)
+
+    # File management (common across all apps)
+    if "uploaded_files" not in st.session_state:
+        st.session_state.uploaded_files = []
+        # Make upload directory if not exists
+        upload_dir = cfg.app.frontend.get("upload_data_dir", "../files")
+        os.makedirs(upload_dir, exist_ok=True)
+
+    # Model configuration
+    if "llm_model" not in st.session_state:
+        all_llms = get_all_available_llms(cfg)
+        st.session_state.llm_model = all_llms[0] if all_llms else "OpenAI/gpt-4o-mini"
+
+    if "text_embedding_model" not in st.session_state:
+        all_embeddings = get_all_available_embeddings(cfg)
+        # Default to NVIDIA embedding as per current T2B app
+        default_embedding = "NVIDIA/llama-3.2-nv-embedqa-1b-v2"
+        if default_embedding in all_embeddings:
+            st.session_state.text_embedding_model = default_embedding
+        else:
+            st.session_state.text_embedding_model = (
+                all_embeddings[0] if all_embeddings else "OpenAI/text-embedding-ada-002"
+            )
+
+    # Agent-specific initializations
+    if agent_type == "T2KG":
+        # Knowledge graph specific session state
+        if "selections" not in st.session_state:
+            st.session_state.selections = initialize_selections()
+
+        if "data_package_key" not in st.session_state:
+            st.session_state.data_package_key = 0
+
+        if "multimodal_key" not in st.session_state:
+            st.session_state.multimodal_key = 0
+
+        if "topk_nodes" not in st.session_state:
+            st.session_state.topk_nodes = cfg.app.frontend.get(
+                "reasoning_subgraph_topk_nodes", 15
+            )
+
+        if "topk_edges" not in st.session_state:
+            st.session_state.topk_edges = cfg.app.frontend.get(
+                "reasoning_subgraph_topk_edges", 15
+            )
+
+        # Ensure T2KG has an embedding model in session
+        if "t2kg_emb_model" not in st.session_state:
+            if cfg.app.frontend.get("default_embedding_model", "openai") == "ollama":
+                from langchain_ollama import OllamaEmbeddings
+
+                st.session_state.t2kg_emb_model = OllamaEmbeddings(
+                    model=cfg.app.frontend.get(
+                        "ollama_embeddings", ["nomic-embed-text"]
+                    )[0]
+                )
+            else:
+                from langchain_openai import OpenAIEmbeddings
+
+                st.session_state.t2kg_emb_model = OpenAIEmbeddings(
+                    model=cfg.app.frontend.get(
+                        "openai_embeddings", ["text-embedding-ada-002"]
+                    )[0]
+                )
+
+    elif agent_type == "T2B":
+        # Biomodels specific session state
+        if "sbml_file_path" not in st.session_state:
+            st.session_state.sbml_file_path = None
+
+        # Keys used by the T2B upload fragment (PDF/article handling)
+        if "t2b_article_key" not in st.session_state:
+            st.session_state.t2b_article_key = 0
+
+        if "t2b_uploaded_files" not in st.session_state:
+            st.session_state.t2b_uploaded_files = []
+
+    elif agent_type == "T2S":
+        # Scholars specific session state
+        if "article_data" not in st.session_state:
+            st.session_state.article_data = {}
+
+        if "vector_store" not in st.session_state:
+            st.session_state.vector_store = None
+
+        if "zotero_initialized" not in st.session_state:
+            st.session_state.zotero_initialized = False
+
+    elif agent_type == "T2AA4P":
+        # Combined agent specific session state (hybrid of T2B + T2KG)
+
+        # T2B specific session state
+        if "sbml_file_path" not in st.session_state:
+            st.session_state.sbml_file_path = None
+
+        # T2B article upload key
+        if "t2b_article_key" not in st.session_state:
+            st.session_state.t2b_article_key = 0
+
+        # T2B uploaded files (separate from T2KG files)
+        if "t2b_uploaded_files" not in st.session_state:
+            st.session_state.t2b_uploaded_files = []
+
+        # T2KG specific session state
+        if "selections" not in st.session_state:
+            st.session_state.selections = initialize_selections()
+
+        if "data_package_key" not in st.session_state:
+            st.session_state.data_package_key = 0
+
+        if "multimodal_key" not in st.session_state:
+            st.session_state.multimodal_key = 0
+
+        # Special for T2AA4P: patient gene expression data
+        if "endotype_key" not in st.session_state:
+            st.session_state.endotype_key = 0
+
+        if "topk_nodes" not in st.session_state:
+            st.session_state.topk_nodes = cfg.app.frontend.get(
+                "reasoning_subgraph_topk_nodes", 15
+            )
+
+        if "topk_edges" not in st.session_state:
+            st.session_state.topk_edges = cfg.app.frontend.get(
+                "reasoning_subgraph_topk_edges", 15
+            )
+
+        # T2KG embedding model (special handling for T2AA4P)
+        if "t2kg_emb_model" not in st.session_state:
+            if cfg.app.frontend.get("default_embedding_model", "openai") == "ollama":
+                from langchain_ollama import OllamaEmbeddings
+
+                st.session_state.t2kg_emb_model = OllamaEmbeddings(
+                    model=cfg.app.frontend.get(
+                        "ollama_embeddings", ["nomic-embed-text"]
+                    )[0]
+                )
+            else:
+                from langchain_openai import OpenAIEmbeddings
+
+                st.session_state.t2kg_emb_model = OpenAIEmbeddings(
+                    model=cfg.app.frontend.get(
+                        "openai_embeddings", ["text-embedding-ada-002"]
+                    )[0]
+                )

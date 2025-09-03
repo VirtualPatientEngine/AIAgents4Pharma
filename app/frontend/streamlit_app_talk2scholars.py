@@ -17,11 +17,11 @@ from hydra.core.global_hydra import GlobalHydra
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
-from utils.streamlit_utils import get_text_embedding_model
 
 sys.path.append("./")
 # import get_app from main_agent
@@ -47,28 +47,35 @@ logging.getLogger("langsmith.client").setLevel(logging.ERROR)
 logging.getLogger("httpx").setLevel(logging.ERROR)
 # Initialize configuration
 
-GlobalHydra.instance().clear()
+# Initialize configuration
+hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
-    # Load Hydra configuration
     with hydra.initialize(
         version_base=None,
         config_path="../../aiagents4pharma/talk2scholars/configs",
     ):
-        cfg = hydra.compose(config_name="config", overrides=["app/frontend=default"])
-        cfg = cfg.app.frontend
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["app/frontend=default"],
+        )
         st.session_state.config = cfg
 else:
     cfg = st.session_state.config
 
+# Extract frontend config for backward compatibility
+cfg_frontend = cfg.app.frontend
+
 st.set_page_config(
-    page_title=cfg.page.title, page_icon=cfg.page.icon, layout=cfg.page.layout
+    page_title=cfg_frontend.page.title,
+    page_icon=cfg_frontend.page.icon,
+    layout=cfg_frontend.page.layout,
+    initial_sidebar_state="collapsed",
 )
 
-
-# Set the logo, detect if we're in container or local development
+# Set the logo using config
 def get_logo_path():
-    container_path = "/app/docs/assets/VPE.png"
-    local_path = "docs/assets/VPE.png"
+    container_path = cfg_frontend.logo_paths.container
+    local_path = cfg_frontend.logo_paths.local
 
     if os.path.exists(container_path):
         return container_path
@@ -77,7 +84,7 @@ def get_logo_path():
     else:
         # Fallback: try to find it relative to script location
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
+        relative_path = os.path.join(script_dir, cfg_frontend.logo_paths.relative)
         if os.path.exists(relative_path):
             return relative_path
 
@@ -87,15 +94,22 @@ def get_logo_path():
 logo_path = get_logo_path()
 if logo_path:
     st.logo(
-        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
+        image=logo_path, size="large", link=cfg_frontend.logo_link
     )
 
 
-# Check if env variables OPENAI_API_KEY and/or NVIDIA_API_KEY exist
-if cfg.api_keys.openai_key not in os.environ:
+# Check required environment variables based on config
+required_env_vars = ["OPENAI_API_KEY"]
+missing_vars = [var for var in required_env_vars if var not in os.environ]
+
+# Check for optional NVIDIA API key if NVIDIA models are configured
+if cfg_frontend.nvidia_llms and "NVIDIA_API_KEY" not in os.environ:
+    missing_vars.append("NVIDIA_API_KEY")
+
+if missing_vars:
     st.error(
-        "Please set the OPENAI_API_KEY "
-        "environment variables in the terminal where you run "
+        f"Please set the {', '.join(missing_vars)} "
+        "environment variable(s) in the terminal where you run "
         "the app. For more information, please refer to our "
         "[documentation](https://virtualpatientengine.github.io/AIAgents4Pharma/#option-2-git)."
     )
@@ -112,34 +126,16 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Initialize unified session state
+streamlit_utils.initialize_session_state(cfg, agent_type="T2S")
 
-# Initialize project_name for Langsmith
-if "project_name" not in st.session_state:
-    # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = "Talk2Scholars-" + str(random.randint(1000, 9999))
-
-# Initialize run_id for Langsmith
-if "run_id" not in st.session_state:
-    st.session_state.run_id = None
-
-# Initialize graph
-if "unique_id" not in st.session_state:
-    st.session_state.unique_id = random.randint(1, 1000)
+# Initialize the app with default LLM model for the first time
 if "app" not in st.session_state:
-    if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        )
-    else:
-        print(st.session_state.llm_model)
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
-        )
+    # Initialize the app using the utility function for proper model mapping
+    st.session_state.app = get_app(
+        st.session_state.unique_id,
+        llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
+    )
 # Get the app
 app = st.session_state.app
 
@@ -326,7 +322,7 @@ def initialize_zotero_and_build_store():
 
         # Initialize vector store
         pdf_config = load_hydra_config()
-        embedding_model = get_text_embedding_model(
+        embedding_model = streamlit_utils.get_text_embedding_model(
             st.session_state.text_embedding_model
         )
         logger.info("Initializing Milvus vector store...")
@@ -446,21 +442,18 @@ with main_col1:
             unsafe_allow_html=True,
         )
 
-        # LLM model panel
+        # LLM panel (Only at the front-end for now)
+        llms = tuple(streamlit_utils.get_all_available_llms(cfg))
         st.selectbox(
             "Pick an LLM to power the agent",
-            list(cfg.llms.available_models),
+            llms,
             index=0,
             key="llm_model",
             on_change=streamlit_utils.update_llm_model,
-            help="Used for tool calling and generating responses.",
         )
 
         # Text embedding model panel
-        text_models = [
-            "OpenAI/text-embedding-ada-002",
-            "NVIDIA/llama-3.2-nv-embedqa-1b-v2",
-        ]
+        text_models = tuple(streamlit_utils.get_all_available_embeddings(cfg))
         st.selectbox(
             "Pick a text embedding model",
             text_models,
@@ -468,7 +461,7 @@ with main_col1:
             key="text_embedding_model",
             on_change=streamlit_utils.update_text_embedding_model,
             kwargs={"app": app},
-            help="Used for Retrival Augmented Generation (RAG)",
+            help="Used for Retrival Augmented Generation (RAG) and other tasks.",
         )
 
         # Upload files (placeholder)
@@ -528,19 +521,34 @@ with main_col2:
                     "Setting up the `agent` and `vector store`. This may take a moment..."
                 ):
                     # Initialize Zotero library and RAG index before greeting
-                    if "zotero_initialized" not in st.session_state:
+                    if not st.session_state.zotero_initialized:
                         initialize_zotero_and_build_store()
                     config: RunnableConfig = {
                         "configurable": {"thread_id": st.session_state.unique_id}
                     }
-                    # Update the agent state with the selected LLM model
-                    current_state = app.get_state(config)
+                    # Prepare LLM and embedding model for updating the agent
+                    llm_model = streamlit_utils.get_base_chat_model(
+                        st.session_state.llm_model
+                    )
+
+                    if cfg_frontend.default_embedding_model == "ollama":
+                        emb_model = OllamaEmbeddings(
+                            model=cfg_frontend.ollama_embeddings[0]
+                        )
+                    else:
+                        emb_model = OpenAIEmbeddings(
+                            model=cfg_frontend.openai_embeddings[0]
+                        )
+
+                    # Update the agent state with initial configuration
                     app.update_state(
                         config,
                         {
-                            "llm_model": streamlit_utils.get_base_chat_model(
-                                st.session_state.llm_model
-                            )
+                            "llm_model": llm_model,
+                            "embedding_model": emb_model,
+                            "text_embedding_model": streamlit_utils.get_text_embedding_model(
+                                st.session_state.text_embedding_model
+                            ),
                         },
                     )
                     intro_prompt = "Greet and tell your name and about yourself."

@@ -1,0 +1,61 @@
+# Milvus Database Configuration
+# This config is used by backend tools and the MilvusConnectionManager
+# Separated from frontend config for proper backend-frontend separation
+#
+# Environment Variables (all optional with sensible defaults):
+#   MILVUS_HOST - Milvus server host (default: localhost)
+#   MILVUS_PORT - Milvus server port (default: 19530)
+#   MILVUS_USER - Milvus username (default: root)
+#   MILVUS_PASSWORD - Milvus password (default: Milvus)
+#   MILVUS_DATABASE - Database name (default: t2kg_primekg)
+
+milvus_db:
+  # Connection settings
+  alias: "default"
+  host: ${oc.env:MILVUS_HOST,localhost}
+  port: ${oc.env:MILVUS_PORT,19530}
+  uri: "http://${oc.env:MILVUS_HOST,localhost}:${oc.env:MILVUS_PORT,19530}"
+  token: "${oc.env:MILVUS_USER,root}:${oc.env:MILVUS_PASSWORD,Milvus}"
+  user: ${oc.env:MILVUS_USER,root}
+  password: ${oc.env:MILVUS_PASSWORD,Milvus}
+
+  # Database and collection names
+  database_name: ${oc.env:MILVUS_DATABASE,t2kg_primekg}
+  collection_edges: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_edges"
+  collection_nodes: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes"
+  collection_nodes_gene_protein: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_gene_protein"
+  collection_nodes_molecular_function: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_molecular_function"
+  collection_nodes_cellular_component: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_cellular_component"
+  collection_nodes_biological_process: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_biological_process"
+  collection_nodes_drug: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_drug"
+  collection_nodes_disease: "${oc.env:MILVUS_DATABASE,t2kg_primekg}_nodes_disease"
+
+  # Query performance settings
+  query_batch_size: 10000
+
+# Node and edge column mappings
+node_id_column: "node_id"
+node_attr_column: "node_attr"
+edge_src_column: "edge_src"
+edge_attr_column: "edge_attr"
+edge_dst_column: "edge_dst"
+
+# Node colors for visualization (moved from frontend)
+node_colors_dict:
+  "gene/protein": "#6a79f7"
+  "molecular_function": "#82cafc"
+  "cellular_component": "#3f9b0b"
+  "biological_process": "#c5c9c7"
+  "drug": "#c4a661"
+  "disease": "#80013f"
+
+# BioBridge data source configuration
+biobridge:
+  source: "/mnt/blockstorage/biobridge_multimodal/"
+  node_type:
+    - "gene/protein"
+    - "molecular_function"
+    - "cellular_component"
+    - "biological_process"
+    - "drug"
+    - "disease"

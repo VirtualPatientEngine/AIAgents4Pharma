@@ -10,11 +10,12 @@ import sys
 
 import hydra
 import streamlit as st
+from langchain_openai import OpenAIEmbeddings
 from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import OllamaEmbeddings
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from streamlit_feedback import streamlit_feedback
+
 from utils import streamlit_utils
 
 st.set_page_config(
@@ -25,41 +26,9 @@ st.set_page_config(
 )
 
 
-# Set the logo, detect if we're in container or local development
-def get_logo_path():
-    container_path = "/app/docs/assets/VPE.png"
-    local_path = "docs/assets/VPE.png"
+# Logo will be configured after Hydra config is loaded
 
-    if os.path.exists(container_path):
-        return container_path
-    elif os.path.exists(local_path):
-        return local_path
-    else:
-        # Fallback: try to find it relative to script location
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        relative_path = os.path.join(script_dir, "../../docs/assets/VPE.png")
-        if os.path.exists(relative_path):
-            return relative_path
-
-    return None  # File not found
-
-
-logo_path = get_logo_path()
-if logo_path:
-    st.logo(
-        image=logo_path, size="large", link="https://github.com/VirtualPatientEngine"
-    )
-
-# Check if env variables OPENAI_API_KEY and/or
-# NVIDIA_API_KEY exist
-if "OPENAI_API_KEY" not in os.environ or "NVIDIA_API_KEY" not in os.environ:
-    st.error(
-        "Please set the OPENAI_API_KEY and NVIDIA_API_KEY "
-        "environment variables in the terminal where you run "
-        "the app. For more information, please refer to our "
-        "[documentation](https://virtualpatientengine.github.io/AIAgents4Pharma/#option-2-git)."
-    )
-    st.stop()
+# Environment variables will be checked after config is loaded
 
 # Import the agent
 sys.path.append("./")
@@ -68,18 +37,47 @@ from aiagents4pharma.talk2aiagents4pharma.agents.main_agent import get_app
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
-    # Load Hydra configuration
+    # Load T2AA4P's main configuration
+    with hydra.initialize(
+        version_base=None,
+        config_path="../../aiagents4pharma/talk2aiagents4pharma/configs",
+    ):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["app/frontend=default"],
+        )
+        st.session_state.config = cfg
+else:
+    cfg = st.session_state.config
+
+# Load T2KG database config for knowledge graph access
+if "t2kg_config" not in st.session_state:
     with hydra.initialize(
         version_base=None,
         config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
     ):
-        cfg_t2kg = hydra.compose(
-            config_name="config", overrides=["app/frontend=default"]
+        t2kg_cfg = hydra.compose(
+            config_name="config",
+            overrides=["utils/database/milvus=default"],
         )
-        cfg_t2kg = cfg_t2kg.app.frontend
-        st.session_state.config = cfg_t2kg
+        st.session_state.t2kg_config = t2kg_cfg
 else:
-    cfg_t2kg = st.session_state.config
+    t2kg_cfg = st.session_state.t2kg_config
+
+# Extract frontend config for backward compatibility
+cfg_t2kg = cfg.app.frontend
+
+
+# Resolve logo via shared utility
+logo_path = streamlit_utils.resolve_logo(cfg)
+if logo_path:
+    # Guard for older Streamlit versions without st.logo
+    if hasattr(st, "logo"):
+        st.logo(image=logo_path, size="large", link=cfg.app.frontend.logo_link)
+    else:
+        st.image(image=logo_path, use_column_width=False)
+
+# Defer provider-aware environment checks until session state is initialized
 
 ########################################################################################
 # Streamlit app
@@ -94,105 +92,45 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# Initialize current user
-if "current_user" not in st.session_state:
-    st.session_state.current_user = cfg_t2kg.default_user
+# Initialize unified session state
+streamlit_utils.initialize_session_state(cfg, agent_type="T2AA4P")
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Provider-aware environment checks (non-blocking to keep uploads/UI usable)
+needed_env = set()
+llm_choice = st.session_state.get("llm_model", "")
+emb_choice = st.session_state.get("text_embedding_model", "")
 
-## T2B
 
-# Initialize sbml_file_path
-if "sbml_file_path" not in st.session_state:
-    st.session_state.sbml_file_path = None
+def needs(prefix: str) -> bool:
+    return llm_choice.startswith(prefix) or emb_choice.startswith(prefix)
 
-## T2KG
 
-# Initialize session state for selections
-if "selections" not in st.session_state:
-    st.session_state.selections = streamlit_utils.initialize_selections()
+if needs("OpenAI/"):
+    needed_env.add("OPENAI_API_KEY")
+if needs("Azure/"):
+    # Azure OpenAI typically needs endpoint and deployment
+    for var in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT"):
+        needed_env.add(var)
+if needs("NVIDIA/"):
+    needed_env.add("NVIDIA_API_KEY")
 
-# Initialize session state for T2B article
-if "t2b_article_key" not in st.session_state:
-    st.session_state.t2b_article_key = 0
+missing = [var for var in needed_env if var not in os.environ]
+if missing:
+    st.warning(
+        "Missing environment settings for the selected provider(s): "
+        + ", ".join(missing)
+    )
 
-# Initialize session state for pre-clinical data package uploader
-if "data_package_key" not in st.session_state:
-    st.session_state.data_package_key = 0
-
-# Initialize session state for patient gene expression data uploader
-if "endotype_key" not in st.session_state:
-    st.session_state.endotype_key = 0
-
-# Initialize session state for multimodal data package uploader
-if "multimodal_key" not in st.session_state:
-    st.session_state.multimodal_key = 0
-
-# Initialize session state for uploaded files
-if "t2b_uploaded_files" not in st.session_state:
-    st.session_state.t2b_uploaded_files = []
-
-# Initialize session state for uploaded files
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = []
-
-    # Make directories if not exists
-    os.makedirs(cfg_t2kg.upload_data_dir, exist_ok=True)
-
-# Initialize project_name for Langsmith
-if "project_name" not in st.session_state:
-    # st.session_state.project_name = str(st.session_state.user_name) + '@' + str(uuid.uuid4())
-    st.session_state.project_name = "T2AA4P-" + str(random.randint(1000, 9999))
-
-# Initialize run_id for Langsmith
-if "run_id" not in st.session_state:
-    st.session_state.run_id = None
-
-# Initialize graph
-if "unique_id" not in st.session_state:
-    st.session_state.unique_id = random.randint(1, 1000)
+# Initialize the app with default LLM model for the first time
 if "app" not in st.session_state:
-    if "llm_model" not in st.session_state:
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        )
-    else:
-        print(st.session_state.llm_model)
-        st.session_state.app = get_app(
-            st.session_state.unique_id,
-            llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
-        )
+    # Initialize the app using the utility function for proper model mapping
+    st.session_state.app = get_app(
+        st.session_state.unique_id,
+        llm_model=streamlit_utils.get_base_chat_model(st.session_state.llm_model),
+    )
 
-if "t2kg_emb_model" not in st.session_state:
-    # Set the default embedding model
-    if cfg_t2kg.default_embedding_model == "ollama":
-        print("Using Ollama embeddings as default.")
-        # For IBD BioBridge data, we still use Ollama embeddings
-        st.session_state.t2kg_emb_model = OllamaEmbeddings(
-            model=cfg_t2kg.ollama_embeddings[0]
-        )
-    else:
-        print("Using OpenAI embeddings as default.")
-        st.session_state.t2kg_emb_model = OpenAIEmbeddings(
-            model=cfg_t2kg.openai_embeddings[0]
-        )
-
-if "topk_nodes" not in st.session_state:
-    # Subgraph extraction settings
-    st.session_state.topk_nodes = cfg_t2kg.reasoning_subgraph_topk_nodes
-    st.session_state.topk_edges = cfg_t2kg.reasoning_subgraph_topk_edges
-
-if "milvus_connection" not in st.session_state:
-    st.session_state.milvus_connection = streamlit_utils.setup_milvus(cfg_t2kg)
-    print("Milvus connection established:", st.session_state.milvus_connection)
-    # Cache edge index if it does not exist
-    if not os.path.exists(cfg_t2kg.milvus_db.cache_edge_index_path):
-        print("Cache edge index does not exist. Creating it now...")
-        # Create the cache edge index
-        streamlit_utils.get_cache_edge_index(cfg_t2kg)
+# Milvus connection is now handled by backend tools automatically
+# No frontend connection management needed
 
 # Get the app
 app = st.session_state.app
@@ -203,18 +141,30 @@ streamlit_utils.apply_css()
 # Sidebar
 with st.sidebar:
     st.markdown("**⚙️ Subgraph Extraction Settings**")
+    # Top-K nodes and edges sliders
     topk_nodes = st.slider(
         "Top-K (Nodes)",
-        cfg_t2kg.reasoning_subgraph_topk_nodes_min,
-        cfg_t2kg.reasoning_subgraph_topk_nodes_max,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_min,
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_max,
         st.session_state.topk_nodes,
         key="st_slider_topk_nodes",
     )
     st.session_state.topk_nodes = topk_nodes
+    # Use dedicated edge min/max if present; fall back to node bounds
+    edges_min = getattr(
+        cfg.app.frontend,
+        "reasoning_subgraph_topk_edges_min",
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_min,
+    )
+    edges_max = getattr(
+        cfg.app.frontend,
+        "reasoning_subgraph_topk_edges_max",
+        cfg.app.frontend.reasoning_subgraph_topk_nodes_max,
+    )
     topk_edges = st.slider(
         "Top-K (Edges)",
-        cfg_t2kg.reasoning_subgraph_topk_nodes_min,
-        cfg_t2kg.reasoning_subgraph_topk_nodes_max,
+        edges_min,
+        edges_max,
         st.session_state.topk_edges,
         key="st_slider_topk_edges",
     )
@@ -235,27 +185,18 @@ with main_col1:
             unsafe_allow_html=True,
         )
 
-        # LLM model panel
-        llms = [
-            "OpenAI/gpt-4o-mini",
-            "NVIDIA/llama-3.3-70b-instruct",
-            "NVIDIA/llama-3.1-70b-instruct",
-            "NVIDIA/llama-3.1-405b-instruct",
-        ]
+        # LLM panel (Only at the front-end for now)
+        llms = tuple(streamlit_utils.get_all_available_llms(cfg))
         st.selectbox(
             "Pick an LLM to power the agent",
             llms,
             index=0,
             key="llm_model",
             on_change=streamlit_utils.update_llm_model,
-            help="Used for tool calling and generating responses.",
         )
 
         # Text embedding model panel
-        text_models = [
-            "NVIDIA/llama-3.2-nv-embedqa-1b-v2",
-            "OpenAI/text-embedding-ada-002",
-        ]
+        text_models = tuple(streamlit_utils.get_all_available_embeddings(cfg))
         st.selectbox(
             "Pick a text embedding model",
             text_models,
@@ -270,7 +211,7 @@ with main_col1:
         uploaded_sbml_file = streamlit_utils.get_t2b_uploaded_files(app)
 
         # T2KG Upload files
-        streamlit_utils.get_uploaded_files(cfg_t2kg)
+        streamlit_utils.get_uploaded_files(cfg)
 
         # Help text
         st.button(
@@ -387,27 +328,36 @@ with main_col2:
             with st.chat_message("assistant", avatar="🤖"):
                 with st.spinner("Initializing the agent ..."):
                     config = {"configurable": {"thread_id": st.session_state.unique_id}}
-                    # Update the agent state with the selected LLM model
-                    current_state = app.get_state(config)
+                    # Prepare LLM and embedding model for updating the agent
+                    llm_model = streamlit_utils.get_base_chat_model(
+                        st.session_state.llm_model
+                    )
+
+                    if cfg.app.frontend.default_embedding_model == "ollama":
+                        emb_model = OllamaEmbeddings(
+                            model=cfg.app.frontend.ollama_embeddings[0]
+                        )
+                    else:
+                        emb_model = OpenAIEmbeddings(
+                            model=cfg.app.frontend.openai_embeddings[0]
+                        )
+
+                    # Update the agent state with initial configuration
                     app.update_state(
                         config,
                         {
-                            "llm_model": streamlit_utils.get_base_chat_model(
-                                st.session_state.llm_model
-                            ),
+                            "llm_model": llm_model,
+                            "embedding_model": emb_model,
                             "text_embedding_model": streamlit_utils.get_text_embedding_model(
                                 st.session_state.text_embedding_model
                             ),
-                            "embedding_model": st.session_state.t2kg_emb_model,
                             "selections": st.session_state.selections,
                             "uploaded_files": st.session_state.uploaded_files,
                             "topk_nodes": st.session_state.topk_nodes,
                             "topk_edges": st.session_state.topk_edges,
                             "dic_source_graph": [
                                 {
-                                    "name": st.session_state.config["kg_name"],
-                                    # "kg_pyg_path": st.session_state.config["kg_pyg_path"],
-                                    # "kg_text_path": st.session_state.config["kg_text_path"],
+                                    "name": t2kg_cfg.utils.database.milvus.milvus_db.database_name,
                                 }
                             ],
                         },
@@ -441,7 +391,7 @@ with main_col2:
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions_t2aa4p()):
                 if st.button(
-                    f"Q{count + 1}. {question}", key=f"sample_question_{count + 1}"
+                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
                 ):
                     # Trigger the question
                     prompt = question
@@ -450,8 +400,8 @@ with main_col2:
                     {
                         "type": "button",
                         "question": question,
-                        "content": f"Q{count + 1}. {question}",
-                        "key": f"sample_question_{count + 1}",
+                        "content": f"Q{count+1}. {question}",
+                        "key": f"sample_question_{count+1}",
                     }
                 )
 

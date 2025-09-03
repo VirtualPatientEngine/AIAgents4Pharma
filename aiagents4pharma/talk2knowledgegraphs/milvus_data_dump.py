@@ -58,21 +58,22 @@ class SystemDetector:
         if self.use_gpu and self.os_type == "linux":
             # Exact package list from original script for GPU mode
             packages = [
-                # "pip install --extra-index-url=https://pypi.nvidia.com cudf-cu12",
-                # "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12",
-                "pip install pymilvus==2.5.11",
-                "pip install numpy==1.26.4",
-                "pip install pandas==2.1.3",
-                "pip install tqdm==4.67.1",
+                "pip install --extra-index-url=https://pypi.nvidia.com cudf-cu12",
+                "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12",
+                "pip install pymilvus",
+                "pip install numpy",
+                "pip install pandas",
+                "pip install tqdm",
             ]
             return packages
         else:
             # CPU-only packages
             packages = [
-                "pip install pymilvus==2.5.11",
-                "pip install numpy==1.26.4",
-                "pip install pandas==2.1.3",
-                "pip install tqdm==4.67.1",
+                "pip install pymilvus",
+                "pip install numpy",
+                "pip install pandas",
+                "pip install tqdm",
+                "pip install pyarrow",
             ]
             return packages
 

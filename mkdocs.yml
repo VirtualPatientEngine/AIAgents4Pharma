@@ -89,6 +89,8 @@ nav:
           - StarkQA-PrimeKG: talk2knowledgegraphs/datasets/starkqa_primekg.md
           - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
+          - Database:
+              - MilvusConnectionManager: talk2knowledgegraphs/utils/embeddings/milvus_connection_manager.md
           - Embeddings:
               - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
               - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
