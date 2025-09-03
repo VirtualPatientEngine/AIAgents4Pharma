@@ -1,1 +1,1 @@
-::: aiagents4pharma.talk2knowledgegraphs.utils.embeddings.milvus_connection_manager
+::: aiagents4pharma.talk2knowledgegraphs.utils.database.milvus_connection_manager

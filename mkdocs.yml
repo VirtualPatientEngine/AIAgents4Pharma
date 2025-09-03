@@ -90,7 +90,7 @@ nav:
           - BioBridge-PrimeKG: talk2knowledgegraphs/datasets/biobridge_primekg.md
       - Utils:
           - Database:
-              - MilvusConnectionManager: talk2knowledgegraphs/utils/embeddings/milvus_connection_manager.md
+              - MilvusConnectionManager: talk2knowledgegraphs/utils/database/milvus_connection_manager.md
           - Embeddings:
               - Embeddings: talk2knowledgegraphs/utils/embeddings/embeddings.md
               - EmbeddingWithSentenceTransformer: talk2knowledgegraphs/utils/embeddings/sentence_transformer.md
@@ -185,6 +185,7 @@ nav:
           - GitHub Workflows: developer/WORKFLOWS.md
           - Streamlit Security: developer/STREAMLIT_SECURITY.md
           - SonarCloud Setup: developer/SONARCLOUD_SETUP.md
+          - Azure Deployment: developer/AZURE_DEPLOYMENT.md
       - Operations:
           - Operations Overview: ops/Documentation_intro.md
           - Code Operations: ops/CodeOps.md
