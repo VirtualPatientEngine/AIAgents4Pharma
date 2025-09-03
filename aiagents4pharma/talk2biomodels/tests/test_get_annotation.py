@@ -126,7 +126,7 @@ def test_all_species_annotations(make_graph):
     Here, we test the tool with three models since they have different use cases:
         - model 12 contains a species with no URL provided.
         - model 20 contains a species without description.
-        - model 56 contains a species with database outside of KEGG, UniProt, and OLS.
+        - model 56 contains a species with database outside of UniProt, and OLS.
 
     We are testing a condition where the user asks for annotations
     of all species in a specific model.
