@@ -333,7 +333,7 @@ jobs:
           zip -r "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.zip" .
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.detect-changes.outputs.version }}
           name: "AIAgents4Pharma ${{ needs.detect-changes.outputs.version }}"
