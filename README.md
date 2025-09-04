@@ -185,6 +185,7 @@ For contributors and developers, we have comprehensive documentation:
 - **[SonarCloud Integration](docs/developer/SONARCLOUD_SETUP.md)** - Code quality analysis and CI/CD integration
 - **[GitHub Workflows](docs/developer/WORKFLOWS.md)** - Understanding our CI/CD pipeline
 - **[Streamlit Security](docs/developer/STREAMLIT_SECURITY.md)** - File upload security implementation
+- **[Azure Deployment](developer/AZURE_DEPLOYMENT.md)** - Understanding our Azure deployment setup
 
 #### How to contribute
 
