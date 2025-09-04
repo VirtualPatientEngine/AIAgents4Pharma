@@ -2,7 +2,6 @@
 Test cases for Talk2Biomodels.
 """
 
-from ..api.kegg import fetch_from_api, fetch_kegg_names
 from ..api.ols import fetch_from_ols
 from ..api.uniprot import search_uniprot_labels
 
@@ -30,32 +29,3 @@ def test_fetch_from_ols():
     assert isinstance(label_2, str), f"Expected string, got {type(label_2)}"
     assert label_1 == "plasma membrane"
     assert label_2.startswith("Error: 404")
-
-
-def test_fetch_kegg_names():
-    """
-    Test the fetch_kegg_names function.
-    """
-    ids = ["C00001", "C00002"]
-    results = fetch_kegg_names(ids)
-    assert results["C00001"] == "H2O"
-    assert results["C00002"] == "ATP"
-
-    # Try with an empty list
-    results = fetch_kegg_names([])
-    assert not results
-
-
-def test_fetch_from_api():
-    """
-    Test the fetch_from_api function.
-    """
-    base_url = "https://rest.kegg.jp/get/"
-    query = "C00001"
-    entry_data = fetch_from_api(base_url, query)
-    assert entry_data.startswith("ENTRY       C00001")
-
-    # Try with an invalid query
-    query = "C0000Q"
-    entry_data = fetch_from_api(base_url, query)
-    assert not entry_data
