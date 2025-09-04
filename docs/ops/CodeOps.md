@@ -4,15 +4,16 @@ hide:
   - toc
 ---
 
-<img src='../VPE.png' height="50" width="50"></img>
+<img src='../assets/VPE.png' height="50" width="50"></img>
 
 # <font color=black>CodeOps</font>
+
 > <font color=black>ℹ️</font><br>
-> **Date** 2024-11-02<br>
-> **Version** 1.0<br>
+> **Date** 2025-09-04<br>
+> **Version** 2.0<br>
 
 1. [Overview](#overview)
-2. [GitHub Repo Types](#github-repo-types)
+2. [GitHub Repo Organization](#github-repo-organization)
 3. [GitHub templates for PRs, features and bugs](#github-templates-for-prs-features-and-bugs)
 4. [Coding practices](#coding-practices)
 5. [Testing locally](#testing-locally)
@@ -22,7 +23,12 @@ hide:
 <hr>
 
 ## Overview
+
 Welcome to Team VPE’s CodeOps document!
+
+This guide is maintained by Team VPE (Virtual Patient Engine). Learn more about the team and our mission here: https://bmedx.com/research-teams/artificial-intelligence/team-vpe/
+
+This public-first repository encourages open collaboration while adhering to quality, security, and release standards suitable for production use.
 
 This document serves as a guide to our team's approach to managing code. Your insights and feedback are highly encouraged 😊. Please provide feedback via [GitHub Issues](https://github.com/VirtualPatientEngine/AIAgents4Pharma/issues). Thanks 😊.
 
@@ -36,42 +42,30 @@ This guide will cover the following topics relevant for our CodeOps:.
 🗸 **Resources for Further Reading**: Additional reading material.<br>
 
 ## GitHub Repo Organization
-This repository is intended to be public facing, encouraging easy collaboration, and sharing within the wider community. It follows a modular structure that allows developers to focus on individual AI Agent modules or compose a complete application using all or some of the available AI Agents. Our folder structure is as follows:
 
-| Folder or File | Description |
-| -------------- | ----------- |
-| .gitignore | Path to files and folders to be ignored |
-| .github/ | Workflows for continuous integration (CI) and templates (Bug/Feature/PR) |
-| app/ | Where the application code sits |
-| app/\<frontend or backend\>/src/ | Code related to the client web UI or server backend, respectively |
-| app/\<frontend or backend\>/tests/ | All pytests for the frontend or backend |
-| app/\<frontend or backend\>/docs/ | All documentation for the frontend or backend |
-| app/\<frontend or backend\>/pyproject.toml | List all the packages required for the front-end or backend |
-| app/\<frontend or backend\>/LICENSE | If differing for the frontend or backend compared to the LICENSE of the repo |
-| app/\<frontend or backend\>/README.md | Description of the frontend or backend |
-| agents/ | Where the AI agents code sits |
-| agents/\<agent\>/src/ |Code related to a particular <agent> |
-| agents/\<agent\>/src/models/ | All code that is specific to defining the decision making of a particular \<agent\> |
-| agents/\<agent\>/src/tools/ | All code that is specific to defining functionality of tools available to a particular \<agent\> |
-| agents/\<agent\>/src/prompts/ | Prompts that are specific to a particular \<agent\> |
-| agents/\<agent\>/tests/ | All pytests for a particular \<agent\> |
-| agents/\<agent\>/docs/ | All documentation for a particular \<agent\> |
-| agents/\<agent\>/examples/ | Notebooks exemplifying how to use a particular \<agent\> |
-| agents/\<agent\>/pyproject.toml | Python installation script for a particular \<agent\> |
-| agents/\<agent\>/LICENSE | If differing for a particular \<agent\> compared to the LICENSE of the repo |
-| agents/\<agent\>/README.md | Description of a particular \<agent\> |
-| docs/ | Where you write .md files for MkDocs for the repository website |
-| env/ | Dockerfiles or scripts for setting up a virtual environment for development or deployment |
-| node_modules | Packages required by sematic-release (do not modify/delete) |
-| pyproject.toml | Build script for the repository following [PEP 518](https://peps.python.org/pep-0518/) |
-| LICENSE | You know what it means |
-| README.md | Description of your repo |
-| CONTRIBUTING.md | Contributing guidelines |
-| *.yml Files | that come with semantic-release and MkDocs |
-| *.json | They are pre-configured |
-| *.js | Modify them based on your need |
+This repository is public-first and modular. The main Python package lives under `aiagents4pharma/`, with Streamlit apps in `app/`, and all tooling configured via `pyproject.toml` and managed by UV. Key paths:
+
+| Folder or File                                | Description                                                                                                                       |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/`                                    | CI/CD workflows and issue/PR templates                                                                                            |
+| `aiagents4pharma/`                            | Main Python package with agents (`talk2biomodels`, `talk2knowledgegraphs`, `talk2scholars`, `talk2cells`, `talk2aiagents4pharma`) |
+| `app/`                                        | Streamlit applications and UI utilities (e.g., secure file upload)                                                                |
+| `docs/`                                       | MkDocs documentation (developer, ops, user docs)                                                                                  |
+| `.github/workflows/`                          | GitHub Actions workflows (tests, security, SonarCloud, docker, release, docs)                                                     |
+| `.gitignore`                                  | Ignore rules for Git                                                                                                              |
+| `pyproject.toml`                              | Project config (PEP 621), tools (ruff, pylint, bandit, coverage, mypy)                                                            |
+| `uv.lock`                                     | Locked dependencies for reproducible builds                                                                                       |
+| `.pre-commit-config.yaml`                     | Pre-commit hooks (ruff, bandit, pip-audit, etc.)                                                                                  |
+| `mkdocs.yml`                                  | Documentation site configuration                                                                                                  |
+| `.coveragerc` or coverage in `pyproject.toml` | Coverage configuration used locally/CI                                                                                            |
+| `sonar-project.properties`                    | SonarCloud project configuration                                                                                                  |
+| `README.md`                                   | Project overview and contributor quickstart                                                                                       |
+| `CONTRIBUTING.md`                             | Contribution guidelines                                                                                                           |
+| `package.json`                                | Semantic-release tooling (node_modules not committed)                                                                             |
+| `LICENSE`                                     | Project license                                                                                                                   |
 
 ## GitHub templates for PRs, features, and bugs
+
 We have created three essential templates: the Pull Request (PR) template, the Feature Request template, and the Bug Report template (all present in the .github/ folder). Each serves a distinct purpose in streamlining our workflow and ensuring effective communication among team members and contributors.
 
 1. The **PR template** serves as a structured guide for anyone submitting a pull request. It outlines essential details such as the purpose of the changes, any associated issues or feature requests, testing instructions, and any necessary documentation updates. By adhering to this template, contributors provide comprehensive context, making the review process smoother and more efficient.
@@ -81,41 +75,48 @@ We have created three essential templates: the Pull Request (PR) template, the F
 Upon opening an issue on GitHub, users are prompted to select the appropriate template based on their specific needs—whether it's a bug report, or a feature request. Likewise, when initiating a pull request, the PR template automatically loads, guiding contributors through the necessary steps to ensure thorough documentation and review of their proposed changes.
 
 ## Coding practices
+
 ### Branching model
+
 1. [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow)
 2. How to use branches:
-    1. Tagged branches (on VPE account) for releases.
-    2. Main branch (on VPE account) to start all Feature/Fix branches (on private account).
-    3. Merge of Feature/Fix branches (on private account) into Main (on VPE account) following a successful PR.
-    4. Tag the Main (on VPE accounts) for a new release.
+   1. Tagged branches (on VPE account) for releases.
+   2. Main branch (on VPE account) to start all Feature/Fix branches (on private account).
+   3. Merge of Feature/Fix branches (on private account) into Main (on VPE account) following a successful PR.
+   4. Tag the Main (on VPE accounts) for a new release.
 
 ### Unit Tests
+
 1. Each class/method should have a [unit test](https://en.wikipedia.org/wiki/Unit_testing)
 2. The tests must cover at least the following:
-    1. Unit testing: see [PyTest](https://docs.pytest.org/en/7.4.x/)
-    2. Linting: see [Pylint](https://pypi.org/project/pylint/)
-    3. Code coverage: see [Coverage](https://coverage.readthedocs.io/en/7.3.2/)
-    4. Works on Linux, Windows, and Mac machines
+   1. Unit testing: see [PyTest](https://docs.pytest.org/en/7.4.x/)
+   2. Linting: see [Ruff](https://docs.astral.sh/ruff/) and [Pylint](https://pypi.org/project/pylint/)
+   3. Code coverage: see [Coverage](https://coverage.readthedocs.io/en/7.3.2/)
+   4. Works on Linux, Windows, and Mac machines
 
-*NOTE: All tests must be written in the tests/ folder (this is where pytest will search by default)*
+_NOTE: All tests must be written in the tests/ folder (this is where pytest will search by default)_
 
-*Pro-tips:
-  - Use the GitHub co-pilot to write docstrings (though not always accurate).
-  - Install PyLint on VS code to spot the linting errors on the fly.*
+\*Pro-tips:
+
+- Use the GitHub co-pilot to write docstrings (though not always accurate).
+- Install PyLint on VS code to spot the linting errors on the fly.\*
 
 ### PR policies
+
 1. Number of approving reviewers on a PR: >= 1
 2. Passing unit testing (pytest)
 3. Passing linting (pylint)
 4. Passing coverage (coverage)
 
 ### Documentation of classes, methods, and APIs
+
 Use [MkDocs](https://www.mkdocs.org/). Refer to the DevOps guide for more details.
 
 ### Best practices in Python
+
 1. Choose your preferred Python version, but ensure your repository's environment passes tests on Windows, macOS, and Linux (you should be able to test that via GitHub actions).
-2. Coding style -> Numpy style ([Style guide](https://numpydoc.readthedocs.io/en/latest/format.html)) for Python using Flake8
-3. Use modules and packages (add __init__.py)
+2. Coding style is enforced via **Ruff**; prefer NumPy-style docstrings where applicable ([Style guide](https://numpydoc.readthedocs.io/en/latest/format.html))
+3. Use modules and packages (add **init**.py)
 4. One Class per script
 5. Separate packages for utilities/helper functions
 6. Import the module, not the function (call the function by accessing the module in the code)
@@ -165,78 +166,84 @@ def sum(a: int, b: int) -> int:
     return (a + b)
 ```
 
-*Pro-tip: Use co-pilot to automatically write a docstring for the methods/classes (though not always accurate)*
+_Pro-tip: Use co-pilot to automatically write a docstring for the methods/classes (though not always accurate)_
 
 11. Examples: Jupyter notebook with the following
     1. Clear API calls to the sources of all data to run the analysis.
     2. Record of all analyses and figure generation routines.
     3. Documentation of the analysis so that another team member could reproduce the results in your absence.
+
  
+
 ## Testing locally
+
 To streamline our development process and save time, we've implemented a CI/CD pipeline that includes automated testing through GitHub Actions (see the DevOps document for details). Essentially, each time code is pushed to GitHub, a TESTS workflow is triggered to test the code automatically. However, running these tests on GitHub Actions can be time-consuming. To optimize efficiency and catch issues early, **it's recommended to run the tests locally before committing changes to GitHub**. This involves executing pytest, pylint, and coverage tests (which are the core of the TESTS workflow) locally to ensure code quality and test coverage meet our standards. Below are the commands to execute these tests locally:
 
 ### pytest:
+
 **Job**: test scripts in the tests/ folder<br>
 **Passing-criteria**: pass all the tests<br>
 
 ```
-pytest
+uv run pytest
 ```
 
-*Note: Running pytest without any options can sometimes execute all the python files, including unintended ones. To avoid this, you can specify the folders you want to test. For example, running*
+_Note: Running pytest without any options can sometimes execute all the python files, including unintended ones. To avoid this, you can specify the folders you want to test. For example, running_
 
 ```
-pytest tests/
+uv run pytest tests/
 ```
 
-*will execute pytest only on the tests/ folder. It is important to ensure that pytest is run on at least the app/ and agents/ folders. Additionally, if you choose to run pytest on specific folders while testing locally, you must also do the same in the workflow files for GitHub actions (see the section on Automated workflows in the DevOps guide).*
+_will execute pytest only on the tests/ folder. It is important to ensure that pytest is run on at least the `aiagents4pharma/` and `app/` folders. Additionally, if you choose to run pytest on specific folders while testing locally, mirror the same in CI where appropriate (see DevOps workflows)._
 
-### pylint:
-**Action**: lint all *.py scripts in the specified folder<br>
-**Passing-criteria**: code rating must be **10.00/10.00**<br>
+### ruff and pylint:
 
-```
-pylint app/
-pylint agents/
-```
-
-*Note: If you want to disable a particular warning, use the disable option in pylint.
-For example, running*
+**Action**: lint/format and static analysis<br>
+**Passing-criteria**: No errors; warnings per `pyproject.toml` configuration<br>
 
 ```
-pylint --disable=R0801,W0613 app/
-pylint --disable=R0801,W0613 agents/
+uv run ruff check --fix .
+uv run ruff format .
+
+uv run pylint aiagents4pharma/
 ```
 
-*will ignore the warnings with codes [R0801](https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/duplicate-code.html) and [W0613](https://pylint.readthedocs.io/en/latest/user_guide/messages/warning/unused-argument.html). Choose to disable warnings wisely. Additionally, if you choose to disable a warning while testing locally, you must also disable it in the workflow files for GitHub Actions (see the section on Automated workflows in the DevOps guide). We have already disabled a few warnings. Please look at the [tests.yml](https://github.com/VirtualPatientEngine/AIAgents4Pharma/main/.github/workflows/tests.yml) to know the warnings we have currently disabled.*
+_Notes:_
+
+- Primary style/import checks use **ruff** (fast). Deep analysis uses **pylint** with disables configured in `pyproject.toml`.
+- If rule exceptions are needed, update `pyproject.toml` so local and CI behavior match (see DevOps workflows). Avoid ad-hoc CLI disables.
 
 ### coverage:
-**Job**: makes sure every method is called at least once in the tests/ folder<br>
-**Passing-criteria**: 100% score<br>
+
+**Job**: measure test coverage and enforce thresholds in CI<br>
+**Passing-criteria**: As enforced by CI (per-workflow coverage and SonarCloud gates)
 
 ```
-coverage run –m pytest agents app
-coverage report –m
+uv run coverage run -m pytest
+uv run coverage report -m
 ```
 
-*Note: Lines to be excluded should be specified in the file .coveragerc*
+_Notes: Component-specific coverage commands are available; coverage settings live in `pyproject.toml` and CI consumes XML artifacts._
 
 ### MkDocs:
+
 **Job**: Hosts the documentation locally<br>
 **Passing-criteria**: Manual assessment<br>
 
 ```
-mkdocs serve
+uv run mkdocs serve
 ```
 
-*NOTE: Please refer to the "Unit Tests" subsection within the "Coding Practices" section for further details.*
+_NOTE: Please refer to the "Unit Tests" subsection within the "Coding Practices" section for further details._
 
 ## Keywords in commit messages
+
 We use [semantic-release](https://github.com/semantic-release/semantic-release) software to automate the process of versioning and releasing code on GitHub. It operates by analyzing commit messages to determine the type of changes made in the codebase. Following the Semantic Versioning convention, commonly known as SemVer, version numbers are structured as MAJOR.MINOR.PATCH. The MAJOR version is incremented for incompatible changes in the code, MINOR for feature additions, and PATCH for backward-compatible bug fixes. This automated approach ensures that version increments are consistent and meaningful, aiding developers and users in understanding the impact of updates.
 
 **Job: Bump up the release (MAJOR.MINOR.PATCH) based on the commit message**
 
-###  “feat:”
+### “feat:”
+
 will bump up the minor version (MINOR)
 
 ```
@@ -244,6 +251,7 @@ git commit –m “feat: add a new feature”
 ```
 
 ### “fix:”
+
 will bump up the patch version (PATCH)
 
 ```
@@ -251,6 +259,7 @@ git commit –m “fix: fix bug”
 ```
 
 ### “feat:” or “fix:” followed by “BREAKING CHANGE:”
+
 will bump up the major version (MAJOR)
 
 ```
@@ -259,19 +268,22 @@ BREAKING CHANGE: update several features”
 ```
 
 #### Notes:
+
 1. The first line of the commit message must begin with the keyword “feat” or “fix” and the last line with "BREAKING_CHANGE" to prompt a major version bump.
-2. Write the commit message on GitHub when approving the merge between the 'develop' branch (on VPE account) and the 'main' branch (on VPE account), this ensures that the 'release.yml' will run using GitHub Actions. For all other cases, this commit message will not trigger any actions."
-3. **The obligation of bumping up the major version lies with the reviewer.**
+2. Use conventional commits when merging feature branches into `main`. This ensures `release.yml` runs in GitHub Actions.
+3. **The obligation of bumping up the major version lies with the reviewer** when changes are breaking (use `BREAKING CHANGE:` in body).
 
 ### “chore”
+
 triggers no action.
 
 ```
 git commit –m “chore: add new example in the folder
 ```
 
-*Please note it is mandatory to specify keywords when merging a pull request (e.g.: merging develop into main) on GitHub that results in a release or when pushing code to GitHub that will lead to a release. In most cases the release workflow activation is linked to the keywords mentioned. Leaf through the section on ‘How to open and close a Pull request on GitHub’ in the DevOps guide to know more.*
+_Please specify conventional commit keywords when merging a pull request into `main` that will lead to a release. See the DevOps guide for PR practices and workflow details._
 
 ## Resources
+
 - Outline of working with GitHub for collaborative projects [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
-Read more about: i. [GitHub Actions](https://docs.github.com/en/actions/using-workflows) workflows and ii. [Semantic versioning](https://semver.org/)
+  Read more about: i. [GitHub Actions](https://docs.github.com/en/actions/using-workflows) workflows and ii. [Semantic versioning](https://semver.org/)
