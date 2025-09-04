@@ -19,7 +19,6 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
-from ..api.kegg import fetch_kegg_annotations
 from ..api.ols import search_ols_labels
 from ..api.uniprot import search_uniprot_labels
 
@@ -298,8 +297,6 @@ class GetAnnotationTool(BaseTool):
         for ols_ontology_abbreviation in ols_ontology_abbreviations:
             if ols_ontology_abbreviation + "/" in link:
                 link = link.replace(f"{ols_ontology_abbreviation}/", "")
-        if "kegg.compound" in link:
-            link = link.replace("kegg.compound/", "kegg.compound:")
         return link
 
     def _fetch_descriptions(self, data: list[dict[str, str]]) -> dict[str, str]:
@@ -338,14 +335,8 @@ class GetAnnotationTool(BaseTool):
                 )
                 for identifier in identifiers:
                     results[identifier] = annotations.get(database, {}).get(identifier, "-")
-            elif database == "kegg.compound":
-                data = [
-                    {"Id": identifier, "Database": "kegg.compound"} for identifier in identifiers
-                ]
-                annotations = fetch_kegg_annotations(data)
-                for identifier in identifiers:
-                    results[identifier] = annotations.get(database, {}).get(identifier, "-")
             else:
+                # For any other database types, do not fetch; mark as unknown
                 for identifier in identifiers:
                     results[identifier] = "-"
         return results

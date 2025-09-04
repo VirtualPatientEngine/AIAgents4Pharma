@@ -332,21 +332,48 @@ jobs:
           tar -czf "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz" .
           zip -r "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.zip" .
 
+      - name: Get release notes from app release
+        id: get_release_notes
+        run: |
+          VERSION="${{ needs.detect-changes.outputs.version }}"
+
+          # Try to get the release title and body from the corresponding app release
+          RELEASE_TITLE=$(gh release view "$VERSION" --json name --jq .name 2>/dev/null || echo "")
+          RELEASE_BODY=$(gh release view "$VERSION" --json body --jq .body 2>/dev/null || echo "")
+
+          # If no release found or empty, create basic release info from git
+          if [ -z "$RELEASE_BODY" ]; then
+            # Get commit info for this version
+            RELEASE_NOTES="$VERSION"$'\n\n'"$(git log --oneline --pretty=format:"%s (%h)" -1 2>/dev/null || echo "Latest updates")"
+          else
+            # Use the release title and body, avoiding duplication
+            if [ -n "$RELEASE_TITLE" ] && [ "$RELEASE_TITLE" != "$VERSION" ]; then
+              RELEASE_NOTES="$RELEASE_TITLE"$'\n\n'"$RELEASE_BODY"
+            else
+              RELEASE_NOTES="$RELEASE_BODY"
+            fi
+          fi
+
+          # Store the release notes (escape newlines for GitHub Actions)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.detect-changes.outputs.version }}
           name: "AIAgents4Pharma ${{ needs.detect-changes.outputs.version }}"
           body: |
+            ${{ env.RELEASE_NOTES }}
+
+            ---
+
             ## 🚀 Ready-to-Deploy Docker Configurations
 
             **One-click deployment** for all AIAgents4Pharma applications with the latest updates from ${{ needs.detect-changes.outputs.version }}.
-
-            ### 📦 What's New in This Release
-            - **Updated Docker images** with latest application code
-            - **Production-ready** compose configurations for CPU & GPU
-            - **Complete setup** with Milvus, Minio, and all dependencies
-            - **Environment templates** for easy configuration
 
             ### ⚡ Quick Deploy
             ```bash
