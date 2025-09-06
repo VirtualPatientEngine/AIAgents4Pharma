@@ -5,10 +5,8 @@ biorxiv and medrxiv.
 """
 
 # Import modules
-from . import download_arxiv_input
+from . import paper_downloader
 
 __all__ = [
-    "download_arxiv_input",
-    "download_biorxiv_input",
-    "download_medrxiv_input",
+    "paper_downloader",
 ]

@@ -145,7 +145,7 @@ Show me the parameters related to drug dosing regimen in the model
 </details>
 <hr> 
 
-**Q:** Show annotated species of the model. <br>
+**Q:** Show annotated species of the model _(This step might take time.)_. <br>
 
 ```
 show me the annotations of all species in the model 537

@@ -1,4 +1,6 @@
 anndata==0.11.3
+beautifulsoup4==4.13.4
+cloudscraper==1.2.71
 copasi_basico==0.84
 coverage==7.6.4
 einops==0.8.0
@@ -36,6 +38,7 @@ pytest==8.3.3
 pytest-asyncio==0.25.2
 pyzotero==1.6.9
 pymilvus==2.5.11
+safetensors==0.4.2
 sentence_transformers==3.3.1
 seaborn==0.13.2
 scanpy==1.11.0
