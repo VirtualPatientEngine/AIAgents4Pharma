@@ -9,7 +9,7 @@ import hydra
 from typing import Any, Dict
 from PIL import Image
 from pdf2image import convert_from_path
-from langchain_nvidia_ai_endpoints import NVIDIARerank
+
 
 # Set up logging with configurable level
 log_level = os.environ.get("LOG_LEVEL", "INFO")
@@ -17,42 +17,21 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-# # --------------------
-# # Hydra config loader
-# # --------------------
-# def load_hydra_config() -> Any:
-#     """
-#     Load the configuration using Hydra and return the configuration for the multimodal processor.
-#     """
-#     with hydra.initialize(version_base=None, config_path="../../../configs"):
-#         cfg = hydra.compose(
-#             config_name="config",
-#             overrides=["tools/multimodal_processor=default"],
-#         )
-#         config = cfg.tools.multimodal_processor
-#         logger.debug("Loaded Multimodal Processor tool configuration.")
-#         return config
-def get_nvidia_headers(config: Any) -> Dict[str, str]:
+# Load configuration and start logging
+def load_hydra_config() -> Any:
     """
-    Build NVIDIA API headers from Hydra config.
-
-    Args:
-        config: Hydra configuration object (expects config.reranker.api_key).
-        logger: Logger instance for error/info logging.
-
-    Returns:
-        dict: Headers for NVIDIA API requests.
+    Load the configuration using Hydra and return the configuration for the multimodal processor.
     """
-    api_key = config.reranker.api_key
-    if not api_key:
-        logger.error("No NVIDIA API key found in configuration.")
-        raise ValueError("Configuration 'reranker.api_key' must be set.")
-    headers = { "Authorization": f"Bearer {api_key}", 
-               "Accept": "application/json" }
-    return headers, api_key 
-# --------------------
+    with hydra.initialize(version_base=None, config_path="../../../configs"):
+        cfg = hydra.compose(
+            config_name="config",
+            overrides=["tools/multimodal_processor=default"],
+        )
+        config = cfg.tools.multimodal_processor
+        logger.debug("Loaded Multimodal Processor configuration.")
+        return config
+config = load_hydra_config()
 # Utility Functions
-# --------------------
 MAX_B64_SIZE = 180_000
 
 def compress_image_to_target_size(image, max_bytes=MAX_B64_SIZE, min_quality=20, min_width=400):
@@ -146,9 +125,11 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=MAX_B64_
     return results
 
 
-def detect_page_elements(pdf_base64_list, config, headers):
+def detect_page_elements(pdf_base64_list):
     responses = []
     page_elements_url = config.page_elements_url
+    headers = config.headers
+    
     for item in pdf_base64_list:
         page, img_b64 = item.get("page"), item.get("base64")
         print("Processing page:", page)
@@ -260,9 +241,10 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=180_000,
     return results
 
 
-def ocr_with_paddle(config, headers, cropped_b64_list, metadata):
+def ocr_with_paddle(cropped_b64_list, metadata):
     logger.info("Running PaddleOCR...")
     ocr_results = []
+    headers = config.headers
     for img_b64, meta in zip(cropped_b64_list, metadata):
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         paddle_ocr_url = config.paddle_ocr_url
@@ -278,9 +260,10 @@ def ocr_with_paddle(config, headers, cropped_b64_list, metadata):
     return ocr_results
 
 
-def analyze_with_nvidia(elements_list, headers, api_url, element_type):
+def analyze_with_nvidia(elements_list, api_url, element_type):
     logger.info(f"Analyzing {element_type}...")
     analyzed = []
+    headers = config.headers
     for item in elements_list:
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{item['b64']}"}]}
         try:
@@ -295,32 +278,46 @@ def analyze_with_nvidia(elements_list, headers, api_url, element_type):
     return analyzed
 
 
-def process_all(cropped_results, config, headers):
+def process_all(cropped_results):
     final_results = {"charts": [], "tables": [], "infographics": []}
-    chart_api_url = config.chart_api_url
-    table_api_url = config.table_api_url
+    chart_url = config.chart_url
+    table_url = config.table_url
 
-    for item, meta in zip(cropped_results.get("charts", {}).get("base64", []), cropped_results.get("charts", {}).get("metadata", [])):
-        chart_analysis = analyze_with_nvidia([item], headers, chart_api_url, "chart")
+    # Process charts
+    for item, meta in zip(
+        cropped_results.get("charts", {}).get("base64", []),
+        cropped_results.get("charts", {}).get("metadata", []),
+    ):
+        chart_analysis = analyze_with_nvidia([item], chart_url, "chart")
         chart_ocr = ocr_with_paddle([item["b64"]], [meta])
-        final_results["charts"].append({"nvidia": chart_analysis[0], "ocr": chart_ocr[0]})
-
-    for item, meta in zip(cropped_results.get("tables", {}).get("base64", []), cropped_results.get("tables", {}).get("metadata", [])):
-        table_analysis = analyze_with_nvidia([item], headers, table_api_url, "table")
+        final_results["charts"].append(
+            {"nvidia": chart_analysis[0], "ocr": chart_ocr[0]}
+        )
+ # Process tables
+    for item, meta in zip(
+        cropped_results.get("tables", {}).get("base64", []),
+        cropped_results.get("tables", {}).get("metadata", []),
+    ):
+        table_analysis = analyze_with_nvidia([item], table_url, "table")
         table_ocr = ocr_with_paddle([item["b64"]], [meta])
-        final_results["tables"].append({"nvidia": table_analysis[0], "ocr": table_ocr[0]})
+        final_results["tables"].append(
+            {"nvidia": table_analysis[0], "ocr": table_ocr[0]}
+        )
 
-    for item, meta in zip(cropped_results.get("infographics", {}).get("base64", []), cropped_results.get("infographics", {}).get("metadata", [])):
+    # Process infographics (OCR only)
+    for item, meta in zip(
+        cropped_results.get("infographics", {}).get("base64", []),
+        cropped_results.get("infographics", {}).get("metadata", []),
+    ):
         infographic_ocr = ocr_with_paddle([item["b64"]], [meta])
         final_results["infographics"].append({"ocr": infographic_ocr[0]})
 
     return final_results
 
-# --------------------
 # OCR Post-Processing Helpers
-# --------------------
 def collect_ocr_results(final_results):
     """Flatten final_results into a list of raw OCR results."""
+    logger.info("Collecting OCR results...")
     ocr_entries = []
     for category, items in final_results.items():
         for item in items:
@@ -334,6 +331,7 @@ def extract_text_lines(data):
     Extract page, type, and text from PaddleOCR output.
     Works with both JSON string and Python dict/list.
     """
+    logger.info("Extracting text lines from OCR data...")
     if isinstance(data, str):
         try:
             data = json.loads(data)

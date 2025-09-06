@@ -3,6 +3,7 @@ Document processing utilities for loading and splitting PDFs.
 """
 
 import logging
+import os
 from typing import Any, Dict, List
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -61,8 +62,8 @@ def load_and_split_pdf(
     try:
         base64_pages = mp.pdf_to_base64_compressed(pdf_url)
         responses = mp.detect_page_elements(base64_pages)
-        categorixed = mp.categorize_page_elements(responses)
-        cropped = mp.crop_categorized_elements(categorixed, base64_pages)
+        categorized = mp.categorize_page_elements(responses)
+        cropped = mp.crop_categorized_elements(categorized, base64_pages)
         final_results = mp.process_all(cropped)
         ocr_results = mp.collect_ocr_results(final_results)
         text_lines = mp.extract_text_lines(ocr_results)

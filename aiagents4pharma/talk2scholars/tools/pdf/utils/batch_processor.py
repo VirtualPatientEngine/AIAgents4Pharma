@@ -4,6 +4,7 @@ Batch processing utilities for adding multiple papers to vector store.
 
 import concurrent.futures
 import logging
+import os
 import time
 from typing import Any, Dict, List, Set, Tuple
 
