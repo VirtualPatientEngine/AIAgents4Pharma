@@ -59,21 +59,32 @@ def load_and_split_pdf(
     chunks = splitter.split_documents(documents)
     logger.info("Split paper %s into %d chunks", paper_id, len(chunks))
 
+    # run multimodal processor at batch level
+    multimodal_texts = []
     try:
+        # Step 1: Convert PDF to base64 images
         base64_pages = mp.pdf_to_base64_compressed(pdf_url)
-        responses = mp.detect_page_elements(base64_pages)
-        categorized = mp.categorize_page_elements(responses)
+
+        # Step 2: Detect page elements (charts, tables, infographics)
+        detected = mp.detect_page_elements(base64_pages)
+        categorized = mp.categorize_page_elements(detected)
+
+        # Step 3: Crop & process each element
         cropped = mp.crop_categorized_elements(categorized, base64_pages)
-        final_results = mp.process_all(cropped)
-        ocr_results = mp.collect_ocr_results(final_results)
-        text_lines = mp.extract_text_lines(ocr_results)
+        processed = mp.process_all(cropped)
+
+        # Step 4: Collect OCR/text results
+        ocr_results = mp.collect_ocr_results(processed)
+        lines = mp.extract_text_lines(ocr_results)
+
+        # Flatten into text for RAG augmentation
+        multimodal_texts.extend([line["text"] for line in lines])
+
         if chunks:
-            chunks[0].metadata["multimodal_results"] = text_lines
+            chunks[0].metadata["multimodal_results"] = multimodal_texts
             logger.info("Attached multimodal results to first chunk of paper %s", paper_id)
     except Exception as e:
         logger.error(f"Error processing multimodal data for paper {paper_id}: {e}")
-        multimodal_results = None
-
     # Attach metadata & populate documents_dict
     for i, chunk in enumerate(chunks):
         chunk_id = f"{paper_id}_{i}"

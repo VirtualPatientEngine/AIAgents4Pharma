@@ -130,16 +130,26 @@ def _parallel_load_and_split(
             all_ids.extend(ids)
             success.append(pid)
 
-            # run multimodal processor at batch level (if you want separate tracking)
+            # run multimodal processor at batch level
+            multimodal_texts = []
             try:
+                # Step 1: Convert PDF to base64 images
                 base64_pages = mp.pdf_to_base64_compressed(url)
-                responses = mp.detect_page_elements(base64_pages)
-                categorized = mp.categorize_page_elements(responses)
-                cropped = mp.crop_categorized_elements(categorized, base64_pages)
-                final_results = mp.process_all(cropped)
-                ocr_results = mp.collect_ocr_results(final_results)
-                text_lines = mp.extract_text_lines(ocr_results)
 
+                # Step 2: Detect page elements (charts, tables, infographics)
+                detected = mp.detect_page_elements(base64_pages)
+                categorized = mp.categorize_page_elements(detected)
+
+                # Step 3: Crop & process each element
+                cropped = mp.crop_categorized_elements(categorized, base64_pages)
+                processed = mp.process_all(cropped)
+
+                # Step 4: Collect OCR/text results
+                ocr_results = mp.collect_ocr_results(processed)
+                lines = mp.extract_text_lines(ocr_results)
+
+                # Flatten into text for RAG augmentation
+                multimodal_texts.extend([line["text"] for line in lines])
             except Exception as e:
                 logger.error("Multimodal processing failed for %s: %s", pid, e)
 
