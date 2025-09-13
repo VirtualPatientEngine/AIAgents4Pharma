@@ -38,19 +38,16 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Check for compose changes
-        uses: dorny/paths-filter@v2
+      - name: Check for compose changes (simplified for workflow_run)
         id: changes
-        with:
-          filters: |
-            compose_changed:
-              - 'aiagents4pharma/talk2aiagents4pharma/docker-compose/**'
-              - 'aiagents4pharma/talk2scholars/docker-compose/**'
-              - 'aiagents4pharma/talk2knowledgegraphs/docker-compose/**'
+        run: |
+          # For workflow_run, assume compose files may need updating after app changes
+          echo "compose_changed=true" >> $GITHUB_OUTPUT
+          echo "Compose files will be released after app changes"
 
       - name: Get version info
         id: version
@@ -75,7 +72,7 @@ jobs:
 
           # Release ONLY if compose files changed
           if [ "${{ steps.changes.outputs.compose_changed }}" == "true" ]; then
-            SHOULD_RELEASE=true  
+            SHOULD_RELEASE=true
             echo "Compose files changed, will release"
           fi
 
@@ -103,7 +100,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup release directory
         run: |
@@ -118,26 +115,26 @@ jobs:
           # Process each application's compose files
           for app in talk2aiagents4pharma talk2scholars talk2knowledgegraphs; do
             app_path="aiagents4pharma/$app/docker-compose"
-            
+
             if [ -d "$app_path" ]; then
               echo "Processing $app compose files"
-              
+
               # Create app directories with cpu/gpu structure
               mkdir -p "release/$app/cpu"
               mkdir -p "release/$app/gpu"
-              
+
               # Process CPU version
               if [ -f "$app_path/cpu/docker-compose.yml" ]; then
                 cp "$app_path/cpu/docker-compose.yml" "release/$app/cpu/docker-compose.yml"
                 echo "Copied CPU compose for $app"
               fi
-              
-              # Process GPU version  
+
+              # Process GPU version
               if [ -f "$app_path/gpu/docker-compose.yml" ]; then
                 cp "$app_path/gpu/docker-compose.yml" "release/$app/gpu/docker-compose.yml"
                 echo "Copied GPU compose for $app"
               fi
-              
+
               # Copy any additional files from the main docker-compose directory
               if [ -d "$app_path" ]; then
                 find "$app_path" -maxdepth 1 -name "*.yml" -o -name "*.yaml" -o -name "*.env*" -o -name "README*" | while read extra_file; do
@@ -224,7 +221,7 @@ jobs:
           - 8GB+ RAM recommended
           - 10GB+ disk space
 
-          ### GPU Version  
+          ### GPU Version
           - NVIDIA Docker runtime
           - CUDA-compatible GPU
           - 16GB+ RAM recommended
@@ -234,7 +231,7 @@ jobs:
 
           Default ports (customize in your compose file if needed):
           - **talk2aiagents4pharma**: http://localhost:8501
-          - **talk2scholars**: http://localhost:8502  
+          - **talk2scholars**: http://localhost:8502
           - **talk2knowledgegraphs**: http://localhost:8503
           - **Milvus**: localhost:19530
           - **Minio**: http://localhost:9000 (console: :9001)
@@ -293,7 +290,7 @@ jobs:
 
           BATCH_SIZE=500
           EOF
-              
+
               # Copy to GPU directory
               cp "release/$app/cpu/.env.example" "release/$app/gpu/.env.example"
             fi
@@ -324,7 +321,7 @@ jobs:
           MILVUS_DB_NAME=pdf_rag_db
           MILVUS_COLLECTION_NAME=pdf_rag_documents
           EOF
-            
+
             # Copy to GPU directory
             cp "release/talk2scholars/cpu/.env.example" "release/talk2scholars/gpu/.env.example"
           fi
@@ -335,29 +332,74 @@ jobs:
           tar -czf "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz" .
           zip -r "../aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.zip" .
 
+      - name: Get release notes from app release
+        id: get_release_notes
+        run: |
+          VERSION="${{ needs.detect-changes.outputs.version }}"
+
+          # Try to get the release title and body from the corresponding app release
+          RELEASE_TITLE=$(gh release view "$VERSION" --json name --jq .name 2>/dev/null || echo "")
+          RELEASE_BODY=$(gh release view "$VERSION" --json body --jq .body 2>/dev/null || echo "")
+
+          # If no release found or empty, create basic release info from git
+          if [ -z "$RELEASE_BODY" ]; then
+            # Get commit info for this version
+            RELEASE_NOTES="$VERSION"$'\n\n'"$(git log --oneline --pretty=format:"%s (%h)" -1 2>/dev/null || echo "Latest updates")"
+          else
+            # Use the release title and body, avoiding duplication
+            if [ -n "$RELEASE_TITLE" ] && [ "$RELEASE_TITLE" != "$VERSION" ]; then
+              RELEASE_NOTES="$RELEASE_TITLE"$'\n\n'"$RELEASE_BODY"
+            else
+              RELEASE_NOTES="$RELEASE_BODY"
+            fi
+          fi
+
+          # Store the release notes (escape newlines for GitHub Actions)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.detect-changes.outputs.version }}
-          name: "Docker Compose Release ${{ needs.detect-changes.outputs.version }}"
+          name: "AIAgents4Pharma ${{ needs.detect-changes.outputs.version }}"
           body: |
-            ## Docker Compose Configuration Release
+            ${{ env.RELEASE_NOTES }}
 
-            This release contains Docker Compose files and configurations for AIAgents4Pharma.
+            ---
 
-            ### What's Included
-              - All Docker Compose configurations
-              - Environment file template (`.env.example`)
-              - Setup documentation
-              - Both development and production configurations
+            ## 🚀 Ready-to-Deploy Docker Configurations
 
-            ### Quick Start
-            1. Download and extract the archive
-            2. Copy `.env.example` to `.env` and customize
-            3. Run: `docker compose up -d`
+            **One-click deployment** for all AIAgents4Pharma applications with the latest updates from ${{ needs.detect-changes.outputs.version }}.
 
-            ### Changes in this release
-            ${{ github.event.head_commit.message }}
+            ### ⚡ Quick Deploy
+            ```bash
+            # Download and extract
+            wget https://github.com/${{ github.repository }}/releases/download/${{ needs.detect-changes.outputs.version }}/aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz
+            tar -xzf aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz
+
+            # Configure and run
+            cd talk2aiagents4pharma/cpu  # or gpu for GPU version
+            cp .env.example .env && nano .env  # Add your API keys
+            docker compose up -d
+            ```
+
+            ### 🏗️ Available Applications
+            | Application | CPU Port | GPU Port | Description |
+            |-------------|----------|----------|-------------|
+            | 🧪 **talk2aiagents4pharma** | 8501 | 8501 | Main pharmaceutical AI platform |
+            | 📚 **talk2scholars** | 8502 | 8502 | Academic paper research system |
+            | 🕸️ **talk2knowledgegraphs** | 8503 | 8503 | Knowledge graph analysis |
+
+            ### 📋 System Requirements
+            - **CPU**: 8GB+ RAM, Docker & Docker Compose
+            - **GPU**: 16GB+ RAM, NVIDIA Docker runtime, CUDA GPU
+
+            ---
+            *Synchronized with application release ${{ needs.detect-changes.outputs.version }} • Built with ❤️ by VirtualPatientEngine*
 
           files: |
             aiagents4pharma-compose-${{ needs.detect-changes.outputs.version }}.tar.gz

@@ -4,15 +4,18 @@ Test cases for datasets/dataset.py
 
 from ..datasets.dataset import Dataset
 
+
 class MockDataset(Dataset):
     """
     Mock dataset class for testing purposes.
     """
+
     def setup(self):
         pass
 
     def load_data(self):
         pass
+
 
 def test_dataset_setup():
     """
@@ -20,6 +23,7 @@ def test_dataset_setup():
     """
     dataset = MockDataset()
     assert dataset.setup() is None
+
 
 def test_dataset_load_data():
     """

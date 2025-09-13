@@ -3,16 +3,17 @@ Tool for performing subgraph summarization.
 """
 
 import logging
-from typing import Type, Annotated
-from pydantic import BaseModel, Field
+from typing import Annotated
+
+import hydra
+from langchain_core.messages import ToolMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import ToolMessage
-from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.tools import BaseTool
-from langgraph.types import Command
+from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
-import hydra
+from langgraph.types import Command
+from pydantic import BaseModel, Field
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -31,9 +32,7 @@ class SubgraphSummarizationInput(BaseModel):
         extraction_name: Name assigned to the subgraph extraction process
     """
 
-    tool_call_id: Annotated[str, InjectedToolCallId] = Field(
-        description="Tool call ID."
-    )
+    tool_call_id: Annotated[str, InjectedToolCallId] = Field(description="Tool call ID.")
     state: Annotated[dict, InjectedState] = Field(description="Injected state.")
     prompt: str = Field(description="Prompt to interact with the backend.")
     extraction_name: str = Field(
@@ -51,7 +50,7 @@ class SubgraphSummarizationTool(BaseTool):
     name: str = "subgraph_summarization"
     description: str = """A tool to perform subgraph summarization over textualized graph
                         for responding to user's follow-up prompt(s)."""
-    args_schema: Type[BaseModel] = SubgraphSummarizationInput
+    args_schema: type[BaseModel] = SubgraphSummarizationInput
 
     def _run(
         self,
@@ -69,9 +68,7 @@ class SubgraphSummarizationTool(BaseTool):
             prompt: The prompt to interact with the backend.
             extraction_name: The name assigned to the subgraph extraction process.
         """
-        logger.log(
-            logging.INFO, "Invoking subgraph_summarization tool for %s", extraction_name
-        )
+        logger.log(logging.INFO, "Invoking subgraph_summarization tool for %s", extraction_name)
 
         # Load hydra configuration
         with hydra.initialize(version_base=None, config_path="../configs"):

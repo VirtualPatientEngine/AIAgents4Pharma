@@ -4,6 +4,7 @@ Enrichments interface
 
 from abc import ABC, abstractmethod
 
+
 class Enrichments(ABC):
     """Interface for enrichment models.
 

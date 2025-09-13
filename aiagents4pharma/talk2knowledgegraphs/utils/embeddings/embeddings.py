@@ -2,8 +2,11 @@
 Embeddings interface from LangChain Core.
 https://github.com/langchain-ai/langchain/blob/master/libs/core/langchain_core/embeddings/embeddings.py
 """
+
 from abc import ABC, abstractmethod
+
 from langchain_core.runnables.config import run_in_executor
+
 
 class Embeddings(ABC):
     """Interface for embedding models.
@@ -32,6 +35,7 @@ class Embeddings(ABC):
     however, implementations may choose to override the asynchronous methods with
     an async native implementation for performance reasons.
     """
+
     @abstractmethod
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed search docs.

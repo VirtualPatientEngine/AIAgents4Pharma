@@ -5,7 +5,7 @@ PubMed paper downloader implementation.
 
 import logging
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, cast
 
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -37,7 +37,7 @@ class PubmedDownloader(BasePaperDownloader):
         self.pdf_meta_name = getattr(config, "pdf_meta_name", "citation_pdf_url")
         self.default_error_code = getattr(config, "default_error_code", "unknown")
 
-    def fetch_metadata(self, identifier: str) -> Dict[str, Any]:
+    def fetch_metadata(self, identifier: str) -> dict[str, Any]:
         """
         Fetch paper metadata from PubMed ID Converter API.
 
@@ -52,9 +52,7 @@ class PubmedDownloader(BasePaperDownloader):
             RuntimeError: If no records found in response
         """
         query_url = f"{self.id_converter_url}?ids={identifier}&format={self.id_converter_format}"
-        logger.info(
-            "Fetching metadata from ID converter for PMID %s: %s", identifier, query_url
-        )
+        logger.info("Fetching metadata from ID converter for PMID %s: %s", identifier, query_url)
 
         response = requests.get(query_url, timeout=self.request_timeout)
         response.raise_for_status()
@@ -67,7 +65,7 @@ class PubmedDownloader(BasePaperDownloader):
 
         return result
 
-    def construct_pdf_url(self, metadata: Dict[str, Any], identifier: str) -> str:
+    def construct_pdf_url(self, metadata: dict[str, Any], identifier: str) -> str:
         """
         Construct PDF URL using multiple fallback strategies.
 
@@ -145,18 +143,14 @@ class PubmedDownloader(BasePaperDownloader):
             if error_elem is not None:
                 error_code = error_elem.get("code", self.default_error_code)
                 error_text = error_elem.text or "unknown error"
-                logger.info(
-                    "OA API error for PMCID %s: %s - %s", pmcid, error_code, error_text
-                )
+                logger.info("OA API error for PMCID %s: %s - %s", pmcid, error_code, error_text)
                 return ""
 
             # Look for PDF link
             pdf_link = root.find(".//link[@format='pdf']")
             if pdf_link is not None:
                 pdf_url = pdf_link.get("href", "")
-                logger.info(
-                    "Found PDF URL from OA API for PMCID %s: %s", pmcid, pdf_url
-                )
+                logger.info("Found PDF URL from OA API for PMCID %s: %s", pmcid, pdf_url)
 
                 # Convert FTP links to HTTPS for download compatibility
                 if pdf_url.startswith(self.ftp_base_url):
@@ -188,15 +182,11 @@ class PubmedDownloader(BasePaperDownloader):
     def _try_pmc_page_scraping(self, pmcid: str) -> str:
         """Try scraping PMC page for PDF meta tag."""
         pmc_page_url = f"{self.pmc_page_base_url}/{pmcid}/"
-        logger.info(
-            "Scraping PMC page for PDF meta tag for %s: %s", pmcid, pmc_page_url
-        )
+        logger.info("Scraping PMC page for PDF meta tag for %s: %s", pmcid, pmc_page_url)
 
         try:
             headers = {"User-Agent": self.user_agent}
-            response = requests.get(
-                pmc_page_url, headers=headers, timeout=self.request_timeout
-            )
+            response = requests.get(pmc_page_url, headers=headers, timeout=self.request_timeout)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.content, "html.parser")
@@ -238,10 +228,10 @@ class PubmedDownloader(BasePaperDownloader):
 
     def extract_paper_metadata(
         self,
-        metadata: Dict[str, Any],
+        metadata: dict[str, Any],
         identifier: str,
-        pdf_result: Optional[Tuple[str, str]],
-    ) -> Dict[str, Any]:
+        pdf_result: tuple[str, str] | None,
+    ) -> dict[str, Any]:
         """
         Extract structured metadata from PubMed ID converter response.
 
@@ -310,15 +300,11 @@ class PubmedDownloader(BasePaperDownloader):
 
     def get_snippet(self, abstract: str) -> str:
         """Override to handle PubMed-specific abstract placeholder."""
-        if (
-            not abstract
-            or abstract == "N/A"
-            or abstract == "Abstract available in PubMed"
-        ):
+        if not abstract or abstract == "N/A" or abstract == "Abstract available in PubMed":
             return ""
         return super().get_snippet(abstract)
 
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """Get PubMed-specific identifier info for paper summary."""
         pmid = paper.get("PMID", "N/A")
         pmcid = paper.get("PMCID", "N/A")
@@ -329,7 +315,7 @@ class PubmedDownloader(BasePaperDownloader):
 
         return info
 
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """Add PMID and PubMed-specific fields to entry."""
         entry["PMID"] = identifier
         entry["PMCID"] = "N/A"

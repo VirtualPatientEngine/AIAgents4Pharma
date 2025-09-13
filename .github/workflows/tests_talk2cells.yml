@@ -1,124 +1,124 @@
-# This is a basic workflow to help you get started with GitHub Actions
+# Modern CI workflow using uv for fast, reliable dependency management
 name: TESTS Talk2Cells
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'aiagents4pharma/talk2cells/**'
-
-  # Allows you to run this workflow manually from the Actions tab
+      - "aiagents4pharma/talk2cells/**"
+      - "pyproject.toml"
+      - "uv.lock"
   workflow_dispatch:
 
 env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-# This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  pylint-windows-ubuntu-macos:
-    # The type of runner that the job will run on
-    name: pylint
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-        matrix:
-            os: [windows-latest, ubuntu-latest, macos-15]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  # Code quality checks
+  quality-checks:
+    name: Code Quality
+    runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
+        run: uv python install 3.12
 
-      # install requirements
-      - name: Install the requirements
-        run: |
-          pip3 install --break-system-packages -r requirements.txt
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
 
-      # pylint
       - name: Run pylint
+        run: uv run pylint aiagents4pharma/talk2cells
+
+      - name: Run ruff linting
+        run: uv run ruff check aiagents4pharma/talk2cells
+
+      - name: Run bandit security scan
+        run: uv run bandit -c pyproject.toml -r aiagents4pharma/talk2cells
+
+      - name: Run bandit security scan with JSON output for SonarCloud
         run: |
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2cells
+          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2cells -f json -o bandit-report.json || true
+        continue-on-error: true
 
-  # code coverage job for ubuntu and macos
-  code-cov-ubuntu-macos:
-    name: code-coverage
+      - name: Run pylint with JSON output for SonarCloud
+        run: |
+          uv run pylint aiagents4pharma/talk2cells --output-format=json --reports=no > pylint-report.json || true
+        continue-on-error: true
+
+      - name: Upload quality reports for SonarCloud
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports-talk2cells
+          path: |
+            pylint-report.json
+            bandit-report.json
+          retention-days: 1
+
+  # Cross-platform testing matrix
+  test-matrix:
+    name: Tests
+    needs: quality-checks
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15, windows-latest]
+        python-version: ["3.12"]
+
     runs-on: ${{ matrix.os }}
 
-    strategy:
-        matrix:
-          os: [ubuntu-latest, macos-15]
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-    - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
-    - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2cells/* -m pytest --cache-clear aiagents4pharma/talk2cells/tests/
+      - name: Install dependencies
+        run: uv sync --frozen
 
-    - name: Check coverage
-      run: |
-        coverage report -m
-        TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-        if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-          echo "Code coverage is not 100%. Please check the coverage report."
-          exit 1
-        fi
-      env:
-        COVERAGE_FILE: './.coverage'
+      - name: Run tests with coverage
+        run: |
+          uv run coverage run --include=aiagents4pharma/talk2cells/* -m pytest --cache-clear aiagents4pharma/talk2cells/tests/
 
-  # code coverage job for windows
-  code-cov-windows:
-    name: code-coverage
-    runs-on: ${{ matrix.os }}
+      - name: Generate coverage report
+        run: |
+          uv run coverage report -m
+          uv run coverage xml
 
-    strategy:
-        matrix:
-          os: [windows-latest]
+      - name: Check coverage threshold
+        shell: bash
+        run: |
+          TOTAL_COVERAGE=$(uv run coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: talk2cells
+          name: talk2cells-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
-
-    - name: Install dependencies
-      run: pip3 install -r requirements.txt  # Adjust this according to your project
-
-    - name: Run tests with coverage
-      run: coverage run --include=aiagents4pharma/talk2cells/* -m pytest --cache-clear aiagents4pharma/talk2cells/tests/
-
-    - name: Check coverage
-      run: |
-        coverage report -m
-        # $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1) -replace "[^\d]"  # Extract the last line and remove non-numeric characters
-        $TOTAL_COVERAGE=(& coverage report -m | Select-Object -Last 1)
-        # split and extract the last element
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -split " ")[-1]
-        # remove non-numeric characters
-        $TOTAL_COVERAGE=($TOTAL_COVERAGE -replace "[^\d]")
-        # convert to int
-        $TOTAL_COVERAGE=[int]$TOTAL_COVERAGE
-        echo "Total coverage: $TOTAL_COVERAGE"
-        if ($TOTAL_COVERAGE -ne 100) {
-          Write-Host "Code coverage is not 100%. Please check the coverage report."
-          exit 1
-        }
-      env:
-        COVERAGE_FILE: './.coverage'
+      - name: Upload test reports for SonarCloud
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-talk2cells
+          path: |
+            coverage.xml
+          retention-days: 1

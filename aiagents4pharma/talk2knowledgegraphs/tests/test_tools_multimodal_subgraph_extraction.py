@@ -3,6 +3,7 @@ Test cases for tools/subgraph_extraction.py
 """
 
 import pytest
+
 # from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from ..tools.multimodal_subgraph_extraction import MultimodalSubgraphExtractionTool
 
@@ -24,7 +25,7 @@ def agent_state_fixture():
             "cellular_component": [],
             "biological_process": [],
             "drug": [],
-            "disease": []
+            "disease": [],
         },
         "uploaded_files": [],
         "topk_nodes": 3,
@@ -59,13 +60,16 @@ def test_extract_multimodal_subgraph_wo_doc(agent_state):
 
     # Invoking the subgraph_extraction_tool
     response = subgraph_extraction_tool.invoke(
-        input={"prompt": prompt,
-               "tool_call_id": "subgraph_extraction_tool",
-               "state": agent_state,
-               "arg_data": {"extraction_name": "subkg_12345"}})
+        input={
+            "prompt": prompt,
+            "tool_call_id": "subgraph_extraction_tool",
+            "state": agent_state,
+            "arg_data": {"extraction_name": "subkg_12345"},
+        }
+    )
 
     # Check tool message
-    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
+    assert response.update["messages"][-1].tool_call_id == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
     dic_extracted_graph = response.update["dic_extracted_graph"][0]
@@ -80,13 +84,13 @@ def test_extract_multimodal_subgraph_wo_doc(agent_state):
     assert isinstance(dic_extracted_graph["graph_text"], str)
     # Check if the nodes are in the graph_text
     assert all(
-        n[0] in dic_extracted_graph["graph_text"].replace('"', '')
+        n[0] in dic_extracted_graph["graph_text"].replace('"', "")
         for n in dic_extracted_graph["graph_dict"]["nodes"]
     )
     # Check if the edges are in the graph_text
     assert all(
         ",".join([e[0], str(tuple(e[2]["relation"])), e[1]])
-        in dic_extracted_graph["graph_text"].replace('"', '')
+        in dic_extracted_graph["graph_text"].replace('"', "")
         for e in dic_extracted_graph["graph_dict"]["edges"]
     )
 
@@ -120,13 +124,16 @@ def test_extract_multimodal_subgraph_w_doc(agent_state):
 
     # Invoking the subgraph_extraction_tool
     response = subgraph_extraction_tool.invoke(
-        input={"prompt": prompt,
-               "tool_call_id": "subgraph_extraction_tool",
-               "state": agent_state,
-               "arg_data": {"extraction_name": "subkg_12345"}})
+        input={
+            "prompt": prompt,
+            "tool_call_id": "subgraph_extraction_tool",
+            "state": agent_state,
+            "arg_data": {"extraction_name": "subkg_12345"},
+        }
+    )
 
     # Check tool message
-    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
+    assert response.update["messages"][-1].tool_call_id == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
     dic_extracted_graph = response.update["dic_extracted_graph"][0]
@@ -141,12 +148,12 @@ def test_extract_multimodal_subgraph_w_doc(agent_state):
     assert isinstance(dic_extracted_graph["graph_text"], str)
     # Check if the nodes are in the graph_text
     assert all(
-        n[0] in dic_extracted_graph["graph_text"].replace('"', '')
+        n[0] in dic_extracted_graph["graph_text"].replace('"', "")
         for n in dic_extracted_graph["graph_dict"]["nodes"]
     )
     # Check if the edges are in the graph_text
     assert all(
         ",".join([e[0], str(tuple(e[2]["relation"])), e[1]])
-        in dic_extracted_graph["graph_text"].replace('"', '')
+        in dic_extracted_graph["graph_text"].replace('"', "")
         for e in dic_extracted_graph["graph_dict"]["edges"]
     )

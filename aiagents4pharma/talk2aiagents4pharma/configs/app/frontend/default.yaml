@@ -1,0 +1,102 @@
+_target_: app.frontend.streamlit_app_talk2aiagents4pharma
+default_user: "talk2aa4p_user"
+
+# File upload configuration (combining T2B and T2KG features)
+upload_data_dir: "../files"
+
+# T2B specific file types
+sbml_allowed_file_types:
+  - "xml"
+  - "sbml"
+article_allowed_file_types:
+  - "pdf"
+
+# T2KG specific file types
+data_package_allowed_file_types:
+  - "pdf"
+multimodal_allowed_file_types:
+  - "xls"
+  - "xlsx"
+
+# Knowledge graph configuration (from T2KG)
+kg_name: "BioBridge-PrimeKG"
+kg_node_types:
+  - "gene/protein"
+  - "molecular_function"
+  - "cellular_component"
+  - "biological_process"
+  - "drug"
+  - "disease"
+kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
+kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
+
+# OpenAI configuration - can use custom base_url for enterprise/Azure deployments
+openai_api_key: ${oc.env:OPENAI_API_KEY}
+openai_base_url: ${oc.env:OPENAI_BASE_URL,null}  # Optional: custom OpenAI endpoint
+openai_llms:
+  - "OpenAI/gpt-4o-mini"
+openai_embeddings:
+  - "text-embedding-ada-002"
+  - "text-embedding-3-small"
+
+# Rate limiting and retry configuration
+llm_max_retries: 5  # Number of retries on rate limit or transient errors
+llm_timeout: 60     # Timeout in seconds for LLM requests
+embedding_max_retries: 3  # Number of retries for embedding requests
+embedding_timeout: 30     # Timeout in seconds for embedding requests
+
+# NVIDIA configuration
+nvidia_api_key: ${oc.env:NVIDIA_API_KEY}
+nvidia_llms:
+  - "NVIDIA/llama-3.3-70b-instruct"
+  - "NVIDIA/llama-3.1-70b-instruct"
+  - "NVIDIA/llama-3.1-405b-instruct"
+nvidia_embeddings:
+  - "NVIDIA/llama-3.2-nv-embedqa-1b-v2"
+
+# Azure OpenAI configuration
+azure_openai_endpoint: ${oc.env:AZURE_OPENAI_ENDPOINT,null}  # Azure OpenAI endpoint
+azure_openai_deployment: ${oc.env:AZURE_OPENAI_DEPLOYMENT,null}  # Azure deployment name
+azure_openai_api_version: ${oc.env:AZURE_OPENAI_API_VERSION,"2024-02-01"}  # Azure API version
+azure_openai_model_name: ${oc.env:AZURE_OPENAI_MODEL_NAME,null}  # Model name for analytics
+azure_openai_model_version: ${oc.env:AZURE_OPENAI_MODEL_VERSION,null}  # Model version
+# Azure AD authentication (uses AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET)
+azure_client_id: ${oc.env:AZURE_CLIENT_ID,null}
+azure_tenant_id: ${oc.env:AZURE_TENANT_ID,null}
+azure_client_secret: ${oc.env:AZURE_CLIENT_SECRET,null}
+azure_openai_llms:
+  - "Azure/gpt-4o-mini"  # Will map to Azure deployment
+azure_openai_embeddings:
+  - "Azure/text-embedding-ada-002"
+
+# Ollama configuration (for local deployment)
+ollama_llms:
+  - "Ollama/llama3.1:8b"
+ollama_embeddings:
+  - "nomic-embed-text"
+
+# Default models
+default_llm_provider: "openai"
+default_embedding_model: "openai"  # Changed from "ollama" to match T2B pattern
+
+# App settings
+temperature: 0.1
+streaming: False
+
+# T2KG specific: Subgraph extraction settings
+reasoning_subgraph_topk_nodes: 15
+reasoning_subgraph_topk_nodes_min: 1
+reasoning_subgraph_topk_nodes_max: 50
+reasoning_subgraph_topk_edges: 15
+reasoning_subgraph_topk_edges_min: 1
+reasoning_subgraph_topk_edges_max: 50
+
+# Logo configuration
+logo_paths:
+  container: "/app/docs/assets/VPE.png"
+  local: "docs/assets/VPE.png"
+  relative: "../../docs/assets/VPE.png"
+logo_link: "https://github.com/VirtualPatientEngine"
+
+# Database configuration reference (handled by utils/database/milvus config)
+# This frontend config now only contains frontend-specific settings

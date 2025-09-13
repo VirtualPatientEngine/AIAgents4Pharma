@@ -1,8 +1,9 @@
 """
 This module contains the API for fetching ols database
 """
-from typing import List, Dict
+
 import requests
+
 
 def fetch_from_ols(term: str) -> str:
     """
@@ -19,23 +20,24 @@ def fetch_from_ols(term: str) -> str:
         base_url = f"https://www.ebi.ac.uk/ols4/api/ontologies/{ontology.lower()}/terms"
         params = {"obo_id": term}
         response = requests.get(
-            base_url,
-            params=params,
-            headers={"Accept": "application/json"},
-            timeout=10
+            base_url, params=params, headers={"Accept": "application/json"}, timeout=10
         )
         response.raise_for_status()
         data = response.json()
-        label = '-'
+        label = "-"
         # Extract and return the label
-        if "_embedded" in data and "terms" in data["_embedded"] \
-             and len(data["_embedded"]["terms"]) > 0:
+        if (
+            "_embedded" in data
+            and "terms" in data["_embedded"]
+            and len(data["_embedded"]["terms"]) > 0
+        ):
             label = data["_embedded"]["terms"][0].get("label", "Label not found")
         return label
     except (requests.exceptions.RequestException, KeyError, IndexError) as e:
         return f"Error: {str(e)}"
 
-def fetch_ols_labels(terms: List[str]) -> Dict[str, str]:
+
+def fetch_ols_labels(terms: list[str]) -> dict[str, str]:
     """
     Fetch labels for multiple terms from OLS.
 
@@ -50,7 +52,8 @@ def fetch_ols_labels(terms: List[str]) -> Dict[str, str]:
         results[term] = fetch_from_ols(term)
     return results
 
-def search_ols_labels(data: List[Dict[str, str]]) -> Dict[str, Dict[str, str]]:
+
+def search_ols_labels(data: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     """
     Fetch OLS annotations grouped by ontology type.
 

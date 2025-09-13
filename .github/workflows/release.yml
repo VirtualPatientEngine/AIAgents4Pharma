@@ -1,63 +1,167 @@
+# Modernized release workflow with semantic-release auto-tagging
 name: RELEASE
 
 on:
   push:
     branches: [main]
     paths:
-      - aiagents4pharma/**
-      - app/**
+      - "aiagents4pharma/**"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
 
 jobs:
-  on-success:
+  release:
+    name: Release & Publish
     permissions:
       contents: write
       issues: write
       pull-requests: write
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v3
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
         with:
-          node-version: "20.8.1"
-      - run: npm ci
+          fetch-depth: 0
 
-      - name: Run semantic-release
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Set up Node.js for semantic-release
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install semantic-release
+        run: npm install
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Run quality checks
+        run: |
+          uv run ruff check aiagents4pharma/
+          uv run bandit -c pyproject.toml -r aiagents4pharma/
+
+      - name: Run semantic-release (creates tag automatically)
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get release version
+      - name: Get release version from latest tag
         run: |
           RELEASE_VERSION=$(git describe --tags --abbrev=0)
-          echo $RELEASE_VERSION > release_version.txt
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "Release version: $RELEASE_VERSION"
 
-      - name: Build the package
+      - name: Build package with uv
         run: |
-          python -m pip install --upgrade pip
-          pip install build
-          python -m build
+          uv build
 
-      - name: Publish package
-        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      - name: Verify package integrity
+        run: |
+          uv run twine check dist/*
+
+      - name: Test package installation
+        run: |
+          # Test that the built package can be installed in a virtual environment
+          uv venv test-env
+          uv pip install --python test-env dist/*.whl --dry-run
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          verify-metadata: true
+          verbose: true
+          skip-existing: true
 
-    #   - name: commit files
-    #     run: |
-    #       git config --local user.email "action@github.com"
-    #       git config --local user.name "GitHub Action"
-    #       git add -f dist/*
-    #       git commit -m "new release"
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          tag_name: ${{ env.RELEASE_VERSION }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    #   # push
-    #   - name: push changes
-    #     uses: ad-m/github-push-action@v0.6.0
-    #     with:
-    #       github_token: ${{ secrets.GITHUB_TOKEN }}
-    #       branch: main
+      - name: Comment on merged PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = process.env.RELEASE_VERSION;
+            const releaseUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/releases/tag/' + version;
+
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 10
+            });
+
+            const previousRelease = releases.find(r => r.tag_name !== version);
+            const previousDate = previousRelease ? previousRelease.published_at : '1970-01-01T00:00:00Z';
+
+            // Get only the latest commit (the merge commit)
+            const { data: commits } = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+
+            const prNumbers = new Set();
+            if (commits.length > 0) {
+              try {
+                const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  commit_sha: commits[0].sha
+                });
+                prs.forEach(pr => {
+                  if (pr.state === 'closed' && pr.merged_at) {
+                    prNumbers.add(pr.number);
+                  }
+                });
+              } catch (error) {
+                console.log('Could not get PRs for latest commit: ' + error.message);
+              }
+            }
+
+            for (const prNumber of prNumbers) {
+              try {
+                const commentLines = [
+                  '🎉 **This pull request has been included in [' + version + '](' + releaseUrl + ')!**',
+                  '',
+                  'Thanks for your contribution!',
+                  '',
+                  '📦 **The release includes:**',
+                  '- 🐍 Python package: pip install aiagents4pharma==' + version.replace('v', ''),
+                  '- 🐳 Docker images: vpatientengine/talk2aiagents4pharma:' + version,
+                  '- 📋 Docker Compose configurations available in the release assets',
+                  '',
+                  '---',
+                  '*🤖 This comment was automatically generated by the release workflow*'
+                ];
+                const commentBody = commentLines.join('\n');
+
+                await github.rest.issues.createComment({ owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: commentBody
+                });
+
+                console.log('Commented on PR #' + prNumber);
+              } catch (error) {
+                console.log('Failed to comment on PR #' + prNumber + ': ' + error.message);
+              }
+            }
+
+            console.log('Release ' + version + ' completed! Commented on ' + prNumbers.size + ' PRs.');
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}

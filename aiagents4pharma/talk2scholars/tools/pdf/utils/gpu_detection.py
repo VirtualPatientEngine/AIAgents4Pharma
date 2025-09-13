@@ -5,7 +5,7 @@ Handle COSINE -> IP conversion for GPU indexes
 
 import logging
 import subprocess
-from typing import Dict, Any, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ def detect_nvidia_gpu(config=None) -> bool:
 
 def get_optimal_index_config(
     has_gpu: bool, embedding_dim: int = 768, use_cosine: bool = True
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Get optimal index and search parameters based on GPU availability.
 
@@ -80,9 +80,7 @@ def get_optimal_index_config(
                 "GPU indexes don't support COSINE distance. "
                 "Vectors will be normalized and IP distance will be used instead."
             )
-            metric_type = (
-                "IP"  # Inner Product for normalized vectors = cosine similarity
-            )
+            metric_type = "IP"  # Inner Product for normalized vectors = cosine similarity
         else:
             metric_type = "IP"  # Default to IP for GPU
 
@@ -120,9 +118,7 @@ def get_optimal_index_config(
             "index_type": "IVF_FLAT",
             "metric_type": metric_type,
             "params": {
-                "nlist": min(
-                    1024, max(64, embedding_dim // 8)
-                )  # Dynamic nlist based on dimension
+                "nlist": min(1024, max(64, embedding_dim // 8))  # Dynamic nlist based on dimension
             },
         }
 
@@ -136,7 +132,7 @@ def get_optimal_index_config(
 
 
 def log_index_configuration(
-    index_params: Dict[str, Any], search_params: Dict[str, Any], use_cosine: bool = True
+    index_params: dict[str, Any], search_params: dict[str, Any], use_cosine: bool = True
 ) -> None:
     """Log the selected index configuration for debugging."""
     index_type = index_params.get("index_type", "Unknown")

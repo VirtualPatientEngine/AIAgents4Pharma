@@ -1,0 +1,51 @@
+# Auto-labeling configuration for PRs based on files changed
+
+# Documentation changes
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**', '*.md', 'mkdocs.yml']
+
+# CI/CD changes
+ci:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**', 'pyproject.toml', 'uv.lock']
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['pyproject.toml', 'uv.lock']
+
+# Talk2Biomodels module
+talk2biomodels:
+  - changed-files:
+    - any-glob-to-any-file: ['aiagents4pharma/talk2biomodels/**']
+
+# Talk2Scholars module
+talk2scholars:
+  - changed-files:
+    - any-glob-to-any-file: ['aiagents4pharma/talk2scholars/**']
+
+# Talk2Cells module
+talk2cells:
+  - changed-files:
+    - any-glob-to-any-file: ['aiagents4pharma/talk2cells/**']
+
+# Talk2KnowledgeGraphs module
+talk2knowledgegraphs:
+  - changed-files:
+    - any-glob-to-any-file: ['aiagents4pharma/talk2knowledgegraphs/**']
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['**/tests/**', '**/test_*.py', '**/*_test.py']
+
+# Docker
+docker:
+  - changed-files:
+    - any-glob-to-any-file: ['**/Dockerfile*', '**/docker-compose*.yml']
+
+# Frontend/App
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: ['app/**']

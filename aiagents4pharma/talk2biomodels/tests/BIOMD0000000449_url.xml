@@ -30,7 +30,7 @@ Dedication</a>
             for more information.        </p>
                 </div>
             </body>
-      
+
     </notes>
     <annotation>
 	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -106,9 +106,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasVersion>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
       <listOfCompartments>
@@ -122,9 +122,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:is>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </compartment>
@@ -140,9 +140,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -157,9 +157,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -173,9 +173,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -190,9 +190,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -206,9 +206,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -222,9 +222,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -239,9 +239,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -257,9 +257,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -273,9 +273,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -290,9 +290,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -307,9 +307,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -323,9 +323,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -340,9 +340,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -357,9 +357,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -374,9 +374,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -391,9 +391,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -408,9 +408,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -425,9 +425,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -442,9 +442,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:hasPart>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -458,9 +458,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -473,16 +473,16 @@ Dedication</a>
 	<rdf:li rdf:resource="http://identifiers.org/pato/PATO:0002220"/>
 	</rdf:Bag>
 	</bqbiol:hasProperty>
-	
+
 	<bqbiol:isVersionOf>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/O60343"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -495,16 +495,16 @@ Dedication</a>
 	<rdf:li rdf:resource="http://identifiers.org/uniprot/P14672"/>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
-	
+
 	<bqbiol:occursIn>
 	<rdf:Bag>
 	<rdf:li rdf:resource="http://identifiers.org/go/GO:0005886"/>
 	</rdf:Bag>
 	</bqbiol:occursIn>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -518,9 +518,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -534,9 +534,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -551,9 +551,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -567,9 +567,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -584,9 +584,9 @@ Dedication</a>
 	</rdf:Bag>
 	</bqbiol:isVersionOf>
 	</rdf:Description>
-	
-	
-	
+
+
+
 	</rdf:RDF>
 	</annotation>
             </species>
@@ -663,7 +663,7 @@ Dedication</a>
     </listOfParameters>
     <listOfRules>
       <assignmentRule metaid="b0ba88ec_2d18_4d66_83a8_63594e7f5c07" variable="measuredIRp">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleIR </ci>
@@ -676,7 +676,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="_355d4cf9_5d43_466d_ad02_6450fa7c0a73" variable="measuredIRint">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <plus/>
             <ci> IRi </ci>
@@ -685,7 +685,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="_9753f26d_ee0a_404a_9c05_c94843ed363d" variable="measuredIRS1p">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleIRS1 </ci>
@@ -698,7 +698,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="_8766b3f2_6c04_46ee_bd3c_ca2e3526a75c" variable="measuredIRS1307">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleIRS1307 </ci>
@@ -711,7 +711,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="a78b7de6_6e3c_45df_a7ae_92e5277dacc6" variable="measuredPKB308p">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scalePKB308 </ci>
@@ -724,7 +724,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="fc0a04d7_c083_4a2c_9082_b191500d2276" variable="measuredPKB473p">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scalePKB473 </ci>
@@ -737,7 +737,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="eabf19c2_3e75_4532_bd8a_a563d43910d2" variable="measuredAS160p">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleAS160 </ci>
@@ -746,12 +746,12 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="a52bc17f_b882_487d_976f_a99f348dd392" variable="measuredmTORC1a">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> mTORC1a </ci>
         </math>
             </assignmentRule>
       <assignmentRule metaid="e2b4ad9a_75b4_48ef_9671_83e83af37cec" variable="measuredS6Kp">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleS6K </ci>
@@ -760,7 +760,7 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="ab90df9e_c013_4f30_a071_33f141f609b3" variable="measuredS6p">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <times/>
             <ci> scaleS6 </ci>
@@ -769,12 +769,12 @@ Dedication</a>
         </math>
             </assignmentRule>
       <assignmentRule metaid="b78e9c60_7dd2_486d_af5a_2e79166dd8c5" variable="measuredmTORC2a">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <ci> mTORC2a </ci>
         </math>
             </assignmentRule>
       <assignmentRule metaid="c481ae23_e767_40ea_b48c_440b2c7947b2" variable="glucoseuptake">
-        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
           <apply>
             <plus/>
             <apply>
@@ -804,7 +804,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="cb047681_028e_4918_967d_3c97a46b0baa" species="IR"/>
         </listOfModifiers>
         <kineticLaw metaid="_23a9ce1c_7f82_4213_9b9b_5180cb35b56b">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IR </ci>
@@ -825,7 +825,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="acb56fc5_4e17_4943_a1a7_b037ea1c8285" species="IR"/>
         </listOfModifiers>
         <kineticLaw metaid="_4dd257ee_3fee_48b4_b4a2_fd622ca5f40e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k1basal </ci>
@@ -845,7 +845,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="b9ba0a5a_c653_4ef7_841b_62ecbf9e4de6" species="IRins"/>
         </listOfModifiers>
         <kineticLaw metaid="_924b7d1a_7d17_4982_a380_ac8a00bae542">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRins </ci>
@@ -865,7 +865,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_904006af_37fe_42fe_a4cc_5ab3b04a77cc" species="IRp"/>
         </listOfModifiers>
         <kineticLaw metaid="_493a945f_5ab8_40fb_aa98_80e40705162a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRp </ci>
@@ -887,7 +887,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="b2c95838_565c_4d63_8b67_27846af93322" species="Xp"/>
         </listOfModifiers>
         <kineticLaw metaid="_47b3e9ac_4fdb_4a15_a38e_9854700be6e1">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRip </ci>
@@ -908,7 +908,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_8adf74cb_f926_44fd_b402_7da1c55b6a75" species="IRp"/>
         </listOfModifiers>
         <kineticLaw metaid="dc9041ab_3774_41f2_889c_70de523947e0">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRp </ci>
@@ -928,7 +928,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_4d09a131_2372_4e62_a790_87d4a425bfcd" species="IRi"/>
         </listOfModifiers>
         <kineticLaw metaid="b1d1b8f4_f783_4bed_91d0_801a53dff947">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRi </ci>
@@ -950,7 +950,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_69905974_68f0_4b4f_ae06_0fe005dc8d5c" species="IRip"/>
         </listOfModifiers>
         <kineticLaw metaid="_2de9631d_2410_495a_be21_d79100ccce9b">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1 </ci>
@@ -971,7 +971,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="a4faa837_6cda_4142_8f53_08cb9d63dd56" species="IRS1p"/>
         </listOfModifiers>
         <kineticLaw metaid="_59bd087d_d2d5_4737_a265_940114fa0056">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1p </ci>
@@ -993,7 +993,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_629b71c6_f8bf_4e84_a503_d85a42dde7c6" species="mTORC1a"/>
         </listOfModifiers>
         <kineticLaw metaid="d4eee7c5_0a18_4ca4_9aa0_3a5d46fe5c98">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1p </ci>
@@ -1015,7 +1015,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="f29fea93_b4c1_4ef6_82d3_802f75d40ef3" species="IRS1p307"/>
         </listOfModifiers>
         <kineticLaw metaid="ec05a33d_b0aa_4853_b7e7_3d7e7309dba9">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1p307 </ci>
@@ -1035,7 +1035,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_662f9329_5b0f_4d0c_8272_bb69f1d07766" species="IRS1p307"/>
         </listOfModifiers>
         <kineticLaw metaid="_34e1725b_af9b_435d_94ee_69411d17183d">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1p307 </ci>
@@ -1055,7 +1055,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="d27ff018_ecbe_4b98_b6eb_8ecb131974d9" species="IRS1"/>
         </listOfModifiers>
         <kineticLaw metaid="_89a4c29e_d6d9_40f3_b381_398a8711872e">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1 </ci>
@@ -1075,7 +1075,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_486f831c_693e_4ad0_bce3_d178bc39c41d" species="IRS1307"/>
         </listOfModifiers>
         <kineticLaw metaid="fe34e70d_1aea_4fab_bdd2_e883d835ac51">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> IRS1307 </ci>
@@ -1097,7 +1097,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="ffab0ea7_60f3_495f_bd56_374ce777ae63" species="IRS1p"/>
         </listOfModifiers>
         <kineticLaw metaid="_4dc92526_7f8d_4fbc_97a3_d0ecf6ec6ab1">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> X </ci>
@@ -1118,7 +1118,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_5d8a92ad_fdc6_4fa6_b706_df253d90638b" species="Xp"/>
         </listOfModifiers>
         <kineticLaw metaid="_93c3fc31_e837_4ca3_aba1_5b1ff83f6a83">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> Xp </ci>
@@ -1142,7 +1142,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_2450269b_63c8_4ac7_bfdb_366748b3c9fc" species="PKB308p"/>
         </listOfModifiers>
         <kineticLaw metaid="b8ef0a35_3d2f_4345_838a_54e806133bcf">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mTORC1 </ci>
@@ -1174,7 +1174,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_145c453b_eaf9_43ed_9c6b_c2557b60557a" species="mTORC1a"/>
         </listOfModifiers>
         <kineticLaw metaid="_00b95fae_f37b_4399_9f7a_a6360e4acc63">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mTORC1a </ci>
@@ -1196,7 +1196,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_6fd0c2d0_f2f8_42c6_9195_62ce2ff10d91" species="IRip"/>
         </listOfModifiers>
         <kineticLaw metaid="_49e930a5_89de_44be_9ced_4d4d7d53795a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> mTORC2 </ci>
@@ -1217,7 +1217,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_26d16909_5909_4a7f_8f60_ade456e4edfc" species="mTORC2a"/>
         </listOfModifiers>
         <kineticLaw metaid="aa23d269_6707_4e71_a754_558c909cb100">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k5d </ci>
@@ -1239,7 +1239,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_94d8b76d_bcc9_4f58_a0f2_bc92c2c0f6af" species="IRS1p"/>
         </listOfModifiers>
         <kineticLaw metaid="_619a83ec_1c28_45cf_b706_bae85ef17c40">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4a </ci>
@@ -1260,7 +1260,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_5e627bfb_665b_4a63_8215_9b8ffd0658d2" species="PKB308p"/>
         </listOfModifiers>
         <kineticLaw metaid="_095900b2_f644_4eda_8391_12a555b0c4c1">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4b </ci>
@@ -1282,7 +1282,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="c794bf8a_4313_436e_a755_2532c529d19e" species="mTORC2a"/>
         </listOfModifiers>
         <kineticLaw metaid="_2d7e0d44_4528_417a_af22_ad85ac0a245a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4c </ci>
@@ -1305,7 +1305,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_5e28d99e_b482_44ec_a98c_d42e51f953e0" species="IRS1p307"/>
         </listOfModifiers>
         <kineticLaw metaid="_4eea02bd_3e68_4906_9c0f_1f80275ecbd2">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4e </ci>
@@ -1326,7 +1326,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_08e3c109_4fe9_42f8_9e85_0e6e9d59a01f" species="PKB308p473p"/>
         </listOfModifiers>
         <kineticLaw metaid="_65fc04b6_663f_4c53_a6bb_c59518091b8a">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4f </ci>
@@ -1346,7 +1346,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="bd93abc6_9a40_415f_ba07_b81dfa4f2dd8" species="PKB473p"/>
         </listOfModifiers>
         <kineticLaw metaid="_7d4c6dca_6715_4d35_ac2f_8657148850a9">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> k4h </ci>
@@ -1370,7 +1370,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="b3a4dd5d_20ea_42c6_9d1a_5a799a07b9ce" species="PKB473p"/>
         </listOfModifiers>
         <kineticLaw metaid="f1433c07_a83f_43e3_bee1_cd1f65275ebd">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> AS160 </ci>
@@ -1422,7 +1422,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_4e23abf7_6f9a_45fa_917c_44d25ae59d3d" species="AS160p"/>
         </listOfModifiers>
         <kineticLaw metaid="_00947007_545e_46e5_b281_a9b937f244b4">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> AS160p </ci>
@@ -1444,7 +1444,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_65d3c57b_c6da_4259_bf6c_5456e03a3493" species="AS160p"/>
         </listOfModifiers>
         <kineticLaw metaid="d4b2af30_e218_460e_a531_2a8d3191ba60">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> GLUT4 </ci>
@@ -1465,7 +1465,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="e352125e_459f_4403_9f8b_88ca5648b447" species="GLUT4m"/>
         </listOfModifiers>
         <kineticLaw metaid="_5be750b9_8f39_414e_814e_dd72f59aefb0">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> GLUT4m </ci>
@@ -1487,7 +1487,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="d982d704_af7f_4838_a537_d1ccddaf2b9f" species="mTORC1a"/>
         </listOfModifiers>
         <kineticLaw metaid="_318a9d99_fd80_4815_95e6_cd157de817ea">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <divide/>
               <apply>
@@ -1528,7 +1528,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_7e05877f_49d3_4277_8dc8_f9ec84652dee" species="S6Kp"/>
         </listOfModifiers>
         <kineticLaw metaid="c265078c_d5aa_4321_8559_f30fcedb8474">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> S6Kp </ci>
@@ -1550,7 +1550,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="_570adff8_2eaa_43f8_9722_fb3dcaae08a7" species="S6Kp"/>
         </listOfModifiers>
         <kineticLaw metaid="_6e33187d_ed79_4195_b78d_fab4682d0c15">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> S6 </ci>
@@ -1571,7 +1571,7 @@ Dedication</a>
           <modifierSpeciesReference metaid="e9e635e3_6149_4c63_9995_f210d88e8c83" species="S6p"/>
         </listOfModifiers>
         <kineticLaw metaid="_76fb9944_9ff5_41cc_a99c_b7b10e09c469">
-          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <times/>
               <ci> S6p </ci>

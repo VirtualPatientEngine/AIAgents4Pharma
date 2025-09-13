@@ -1,11 +1,13 @@
-'''
+"""
 A test BasicoModel class for pytest unit testing.
-'''
+"""
 
+import basico
 import pandas as pd
 import pytest
-import basico
+
 from ..models.basico_model import BasicoModel
+
 
 @pytest.fixture(name="model")
 def model_fixture():
@@ -14,16 +16,17 @@ def model_fixture():
     """
     return BasicoModel(biomodel_id=64, species={"Pyruvate": 100}, duration=2, interval=2)
 
+
 def test_with_biomodel_id(model):
     """
     Test initialization of BasicoModel with biomodel_id.
     """
     assert model.biomodel_id == 64
-    model.update_parameters(parameters={'Pyruvate': 0.5, 'KmPFKF6P': 1.5})
+    model.update_parameters(parameters={"Pyruvate": 0.5, "KmPFKF6P": 1.5})
     df_species = basico.model_info.get_species(model=model.copasi_model)
-    assert df_species.loc['Pyruvate', 'initial_concentration'] == 0.5
+    assert df_species.loc["Pyruvate", "initial_concentration"] == 0.5
     df_parameters = basico.model_info.get_parameters(model=model.copasi_model)
-    assert df_parameters.loc['KmPFKF6P', 'initial_value'] == 1.5
+    assert df_parameters.loc["KmPFKF6P", "initial_value"] == 1.5
     # check if the simulation results are a pandas DataFrame object
     assert isinstance(model.simulate(duration=2, interval=2), pd.DataFrame)
     # Pass a None value to the update_parameters method
@@ -34,7 +37,8 @@ def test_with_biomodel_id(model):
     # check if an error is raised if an invalid species/parameter (`Pyruv`)
     # is passed and it should raise a ValueError
     with pytest.raises(ValueError):
-        model.update_parameters(parameters={'Pyruv': 0.5})
+        model.update_parameters(parameters={"Pyruv": 0.5})
+
 
 def test_with_sbml_file():
     """
@@ -44,12 +48,14 @@ def test_with_sbml_file():
     assert model_object.sbml_file_path == "./BIOMD0000000064_url.xml"
     assert isinstance(model_object.simulate(duration=2, interval=2), pd.DataFrame)
 
+
 def test_check_biomodel_id_or_sbml_file_path():
-    '''
+    """
     Test the check_biomodel_id_or_sbml_file_path method of the BioModel class.
-    '''
+    """
     with pytest.raises(ValueError):
         BasicoModel(species={"Pyruvate": 100}, duration=2, interval=2)
+
 
 def test_get_model_metadata():
     """

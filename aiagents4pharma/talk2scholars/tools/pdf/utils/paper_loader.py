@@ -3,7 +3,7 @@ Paper loading utilities for managing PDF documents in vector store.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from .batch_processor import add_papers_batch
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def load_all_papers(
     vector_store: Any,  # The Vectorstore instance
-    articles: Dict[str, Any],
+    articles: dict[str, Any],
     call_id: str,
     config: Any,
     has_gpu: bool,

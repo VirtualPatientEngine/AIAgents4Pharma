@@ -5,6 +5,7 @@ Test cases for utils/enrichments/uniprot_proteins.py
 """
 
 import pytest
+
 from ..utils.enrichments.uniprot_proteins import EnrichmentWithUniProt
 
 # In this test, we will consider 2 examples:
@@ -16,10 +17,12 @@ START_DESCP = "Multifunctional transcription factor"
 # The expected amino acid sequence of TP53 startswith:
 START_SEQ = "MEEPQSDPSV"
 
+
 @pytest.fixture(name="enrich_obj")
 def fixture_uniprot_config():
     """Return a dictionary with the configuration for UniProt enrichment."""
     return EnrichmentWithUniProt()
+
 
 def test_enrich_documents(enrich_obj):
     """Test the enrich_documents method."""
@@ -31,6 +34,7 @@ def test_enrich_documents(enrich_obj):
     assert sequences[1] is None
     assert descriptions[2] is None
     assert sequences[2] is None
+
 
 def test_enrich_documents_with_rag(enrich_obj):
     """Test the enrich_documents_with_rag method."""

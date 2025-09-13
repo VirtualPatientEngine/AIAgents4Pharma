@@ -5,33 +5,38 @@ Tool for simulating a model.
 """
 
 import logging
-from typing import Type, Annotated
-from pydantic import BaseModel, Field
-from langgraph.types import Command
-from langgraph.prebuilt import InjectedState
-from langchain_core.tools import BaseTool
+from typing import Annotated
+
 from langchain_core.messages import ToolMessage
+from langchain_core.tools import BaseTool
 from langchain_core.tools.base import InjectedToolCallId
-from .load_biomodel import ModelData, load_biomodel
+from langgraph.prebuilt import InjectedState
+from langgraph.types import Command
+from pydantic import BaseModel, Field
+
 from .load_arguments import ArgumentData, add_rec_events
+from .load_biomodel import ModelData, load_biomodel
 from .utils import get_model_units
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class SimulateModelInput(BaseModel):
     """
     Input schema for the SimulateModel tool.
     """
-    sys_bio_model: ModelData = Field(description="model data",
-                                     default=None)
-    arg_data: ArgumentData = Field(description=
-                                   """time, species, and reocurring data
+
+    sys_bio_model: ModelData = Field(description="model data", default=None)
+    arg_data: ArgumentData = Field(
+        description="""time, species, and reocurring data
                                    as well as the simulation name""",
-                                   default=None)
+        default=None,
+    )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
+
 
 # Note: It's important that every field has type hints. BaseTool is a
 # Pydantic class and not having type hints can lead to unexpected behavior.
@@ -39,15 +44,17 @@ class SimulateModelTool(BaseTool):
     """
     Tool for simulating a model.
     """
+
     name: str = "simulate_model"
     description: str = "A tool to simulate a biomodel"
-    args_schema: Type[BaseModel] = SimulateModelInput
+    args_schema: type[BaseModel] = SimulateModelInput
 
-    def _run(self,
+    def _run(
+        self,
         tool_call_id: Annotated[str, InjectedToolCallId],
         state: Annotated[dict, InjectedState],
         sys_bio_model: ModelData = None,
-        arg_data: ArgumentData = None
+        arg_data: ArgumentData = None,
     ) -> Command:
         """
         Run the tool.
@@ -61,13 +68,9 @@ class SimulateModelTool(BaseTool):
         Returns:
             str: The result of the simulation.
         """
-        logger.log(logging.INFO,
-                   "Calling simulate_model tool %s, %s",
-                   sys_bio_model,
-                   arg_data)
-        sbml_file_path = state['sbml_file_path'][-1] if len(state['sbml_file_path']) > 0 else None
-        model_object = load_biomodel(sys_bio_model,
-                                  sbml_file_path=sbml_file_path)
+        logger.log(logging.INFO, "Calling simulate_model tool %s, %s", sys_bio_model, arg_data)
+        sbml_file_path = state["sbml_file_path"][-1] if len(state["sbml_file_path"]) > 0 else None
+        model_object = load_biomodel(sys_bio_model, sbml_file_path=sbml_file_path)
         # Prepare the dictionary of species data
         # that will be passed to the simulate method
         # of the BasicoModel class
@@ -78,8 +81,12 @@ class SimulateModelTool(BaseTool):
             # Prepare the dictionary of species data
             if arg_data.species_to_be_analyzed_before_experiment is not None:
                 dic_species_to_be_analyzed_before_experiment = dict(
-                    zip(arg_data.species_to_be_analyzed_before_experiment.species_name,
-                        arg_data.species_to_be_analyzed_before_experiment.species_concentration))
+                    zip(
+                        arg_data.species_to_be_analyzed_before_experiment.species_name,
+                        arg_data.species_to_be_analyzed_before_experiment.species_concentration,
+                        strict=False,
+                    )
+                )
             # Add reocurring events (if any) to the model
             if arg_data.reocurring_data is not None:
                 add_rec_events(model_object, arg_data.reocurring_data)
@@ -89,17 +96,19 @@ class SimulateModelTool(BaseTool):
                 interval = arg_data.time_data.interval
         # Update the model parameters
         model_object.update_parameters(dic_species_to_be_analyzed_before_experiment)
-        logger.log(logging.INFO,
-                   "Following species/parameters updated in the model %s",
-                   dic_species_to_be_analyzed_before_experiment)
+        logger.log(
+            logging.INFO,
+            "Following species/parameters updated in the model %s",
+            dic_species_to_be_analyzed_before_experiment,
+        )
         # Simulate the model
         df = model_object.simulate(duration=duration, interval=interval)
         logger.log(logging.INFO, "Simulation results ready with shape %s", df.shape)
         dic_simulated_data = {
-            'name': arg_data.experiment_name,
-            'source': sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else 'upload',
-            'tool_call_id': tool_call_id,
-            'data': df.to_dict()
+            "name": arg_data.experiment_name,
+            "source": (sys_bio_model.biomodel_id if sys_bio_model.biomodel_id else "upload"),
+            "tool_call_id": tool_call_id,
+            "data": df.to_dict(),
         }
         # Prepare the dictionary of updated state
         dic_updated_state_for_model = {}
@@ -107,19 +116,20 @@ class SimulateModelTool(BaseTool):
             "model_id": [sys_bio_model.biomodel_id],
             "sbml_file_path": [sbml_file_path],
             "dic_simulated_data": [dic_simulated_data],
-            }.items():
+        }.items():
             if value:
                 dic_updated_state_for_model[key] = value
         # Return the updated state of the tool
         return Command(
-                update=dic_updated_state_for_model|{
+            update=dic_updated_state_for_model
+            | {
                 # update the message history
                 "messages": [
                     ToolMessage(
                         content=f"Simulation results of {arg_data.experiment_name}",
                         tool_call_id=tool_call_id,
-                        artifact=get_model_units(model_object)
-                        )
-                    ],
-                }
-            )
+                        artifact=get_model_units(model_object),
+                    )
+                ],
+            }
+        )

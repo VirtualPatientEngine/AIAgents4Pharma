@@ -25,15 +25,20 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
+from .utils.answer_formatter import format_answer
 from .utils.generate_answer import load_hydra_config
-from .utils.tool_helper import QAToolHelper
+from .utils.multimodal_processor import (
+    categorize_page_elements,
+    collect_ocr_results,
+    crop_categorized_elements,
+    detect_page_elements,
+    extract_text_lines,
+    pdf_to_base64_compressed,
+    process_all,
+)
 from .utils.paper_loader import load_all_papers
 from .utils.rag_pipeline import retrieve_and_rerank_chunks
-from .utils.answer_formatter import format_answer
-from .utils.multimodal_processor import (
-    pdf_to_base64_compressed, detect_page_elements, categorize_page_elements,
-    crop_categorized_elements, process_all, collect_ocr_results, extract_text_lines
-)
+from .utils.tool_helper import QAToolHelper
 
 # Helper for managing state, vectorstore, reranking, and formatting
 helper = QAToolHelper()

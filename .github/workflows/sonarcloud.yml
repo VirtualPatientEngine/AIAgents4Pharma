@@ -1,0 +1,49 @@
+# SonarCloud code quality analysis workflow
+name: SonarCloud Analysis
+
+on:
+  workflow_run:
+    workflows:
+      - "TESTS Talk2Scholars"
+      - "TESTS Talk2AIAgents4Pharma"
+      - "TESTS Talk2BioModels"
+      - "TESTS Talk2KnowledgeGraphs"
+      - "TESTS Talk2Cells"
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Download test artifacts
+        uses: actions/download-artifact@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          pattern: "*-reports-*"
+          path: ./reports/
+          merge-multiple: true
+
+      - name: Move reports to root for SonarCloud
+        run: |
+          if [ -d ./reports ]; then
+            cp ./reports/*.xml . 2>/dev/null || true
+            cp ./reports/*.json . 2>/dev/null || true
+          fi
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

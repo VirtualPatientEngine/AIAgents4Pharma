@@ -1,10 +1,11 @@
 """
 This module contains the API for fetching uniprot database
 """
-from typing import List, Dict
+
 import requests
 
-def search_uniprot_labels(identifiers: List[str]) -> Dict[str, str]:
+
+def search_uniprot_labels(identifiers: list[str]) -> dict[str, str]:
     """
     Fetch protein names or labels for a list of UniProt identifiers by making sequential requests.
 
@@ -24,10 +25,10 @@ def search_uniprot_labels(identifiers: List[str]) -> Dict[str, str]:
             response.raise_for_status()
             data = response.json()
             protein_name = (
-                data.get('proteinDescription', {})
-                .get('recommendedName', {})
-                .get('fullName', {})
-                .get('value', 'Name not found')
+                data.get("proteinDescription", {})
+                .get("recommendedName", {})
+                .get("fullName", {})
+                .get("value", "Name not found")
             )
             results[identifier] = protein_name
         except requests.exceptions.RequestException as e:

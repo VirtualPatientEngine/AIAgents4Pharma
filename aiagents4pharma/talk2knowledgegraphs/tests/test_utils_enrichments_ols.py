@@ -5,6 +5,7 @@ Test cases for utils/enrichments/ols_terms.py
 """
 
 import pytest
+
 from ..utils.enrichments.ols_terms import EnrichmentWithOLS
 
 # In this test, we will consider 5 examples:

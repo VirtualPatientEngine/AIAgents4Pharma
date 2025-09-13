@@ -1,36 +1,72 @@
+_target_: app.frontend.streamlit_app_talk2scholars
+default_user: "talk2scholars_user"
+
+# File upload configuration
+upload_data_dir: "../files"
+pdf_allowed_file_types:
+  - "pdf"
+
+# OpenAI configuration - can use custom base_url for enterprise/Azure deployments
+openai_api_key: ${oc.env:OPENAI_API_KEY}
+openai_base_url: ${oc.env:OPENAI_BASE_URL,null} # Optional: custom OpenAI endpoint
+openai_llms:
+  - "OpenAI/gpt-4o-mini"
+openai_embeddings:
+  - "text-embedding-ada-002"
+  - "text-embedding-3-small"
+# Rate limiting and retry configuration
+llm_max_retries: 5  # Number of retries on rate limit or transient errors
+llm_timeout: 60     # Timeout in seconds for LLM requests
+embedding_max_retries: 3  # Number of retries for embedding requests
+embedding_timeout: 30     # Timeout in seconds for embedding requests
+
+# NVIDIA configuration
+nvidia_api_key: ${oc.env:NVIDIA_API_KEY}
+nvidia_llms:
+  - "NVIDIA/llama-3.3-70b-instruct"
+  - "NVIDIA/llama-3.1-405b-instruct"
+  - "NVIDIA/llama-3.1-70b-instruct"
+nvidia_embeddings:
+  - "NVIDIA/llama-3.2-nv-embedqa-1b-v2"
+
+# Azure OpenAI configuration
+azure_openai_endpoint: ${oc.env:AZURE_OPENAI_ENDPOINT,null} # Azure OpenAI endpoint
+azure_openai_deployment: ${oc.env:AZURE_OPENAI_DEPLOYMENT,null} # Azure deployment name
+azure_openai_api_version: ${oc.env:AZURE_OPENAI_API_VERSION,"2024-02-01"} # Azure API version
+azure_openai_model_name: ${oc.env:AZURE_OPENAI_MODEL_NAME,null} # Model name for analytics
+azure_openai_model_version: ${oc.env:AZURE_OPENAI_MODEL_VERSION,null} # Model version
+# Azure AD authentication (uses AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET)
+azure_client_id: ${oc.env:AZURE_CLIENT_ID,null}
+azure_tenant_id: ${oc.env:AZURE_TENANT_ID,null}
+azure_client_secret: ${oc.env:AZURE_CLIENT_SECRET,null}
+azure_openai_llms:
+  - "Azure/gpt-4o-mini" # Will map to Azure deployment
+azure_openai_embeddings:
+  - "Azure/text-embedding-ada-002"
+
+# Ollama configuration (for local deployment)
+ollama_llms:
+  - "Ollama/llama3.1:8b"
+ollama_embeddings:
+  - "nomic-embed-text"
+
+# Default models
+default_llm_provider: "openai"
+default_embedding_model: "openai"
+
+# App settings
+temperature: 0.1
+streaming: False
+
+# Logo configuration
+logo_paths:
+  container: "/app/docs/assets/VPE.png"
+  local: "docs/assets/VPE.png"
+  relative: "../../docs/assets/VPE.png"
+logo_link: "https://github.com/VirtualPatientEngine"
+
 # Page configuration
 page:
   title: "Talk2Scholars"
   icon: "🤖"
   layout: "wide"
-
-# Available LLM models
-llms:
-  available_models:
-    - "OpenAI/gpt-4o-mini"
-    - "NVIDIA/llama-3.3-70b-instruct"
-# # Chat UI configuration
-# chat:
-#   assistant_avatar: "🤖"
-#   user_avatar: "👩🏻‍💻"
-#   input_placeholder: "Say something ..."
-#   spinner_text: "Fetching response ..."
-
-api_keys:
-  openai_key: "OPENAI_API_KEY"
-  nvidia_key: "NVIDIA_API_KEY"
-# # Feedback configuration
-# feedback:
-#   type: "thumbs"
-#   text_label: "[Optional] Please provide an explanation"
-#   success_message: "Your feedback is on its way to the developers. Thank you!"
-#   success_icon: "🚀"
-
-# # Layout configuration
-# layout:
-#   column_ratio: [3, 7] # Ratio for main_col1 and main_col2
-#   chat_container_height: 575
-#   sidebar_container_height: 500
-#
-# # Project name prefix
-# project_name_prefix: "Talk2Scholars-"

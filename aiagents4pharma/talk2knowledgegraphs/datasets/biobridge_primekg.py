@@ -2,15 +2,18 @@
 Class for loading BioBridgePrimeKG dataset.
 """
 
+import json
 import os
 import pickle
-import json
-import requests
+
 import numpy as np
 import pandas as pd
+import requests
 from tqdm import tqdm
+
 from .dataset import Dataset
 from .primekg import PrimeKG
+
 
 class BioBridgePrimeKG(Dataset):
     """
@@ -21,11 +24,13 @@ class BioBridgePrimeKG(Dataset):
     https://github.com/RyanWangZf/BioBridge
     """
 
-    def __init__(self,
-                 primekg_dir: str = "../../../data/primekg/",
-                 local_dir: str = "../../../data/biobridge_primekg/",
-                 random_seed: int=0,
-                 n_neg_samples: int=5):
+    def __init__(
+        self,
+        primekg_dir: str = "../../../data/primekg/",
+        local_dir: str = "../../../data/biobridge_primekg/",
+        random_seed: int = 0,
+        n_neg_samples: int = 5,
+    ):
         """
         Constructor for BioBridgePrimeKG class.
 
@@ -92,10 +97,7 @@ class BioBridgePrimeKG(Dataset):
 
         return primekg_data
 
-    def _download_file(self,
-                       remote_url:str,
-                       local_dir: str,
-                       local_filename: str):
+    def _download_file(self, remote_url: str, local_dir: str, local_filename: str):
         """
         A helper function to download a file from remote URL to the local directory.
 
@@ -135,13 +137,16 @@ class BioBridgePrimeKG(Dataset):
         """
         # Download the data config file of BioBridgePrimeKG
         self._download_file(
-            remote_url= ('https://raw.githubusercontent.com/RyanWangZf/BioBridge/'
-                         'refs/heads/main/data/BindData/data_config.json'),
+            remote_url=(
+                "https://raw.githubusercontent.com/RyanWangZf/BioBridge/"
+                "refs/heads/main/data/BindData/data_config.json"
+            ),
             local_dir=self.local_dir,
-            local_filename='data_config.json')
+            local_filename="data_config.json",
+        )
 
         # Load the downloaded data config file
-        with open(os.path.join(self.local_dir, 'data_config.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.local_dir, "data_config.json"), encoding="utf-8") as f:
             data_config = json.load(f)
 
         return data_config
@@ -161,15 +166,19 @@ class BioBridgePrimeKG(Dataset):
         else:
             # Download the embeddings from the BioBridge repo and further process them
             # List of embedding source files
-            url = ('https://media.githubusercontent.com/media/RyanWangZf/BioBridge/'
-                   'refs/heads/main/data/embeddings/esm2b_unimo_pubmedbert/')
+            url = (
+                "https://media.githubusercontent.com/media/RyanWangZf/BioBridge/"
+                "refs/heads/main/data/embeddings/esm2b_unimo_pubmedbert/"
+            )
             file_list = [f"{n}.pkl" for n in self.preselected_node_types]
 
             # Download the embeddings
             for file in file_list:
-                self._download_file(remote_url=os.path.join(url, file),
-                                    local_dir=os.path.join(self.local_dir, "embeddings"),
-                                    local_filename=file)
+                self._download_file(
+                    remote_url=os.path.join(url, file),
+                    local_dir=os.path.join(self.local_dir, "embeddings"),
+                    local_filename=file,
+                )
 
             # Unified embeddings
             emb_dict_all = {}
@@ -179,7 +188,7 @@ class BioBridgePrimeKG(Dataset):
                 emb_ar = emb["embedding"]
                 if not isinstance(emb_ar, list):
                     emb_ar = emb_ar.tolist()
-                emb_dict_all.update(dict(zip(emb["node_index"], emb_ar)))
+                emb_dict_all.update(dict(zip(emb["node_index"], emb_ar, strict=False)))
 
             # Store embeddings
             with open(processed_file_path, "wb") as f:
@@ -204,37 +213,54 @@ class BioBridgePrimeKG(Dataset):
             # Load each dataframe in the local directory
             node_info_dict = {}
             for i, node_type in enumerate(self.preselected_node_types):
-                with open(os.path.join(self.local_dir, "processed",
-                                       f"{node_type}.csv"), "rb") as f:
+                with open(os.path.join(self.local_dir, "processed", f"{node_type}.csv"), "rb") as f:
                     df_node = pd.read_csv(f)
                 node_info_dict[self.node_type_map[node_type]] = df_node
+                print(i)
         else:
             # Download the related files from the BioBridge repo and further process them
             # List of processed files
-            url = ('https://media.githubusercontent.com/media/RyanWangZf/BioBridge/'
-                   'refs/heads/main/data/Processed/')
-            file_list = ["protein", "molecular", "cellular", "biological", "drug", "disease"]
+            url = (
+                "https://media.githubusercontent.com/media/RyanWangZf/BioBridge/"
+                "refs/heads/main/data/Processed/"
+            )
+            file_list = [
+                "protein",
+                "molecular",
+                "cellular",
+                "biological",
+                "drug",
+                "disease",
+            ]
 
             # Download the processed files
             for i, file in enumerate(file_list):
-                self._download_file(remote_url=os.path.join(url, f"{file}.csv"),
-                                    local_dir=os.path.join(self.local_dir, "processed"),
-                                    local_filename=f"{self.preselected_node_types[i]}.csv")
+                self._download_file(
+                    remote_url=os.path.join(url, f"{file}.csv"),
+                    local_dir=os.path.join(self.local_dir, "processed"),
+                    local_filename=f"{self.preselected_node_types[i]}.csv",
+                )
 
             # Build the node index list
             node_info_dict = {}
             node_index_list = []
             for i, file in enumerate(file_list):
-                df_node = pd.read_csv(os.path.join(self.local_dir, "processed",
-                                                   f"{self.preselected_node_types[i]}.csv"))
+                df_node = pd.read_csv(
+                    os.path.join(
+                        self.local_dir,
+                        "processed",
+                        f"{self.preselected_node_types[i]}.csv",
+                    )
+                )
                 node_info_dict[self.node_type_map[self.preselected_node_types[i]]] = df_node
                 node_index_list.extend(df_node["node_index"].tolist())
+                print(i, file)
 
             # Filter the PrimeKG dataset to take into account only the selected node types
             primekg_triplets = self.primekg.get_edges().copy()
             primekg_triplets = primekg_triplets[
-                primekg_triplets["head_index"].isin(node_index_list) &\
-                primekg_triplets["tail_index"].isin(node_index_list)
+                primekg_triplets["head_index"].isin(node_index_list)
+                & primekg_triplets["tail_index"].isin(node_index_list)
             ]
             primekg_triplets = primekg_triplets.reset_index(drop=True)
 
@@ -256,8 +282,9 @@ class BioBridgePrimeKG(Dataset):
 
         return primekg_triplets, node_info_dict
 
-    def _build_train_test_split(self) -> tuple[pd.DataFrame, pd.DataFrame,
-                                               pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def _build_train_test_split(
+        self,
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Build the train-test split for BioBridgePrimeKG dataset.
 
@@ -268,34 +295,31 @@ class BioBridgePrimeKG(Dataset):
             The test nodes for BioBridgePrimeKG dataset.
             The full triplets for BioBridgePrimeKG dataset.
         """
-        if os.path.exists(os.path.join(self.local_dir, "processed",
-                                       "triplet_full_altered.tsv.gz")):
+        if os.path.exists(os.path.join(self.local_dir, "processed", "triplet_full_altered.tsv.gz")):
             # Load each dataframe in the local directory
-            with open(os.path.join(self.local_dir, "processed",
-                                   "triplet_train.tsv.gz"), "rb") as f:
+            with open(os.path.join(self.local_dir, "processed", "triplet_train.tsv.gz"), "rb") as f:
                 df_train = pd.read_csv(f, sep="\t", compression="gzip", low_memory=False)
 
-            with open(os.path.join(self.local_dir, "processed",
-                                   "node_train.tsv.gz"), "rb") as f:
+            with open(os.path.join(self.local_dir, "processed", "node_train.tsv.gz"), "rb") as f:
                 df_node_train = pd.read_csv(f, sep="\t", compression="gzip", low_memory=False)
 
-            with open(os.path.join(self.local_dir, "processed",
-                                   "triplet_test.tsv.gz"), "rb") as f:
+            with open(os.path.join(self.local_dir, "processed", "triplet_test.tsv.gz"), "rb") as f:
                 df_test = pd.read_csv(f, sep="\t", compression="gzip", low_memory=False)
 
-            with open(os.path.join(self.local_dir, "processed",
-                                   "node_test.tsv.gz"), "rb") as f:
+            with open(os.path.join(self.local_dir, "processed", "node_test.tsv.gz"), "rb") as f:
                 df_node_test = pd.read_csv(f, sep="\t", compression="gzip", low_memory=False)
 
-            with open(os.path.join(self.local_dir, "processed",
-                                   "triplet_full_altered.tsv.gz"), "rb") as f:
+            with open(
+                os.path.join(self.local_dir, "processed", "triplet_full_altered.tsv.gz"),
+                "rb",
+            ) as f:
                 triplets = pd.read_csv(f, sep="\t", compression="gzip", low_memory=False)
         else:
             # Filtering out some nodes in the embedding dictionary
             triplets = self.primekg_triplets.copy()
             triplets = triplets[
-                triplets["head_index"].isin(list(self.emb_dict.keys())) &\
-                triplets["tail_index"].isin(list(self.emb_dict.keys()))
+                triplets["head_index"].isin(list(self.emb_dict.keys()))
+                & triplets["tail_index"].isin(list(self.emb_dict.keys()))
             ].reset_index(drop=True)
 
             # Perform splitting of the triplets
@@ -311,7 +335,7 @@ class BioBridgePrimeKG(Dataset):
                 "test": {
                     "node_index": [],
                     "node_type": [],
-                }
+                },
             }
             # Loop over the node types
             for node_type in triplets["head_type"].unique():
@@ -319,7 +343,7 @@ class BioBridgePrimeKG(Dataset):
                 all_x_indexes = df_sub["head_index"].unique()
                 # By default, we use 90% of the nodes for training and 10% for testing
                 te_x_indexes = np.random.choice(
-                    all_x_indexes, size=int(0.1*len(all_x_indexes)), replace=False
+                    all_x_indexes, size=int(0.1 * len(all_x_indexes)), replace=False
                 )
                 df_subs = {}
                 df_subs["test"] = df_sub[df_sub["head_index"].isin(te_x_indexes)]
@@ -331,10 +355,10 @@ class BioBridgePrimeKG(Dataset):
                 node_index = {}
                 node_index["train"] = df_subs["train"]["head_index"].unique()
                 node_split["train"]["node_index"].extend(node_index["train"].tolist())
-                node_split["train"]["node_type"].extend([node_type]*len(node_index["train"]))
+                node_split["train"]["node_type"].extend([node_type] * len(node_index["train"]))
                 node_index["test"] = df_subs["test"]["head_index"].unique()
                 node_split["test"]["node_index"].extend(node_index["test"].tolist())
-                node_split["test"]["node_type"].extend([node_type]*len(node_index["test"]))
+                node_split["test"]["node_type"].extend([node_type] * len(node_index["test"]))
 
                 print(f"Number of {node_type} nodes in train: {len(node_index['train'])}")
                 print(f"Number of {node_type} nodes in test: {len(node_index['test'])}")
@@ -346,18 +370,37 @@ class BioBridgePrimeKG(Dataset):
             df_node_test = pd.DataFrame(node_split["test"])
 
             # Store each dataframe in the local directory
-            df_train.to_csv(os.path.join(self.local_dir, "processed", "triplet_train.tsv.gz"),
-                            sep="\t", compression="gzip", index=False)
-            df_node_train.to_csv(os.path.join(self.local_dir, "processed", "node_train.tsv.gz"),
-                                sep="\t", compression="gzip", index=False)
-            df_test.to_csv(os.path.join(self.local_dir, "processed", "triplet_test.tsv.gz"),
-                           sep="\t", compression="gzip", index=False)
-            df_node_test.to_csv(os.path.join(self.local_dir, "processed", "node_test.tsv.gz"),
-                                sep="\t", compression="gzip", index=False)
+            df_train.to_csv(
+                os.path.join(self.local_dir, "processed", "triplet_train.tsv.gz"),
+                sep="\t",
+                compression="gzip",
+                index=False,
+            )
+            df_node_train.to_csv(
+                os.path.join(self.local_dir, "processed", "node_train.tsv.gz"),
+                sep="\t",
+                compression="gzip",
+                index=False,
+            )
+            df_test.to_csv(
+                os.path.join(self.local_dir, "processed", "triplet_test.tsv.gz"),
+                sep="\t",
+                compression="gzip",
+                index=False,
+            )
+            df_node_test.to_csv(
+                os.path.join(self.local_dir, "processed", "node_test.tsv.gz"),
+                sep="\t",
+                compression="gzip",
+                index=False,
+            )
             # Store altered full triplets as well
-            triplets.to_csv(os.path.join(self.local_dir, "processed",
-                                         "triplet_full_altered.tsv.gz"),
-                            sep="\t", compression="gzip", index=False)
+            triplets.to_csv(
+                os.path.join(self.local_dir, "processed", "triplet_full_altered.tsv.gz"),
+                sep="\t",
+                compression="gzip",
+                index=False,
+            )
 
         return df_train, df_node_train, df_test, df_node_test, triplets
 
@@ -473,8 +516,13 @@ class BioBridgePrimeKG(Dataset):
 
         # Build train-test split
         print("Building train-test split...")
-        self.df_train, self.df_node_train, self.df_test, self.df_node_test, self.primekg_triplets =\
-        self._build_train_test_split()
+        (
+            self.df_train,
+            self.df_node_train,
+            self.df_test,
+            self.df_node_test,
+            self.primekg_triplets,
+        ) = self._build_train_test_split()
 
         # if build_neg_triplest:
         #     # Build negative triplets
@@ -549,7 +597,7 @@ class BioBridgePrimeKG(Dataset):
             "train": self.df_train,
             "node_train": self.df_node_train,
             "test": self.df_test,
-            "node_test": self.df_node_test
+            "node_test": self.df_node_test,
         }
 
     def get_node_info_dict(self) -> dict:

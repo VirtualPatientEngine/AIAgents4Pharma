@@ -2,17 +2,20 @@
 Embedding class using Ollama model based on LangChain Embeddings class.
 """
 
-import time
-from typing import List
 import subprocess
+import time
+
 import ollama
 from langchain_ollama import OllamaEmbeddings
+
 from .embeddings import Embeddings
+
 
 class EmbeddingWithOllama(Embeddings):
     """
     Embedding class using Ollama model based on LangChain Embeddings class.
     """
+
     def __init__(self, model_name: str):
         """
         Initialize the EmbeddingWithOllama class.
@@ -38,18 +41,21 @@ class EmbeddingWithOllama(Embeddings):
         """
         try:
             models_list = ollama.list()["models"]
-            if model_name not in [m['model'].replace(":latest", "") for m in models_list]:
+            if model_name not in [m["model"].replace(":latest", "") for m in models_list]:
                 ollama.pull(model_name)
                 time.sleep(30)
                 raise ValueError(f"Pulled {model_name} model")
         except Exception as e:
             with subprocess.Popen(
-                "ollama serve", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                "ollama serve",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             ):
                 time.sleep(10)
             raise ValueError(f"Error: {e} and restarted Ollama server.") from e
 
-    def embed_documents(self, texts: List[str]) -> List[float]:
+    def embed_documents(self, texts: list[str]) -> list[float]:
         """
         Generate embedding for a list of input texts using Ollama model.
 
@@ -65,7 +71,7 @@ class EmbeddingWithOllama(Embeddings):
 
         return embeddings
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         """
         Generate embeddings for an input text using Ollama model.
 

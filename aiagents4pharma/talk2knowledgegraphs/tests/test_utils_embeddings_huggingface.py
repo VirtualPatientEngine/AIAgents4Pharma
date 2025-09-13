@@ -3,7 +3,9 @@ Test cases for utils/embeddings/huggingface.py
 """
 
 import pytest
+
 from ..utils.embeddings.huggingface import EmbeddingWithHuggingFace
+
 
 @pytest.fixture(name="embedding_model")
 def embedding_model_fixture():
@@ -14,6 +16,7 @@ def embedding_model_fixture():
         truncation=True,
     )
 
+
 def test_embedding_with_huggingface_embed_documents(embedding_model):
     """Test embedding documents using the EmbeddingWithHuggingFace class."""
     # Perform embedding
@@ -23,6 +26,7 @@ def test_embedding_with_huggingface_embed_documents(embedding_model):
     assert len(result) == 3
     assert len(result[0]) == 768
 
+
 def test_embedding_with_huggingface_embed_query(embedding_model):
     """Test embedding a query using the EmbeddingWithHuggingFace class."""
     # Perform embedding
@@ -30,6 +34,7 @@ def test_embedding_with_huggingface_embed_query(embedding_model):
     result = embedding_model.embed_query(text)
     # Check the result
     assert len(result) == 768
+
 
 def test_embedding_with_huggingface_failed():
     """Test embedding documents using the EmbeddingWithHuggingFace class."""

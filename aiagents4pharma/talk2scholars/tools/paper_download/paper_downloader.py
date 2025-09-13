@@ -6,16 +6,17 @@ Supports downloading papers from arXiv, medRxiv, bioRxiv, and PubMed through a s
 
 import logging
 import threading
-from typing import Annotated, Any, List, Literal, Optional
+from typing import Annotated, Any, Literal
 
 import hydra
 from hydra.core.global_hydra import GlobalHydra
-from omegaconf import OmegaConf
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
+from omegaconf import OmegaConf
 from pydantic import BaseModel, Field
+
 from .utils.arxiv_downloader import ArxivDownloader
 from .utils.base_paper_downloader import BasePaperDownloader
 from .utils.biorxiv_downloader import BiorxivDownloader
@@ -30,14 +31,14 @@ logger = logging.getLogger(__name__)
 class UnifiedPaperDownloadInput(BaseModel):
     """Input schema for the unified paper download tool."""
 
-    service: Optional[Literal["arxiv", "medrxiv", "biorxiv", "pubmed"]] = Field(
+    service: Literal["arxiv", "medrxiv", "biorxiv", "pubmed"] | None = Field(
         default=None,
         description=(
             "Paper service to download from: 'arxiv', 'medrxiv', 'biorxiv', or 'pubmed'. "
             "If not specified, uses the configured default service."
         ),
     )
-    identifiers: List[str] = Field(
+    identifiers: list[str] = Field(
         description=(
             "List of paper identifiers. Format depends on service:\n"
             "- arxiv: arXiv IDs (e.g., ['1234.5678', '2301.12345'])\n"
@@ -140,12 +141,9 @@ class PaperDownloaderFactory:
                 return PaperDownloaderFactory._cached_config
 
             try:
-
                 # Clear if already initialized
                 if GlobalHydra().is_initialized():
-                    logger.info(
-                        "GlobalHydra already initialized, clearing for config load"
-                    )
+                    logger.info("GlobalHydra already initialized, clearing for config load")
                     GlobalHydra.instance().clear()
 
                 # Load configuration
@@ -156,16 +154,12 @@ class PaperDownloaderFactory:
 
                 # Cache the configuration
                 PaperDownloaderFactory._cached_config = cfg.tools.paper_download
-                logger.info(
-                    "Successfully loaded and cached paper download configuration"
-                )
+                logger.info("Successfully loaded and cached paper download configuration")
 
                 return PaperDownloaderFactory._cached_config
 
             except Exception as e:
-                logger.error(
-                    "Failed to load unified paper download configuration: %s", e
-                )
+                logger.error("Failed to load unified paper download configuration: %s", e)
                 raise RuntimeError(f"Configuration loading failed: {e}") from e
 
     @staticmethod
@@ -181,10 +175,7 @@ class PaperDownloaderFactory:
         Returns:
             Service-specific configuration object
         """
-        if (
-            not hasattr(unified_config, "services")
-            or service not in unified_config.services
-        ):
+        if not hasattr(unified_config, "services") or service not in unified_config.services:
             raise ValueError(f"Service '{service}' not found in configuration")
 
         # Create a simple config object that combines common and service-specific settings
@@ -202,14 +193,10 @@ class PaperDownloaderFactory:
         config_obj = ServiceConfig()
 
         # Handle common config (using helper method to reduce branches)
-        PaperDownloaderFactory._apply_config(
-            config_obj, unified_config.common, "common"
-        )
+        PaperDownloaderFactory._apply_config(config_obj, unified_config.common, "common")
 
         # Handle service-specific config (using helper method to reduce branches)
-        PaperDownloaderFactory._apply_config(
-            config_obj, unified_config.services[service], service
-        )
+        PaperDownloaderFactory._apply_config(config_obj, unified_config.services[service], service)
 
         return config_obj
 
@@ -239,9 +226,7 @@ class PaperDownloaderFactory:
 
         # Method 2: Try direct attribute access
         if hasattr(source_config, "__dict__"):
-            PaperDownloaderFactory._extract_from_dict(
-                config_obj, source_config.__dict__
-            )
+            PaperDownloaderFactory._extract_from_dict(config_obj, source_config.__dict__)
             return
 
         # Method 3: Try items() method
@@ -290,8 +275,8 @@ class PaperDownloaderFactory:
     parse_docstring=True,
 )
 def download_papers(
-    service: Optional[Literal["arxiv", "medrxiv", "biorxiv", "pubmed"]],
-    identifiers: List[str],
+    service: Literal["arxiv", "medrxiv", "biorxiv", "pubmed"] | None,
+    identifiers: list[str],
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> Command[Any]:
     """
@@ -334,36 +319,36 @@ def download_papers(
 # Convenience functions for backward compatibility (optional)
 # These functions explicitly specify the service, bypassing the default service config
 def download_arxiv_papers(
-    arxiv_ids: List[str], tool_call_id: Annotated[str, InjectedToolCallId]
+    arxiv_ids: list[str], tool_call_id: Annotated[str, InjectedToolCallId]
 ) -> Command[Any]:
     """Convenience function for downloading arXiv papers (explicitly uses arXiv service)."""
     return _download_papers_impl("arxiv", arxiv_ids, tool_call_id)
 
 
 def download_medrxiv_papers(
-    dois: List[str], tool_call_id: Annotated[str, InjectedToolCallId]
+    dois: list[str], tool_call_id: Annotated[str, InjectedToolCallId]
 ) -> Command[Any]:
     """Convenience function for downloading medRxiv papers (explicitly uses medRxiv service)."""
     return _download_papers_impl("medrxiv", dois, tool_call_id)
 
 
 def download_biorxiv_papers(
-    dois: List[str], tool_call_id: Annotated[str, InjectedToolCallId]
+    dois: list[str], tool_call_id: Annotated[str, InjectedToolCallId]
 ) -> Command[Any]:
     """Convenience function for downloading bioRxiv papers (explicitly uses bioRxiv service)."""
     return _download_papers_impl("biorxiv", dois, tool_call_id)
 
 
 def download_pubmed_papers(
-    pmids: List[str], tool_call_id: Annotated[str, InjectedToolCallId]
+    pmids: list[str], tool_call_id: Annotated[str, InjectedToolCallId]
 ) -> Command[Any]:
     """Convenience function for downloading PubMed papers (explicitly uses PubMed service)."""
     return _download_papers_impl("pubmed", pmids, tool_call_id)
 
 
 def _download_papers_impl(
-    service: Optional[Literal["arxiv", "medrxiv", "biorxiv", "pubmed"]],
-    identifiers: List[str],
+    service: Literal["arxiv", "medrxiv", "biorxiv", "pubmed"] | None,
+    identifiers: list[str],
     tool_call_id: str,
 ) -> Command[Any]:
     """

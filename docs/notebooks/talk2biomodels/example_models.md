@@ -1,6 +1,6 @@
 # Exemplary Ordinary Differential Equation (ODE) models
 
-Inflammatory bowel disease (IBD) model targeting IL6R with tocilizumab. 
+Inflammatory bowel disease (IBD) model targeting IL6R with tocilizumab.
 
 Publication: <br>
 *A multiscale model of interleukin-6-mediated immune regulation in Crohn's disease and its application in drug discovery and development.* <br >
