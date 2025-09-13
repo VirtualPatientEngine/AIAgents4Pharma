@@ -107,8 +107,8 @@ class SystemDetector:
                         sys.exit(1)
                 else:
                     logger.info("Successfully installed: %s", package_cmd.split()[-1])
-            except subprocess.CalledProcessError as e:
-                logger.error("Failed to install %s: %s", package_cmd, e.stderr)
+            except subprocess.CalledProcessError:
+                logger.error("Failed to install package: %s", package_cmd.split()[-1])
                 if "cudf" in package_cmd:
                     logger.warning("GPU package installation failed, falling back to CPU mode")
                     self.use_gpu = False
@@ -198,12 +198,12 @@ class DynamicDataLoader:
                 self.cudf = cudf
                 self.cp = cp
                 logger.info("Successfully imported GPU libraries (cudf, cupy)")
-            except ImportError as e:
+            except ImportError:
                 logger.error(
                     "[DATA LOADER] cudf or cupy not found. "
                     "Please ensure they are installed correctly."
                 )
-                logger.error("Import error: %s", str(e))
+                logger.error("Import error occurred - GPU libraries not available")
                 # Match original script's exit behavior for critical GPU import failure
                 if not os.getenv("FORCE_CPU", "false").lower() == "true":
                     logger.error(
@@ -795,11 +795,9 @@ class DynamicDataLoader:
                 collection = self.pymilvus_modules["Collection"](name=coll)
                 logger.info("  %s: %d entities", coll, collection.num_entities)
 
-        except Exception as e:
-            logger.error("Error during data loading: %s", str(e))
-            import traceback
-
-            logger.error("Full traceback: %s", traceback.format_exc())
+        except Exception:
+            logger.error("Error occurred during data loading")
+            logger.debug("Detailed error information available in debug mode")
             raise
 
 
@@ -832,8 +830,10 @@ def main():
     logger.info("Configuration:")
     for key, value in config.items():
         # Don't log sensitive information
-        if "password" in key.lower():
-            logger.info("  %s: %s", key, "*" * len(str(value)))
+        if any(
+            sensitive in key.lower() for sensitive in ["password", "user", "token", "key", "secret"]
+        ):
+            logger.info("  %s: %s", key, "*" * min(8, len(str(value))))
         else:
             logger.info("  %s: %s", key, value)
 
@@ -866,11 +866,9 @@ def main():
     except KeyboardInterrupt:
         logger.info("Data loading interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        logger.error("Fatal error during data loading: %s", str(e))
-        import traceback
-
-        logger.error("Full traceback: %s", traceback.format_exc())
+    except Exception:
+        logger.error("Fatal error occurred during data loading")
+        logger.debug("Detailed error information available in debug mode")
         sys.exit(1)
 
 
