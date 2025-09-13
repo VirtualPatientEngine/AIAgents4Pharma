@@ -17,6 +17,7 @@ from . import (
     tool_helper,
     vector_normalization,
     vector_store,
+    multimodal_processor,
 )
 
 __all__ = [
@@ -34,4 +35,5 @@ __all__ = [
     "tool_helper",
     "vector_normalization",
     "vector_store",
+    "multimodal_processor",
 ]
