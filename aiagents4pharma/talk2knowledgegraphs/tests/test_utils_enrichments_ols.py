@@ -48,7 +48,7 @@ def test_enrich_documents(enrich_obj):
     assert UBERON_DESC in descriptions[2]
     assert HP_DESC in descriptions[3]
     assert MONDO_DESC in descriptions[4]
-    assert descriptions[5] is None
+    assert descriptions[5] == ""
 
 
 def test_enrich_documents_with_rag(enrich_obj):
@@ -67,4 +67,4 @@ def test_enrich_documents_with_rag(enrich_obj):
     assert UBERON_DESC in descriptions[2]
     assert HP_DESC in descriptions[3]
     assert MONDO_DESC in descriptions[4]
-    assert descriptions[5] is None
+    assert descriptions[5] == ""
