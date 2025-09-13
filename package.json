@@ -3,7 +3,7 @@
 	"private": true,
 	"devDependencies": {
 		"semantic-release": "^24.0.0",
-		"@semantic-release/github": "^11.0.1",
+		"@semantic-release/github": "^11.0.6",
 		"@semantic-release/exec": "^6.0.3"
 	},
 	"release": {
