@@ -61,7 +61,7 @@ dependencies = [
   "pymilvus==2.6.1",
   "pypdf==6.0.0",
   "pytest==8.4.1",
-  "pytest-asyncio==0.25.2",
+  "pytest-asyncio==1.2.0",
   "pyzotero==1.6.11",
   "requests==2.32.5",
   "scanpy==1.11.4",
