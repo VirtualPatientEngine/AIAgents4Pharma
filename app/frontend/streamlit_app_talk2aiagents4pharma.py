@@ -213,7 +213,7 @@ with main_col1:
 
         # Help text
         st.button(
-            "Know more ↗",
+            "How to use this application ↗",
             #   icon="ℹ️",
             on_click=streamlit_utils.help_button,
             use_container_width=False,

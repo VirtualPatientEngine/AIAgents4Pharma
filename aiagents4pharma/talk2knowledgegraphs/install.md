@@ -22,12 +22,6 @@ If your machine has NVIDIA GPU(s), please install the following this:
 
 _This agent is available on Docker Hub._
 
-**Prerequisites**
-
-- If your machine has NVIDIA GPU(s), please install [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.17.8/install-guide.html) (required for GPU support with Docker; enables containers to access NVIDIA GPUs for accelerated computing). After installing `nvidia-container-toolkit`, please restart Docker to ensure GPU support is enabled.
-
-- [Milvus](https://milvus.io) (for a vector database)
-
 ---
 
 #### 1. Download files
@@ -74,7 +68,7 @@ MILVUS_HOST=localhost
 MILVUS_PORT=19530
 MILVUS_USER=root
 MILVUS_PASSWORD=Milvus
-MILVUS_DATABASE=your_database_name_here
+MILVUS_DATABASE=t2kg_primekg
 
 # Specify the data directory for multimodal data to your own data directory
 # DATA_DIR=/your_absolute_path_to_your_data_dir/
