@@ -4,6 +4,7 @@ Test cases for tools/subgraph_extraction.py
 
 import pytest
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
 from ..tools.subgraph_extraction import SubgraphExtractionTool
 
 # Define the data path
@@ -41,7 +42,7 @@ def test_extract_subgraph_wo_docs(agent_state):
         agent_state: Agent state in the form of a dictionary.
     """
     prompt = """
-    Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
+    Extract all relevant information related to nodes of genes related to inflammatory bowel disease
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
     """
@@ -51,13 +52,16 @@ def test_extract_subgraph_wo_docs(agent_state):
 
     # Invoking the subgraph_extraction_tool
     response = subgraph_extraction_tool.invoke(
-        input={"prompt": prompt,
-               "tool_call_id": "subgraph_extraction_tool",
-               "state": agent_state,
-               "arg_data": {"extraction_name": "subkg_12345"}})
+        input={
+            "prompt": prompt,
+            "tool_call_id": "subgraph_extraction_tool",
+            "state": agent_state,
+            "arg_data": {"extraction_name": "subkg_12345"},
+        }
+    )
 
     # Check tool message
-    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
+    assert response.update["messages"][-1].tool_call_id == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
     dic_extracted_graph = response.update["dic_extracted_graph"][0]
@@ -103,7 +107,7 @@ def test_extract_subgraph_w_docs(agent_state):
     ]
 
     prompt = """
-    Extract all relevant information related to nodes of genes related to inflammatory bowel disease 
+    Extract all relevant information related to nodes of genes related to inflammatory bowel disease
     (IBD) that existed in the knowledge graph.
     Please set the extraction name for this process as `subkg_12345`.
     """
@@ -113,13 +117,16 @@ def test_extract_subgraph_w_docs(agent_state):
 
     # Invoking the subgraph_extraction_tool
     response = subgraph_extraction_tool.invoke(
-        input={"prompt": prompt,
-               "tool_call_id": "subgraph_extraction_tool",
-               "state": agent_state,
-               "arg_data": {"extraction_name": "subkg_12345"}})
+        input={
+            "prompt": prompt,
+            "tool_call_id": "subgraph_extraction_tool",
+            "state": agent_state,
+            "arg_data": {"extraction_name": "subkg_12345"},
+        }
+    )
 
     # Check tool message
-    assert response.update["messages"][-1].tool_call_id  == "subgraph_extraction_tool"
+    assert response.update["messages"][-1].tool_call_id == "subgraph_extraction_tool"
 
     # Check extracted subgraph dictionary
     dic_extracted_graph = response.update["dic_extracted_graph"][0]

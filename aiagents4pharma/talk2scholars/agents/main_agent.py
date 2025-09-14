@@ -12,15 +12,17 @@ Functions:
 """
 
 import logging
+
 import hydra
-from langgraph_supervisor import create_supervisor
-from langchain_openai import ChatOpenAI
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph_supervisor import create_supervisor
+
+from ..agents.paper_download_agent import get_app as get_app_paper_download
+from ..agents.pdf_agent import get_app as get_app_pdf
 from ..agents.s2_agent import get_app as get_app_s2
 from ..agents.zotero_agent import get_app as get_app_zotero
-from ..agents.pdf_agent import get_app as get_app_pdf
-from ..agents.paper_download_agent import get_app as get_app_paper_download
 from ..state.state_talk2scholars import Talk2Scholars
 
 # Initialize logger

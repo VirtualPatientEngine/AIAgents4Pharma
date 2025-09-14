@@ -143,7 +143,7 @@ Show me the parameters related to drug dosing regimen in the model
 <p>These parameters are crucial for defining how the drug is administered over time and help in modeling the effects of different dosing schedules on the pharmacokinetics and pharmacodynamics of the drug.</p>
 
 </details>
-<hr> 
+<hr>
 
 **Q:** Show annotated species of the model _(This step might take time.)_. <br>
 
@@ -152,7 +152,7 @@ show me the annotations of all species in the model 537
 ```
 
 <details>
-<summary>Answer (snippet)</summary>   
+<summary>Answer (snippet)</summary>
 <img src="../figures/C1_q4.2.png" width="600"/>
 </details>
 
@@ -163,9 +163,9 @@ Show annotations of all interleukins in model 537
 ```
 
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 <img src="../figures/C1_q4.3.png" width="600"/>
-</details>	
+</details>
 
 **Q:** Interrogate specific species in the model <br>
 
@@ -174,7 +174,7 @@ what is R in this model?
 ```
 
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 <img src="../figures/C1_q4.4.png" width="600"/>
 </details>
 
@@ -189,7 +189,7 @@ Query the uploaded article to suggest a possible description and role of the par
 ```
 
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 
 <p>The parameter R in the model is associated with the dynamics of IL-6 signaling in the context of Crohn's disease. While the specific role of R is not explicitly detailed in the provided excerpts, it can be inferred that R is likely involved in the regulation of receptor interactions or signaling pathways related to IL-6.</p>
 
@@ -207,9 +207,9 @@ Query the uploaded article to suggest a possible description and role of the par
 ```
 Query the uploaded article and return the model's simulation duration time mentioned in the paper.
 ```
- 
+
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 
 <p>The model in the paper simulates the pharmacological effects over a duration of <strong>12 weeks</strong>. This is indicated in the context of intravenous drug administration at 4-week intervals, where the effects on biomarkers such as serum CRP are assessed throughout this period.</p>
 
@@ -225,7 +225,7 @@ show concentrations of all species in this model in a table format
 ```
 
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 
 <table>
 <tr><th>Species Name</th><th>Compartment</th><th>Initial Concentration (nmol/l)</th></tr>
@@ -284,7 +284,7 @@ show parameter values in this model
 ```
 
 <details>
-<summary>Answer</summary>   
+<summary>Answer</summary>
 <table>
 <tr><th>Parameter Name</th><th>Initial Value</th><th>Unit</th></tr>
 <tr><td>Values[kRLOn]</td><td>0.384</td><td></td></tr>
@@ -354,7 +354,7 @@ show parameter values in this model
 
 ```
 Simulate the model for 2016 hours with 300 intervals. Set the initial concentration of Dose to 200 mg. Call this result `Treatment 4wk`.
-```	
+```
 
 <details>
 <summary>Answer</summary>
@@ -469,7 +469,7 @@ What is the CRP concentration in the serum at the end of the simulation?
 ### Compare two treatment regimens and apply reasoning
 
 
-**Q:** Administrate the drug treatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>  
+**Q:** Administrate the drug treatment every two weeks by activating the `DoseQ2W` and deactivating `Dose` parameters. <br>
 
 
 ```
@@ -503,13 +503,13 @@ Based on the CRP values in serum at the end of the simulation, which treatment w
 
 <hr>
 
-### Compute the concentration of free drug in blood serum 
+### Compute the concentration of free drug in blood serum
 
 
 **Q:** Reproduce Figure 4f from the paper for a 500mg dose. <br>
 
 ```
-Set the initial concentration of 'Dose' to 500 mg and simulate the model for 2016 hours with 300 intervals. 
+Set the initial concentration of 'Dose' to 500 mg and simulate the model for 2016 hours with 300 intervals.
 ```
 ```
 Plot Ab in serum.
@@ -534,7 +534,7 @@ Plot Ab in serum.
 Simulate the model 537 for 2016 hours with 300 intervals. Save this simulation as 'Ab_2.5'.
 ```
 ```
-Plot the trajectory of CRP % suppression. 
+Plot the trajectory of CRP % suppression.
 ```
 
 
@@ -549,10 +549,10 @@ Plot the trajectory of CRP % suppression.
 **Q:** Set the parameter `kIL6RUnbind` to 250, decreasing the stability of the antibody-IL6R complex. Simulate the model and plot serum CRP % suppression. The authors expect ~10% suppression of CRP after 12 weeks. <br>
 
 ```
-Simulate the model for 2016 hours with 300 intervals, but set the parameter `kIL6RUnbind` to 250. Save this simulation as 'Ab_250'. 
+Simulate the model for 2016 hours with 300 intervals, but set the parameter `kIL6RUnbind` to 250. Save this simulation as 'Ab_250'.
 ```
-```	
-Plot the curve of CRP % suppression. 
+```
+Plot the curve of CRP % suppression.
 ```
 
 <details>

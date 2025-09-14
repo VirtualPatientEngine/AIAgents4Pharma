@@ -5,7 +5,6 @@ Utility for reviewing papers and saving them to Zotero.
 """
 
 import logging
-from typing import List
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,12 +39,9 @@ class ReviewData:
 
     def get_custom_path_approval_message(self, custom_path: str) -> str:
         """Get the formatted approval message for a custom collection path."""
-        return (
-            f"Human approved saving papers to custom Zotero "
-            f"collection '{custom_path}'."
-        )
+        return f"Human approved saving papers to custom Zotero collection '{custom_path}'."
 
-    def _create_papers_summary(self) -> List[str]:
+    def _create_papers_summary(self) -> list[str]:
         """Create a summary of papers for review."""
         summary = []
         for paper_id, paper in list(self.fetched_papers.items())[:5]:

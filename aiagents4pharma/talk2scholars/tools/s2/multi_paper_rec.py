@@ -9,14 +9,15 @@ of recommended papers.
 """
 
 import logging
-from typing import Annotated, Any, List, Optional
+from typing import Annotated, Any
+
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.types import Command
 from pydantic import BaseModel, Field
-from .utils.multi_helper import MultiPaperRecData
 
+from .utils.multi_helper import MultiPaperRecData
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +35,7 @@ class MultiPaperRecInput(BaseModel):
         tool_call_id: Internal tool call identifier injected by the system.
     """
 
-    paper_ids: List[str] = Field(
+    paper_ids: list[str] = Field(
         description="List of 40-character Semantic Scholar Paper IDs"
         "(at least two) to base recommendations on"
     )
@@ -44,7 +45,7 @@ class MultiPaperRecInput(BaseModel):
         ge=1,
         le=500,
     )
-    year: Optional[str] = Field(
+    year: str | None = Field(
         default=None,
         description="Publication year filter; supports formats:"
         "'YYYY', 'YYYY-', '-YYYY', 'YYYY:YYYY'",
@@ -59,10 +60,10 @@ class MultiPaperRecInput(BaseModel):
     parse_docstring=True,
 )
 def get_multi_paper_recommendations(
-    paper_ids: List[str],
+    paper_ids: list[str],
     tool_call_id: Annotated[str, InjectedToolCallId],
     limit: int = 10,
-    year: Optional[str] = None,
+    year: str | None = None,
 ) -> Command[Any]:
     """
     Recommend related research papers using the Semantic Scholar API.

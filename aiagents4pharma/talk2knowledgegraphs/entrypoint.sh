@@ -84,7 +84,7 @@ import sys
 try:
     from pymilvus import connections, utility, db
     connections.connect(host='$MILVUS_HOST', port='$MILVUS_PORT', user='$MILVUS_USER', password='$MILVUS_PASSWORD')
-    
+
     # Check if database exists
     if '$MILVUS_DATABASE' in db.list_database():
         db.using_database('$MILVUS_DATABASE')
@@ -92,7 +92,7 @@ try:
         if collections:
             connections.disconnect('default')
             sys.exit(0)  # Data exists
-    
+
     connections.disconnect('default')
     sys.exit(1)  # No data found
 except Exception:
@@ -173,18 +173,8 @@ log "Data loading phase completed. Starting main application..."
 # Ensure Python path includes the app directory
 export PYTHONPATH="/app:${PYTHONPATH}"
 
-# Create cache directory and set path for container
-cache_dir="/app/aiagents4pharma/talk2knowledgegraphs/tests/files"
-if [ ! -d "$cache_dir" ]; then
-	log "Creating cache directory: $cache_dir"
-	mkdir -p "$cache_dir"
-fi
-
-# Set container-specific cache path
-export CACHE_EDGE_INDEX_PATH="/app/aiagents4pharma/talk2knowledgegraphs/tests/files/t2kg_primekg_edge_index.pkl"
-
 log "Starting main application..."
 log "Python path: $PYTHONPATH"
-log "Cache edge index path: $CACHE_EDGE_INDEX_PATH"
+log "Note: Edge index is now loaded on-demand from Milvus (no cache file needed)"
 log "Executing command: $@"
 exec "$@"

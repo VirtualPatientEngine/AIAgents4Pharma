@@ -6,7 +6,7 @@ Handles connection reuse, event loops, and GPU detection caching.
 import asyncio
 import logging
 import threading
-from typing import Any, Dict
+from typing import Any
 
 from langchain_core.embeddings import Embeddings
 from langchain_milvus import Milvus
@@ -105,7 +105,7 @@ class VectorstoreSingleton:
         self,
         collection_name: str,
         embedding_model: Embeddings,
-        connection_args: Dict[str, Any],
+        connection_args: dict[str, Any],
     ) -> Milvus:
         """Get or create a vector store for a collection."""
         if collection_name not in self._vector_stores:

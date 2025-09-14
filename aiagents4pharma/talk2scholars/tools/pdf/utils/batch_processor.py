@@ -150,6 +150,16 @@ def _parallel_load_and_split(
 
                 # Flatten into text for RAG augmentation
                 multimodal_texts.extend([line["text"] for line in lines])
+
+                # Convert multimodal text into Document objects
+                multi_docs = [
+                    Document(page_content=text, metadata={"paper_id": pid, "source": "multimodal"})
+                    for text in multimodal_texts
+                ]
+                multi_ids = [f"{pid}_multimodal_{i}" for i in range(len(multi_docs))]
+                all_chunks.extend(multi_docs)
+                all_ids.extend(multi_ids)
+                text_lines[pid] = multimodal_texts
             except Exception as e:
                 logger.error("Multimodal processing failed for %s: %s", pid, e)
 

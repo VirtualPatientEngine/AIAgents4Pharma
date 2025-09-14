@@ -6,10 +6,10 @@ Utility for fetching recommendations based on multiple papers.
 
 import json
 import logging
-from typing import Any, List, Optional, Dict
+from typing import Any
+
 import hydra
 import requests
-
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -21,9 +21,9 @@ class MultiPaperRecData:
 
     def __init__(
         self,
-        paper_ids: List[str],
+        paper_ids: list[str],
         limit: int,
-        year: Optional[str],
+        year: str | None,
         tool_call_id: str,
     ):
         self.paper_ids = paper_ids
@@ -51,7 +51,7 @@ class MultiPaperRecData:
             logger.info("Loaded configuration for multi-paper recommendation tool")
             return cfg.tools.multi_paper_recommendation
 
-    def _create_params(self) -> Dict[str, Any]:
+    def _create_params(self) -> dict[str, Any]:
         """Create parameters for the API request."""
         params = {
             "limit": min(self.limit, 500),
@@ -94,9 +94,7 @@ class MultiPaperRecData:
                     ) from e
 
         if self.response is None:
-            raise RuntimeError(
-                "Failed to obtain a response from the Semantic Scholar API."
-            )
+            raise RuntimeError("Failed to obtain a response from the Semantic Scholar API.")
 
         logger.info(
             "API Response Status for multi-paper recommendations: %s",
@@ -117,9 +115,7 @@ class MultiPaperRecData:
 
         self.recommendations = self.data.get("recommendedPapers", [])
         if not self.recommendations:
-            logger.error(
-                "No recommendations returned from API for paper IDs: %s", self.paper_ids
-            )
+            logger.error("No recommendations returned from API for paper IDs: %s", self.paper_ids)
             raise RuntimeError(
                 "No recommendations were found for your query. Consider refining your search "
                 "by using more specific keywords or different terms."
@@ -128,12 +124,12 @@ class MultiPaperRecData:
     def _filter_papers(self) -> None:
         """Filter and format papers."""
         # Build filtered recommendations with unified paper_ids
-        filtered: Dict[str, Any] = {}
+        filtered: dict[str, Any] = {}
         for paper in self.recommendations:
             if not paper.get("title") or not paper.get("authors"):
                 continue
             ext = paper.get("externalIds", {}) or {}
-            ids: List[str] = []
+            ids: list[str] = []
             arxiv = ext.get("ArXiv")
             if arxiv:
                 ids.append(f"arxiv:{arxiv}")
@@ -191,7 +187,7 @@ class MultiPaperRecData:
             title = paper.get("Title", "N/A")
             year = paper.get("Year", "N/A")
             snippet = self._get_snippet(paper.get("Abstract", ""))
-            entry = f"{i+1}. {title} ({year})"
+            entry = f"{i + 1}. {title} ({year})"
             if snippet:
                 entry += f"\n   Abstract snippet: {snippet}"
             entries.append(entry)
@@ -202,14 +198,12 @@ class MultiPaperRecData:
             "Papers are attached as an artifact."
         )
         self.content += " Here is a summary of the recommendations:\n"
-        self.content += (
-            f"Number of recommended papers found: {self.get_paper_count()}\n"
-        )
+        self.content += f"Number of recommended papers found: {self.get_paper_count()}\n"
         self.content += f"Query Paper IDs: {', '.join(self.paper_ids)}\n"
         self.content += f"Year: {self.year}\n" if self.year else ""
         self.content += "Here are a few of these papers:\n" + top_papers_info
 
-    def process_recommendations(self) -> Dict[str, Any]:
+    def process_recommendations(self) -> dict[str, Any]:
         """Process the recommendations request and return results."""
         self._fetch_recommendations()
         self._filter_papers()

@@ -5,7 +5,7 @@ Collection Manager for Milvus
 import logging
 import os
 import threading
-from typing import Any, Dict
+from typing import Any
 
 from pymilvus import (
     Collection,
@@ -28,7 +28,7 @@ _cache_lock = threading.Lock()
 
 
 def ensure_collection_exists(
-    collection_name: str, config: Any, index_params: Dict[str, Any], has_gpu: bool
+    collection_name: str, config: Any, index_params: dict[str, Any], has_gpu: bool
 ) -> Collection:
     """Ensure the Milvus collection exists before trying to sync or add documents."""
 

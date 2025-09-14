@@ -1,435 +1,187 @@
-# This is a basic workflow to help you get started with GitHub Actions
+# Modern CI workflow using uv for fast, reliable dependency management
 name: TESTS Talk2AIAgents4Pharma
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events
   pull_request:
     branches: [main]
     paths:
       - "aiagents4pharma/talk2aiagents4pharma/**"
       - "aiagents4pharma/talk2biomodels/**"
       - "aiagents4pharma/talk2knowledgegraphs/**"
-
-  # Allows you to run this workflow manually from the Actions tab
+      - "pyproject.toml"
+      - "uv.lock"
   workflow_dispatch:
 
 env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
 
-# This workflow contains jobs covering linting and code coverage (along with testing).
 jobs:
-  # pylint job for ubuntu
-  pylint-ubuntu:
-    name: pylint-ubuntu
+  # Code quality checks
+  quality-checks:
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v5
         with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
+          fetch-depth: 0
 
-      - name: Cache conda environment
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            Linux-conda-talk2aiagents4pharma-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-      - name: Create conda environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        shell: bash -l {0}
-        run: |
-          conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
-          conda activate talk2aiagents4pharma
-          pip install -r requirements.txt
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev
 
       - name: Run pylint
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2aiagents4pharma
+        run: uv run pylint aiagents4pharma/talk2aiagents4pharma
 
-  # pylint job for macos
-  pylint-macos:
-    name: pylint-macos
-    runs-on: macos-15
+      - name: Run ruff linting
+        run: uv run ruff check aiagents4pharma/talk2aiagents4pharma
+
+      - name: Run bandit security scan
+        run: uv run bandit -c pyproject.toml -r aiagents4pharma/talk2aiagents4pharma
+
+      - name: Run bandit security scan with JSON output for SonarCloud
+        run: |
+          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2aiagents4pharma -f json -o bandit-report.json || true
+        continue-on-error: true
+
+      - name: Run pylint with JSON output for SonarCloud
+        run: |
+          uv run pylint aiagents4pharma/talk2aiagents4pharma --output-format=json --reports=no > pylint-report.json || true
+        continue-on-error: true
+
+      - name: Upload quality reports for SonarCloud
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports-talk2aiagents4pharma
+          path: |
+            pylint-report.json
+            bandit-report.json
+          retention-days: 1
+
+  # Cross-platform testing with Ollama
+  test-matrix:
+    name: Tests
+    needs: quality-checks
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15, windows-latest]
+        python-version: ["3.12"]
+
+    runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v5
         with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
+          fetch-depth: 0
 
-      - name: Cache conda environment
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            macOS-conda-talk2aiagents4pharma-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-      - name: Create conda environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        shell: bash -l {0}
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      # Ollama setup for Ubuntu
+      - name: Setup Ollama (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
-          conda activate talk2aiagents4pharma
-          pip install -r requirements.txt
-
-      - name: Run pylint
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2aiagents4pharma
-
-  # pylint job for windows
-  pylint-windows:
-    name: pylint-windows
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
-
-      - name: Cache conda environment
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            Windows-conda-talk2aiagents4pharma-
-
-      - name: Create conda environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        shell: bash -l {0}
-        run: |
-          conda update -n base -c defaults conda -y
-          conda create -n talk2aiagents4pharma -y python=3.12 pip pylint
-          conda activate talk2aiagents4pharma
-          pip install -r requirements.txt
-
-      - name: Run pylint
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          pylint --disable=R0801,R0902,W0221,W0122 aiagents4pharma/talk2aiagents4pharma
-
-  # code coverage job for ubuntu
-  code-cov-ubuntu:
-    name: code-coverage-ubuntu
-    needs: pylint-ubuntu
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
-
-      - name: Restore conda environment cache
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: Linux-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            Linux-conda-talk2aiagents4pharma-
-
-      - name: Install test dependencies
-        shell: bash -l {0}
-        run: |
-          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
-            conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip
-            conda activate talk2aiagents4pharma
-            pip install -r requirements.txt
-          fi
-          conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage
-
-      # Restore Ollama model cache
-      - name: Restore Ollama model cache
-        id: cache_ollama
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/.ollama/models
-          key: Linux-ollama
-          restore-keys: |
-            Linux-ollama
-
-      - name: Ensure Ollama model directory exists
-        shell: bash -l {0}
-        run: mkdir -p /home/runner/.ollama/models
-
-      - name: Install Ollama CLI and start service
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
           curl -fsSL https://ollama.com/install.sh | sh
+          export PATH="/usr/local/bin:$PATH"
+          echo "/usr/local/bin" >> $GITHUB_PATH
           ollama serve &
           sleep 10
 
-      - name: Pull Ollama models if not cached
-        if: steps.cache_ollama.outputs.cache-hit != 'true'
-        shell: bash -l {0}
+      # Ollama setup for macOS
+      - name: Setup Ollama (macOS)
+        if: matrix.os == 'macos-15'
         run: |
-          conda activate talk2aiagents4pharma
-          ollama pull llama3.2:1b
-
-      - name: List Ollama models
-        shell: bash -l {0}
-        run: |
-          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-          conda activate talk2aiagents4pharma
-          ollama list
-
-      - name: Run tests with coverage
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          coverage run --include=aiagents4pharma/talk2aiagents4pharma/* -m pytest --cache-clear aiagents4pharma/talk2aiagents4pharma/tests/
-
-      - name: Check coverage
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          coverage report -m
-          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-            echo "Code coverage is not 100%. Please check the coverage report."
-            exit 1
-          fi
-        env:
-          COVERAGE_FILE: "./.coverage"
-
-      # Save Ollama model cache after pulling
-      - name: Save Ollama model cache
-        if: steps.cache_ollama.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: /home/runner/.ollama/models
-          key: Linux-ollama
-
-  # code coverage job for macos
-  code-cov-macos:
-    name: code-coverage-macos
-    needs: pylint-macos
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
-
-      - name: Restore conda environment cache
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: macOS-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            macOS-conda-talk2aiagents4pharma-
-
-      - name: Install test dependencies
-        shell: bash -l {0}
-        run: |
-          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
-            conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip
-            conda activate talk2aiagents4pharma
-            pip install -r requirements.txt
-          fi
-          conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage
-
-      - name: Cache Ollama models
-        uses: actions/cache@v4
-        id: cache_ollama
-        with:
-          path: |
-            /Users/runner/.ollama/models/*
-          key: ${{ runner.os }}-ollama
-
-      - name: Install and Pull Ollama models
-        if: steps.cache_ollama.outputs.cache-hit != 'true'
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
           brew install ollama
           ollama serve &
           sleep 10
-          ollama pull llama3.2:1b
-          ollama list
 
-      - name: Reading cached Ollama models
-        shell: bash -l {0}
+      # Ollama setup for Windows
+      - name: Setup Ollama (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
         run: |
-          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-          conda activate talk2aiagents4pharma
-          brew install ollama
-          ollama serve &
-          sleep 10
-          ollama list
-
-      - name: Run tests with coverage
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          coverage run --include=aiagents4pharma/talk2aiagents4pharma/* -m pytest --cache-clear aiagents4pharma/talk2aiagents4pharma/tests/
-
-      - name: Check coverage
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-          coverage report -m
-          TOTAL_COVERAGE=$(coverage report -m | awk 'END {print int($NF)}')
-          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
-            echo "Code coverage is not 100%. Please check the coverage report."
-            exit 1
-          fi
-        env:
-          COVERAGE_FILE: "./.coverage"
-
-  # code coverage job for windows
-  code-cov-windows:
-    name: code-coverage-windows
-    needs: pylint-windows
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          python-version: 3.12
-          channels: defaults
-
-      - name: Restore conda environment cache
-        id: cache-conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs/talk2aiagents4pharma
-          key: Windows-conda-talk2aiagents4pharma-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            Windows-conda-talk2aiagents4pharma-
-
-      - name: Install test dependencies
-        shell: bash -l {0}
-        run: |
-          if [ ! -d "$CONDA/envs/talk2aiagents4pharma" ]; then
-            conda update -n base -c defaults conda -y
-            conda create -n talk2aiagents4pharma -y python=3.12 pip
-            conda activate talk2aiagents4pharma
-            pip install -r requirements.txt
-          fi
-          conda activate talk2aiagents4pharma
-          conda install -n talk2aiagents4pharma -y pytest coverage
-
-      - name: Cache Ollama models
-        uses: actions/cache@v4
-        id: cache_ollama
-        with:
-          path: |
-            C:\Users\runneradmin\.ollama\models
-          key: ${{ runner.os }}-ollama
-
-      - name: Install and Pull Ollama models
-        if: steps.cache_ollama.outputs.cache-hit != 'true'
-        shell: bash -l {0}
-        run: |
-          conda activate talk2aiagents4pharma
-
-          # Download Ollama
           curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-
-          # Create a directory for Ollama
           mkdir -p ollama_dir
-
-          # Extract using PowerShell
           powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ollama_dir -Force"
-
-          # Make the ollama directory executable and add to PATH
+          ls -la ollama_dir/
           chmod +x ollama_dir/*
           export PATH="$PWD/ollama_dir:$PATH"
           echo "$PWD/ollama_dir" >> $GITHUB_PATH
-
-          # Verify extraction was successful
-          ls -la ollama_dir/
-
-          # Start ollama service
           ./ollama_dir/ollama.exe serve &
-
-          # Wait for it to start
           sleep 15
 
-          # Pull the model
-          ./ollama_dir/ollama.exe pull llama3.2:1b
-
-          # List available models
-          ./ollama_dir/ollama.exe list
-
-      - name: Reading cached Ollama models
-        shell: bash -l {0}
+      # Pull Ollama models
+      - name: Pull Ollama models (Ubuntu/macOS)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-15'
         run: |
-          echo "Cache Hit Status - ${{ steps.cache_ollama.outputs.cache-hit }}"
-          conda activate talk2aiagents4pharma
+          ollama pull llama3.2:1b
+          ollama pull nomic-embed-text
 
-          # Create ollama directory if it doesn't exist
-          mkdir -p ollama_dir
-
-          # If we need to download Ollama
-          if [ ! -f "ollama_dir/ollama.exe" ]; then
-            curl -L https://ollama.com/download/ollama-windows-amd64.zip -o ollama-windows-amd64.zip
-            powershell -command "Expand-Archive -Path ollama-windows-amd64.zip -DestinationPath ollama_dir -Force"
-          fi
-
-          # Add to PATH
+      - name: Pull Ollama models (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
           export PATH="$PWD/ollama_dir:$PATH"
-          echo "$PWD/ollama_dir" >> $GITHUB_PATH
+          ./ollama_dir/ollama.exe pull llama3.2:1b
+          ./ollama_dir/ollama.exe pull nomic-embed-text
 
-          # Start ollama service
-          ./ollama_dir/ollama.exe serve &
+      - name: Verify Ollama setup (Ubuntu/macOS)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-15'
+        run: |
+          ollama list
 
-          # Wait for service to start
-          sleep 15
-
-          # List available models
+      - name: Verify Ollama setup (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          export PATH="$PWD/ollama_dir:$PATH"
           ./ollama_dir/ollama.exe list
 
       - name: Run tests with coverage
-        shell: bash -l {0}
         run: |
-          conda run -n talk2aiagents4pharma coverage run --include=aiagents4pharma/talk2aiagents4pharma/* -m pytest --cache-clear aiagents4pharma/talk2aiagents4pharma/tests/
+          uv run coverage run --include=aiagents4pharma/talk2aiagents4pharma/* -m pytest --cache-clear aiagents4pharma/talk2aiagents4pharma/tests/
 
-      - name: Check coverage
-        shell: bash -l {0}
+      - name: Generate coverage report
         run: |
-          conda run -n talk2aiagents4pharma coverage report -m --fail-under=100
+          uv run coverage report -m
+          uv run coverage xml
+
+      - name: Check coverage threshold
+        shell: bash
+        run: |
+          TOTAL_COVERAGE=$(uv run coverage report -m | awk 'END {print int($NF)}')
+          if [[ $TOTAL_COVERAGE -ne 100 ]]; then
+            echo "Code coverage is not 100%. Please check the coverage report."
+            exit 1
+          fi
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: talk2aiagents4pharma
+          name: talk2aiagents4pharma-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Upload test reports for SonarCloud
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-talk2aiagents4pharma
+          path: |
+            coverage.xml
+          retention-days: 1

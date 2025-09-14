@@ -4,7 +4,7 @@ MedRxiv paper downloader implementation.
 """
 
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import requests
 
@@ -27,7 +27,7 @@ class MedrxivDownloader(BasePaperDownloader):
         )
         self.default_version = getattr(config, "default_version", "1")
 
-    def fetch_metadata(self, identifier: str) -> Dict[str, Any]:
+    def fetch_metadata(self, identifier: str) -> dict[str, Any]:
         """
         Fetch paper metadata from medRxiv API.
 
@@ -54,7 +54,7 @@ class MedrxivDownloader(BasePaperDownloader):
 
         return paper_data
 
-    def construct_pdf_url(self, metadata: Dict[str, Any], identifier: str) -> str:
+    def construct_pdf_url(self, metadata: dict[str, Any], identifier: str) -> str:
         """
         Construct PDF URL from medRxiv metadata and DOI.
 
@@ -79,10 +79,10 @@ class MedrxivDownloader(BasePaperDownloader):
 
     def extract_paper_metadata(
         self,
-        metadata: Dict[str, Any],
+        metadata: dict[str, Any],
         identifier: str,
-        pdf_result: Optional[Tuple[str, str]],
-    ) -> Dict[str, Any]:
+        pdf_result: tuple[str, str] | None,
+    ) -> dict[str, Any]:
         """
         Extract structured metadata from medRxiv API response.
 
@@ -111,9 +111,7 @@ class MedrxivDownloader(BasePaperDownloader):
             **pdf_metadata,
         }
 
-    def _extract_basic_metadata(
-        self, paper: Dict[str, Any], identifier: str
-    ) -> Dict[str, Any]:
+    def _extract_basic_metadata(self, paper: dict[str, Any], identifier: str) -> dict[str, Any]:
         """Extract basic metadata from paper data."""
         # Extract basic fields
         title = paper.get("title", "N/A").strip()
@@ -144,8 +142,8 @@ class MedrxivDownloader(BasePaperDownloader):
         return [author.strip() for author in authors_str.split(";") if author.strip()]
 
     def _extract_pdf_metadata(
-        self, pdf_result: Optional[Tuple[str, str]], identifier: str
-    ) -> Dict[str, Any]:
+        self, pdf_result: tuple[str, str] | None, identifier: str
+    ) -> dict[str, Any]:
         """Extract PDF-related metadata."""
         if pdf_result:
             temp_file_path, filename = pdf_result
@@ -178,7 +176,7 @@ class MedrxivDownloader(BasePaperDownloader):
         # Sanitize DOI for filename use
         return f"{identifier.replace('/', '_').replace('.', '_')}.pdf"
 
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """Get medRxiv-specific identifier info for paper summary."""
         doi = paper.get("DOI", "N/A")
         pub_date = paper.get("Publication Date", "N/A")
@@ -190,7 +188,7 @@ class MedrxivDownloader(BasePaperDownloader):
 
         return info
 
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """Add DOI and medRxiv-specific fields to entry."""
         entry["DOI"] = identifier
         entry["Category"] = "N/A"

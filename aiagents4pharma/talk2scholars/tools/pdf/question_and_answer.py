@@ -25,15 +25,20 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
+from .utils.answer_formatter import format_answer
 from .utils.generate_answer import load_hydra_config
-from .utils.tool_helper import QAToolHelper
 from .utils.paper_loader import load_all_papers
 from .utils.rag_pipeline import retrieve_and_rerank_chunks
 from .utils.answer_formatter import format_answer
+from .utils.tool_helper import QAToolHelper
 from .utils.multimodal_processor import (
-    pdf_to_base64_compressed, detect_page_elements, categorize_page_elements,
-    crop_categorized_elements, process_all, collect_ocr_results, extract_text_lines
-)
+    pdf_to_base64_compressed,
+    detect_page_elements,
+    categorize_page_elements,
+    crop_categorized_elements,
+    process_all,
+    collect_ocr_results,
+    extract_text_lines)
 
 # Helper for managing state, vectorstore, reranking, and formatting
 helper = QAToolHelper()
@@ -60,9 +65,7 @@ class QuestionAndAnswerInput(BaseModel):
         - llm_model: chat/LLM instance for answer generation.
     """
 
-    question: str = Field(
-        description="User question for generating a PDF-based answer."
-    )
+    question: str = Field(description="User question for generating a PDF-based answer.")
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
 
@@ -137,9 +140,7 @@ def question_and_answer(
     )
 
     # Retrieve and rerank chunks in one step
-    reranked_chunks = retrieve_and_rerank_chunks(
-        vs, question, config, call_id, helper.has_gpu
-    )
+    reranked_chunks = retrieve_and_rerank_chunks(vs, question, config, call_id, helper.has_gpu)
 
     if not reranked_chunks:
         msg = f"No relevant chunks found for question: '{question}'"

@@ -1,0 +1,23 @@
+# All rules intentionally commented out to disable Code Owners
+# while preserving the previous configuration for reference.
+
+# Global code owners - will be automatically requested for review on all PRs
+# * @gurdeep330
+
+# Specific module owners
+# /aiagents4pharma/talk2biomodels/ @gurdeep330
+# /aiagents4pharma/talk2scholars/ @gurdeep330
+# /aiagents4pharma/talk2cells/ @gurdeep330
+# /aiagents4pharma/talk2knowledgegraphs/ @gurdeep330
+# /aiagents4pharma/talk2aiagents4pharma/ @gurdeep330
+
+# CI/CD and configuration
+# /.github/ @gurdeep330
+# /pyproject.toml @gurdeep330
+# /uv.lock @gurdeep330
+# /mkdocs.yml @gurdeep330
+
+# Documentation
+# /docs/ @gurdeep330
+# /README.md @gurdeep330
+# /CONTRIBUTING.md @gurdeep330

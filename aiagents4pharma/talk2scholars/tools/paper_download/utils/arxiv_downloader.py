@@ -5,7 +5,7 @@ ArXiv paper downloader implementation.
 
 import logging
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import requests
 
@@ -92,8 +92,8 @@ class ArxivDownloader(BasePaperDownloader):
         self,
         metadata: ET.Element,
         identifier: str,
-        pdf_result: Optional[Tuple[str, str]],
-    ) -> Dict[str, Any]:
+        pdf_result: tuple[str, str] | None,
+    ) -> dict[str, Any]:
         """
         Extract structured metadata from arXiv API response.
 
@@ -124,7 +124,7 @@ class ArxivDownloader(BasePaperDownloader):
             "arxiv_id": identifier,
         }
 
-    def _extract_basic_metadata(self, entry: ET.Element, ns: dict) -> Dict[str, Any]:
+    def _extract_basic_metadata(self, entry: ET.Element, ns: dict) -> dict[str, Any]:
         """Extract basic metadata (title, authors, abstract, date) from entry."""
         title = self._extract_title(entry, ns)
         authors = self._extract_authors(entry, ns)
@@ -160,13 +160,11 @@ class ArxivDownloader(BasePaperDownloader):
     def _extract_publication_date(self, entry: ET.Element, ns: dict) -> str:
         """Extract publication date from entry."""
         published_elem = entry.find("atom:published", ns)
-        return (
-            (published_elem.text or "").strip() if published_elem is not None else "N/A"
-        )
+        return (published_elem.text or "").strip() if published_elem is not None else "N/A"
 
     def _extract_pdf_metadata(
-        self, pdf_result: Optional[Tuple[str, str]], identifier: str
-    ) -> Dict[str, Any]:
+        self, pdf_result: tuple[str, str] | None, identifier: str
+    ) -> dict[str, Any]:
         """Extract PDF-related metadata."""
         if pdf_result:
             temp_file_path, filename = pdf_result
@@ -198,12 +196,12 @@ class ArxivDownloader(BasePaperDownloader):
         """Generate default filename for arXiv paper."""
         return f"{identifier}.pdf"
 
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """Get arXiv-specific identifier info for paper summary."""
         arxiv_id = paper.get("arxiv_id", "N/A")
         pub_date = paper.get("Publication Date", "N/A")
         return f" (arXiv:{arxiv_id}, {pub_date})"
 
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """Add arXiv ID field to entry."""
         entry["arxiv_id"] = identifier

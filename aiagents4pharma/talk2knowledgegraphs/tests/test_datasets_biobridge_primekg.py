@@ -4,7 +4,9 @@ Test cases for datasets/primekg_loader.py
 
 import os
 import shutil
+
 import pytest
+
 from ..datasets.biobridge_primekg import BioBridgePrimeKG
 
 # Remove the data folder for testing if it exists
@@ -12,13 +14,14 @@ PRIMEKG_LOCAL_DIR = "../data/primekg_test/"
 LOCAL_DIR = "../data/biobridge_primekg_test/"
 shutil.rmtree(LOCAL_DIR, ignore_errors=True)
 
+
 @pytest.fixture(name="biobridge_primekg")
 def biobridge_primekg_fixture():
     """
     Fixture for creating an instance of PrimeKG.
     """
-    return BioBridgePrimeKG(primekg_dir=PRIMEKG_LOCAL_DIR,
-                            local_dir=LOCAL_DIR)
+    return BioBridgePrimeKG(primekg_dir=PRIMEKG_LOCAL_DIR, local_dir=LOCAL_DIR)
+
 
 def test_download_primekg(biobridge_primekg):
     """
@@ -39,8 +42,7 @@ def test_download_primekg(biobridge_primekg):
     assert os.path.exists(biobridge_primekg.local_dir)
     # Check if downloaded and processed files exist
     # PrimeKG files
-    files = ["nodes.tab", "primekg_nodes.tsv.gz",
-             "edges.csv", "primekg_edges.tsv.gz"]
+    files = ["nodes.tab", "primekg_nodes.tsv.gz", "edges.csv", "primekg_edges.tsv.gz"]
     for file in files:
         path = f"{biobridge_primekg.primekg_dir}/{file}"
         assert os.path.exists(path)
@@ -54,7 +56,7 @@ def test_download_primekg(biobridge_primekg):
         "bp.pkl",
         "drug.pkl",
         "disease.pkl",
-        "embedding_dict.pkl"
+        "embedding_dict.pkl",
     ]
     for file in files:
         path = f"{biobridge_primekg.local_dir}/embeddings/{file}"
@@ -89,9 +91,9 @@ def test_download_primekg(biobridge_primekg):
     # Check processed BioBridge data config
     assert biobridge_data_config is not None
     assert len(biobridge_data_config) > 0
-    assert len(biobridge_data_config['node_type']) == 10
-    assert len(biobridge_data_config['relation_type']) == 18
-    assert len(biobridge_data_config['emb_dim']) == 6
+    assert len(biobridge_data_config["node_type"]) == 10
+    assert len(biobridge_data_config["relation_type"]) == 18
+    assert len(biobridge_data_config["emb_dim"]) == 6
     # Check processed BioBridge embeddings
     assert biobridge_emb_dict is not None
     assert len(biobridge_emb_dict) > 0
@@ -100,24 +102,26 @@ def test_download_primekg(biobridge_primekg):
     assert biobridge_triplets is not None
     assert len(biobridge_triplets) > 0
     assert biobridge_triplets.shape[0] == 3904610
-    assert list(biobridge_splits.keys()) == ['train', 'node_train', 'test', 'node_test']
-    assert len(biobridge_splits['train']) == 3510930
-    assert len(biobridge_splits['node_train']) == 76486
-    assert len(biobridge_splits['test']) == 393680
-    assert len(biobridge_splits['node_test']) == 8495
+    assert list(biobridge_splits.keys()) == ["train", "node_train", "test", "node_test"]
+    assert len(biobridge_splits["train"]) == 3510930
+    assert len(biobridge_splits["node_train"]) == 76486
+    assert len(biobridge_splits["test"]) == 393680
+    assert len(biobridge_splits["node_test"]) == 8495
     # Check node info dictionary
-    assert list(biobridge_node_info.keys()) == ['gene/protein',
-                                                'molecular_function',
-                                                'cellular_component',
-                                                'biological_process',
-                                                'drug',
-                                                'disease']
-    assert len(biobridge_node_info['gene/protein']) == 19162
-    assert len(biobridge_node_info['molecular_function']) == 10966
-    assert len(biobridge_node_info['cellular_component']) == 4013
-    assert len(biobridge_node_info['biological_process']) == 27478
-    assert len(biobridge_node_info['drug']) == 6948
-    assert len(biobridge_node_info['disease']) == 44133
+    assert list(biobridge_node_info.keys()) == [
+        "gene/protein",
+        "molecular_function",
+        "cellular_component",
+        "biological_process",
+        "drug",
+        "disease",
+    ]
+    assert len(biobridge_node_info["gene/protein"]) == 19162
+    assert len(biobridge_node_info["molecular_function"]) == 10966
+    assert len(biobridge_node_info["cellular_component"]) == 4013
+    assert len(biobridge_node_info["biological_process"]) == 27478
+    assert len(biobridge_node_info["drug"]) == 6948
+    assert len(biobridge_node_info["disease"]) == 44133
 
 
 def test_load_existing_primekg(biobridge_primekg):
@@ -139,8 +143,7 @@ def test_load_existing_primekg(biobridge_primekg):
     assert os.path.exists(biobridge_primekg.local_dir)
     # Check if downloaded and processed files exist
     # PrimeKG files
-    files = ["nodes.tab", "primekg_nodes.tsv.gz",
-             "edges.csv", "primekg_edges.tsv.gz"]
+    files = ["nodes.tab", "primekg_nodes.tsv.gz", "edges.csv", "primekg_edges.tsv.gz"]
     for file in files:
         path = f"{biobridge_primekg.primekg_dir}/{file}"
         assert os.path.exists(path)
@@ -154,7 +157,7 @@ def test_load_existing_primekg(biobridge_primekg):
         "bp.pkl",
         "drug.pkl",
         "disease.pkl",
-        "embedding_dict.pkl"
+        "embedding_dict.pkl",
     ]
     for file in files:
         path = f"{biobridge_primekg.local_dir}/embeddings/{file}"
@@ -189,9 +192,9 @@ def test_load_existing_primekg(biobridge_primekg):
     # Check processed BioBridge data config
     assert biobridge_data_config is not None
     assert len(biobridge_data_config) > 0
-    assert len(biobridge_data_config['node_type']) == 10
-    assert len(biobridge_data_config['relation_type']) == 18
-    assert len(biobridge_data_config['emb_dim']) == 6
+    assert len(biobridge_data_config["node_type"]) == 10
+    assert len(biobridge_data_config["relation_type"]) == 18
+    assert len(biobridge_data_config["emb_dim"]) == 6
     # Check processed BioBridge embeddings
     assert biobridge_emb_dict is not None
     assert len(biobridge_emb_dict) > 0
@@ -200,24 +203,27 @@ def test_load_existing_primekg(biobridge_primekg):
     assert biobridge_triplets is not None
     assert len(biobridge_triplets) > 0
     assert biobridge_triplets.shape[0] == 3904610
-    assert list(biobridge_splits.keys()) == ['train', 'node_train', 'test', 'node_test']
-    assert len(biobridge_splits['train']) == 3510930
-    assert len(biobridge_splits['node_train']) == 76486
-    assert len(biobridge_splits['test']) == 393680
-    assert len(biobridge_splits['node_test']) == 8495
+    assert list(biobridge_splits.keys()) == ["train", "node_train", "test", "node_test"]
+    assert len(biobridge_splits["train"]) == 3510930
+    assert len(biobridge_splits["node_train"]) == 76486
+    assert len(biobridge_splits["test"]) == 393680
+    assert len(biobridge_splits["node_test"]) == 8495
     # Check node info dictionary
-    assert list(biobridge_node_info.keys()) == ['gene/protein',
-                                                'molecular_function',
-                                                'cellular_component',
-                                                'biological_process',
-                                                'drug',
-                                                'disease']
-    assert len(biobridge_node_info['gene/protein']) == 19162
-    assert len(biobridge_node_info['molecular_function']) == 10966
-    assert len(biobridge_node_info['cellular_component']) == 4013
-    assert len(biobridge_node_info['biological_process']) == 27478
-    assert len(biobridge_node_info['drug']) == 6948
-    assert len(biobridge_node_info['disease']) == 44133
+    assert list(biobridge_node_info.keys()) == [
+        "gene/protein",
+        "molecular_function",
+        "cellular_component",
+        "biological_process",
+        "drug",
+        "disease",
+    ]
+    assert len(biobridge_node_info["gene/protein"]) == 19162
+    assert len(biobridge_node_info["molecular_function"]) == 10966
+    assert len(biobridge_node_info["cellular_component"]) == 4013
+    assert len(biobridge_node_info["biological_process"]) == 27478
+    assert len(biobridge_node_info["drug"]) == 6948
+    assert len(biobridge_node_info["disease"]) == 44133
+
 
 # def test_load_existing_primekg_with_negative_triplets(biobridge_primekg):
 #     """

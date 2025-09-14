@@ -12,17 +12,15 @@ only displays the existing list. If no papers are available, it raises NoPapersF
 to signal that a search or recommendation must be executed first.
 """
 
-
 import logging
-
 from typing import Annotated
-from pydantic import BaseModel, Field
+
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
-
+from pydantic import BaseModel, Field
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -97,9 +95,7 @@ def display_dataframe(
         artifact = state.get(context_val)
     if not artifact:
         logger.info("No papers found in state, raising NoPapersFoundError")
-        raise NoPapersFoundError(
-            "No papers found. A search/rec needs to be performed first."
-        )
+        raise NoPapersFoundError("No papers found. A search/rec needs to be performed first.")
     content = f"{len(artifact)} papers found. Papers are attached as an artifact."
     return Command(
         update={

@@ -18,7 +18,7 @@ import os
 import platform
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="[DATA LOADER] %(message)s")
@@ -32,9 +32,7 @@ class SystemDetector:
         self.os_type = platform.system().lower()  # 'windows', 'linux', 'darwin'
         self.architecture = platform.machine().lower()  # 'x86_64', 'arm64', etc.
         self.has_nvidia_gpu = self._detect_nvidia_gpu()
-        self.use_gpu = (
-            self.has_nvidia_gpu and self.os_type != "darwin"
-        )  # No CUDA on macOS
+        self.use_gpu = self.has_nvidia_gpu and self.os_type != "darwin"  # No CUDA on macOS
 
         logger.info("System Detection Results:")
         logger.info("  OS: %s", self.os_type)
@@ -46,9 +44,7 @@ class SystemDetector:
         """Detect if NVIDIA GPU is available."""
         try:
             # Try nvidia-smi command
-            result = subprocess.run(
-                ["nvidia-smi"], capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, timeout=10)
             return result.returncode == 0
         except (
             subprocess.TimeoutExpired,
@@ -57,26 +53,27 @@ class SystemDetector:
         ):
             return False
 
-    def get_required_packages(self) -> List[str]:
+    def get_required_packages(self) -> list[str]:
         """Get list of packages to install based on system capabilities - matches original logic."""
         if self.use_gpu and self.os_type == "linux":
             # Exact package list from original script for GPU mode
             packages = [
-                # "pip install --extra-index-url=https://pypi.nvidia.com cudf-cu12",
-                # "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12",
-                "pip install pymilvus==2.5.11",
-                "pip install numpy==1.26.4",
-                "pip install pandas==2.1.3",
-                "pip install tqdm==4.67.1",
+                "pip install --extra-index-url=https://pypi.nvidia.com cudf-cu12",
+                "pip install --extra-index-url=https://pypi.nvidia.com dask-cudf-cu12",
+                "pip install pymilvus",
+                "pip install numpy",
+                "pip install pandas",
+                "pip install tqdm",
             ]
             return packages
         else:
             # CPU-only packages
             packages = [
-                "pip install pymilvus==2.5.11",
-                "pip install numpy==1.26.4",
-                "pip install pandas==2.1.3",
-                "pip install tqdm==4.67.1",
+                "pip install pymilvus",
+                "pip install numpy",
+                "pip install pandas",
+                "pip install tqdm",
+                "pip install pyarrow",
             ]
             return packages
 
@@ -103,9 +100,7 @@ class SystemDetector:
                 if result.returncode != 0:
                     logger.error("Error installing package: %s", result.stderr)
                     if "cudf" in package_cmd or "dask-cudf" in package_cmd:
-                        logger.warning(
-                            "GPU package installation failed, falling back to CPU mode"
-                        )
+                        logger.warning("GPU package installation failed, falling back to CPU mode")
                         self.use_gpu = False
                         return self.install_packages()  # Retry with CPU packages
                     else:
@@ -115,9 +110,7 @@ class SystemDetector:
             except subprocess.CalledProcessError as e:
                 logger.error("Failed to install %s: %s", package_cmd, e.stderr)
                 if "cudf" in package_cmd:
-                    logger.warning(
-                        "GPU package installation failed, falling back to CPU mode"
-                    )
+                    logger.warning("GPU package installation failed, falling back to CPU mode")
                     self.use_gpu = False
                     return self.install_packages()  # Retry with CPU packages
                 else:
@@ -130,7 +123,7 @@ class SystemDetector:
 class DynamicDataLoader:
     """Dynamic data loader that adapts to system capabilities."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """Initialize with system detection and dynamic library loading."""
         self.config = config
         self.detector = SystemDetector()
@@ -207,13 +200,15 @@ class DynamicDataLoader:
                 logger.info("Successfully imported GPU libraries (cudf, cupy)")
             except ImportError as e:
                 logger.error(
-                    "[DATA LOADER] cudf or cupy not found. Please ensure they are installed correctly."
+                    "[DATA LOADER] cudf or cupy not found. "
+                    "Please ensure they are installed correctly."
                 )
                 logger.error("Import error: %s", str(e))
                 # Match original script's exit behavior for critical GPU import failure
                 if not os.getenv("FORCE_CPU", "false").lower() == "true":
                     logger.error(
-                        "GPU libraries required but not available. Set FORCE_CPU=true to use CPU mode."
+                        "GPU libraries required but not available. "
+                        "Set FORCE_CPU=true to use CPU mode."
                     )
                     sys.exit(1)
                 else:
@@ -222,7 +217,7 @@ class DynamicDataLoader:
                     self.use_gpu = False
 
     def _read_dataframe(
-        self, file_path: str, columns: Optional[List[str]] = None
+        self, file_path: str, columns: list[str] | None = None
     ) -> Union["pd.DataFrame", "cudf.DataFrame"]:  # type: ignore[reportUndefinedVariable]  # noqa: F821
         """Read dataframe using appropriate library."""
         if self.use_gpu:
@@ -231,7 +226,7 @@ class DynamicDataLoader:
             return self.pd.read_parquet(file_path, columns=columns)
 
     def _concat_dataframes(
-        self, df_list: List, ignore_index: bool = True
+        self, df_list: list, ignore_index: bool = True
     ) -> Union["pd.DataFrame", "cudf.DataFrame"]:  # type: ignore[reportUndefinedVariable]  # noqa: F821
         """Concatenate dataframes using appropriate library."""
         if self.use_gpu:
@@ -257,9 +252,7 @@ class DynamicDataLoader:
         """Extract embeddings and convert to appropriate format."""
         if self.use_gpu:
             # cuDF list extraction
-            emb_data = self.cp.asarray(df[column_name].list.leaves).astype(
-                self.cp.float32
-            )
+            emb_data = self.cp.asarray(df[column_name].list.leaves).astype(self.cp.float32)
             return emb_data.reshape(df.shape[0], -1)
         else:
             # pandas extraction
@@ -325,9 +318,7 @@ class DynamicDataLoader:
             for stage in ["enrichment", "embedding"]:
                 logger.info("Processing %s %s", element, stage)
 
-                file_list = glob.glob(
-                    os.path.join(self.data_dir, element, stage, "*.parquet.gzip")
-                )
+                file_list = glob.glob(os.path.join(self.data_dir, element, stage, "*.parquet.gzip"))
                 logger.info("Found %d files for %s %s", len(file_list), element, stage)
 
                 if not file_list:
@@ -342,13 +333,9 @@ class DynamicDataLoader:
                         chunk_files = file_list[i : i + chunk_size]
                         chunk_df_list = []
                         for f in chunk_files:
-                            df = self._read_dataframe(
-                                f, columns=["triplet_index", "edge_emb"]
-                            )
+                            df = self._read_dataframe(f, columns=["triplet_index", "edge_emb"])
                             chunk_df_list.append(df)
-                        chunk_df = self._concat_dataframes(
-                            chunk_df_list, ignore_index=True
-                        )
+                        chunk_df = self._concat_dataframes(chunk_df_list, ignore_index=True)
                         graph[element][stage].append(chunk_df)
                 else:
                     # For other combinations, read all files
@@ -356,9 +343,7 @@ class DynamicDataLoader:
                     for f in file_list:
                         df = self._read_dataframe(f)
                         df_list.append(df)
-                    graph[element][stage] = self._concat_dataframes(
-                        df_list, ignore_index=True
-                    )
+                    graph[element][stage] = self._concat_dataframes(df_list, ignore_index=True)
 
         logger.info("Graph data loaded successfully")
         return graph
@@ -367,16 +352,15 @@ class DynamicDataLoader:
         """Get embedding dimension using original script's exact logic."""
         first_emb = df.iloc[0][column_name]
         if self.use_gpu:
-            # cuDF format - matches original: len(nodes_df.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])
+            # cuDF format - matches original:
+            # len(nodes_df.iloc[0]['desc_emb'].to_arrow().to_pylist()[0])
             return len(first_emb.to_arrow().to_pylist()[0])
         else:
             # pandas format
             if isinstance(first_emb, list):
                 return len(first_emb)
             else:
-                return len(
-                    first_emb.tolist() if hasattr(first_emb, "tolist") else first_emb
-                )
+                return len(first_emb.tolist() if hasattr(first_emb, "tolist") else first_emb)
 
     def create_nodes_collection(self, nodes_df):
         """Create and populate the main nodes collection."""
@@ -431,9 +415,7 @@ class DynamicDataLoader:
 
         # Create collection if it doesn't exist
         if not self.pymilvus_modules["utility"].has_collection(node_coll_name):
-            collection = self.pymilvus_modules["Collection"](
-                name=node_coll_name, schema=schema
-            )
+            collection = self.pymilvus_modules["Collection"](name=node_coll_name, schema=schema)
         else:
             collection = self.pymilvus_modules["Collection"](name=node_coll_name)
 
@@ -487,9 +469,7 @@ class DynamicDataLoader:
             collection.insert(batch)
 
         collection.flush()
-        logger.info(
-            "Nodes collection created with %d entities", collection.num_entities
-        )
+        logger.info("Nodes collection created with %d entities", collection.num_entities)
 
     def create_node_type_collections(self, nodes_df):
         """Create separate collections for each node type."""
@@ -498,9 +478,7 @@ class DynamicDataLoader:
         for node_type, nodes_df_ in self.tqdm(
             nodes_df.groupby("node_type"), desc="Processing node types"
         ):
-            node_coll_name = (
-                f"{self.milvus_database}_nodes_{node_type.replace('/', '_')}"
-            )
+            node_coll_name = f"{self.milvus_database}_nodes_{node_type.replace('/', '_')}"
 
             # Get embedding dimensions
             desc_dim = self._get_embedding_dimension(nodes_df_, "desc_emb")
@@ -564,9 +542,7 @@ class DynamicDataLoader:
             )
 
             if not self.pymilvus_modules["utility"].has_collection(node_coll_name):
-                collection = self.pymilvus_modules["Collection"](
-                    name=node_coll_name, schema=schema
-                )
+                collection = self.pymilvus_modules["Collection"](name=node_coll_name, schema=schema)
             else:
                 collection = self.pymilvus_modules["Collection"](name=node_coll_name)
 
@@ -639,7 +615,7 @@ class DynamicDataLoader:
                 collection.num_entities,
             )
 
-    def create_edges_collection(self, edges_enrichment_df, edges_embedding_df: List):
+    def create_edges_collection(self, edges_enrichment_df, edges_embedding_df: list):
         """Create and populate the edges collection - exact original logic."""
         logger.info("Creating edges collection...")
 
@@ -647,9 +623,7 @@ class DynamicDataLoader:
 
         # Get embedding dimension from first chunk - exact original logic
         if self.use_gpu:
-            emb_dim = len(
-                edges_embedding_df[0].loc[0, "edge_emb"]
-            )  # Original cudf access
+            emb_dim = len(edges_embedding_df[0].loc[0, "edge_emb"])  # Original cudf access
         else:
             first_edge_emb = edges_embedding_df[0].iloc[0]["edge_emb"]
             emb_dim = (
@@ -772,24 +746,18 @@ class DynamicDataLoader:
 
             # Insert data in batches
             total = len(data[0])
-            for i in self.tqdm(
-                range(0, total, self.batch_size), desc="Inserting edges"
-            ):
+            for i in self.tqdm(range(0, total, self.batch_size), desc="Inserting edges"):
                 batch_data = [d[i : i + self.batch_size] for d in data]
                 collection.insert(batch_data)
 
         collection.flush()
-        logger.info(
-            "Edges collection created with %d entities", collection.num_entities
-        )
+        logger.info("Edges collection created with %d entities", collection.num_entities)
 
     def run(self):
         """Main execution method."""
         try:
             logger.info("Starting Dynamic Milvus data loading process...")
-            logger.info(
-                "System: %s %s", self.detector.os_type, self.detector.architecture
-            )
+            logger.info("System: %s %s", self.detector.os_type, self.detector.architecture)
             logger.info("GPU acceleration: %s", self.use_gpu)
 
             # Connect to Milvus
@@ -851,8 +819,7 @@ def main():
         "data_dir": os.getenv("DATA_DIR", default_data_dir),
         "batch_size": int(os.getenv("BATCH_SIZE", "500")),
         "chunk_size": int(os.getenv("CHUNK_SIZE", "5")),
-        "auto_install_packages": os.getenv("AUTO_INSTALL_PACKAGES", "true").lower()
-        == "true",
+        "auto_install_packages": os.getenv("AUTO_INSTALL_PACKAGES", "true").lower() == "true",
     }
 
     # Override detection for testing/forcing specific modes

@@ -26,25 +26,20 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Check for changes
-        uses: dorny/paths-filter@v2
+      - name: Check for changes (simplified for workflow_run)
         id: filter
-        with:
-          filters: |
-            talk2biomodels:
-              - 'aiagents4pharma/talk2biomodels/**'
-            talk2scholars:
-              - 'aiagents4pharma/talk2scholars/**'
-            talk2aiagents4pharma:
-              - 'aiagents4pharma/talk2aiagents4pharma/**'
-            talk2knowledgegraphs:
-              - 'aiagents4pharma/talk2knowledgegraphs/**'
-            app:
-              - 'app/**'
+        run: |
+          # For workflow_run, always build all components when triggered by release
+          echo "talk2biomodels=true" >> $GITHUB_OUTPUT
+          echo "talk2scholars=true" >> $GITHUB_OUTPUT
+          echo "talk2aiagents4pharma=true" >> $GITHUB_OUTPUT
+          echo "talk2knowledgegraphs=true" >> $GITHUB_OUTPUT
+          echo "app=true" >> $GITHUB_OUTPUT
+          echo "All components will be built after release"
 
   # Generate version for the build
   version:
@@ -53,7 +48,7 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -78,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -103,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -128,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -153,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3

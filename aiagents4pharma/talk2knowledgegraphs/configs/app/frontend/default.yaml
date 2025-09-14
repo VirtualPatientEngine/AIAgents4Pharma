@@ -19,17 +19,45 @@ kg_node_types:
 kg_pyg_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_pyg_graph.pkl"
 kg_text_path: "aiagents4pharma/talk2knowledgegraphs/tests/files/biobridge_multimodal_text_graph.pkl"
 openai_api_key: ${oc.env:OPENAI_API_KEY}
+# OpenAI configuration - can use custom base_url for enterprise/Azure deployments
+openai_base_url: ${oc.env:OPENAI_BASE_URL,null} # Optional: custom OpenAI endpoint
 openai_llms:
-  - "gpt-4o-mini"
-  - "gpt-4-turbo"
-  - "gpt-3.5-turbo"
+  - "OpenAI/gpt-4o-mini"
 openai_embeddings:
   - "text-embedding-ada-002"
   - "text-embedding-3-small"
+# Rate limiting and retry configuration
+llm_max_retries: 5  # Number of retries on rate limit or transient errors
+llm_timeout: 60     # Timeout in seconds for LLM requests
+embedding_max_retries: 3  # Number of retries for embedding requests
+embedding_timeout: 30     # Timeout in seconds for embedding requests
+# Azure OpenAI configuration
+azure_openai_endpoint: ${oc.env:AZURE_OPENAI_ENDPOINT,null} # Azure OpenAI endpoint
+azure_openai_deployment: ${oc.env:AZURE_OPENAI_DEPLOYMENT,null} # Azure deployment name
+azure_openai_api_version: ${oc.env:AZURE_OPENAI_API_VERSION,"2024-02-01"} # Azure API version
+azure_openai_model_name: ${oc.env:AZURE_OPENAI_MODEL_NAME,null} # Model name for analytics
+azure_openai_model_version: ${oc.env:AZURE_OPENAI_MODEL_VERSION,null} # Model version
+# Azure AD authentication (uses AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET)
+azure_client_id: ${oc.env:AZURE_CLIENT_ID,null}
+azure_tenant_id: ${oc.env:AZURE_TENANT_ID,null}
+azure_client_secret: ${oc.env:AZURE_CLIENT_SECRET,null}
+# NVIDIA configuration
+nvidia_api_key: ${oc.env:NVIDIA_API_KEY}
+nvidia_llms:
+  - "NVIDIA/llama-3.3-70b-instruct"
+  - "NVIDIA/llama-3.1-405b-instruct"
+  - "NVIDIA/llama-3.1-70b-instruct"
+nvidia_embeddings:
+  - "NVIDIA/llama-3.2-nv-embedqa-1b-v2"
+
+azure_openai_llms:
+  - "Azure/gpt-4o-mini" # Will map to Azure deployment
+azure_openai_embeddings:
+  - "Azure/text-embedding-ada-002"
+
+# Ollama configuration (for local deployment)
 ollama_llms:
-  - "llama3.2:1b"
-  - "llama3.2"
-  - "llama3.1"
+  - "Ollama/llama3.1:8b"
 ollama_embeddings:
   - "nomic-embed-text"
 default_embedding_model: "openai"
@@ -41,23 +69,11 @@ reasoning_subgraph_topk_nodes_max: 50
 reasoning_subgraph_topk_edges: 15
 reasoning_subgraph_topk_edges_min: 1
 reasoning_subgraph_topk_edges_max: 50
-# Configuration for Milvus
-milvus_db:
-  alias: "default"
-  host: ${oc.env:MILVUS_HOST,localhost}
-  port: ${oc.env:MILVUS_PORT,19530}
-  uri: "http://${oc.env:MILVUS_HOST,localhost}:${oc.env:MILVUS_PORT,19530}"
-  token: "root:Milvus"
-  user: "root"
-  password: "Milvus"
-  database_name: "t2kg_primekg"
-  collection_edges: "t2kg_primekg_edges"
-  collection_nodes: "t2kg_primekg_nodes"
-  collection_nodes_gene_protein: "t2kg_primekg_nodes_gene_protein"
-  collection_nodes_molecular_function: "t2kg_primekg_nodes_molecular_function"
-  collection_nodes_cellular_component: "t2kg_primekg_nodes_cellular_component"
-  collection_nodes_biological_process: "t2kg_primekg_nodes_biological_process"
-  collection_nodes_drug: "t2kg_primekg_nodes_drug"
-  collection_nodes_disease: "t2kg_primekg_nodes_disease"
-  query_batch_size: 1000000
-  cache_edge_index_path: "${oc.env:CACHE_EDGE_INDEX_PATH,aiagents4pharma/talk2knowledgegraphs/tests/files/t2kg_primekg_edge_index.pkl}"
+# Logo configuration
+logo_paths:
+  container: "/app/docs/assets/VPE.png"
+  local: "docs/assets/VPE.png"
+  relative: "../../docs/assets/VPE.png"
+logo_link: "https://github.com/VirtualPatientEngine"
+# Database configuration moved to configs/utils/database/milvus/default.yaml
+# This frontend config now only contains frontend-specific settings

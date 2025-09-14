@@ -4,9 +4,12 @@
 Function for loading the BioModel.
 """
 
-from typing import Annotated, Any, Union
+from typing import Annotated, Any
+
 from pydantic import BaseModel, BeforeValidator
+
 from ..models.basico_model import BasicoModel
+
 
 def ensure_biomodel_id(value: Any) -> Any:
     """
@@ -18,13 +21,16 @@ def ensure_biomodel_id(value: Any) -> Any:
         return value
     raise ValueError("biomodel_id must be an integer or a string starting with 'BIOMD' or 'MODEL'.")
 
+
 class ModelData(BaseModel):
     """
     Base model for the model data.
     """
-    biomodel_id: Annotated[Union[int, str], BeforeValidator(ensure_biomodel_id)] = None
+
+    biomodel_id: Annotated[int | str, BeforeValidator(ensure_biomodel_id)] = None
     # sbml_file_path: Optional[str] = None
     use_uploaded_sbml_file: bool = False
+
 
 def load_biomodel(sys_bio_model, sbml_file_path=None):
     """

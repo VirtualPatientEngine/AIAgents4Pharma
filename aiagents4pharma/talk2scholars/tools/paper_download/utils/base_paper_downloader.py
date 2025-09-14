@@ -8,7 +8,7 @@ import logging
 import re
 import tempfile
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import requests
 
@@ -58,8 +58,8 @@ class BasePaperDownloader(ABC):
 
     @abstractmethod
     def extract_paper_metadata(
-        self, metadata: Any, identifier: str, pdf_result: Optional[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, metadata: Any, identifier: str, pdf_result: tuple[str, str] | None
+    ) -> dict[str, Any]:
         """
         Extract and structure metadata into standardized format.
 
@@ -89,9 +89,7 @@ class BasePaperDownloader(ABC):
         raise NotImplementedError
 
     # Common methods shared by all services
-    def download_pdf_to_temp(
-        self, pdf_url: str, identifier: str
-    ) -> Optional[Tuple[str, str]]:
+    def download_pdf_to_temp(self, pdf_url: str, identifier: str) -> tuple[str, str] | None:
         """
         Download PDF from URL to a temporary file.
 
@@ -103,9 +101,7 @@ class BasePaperDownloader(ABC):
             Tuple of (temp_file_path, filename) or None if failed
         """
         if not pdf_url:
-            logger.info(
-                "No PDF URL available for %s %s", self.get_identifier_name(), identifier
-            )
+            logger.info("No PDF URL available for %s %s", self.get_identifier_name(), identifier)
             return None
 
         try:
@@ -141,14 +137,11 @@ class BasePaperDownloader(ABC):
 
             if "filename=" in content_disposition:
                 try:
-
                     filename_match = re.search(
                         r'filename[*]?=(?:"([^"]+)"|([^;]+))', content_disposition
                     )
                     if filename_match:
-                        extracted_filename = filename_match.group(
-                            1
-                        ) or filename_match.group(2)
+                        extracted_filename = filename_match.group(1) or filename_match.group(2)
                         extracted_filename = extracted_filename.strip().strip('"')
                         if extracted_filename and extracted_filename.endswith(".pdf"):
                             filename = extracted_filename
@@ -189,7 +182,7 @@ class BasePaperDownloader(ABC):
 
         return snippet
 
-    def create_error_entry(self, identifier: str, error_msg: str) -> Dict[str, Any]:
+    def create_error_entry(self, identifier: str, error_msg: str) -> dict[str, Any]:
         """
         Create standardized error entry for failed paper processing.
 
@@ -215,7 +208,7 @@ class BasePaperDownloader(ABC):
             # Service-specific identifier field will be added by subclasses
         }
 
-    def build_summary(self, article_data: Dict[str, Any]) -> str:
+    def build_summary(self, article_data: dict[str, Any]) -> str:
         """
         Build a summary string for up to three papers with snippets.
 
@@ -226,7 +219,7 @@ class BasePaperDownloader(ABC):
             Formatted summary string
         """
         top = list(article_data.values())[:3]
-        lines: List[str] = []
+        lines: list[str] = []
         downloaded_count = sum(
             1
             for paper in article_data.values()
@@ -240,7 +233,7 @@ class BasePaperDownloader(ABC):
             snippet = self.get_snippet(paper.get("Abstract", ""))
 
             # Build paper line with service-specific identifier info
-            line = f"{idx+1}. {title}"
+            line = f"{idx + 1}. {title}"
             line += self._get_paper_identifier_info(paper)
             line += f"\n   Access: {access_type}"
 
@@ -264,7 +257,7 @@ class BasePaperDownloader(ABC):
         )
 
     @abstractmethod
-    def _get_paper_identifier_info(self, paper: Dict[str, Any]) -> str:
+    def _get_paper_identifier_info(self, paper: dict[str, Any]) -> str:
         """
         Get service-specific identifier info for paper summary.
 
@@ -276,7 +269,7 @@ class BasePaperDownloader(ABC):
         """
         raise NotImplementedError
 
-    def process_identifiers(self, identifiers: List[str]) -> Dict[str, Any]:
+    def process_identifiers(self, identifiers: list[str]) -> dict[str, Any]:
         """
         Main processing loop for downloading papers.
 
@@ -293,7 +286,7 @@ class BasePaperDownloader(ABC):
             identifiers,
         )
 
-        article_data: Dict[str, Any] = {}
+        article_data: dict[str, Any] = {}
 
         for identifier in identifiers:
             logger.info("Processing %s: %s", self.get_identifier_name(), identifier)
@@ -332,7 +325,7 @@ class BasePaperDownloader(ABC):
         return article_data
 
     @abstractmethod
-    def _add_service_identifier(self, entry: Dict[str, Any], identifier: str) -> None:
+    def _add_service_identifier(self, entry: dict[str, Any], identifier: str) -> None:
         """
         Add service-specific identifier field to entry.
 

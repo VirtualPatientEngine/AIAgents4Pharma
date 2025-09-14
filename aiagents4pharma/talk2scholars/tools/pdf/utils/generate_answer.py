@@ -4,7 +4,7 @@ Generate an answer for a question using retrieved chunks of documents.
 
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 import hydra
 from langchain_core.documents import Document
@@ -32,7 +32,7 @@ def load_hydra_config() -> Any:
 
 
 def _build_context_and_sources(
-    retrieved_chunks: List[Document],
+    retrieved_chunks: list[Document],
 ) -> tuple[str, set[str]]:
     """
     Build the combined context string and set of paper_ids from retrieved chunks.
@@ -61,10 +61,10 @@ def _build_context_and_sources(
 
 def generate_answer(
     question: str,
-    retrieved_chunks: List[Document],
+    retrieved_chunks: list[Document],
     llm_model: BaseChatModel,
     config: Any,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate an answer for a question using retrieved chunks.
 

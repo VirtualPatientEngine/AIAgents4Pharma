@@ -1,5 +1,6 @@
 defaults:
   - _self_
+  - utils/database/milvus: default
   - agents/t2kg_agent: default
   - tools/subgraph_extraction: default
   - tools/multimodal_subgraph_extraction: default

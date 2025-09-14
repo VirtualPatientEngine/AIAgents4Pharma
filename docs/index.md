@@ -9,7 +9,7 @@
 <!--  Deployment Workflows -->
 
 [![Pages Deployment](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/pages/pages-build-deployment)
-[![MkDocs Deploy](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs-deploy.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs-deploy.yml)
+[![MkDocs Deploy](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs_deploy.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/mkdocs_deploy.yml)
 [![Docker Build & Push](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_build.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_build.yml)
 [![Docker Compose Release](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_compose_release.yml/badge.svg)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/docker_compose_release.yml)
 
@@ -80,11 +80,15 @@ git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma && cd AIAgents
 
 2. **Install dependencies:**
 
-We use Conda as our environment manager, Follow the official [Quickstart](https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions) install instructions provided by anaconda/miniconda.
+We use `uv` for fast and reliable dependency management. Install uv first following the [official installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
-```python
-conda create --name AIAgents4Pharma python=3.12 -y && conda activate AIAgents4Pharma && pip install --upgrade pip && pip install -r requirements.txt
+> **For developers**: See [docs/developer/README.md](docs/developer/README.md) for detailed setup instructions including system prerequisites.
+
+```sh
+uv sync --extra dev --frozen
 ```
+
+> 💡 **Recommended**: Use `--frozen` flag to ensure exact reproducible builds using the pinned versions from `uv.lock`.
 
 3. **Initialize API Keys**
 
@@ -99,7 +103,29 @@ export LANGCHAIN_API_KEY=...        # Optional for all agents
 
 4. **Launch the app:**
 
+> System Dependency: libmagic (for secure uploads)
+> For accurate file MIME-type detection used by our secure upload validation, install the libmagic system library. This is recommended across all providers (OpenAI, Azure OpenAI, NVIDIA) because it runs locally in the Streamlit apps.
+>
+> - Linux (Debian/Ubuntu): `sudo apt-get install libmagic1`
+> - macOS (Homebrew): `brew install libmagic`
+> - Windows: Use the `python-magic`/`python-magic-bin` package; libmagic is bundled
+>   If libmagic is not available, the apps fall back to extension-based detection. For best security, keep libmagic installed.
+
+**Option A: Using UV (recommended)**
+
 ```sh
+uv run streamlit run app/frontend/streamlit_app_<agent>.py
+```
+
+**Option B: Traditional approach**
+
+```sh
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
+
+# Then run the app
 streamlit run app/frontend/streamlit_app_<agent>.py
 ```
 
@@ -145,8 +171,19 @@ Check out the tutorials on each agent for detailed instructions.
 
 ## Contributing
 
-We welcome your support to make **AIAgents4Pharma** even better.  
+We welcome your support to make **AIAgents4Pharma** even better.
 All types of contributions are appreciated — whether you're fixing bugs, adding features, improving documentation, or helping with testing, every contribution is valuable.
+
+#### Development Setup
+
+For contributors and developers, we have comprehensive documentation:
+
+- **[Developer Setup Guide](developer/README.md)** - Complete setup instructions with UV, security implementation, and tooling
+- **[Testing & Linting Guide](developer/TESTING_LINTING.md)** - How to run tests, coverage, and code quality checks
+- **[SonarCloud Integration](developer/SONARCLOUD_SETUP.md)** - Code quality analysis and CI/CD integration
+- **[GitHub Workflows](developer/WORKFLOWS.md)** - Understanding our CI/CD pipeline
+- **[Streamlit Security](developer/STREAMLIT_SECURITY.md)** - File upload security implementation
+- **[Azure Deployment](developer/AZURE_DEPLOYMENT.md)** - Understanding our Azure deployment setup
 
 #### How to contribute
 
@@ -158,19 +195,33 @@ All types of contributions are appreciated — whether you're fixing bugs, addin
 git checkout -b feat/your-feature-name
 ```
 
-4. Make your changes and commit them:
+4. Set up your development environment:
+
+```sh
+uv sync --extra dev --frozen  # Install development dependencies
+uv run pre-commit install    # Set up code quality hooks
+```
+
+5. Make your changes and run quality checks:
+
+```sh
+uv run ruff check --fix .  # Lint and fix code
+uv run ruff format .  # Format code
+uv run pre-commit run --all-files  # Run all checks (linting, formatting, security)
+
+# Run submodule-specific checks (pylint configuration in pyproject.toml)
+uv run pylint aiagents4pharma/talk2scholars/
+uv run coverage run --include="aiagents4pharma/talk2scholars/*" -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/ && uv run coverage report
+```
+
+6. Commit and push your changes:
 
 ```sh
 git commit -m "feat: add a brief description of your change"
-```
-
-5. Push your branch:
-
-```sh
 git push origin feat/your-feature-name
 ```
 
-6. Open a Pull Request.
+7. Open a Pull Request.
 
 #### Areas where you can help
 
@@ -184,9 +235,9 @@ git push origin feat/your-feature-name
 - **Talk2KnowledgeGraphs**: [@awmulyadi](https://github.com/awmulyadi)
 - **Talk2Scholars**: [@ansh-info](https://github.com/ansh-info), [@gurdeep330](https://github.com/gurdeep330)
 
-Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for more detailed contribution guidelines.
+Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) and [developer documentation](docs/developer/) for detailed contribution guidelines and setup instructions.
 
 ## Feedback
 
-If you have questions, bug reports, feature requests, comments, or suggestions, we would love to hear from you.  
+If you have questions, bug reports, feature requests, comments, or suggestions, we would love to hear from you.
 Please open an `issue` or start a `discussion`
