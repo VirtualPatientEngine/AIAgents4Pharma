@@ -4,8 +4,8 @@ Class for loading BioBridgePrimeKG dataset.
 
 import json
 import os
-import pickle
 
+import joblib
 import numpy as np
 import pandas as pd
 import requests
@@ -161,8 +161,7 @@ class BioBridgePrimeKG(Dataset):
         processed_file_path = os.path.join(self.local_dir, "embeddings", "embedding_dict.pkl")
         if os.path.exists(processed_file_path):
             # Load the embeddings from the local directory
-            with open(processed_file_path, "rb") as f:
-                emb_dict_all = pickle.load(f)
+            emb_dict_all = joblib.load(processed_file_path)
         else:
             # Download the embeddings from the BioBridge repo and further process them
             # List of embedding source files
@@ -183,16 +182,14 @@ class BioBridgePrimeKG(Dataset):
             # Unified embeddings
             emb_dict_all = {}
             for file in file_list:
-                with open(os.path.join(self.local_dir, "embeddings", file), "rb") as f:
-                    emb = pickle.load(f)
+                emb = joblib.load(os.path.join(self.local_dir, "embeddings", file))
                 emb_ar = emb["embedding"]
                 if not isinstance(emb_ar, list):
                     emb_ar = emb_ar.tolist()
                 emb_dict_all.update(dict(zip(emb["node_index"], emb_ar, strict=False)))
 
-            # Store embeddings
-            with open(processed_file_path, "wb") as f:
-                pickle.dump(emb_dict_all, f)
+            # Store embeddings using secure joblib
+            joblib.dump(emb_dict_all, processed_file_path)
 
         return emb_dict_all
 

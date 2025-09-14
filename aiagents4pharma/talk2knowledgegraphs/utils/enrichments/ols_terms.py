@@ -54,7 +54,7 @@ class EnrichmentWithOLS(Enrichments):
             response_body = json.loads(r.text)
             # if the response body is empty
             if "_embedded" not in response_body:
-                descriptions.append(None)
+                descriptions.append("")
                 continue
             # Add the description to the list
             description = []
@@ -65,13 +65,15 @@ class EnrichmentWithOLS(Enrichments):
                 description += term.get("synonyms", [])
                 # Add the label to the description
                 # Label is not provided as list, so we need to convert it to a list
-                description += [term.get("label", [])]
+                label = term.get("label", "")
+                if label:
+                    description += [label]
             # Make unique the description
             description = list(set(description))
             # Join the description with new line
             description = "\n".join(description)
-            # Add the description to the list
-            descriptions.append(description)
+            # Ensure we always return a string, even if empty
+            descriptions.append(description if description else "")
         return descriptions
 
     def enrich_documents_with_rag(self, texts, docs):

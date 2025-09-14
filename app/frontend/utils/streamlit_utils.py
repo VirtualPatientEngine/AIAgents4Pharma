@@ -1513,78 +1513,20 @@ def update_t2kg_embedding_model():
     )
 
 
-@st.dialog("Get started with Talk2Biomodels 🚀")
+@st.dialog("How to use this application 🚀")
 def help_button():
     """
     Function to display the help dialog.
     """
     st.markdown(
-        """I am an AI agent designed to assist you with biological
-modeling and simulations. I can assist with tasks such as:
-1. Search specific models in the BioModels database.
+        """**FAQs**
+- Talk2KnowledgeGraphs: [click here](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2knowledgegraphs/faq/)
+- Talk2Biomodels: [click here](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/faq/)
 
-```
-Search models on Crohns disease
-```
+**Video**
+- [Watch the app overview](https://www.youtube.com/watch?v=3cU_OxY4HiE)
 
-2. Extract information about models, including species, parameters, units,
-name and descriptions.
-
-```
-Briefly describe model 537 and
-its parameters related to drug dosage
-```
-
-3. Simulate models:
-    - Run simulations of models to see how they behave over time.
-    - Set the duration and the interval.
-    - Specify which species/parameters you want to include and their starting concentrations/values.
-    - Include recurring events.
-
-```
-Simulate the model 537 for 2016 hours and
-intervals 300 with an initial value
-of `DoseQ2W` set to 300 and `Dose` set to 0.
-```
-
-4. Answer questions about simulation results.
-
-```
-What is the concentration of species IL6 in serum
-at the end of simulation?
-```
-
-5. Create custom plots to visualize the simulation results.
-
-```
-Plot the concentration of all
-the interleukins over time.
-```
-
-6. Bring a model to a steady state and determine the concentration of a species at the steady state.
-
-```
-Bring BioModel 27 to a steady state,
-and then determine the Mpp concentration
-at the steady state.
-```
-
-7. Perform parameter scans to determine the effect of changing parameters on the model behavior.
-
-```
-How does the value of Pyruvate change in
-model 64 if the concentration of Extracellular Glucose
-is changed from 10 to 100 with a step size of 10?
-The simulation should run for 5 time units with an
-interval of 10.
-```
-
-8. Check out the [Use Cases](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/cases/Case_1/)
-for more examples, and the [FAQs](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/faq/)
-for common questions.
-
-9. Provide feedback to the developers by clicking on the feedback button.
-
+[![Watch the app overview](https://img.youtube.com/vi/3cU_OxY4HiE/0.jpg)](https://www.youtube.com/watch?v=3cU_OxY4HiE)
 """
     )
 
