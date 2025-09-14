@@ -43,6 +43,26 @@ updates:
       - "github-actions"
     open-pull-requests-limit: 5
 
+  # JavaScript/TypeScript (npm)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+    target-branch: "main"
+    assignees:
+      - "ansh-info"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "security"
+    open-pull-requests-limit: 10
+    # Update both package.json and lockfile as needed
+    versioning-strategy: "increase"
+
   # Disabled for now: repo has no Dockerfiles or Kubernetes manifests
   # in the root directory, causing Dependabot's Docker updater to fail
   # with "No Dockerfiles nor Kubernetes YAML found". Re-enable when

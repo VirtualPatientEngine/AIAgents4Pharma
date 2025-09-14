@@ -3,10 +3,10 @@ Tool for performing multimodal subgraph extraction.
 """
 
 import logging
-import pickle
 from typing import Annotated
 
 import hydra
+import joblib
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -319,11 +319,9 @@ class MultimodalSubgraphExtractionTool(BaseTool):
         initial_graph["source"] = state["dic_source_graph"][-1]  # The last source graph as of now
         # logger.log(logging.INFO, "Source graph: %s", source_graph)
 
-        # Load the knowledge graph
-        with open(initial_graph["source"]["kg_pyg_path"], "rb") as f:
-            initial_graph["pyg"] = pickle.load(f)
-        with open(initial_graph["source"]["kg_text_path"], "rb") as f:
-            initial_graph["text"] = pickle.load(f)
+        # Load the knowledge graph using secure joblib
+        initial_graph["pyg"] = joblib.load(initial_graph["source"]["kg_pyg_path"])
+        initial_graph["text"] = joblib.load(initial_graph["source"]["kg_text_path"])
 
         # Prepare the query embeddings and modalities
         query_df = self._prepare_query_modalities(

@@ -3,10 +3,10 @@ Class for loading StarkQAPrimeKG dataset.
 """
 
 import os
-import pickle
 import shutil
 
 import gdown
+import joblib
 import numpy as np
 import pandas as pd
 import torch
@@ -110,8 +110,9 @@ class StarkQAPrimeKG(Dataset):
             )
 
         # Load the node info of PrimeKG preprocessed for StarkQA
-        with open(os.path.join(self.local_dir, "skb/prime/processed/node_info.pkl"), "rb") as f:
-            starkqa_node_info = pickle.load(f)
+        starkqa_node_info = joblib.load(
+            os.path.join(self.local_dir, "skb/prime/processed/node_info.pkl")
+        )
 
         return starkqa, starkqa_split_idx, starkqa_node_info
 
