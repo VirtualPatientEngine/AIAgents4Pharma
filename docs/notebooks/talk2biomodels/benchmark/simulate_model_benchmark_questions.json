@@ -1,0 +1,100 @@
+{
+  "benchmark_questions": [
+    {
+      "id": "Q001",
+      "question": "what is the concentration of c-reactive protein in the serum after 10 weeks of simulation when simulating model 537?",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "length": "medium",
+      "notes": "Clear, specific question with exact model ID and time frame"
+    },
+    {
+      "id": "Q002", 
+      "question": "run sim on biomodel 971 for 50 hours pls",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "length": "short",
+      "notes": "Very brief, uses abbreviation 'sim', casual tone"
+    },
+    {
+      "id": "Q003",
+      "question": "I need to understand the dynamic behavior of interleukin-6 and tumor necrosis factor-alpha concentrations over a 200-hour period in the context of chronic inflammation. Could you please simulate the BIOMD0000000027 model with initial concentrations of IL-6 set to 0.5 ng/mL and TNF-α to 2.3 ng/mL, and also include a recurring event where TNF-α concentration resets to 1.8 ng/mL every 24 hours to simulate daily medication administration?",
+      "complexity_score": 9,
+      "user_background": "immunologist",
+      "length": "long",
+      "notes": "Complex, detailed question with specific parameters, recurring events, and scientific terminology"
+    },
+    {
+      "id": "Q004",
+      "question": "simulate model 537 but make it run longer",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "length": "short",
+      "notes": "Vague request, no specific parameters"
+    },
+    {
+      "id": "Q005",
+      "question": "Can you please run a simulation of the uploaded SBML model with the following parameters: duration should be 150 time units, interval set to 5, initial concentration of glucose should be 5.0 mM, pyruvate at 0.2 mM, and lactate at 1.5 mM. Also, I want to observe the behavior of ATP, NADH, and NAD+ species throughout the simulation period.",
+      "complexity_score": 7,
+      "user_background": "modeller",
+      "length": "medium",
+      "notes": "Detailed technical parameters, specific species names, clear structure"
+    },
+    {
+      "id": "Q006",
+      "question": "hey can u do a sim thingy on that model thing? the one with the proteins",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "length": "short",
+      "notes": "Very vague, informal language, grammatical errors, unclear reference"
+    },
+    {
+      "id": "Q007",
+      "question": "I'm studying the metabolic flux through the glycolysis pathway and need to analyze the temporal dynamics of key metabolites including glucose-6-phosphate, fructose-6-phosphate, glyceraldehyde-3-phosphate, and pyruvate. Please simulate model BIOMD0000000027 for 300 hours with 20-minute intervals, setting initial glucose concentration to 10 mM and including a periodic glucose infusion event every 6 hours where glucose concentration increases by 2 mM to simulate meal intake patterns.",
+      "complexity_score": 10,
+      "user_background": "modeller",
+      "length": "long",
+      "notes": "Highly complex, multiple specific metabolites, detailed timing parameters, recurring events, scientific precision"
+    },
+    {
+      "id": "Q008",
+      "question": "simulate 971 for 100 time units with glucose at 5 and pyruvate at 0.1",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "length": "short",
+      "notes": "Concise, technical, missing units but clear parameters"
+    },
+    {
+      "id": "Q009",
+      "question": "I need to see what happens to the inflamation markers over time in model 537. Can you set the CRP to start at 1.0 and the IL-1beta to 0.5, then run it for like 2 weeks? Also, I want to see if there's any effect when we add a pulse of TNF every 12 hours starting at 0.3 concentration.",
+      "complexity_score": 6,
+      "user_background": "immunologist",
+      "length": "medium",
+      "notes": "Mix of formal and informal language, specific parameters, recurring events, some typos"
+    },
+    {
+      "id": "Q010",
+      "question": "pls run the sim tool on biomodel 971 for 72 hrs with these settings: gluc=5.0, pyr=0.2, atp=2.5, nadh=0.8, nad=1.2, and make sure to include a recurring event where atp gets reset to 2.0 every 8 hours to simulate cellular energy consumption patterns in a circadian rhythm context",
+      "complexity_score": 8,
+      "user_background": "modeller",
+      "length": "medium",
+      "notes": "Abbreviated species names, technical parameters, complex recurring event, some typos, scientific context"
+    }
+  ],
+  "complexity_scale": {
+    "0-2": "Very easy - simple, clear requests",
+    "3-4": "Easy - mostly clear with minor ambiguities", 
+    "5-6": "Medium - some complexity or unclear elements",
+    "7-8": "Hard - complex parameters or multiple requirements",
+    "9-10": "Very hard - highly complex, detailed, or convoluted"
+  },
+  "user_backgrounds": {
+    "immunologist": "Uses biological terminology, may be vague about technical tool names, focuses on biological relevance",
+    "modeller": "Uses precise technical language, specific about tool parameters and expected outputs"
+  },
+  "length_categories": {
+    "short": "1-2 sentences, minimal detail",
+    "medium": "3-4 sentences, moderate detail", 
+    "long": "5+ sentences, extensive detail"
+  }
+}
