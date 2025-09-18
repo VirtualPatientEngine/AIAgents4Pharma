@@ -27,9 +27,11 @@ We'd like to test following aspects:
 3. Create and run a T2B agent for each prompt in a notebook.
 
 ## Benchmark "User input context" 
-**Aim**: test the stability of the outputs depending on the specific wording of the prompt.
+**Aim**: test the stability of the outputs depending on the specific wording of the prompt. Keep parameters constant, vary only prompt quality and context.
 
 **Data**: Diverse questions with respect to lenght, background (immunologist, modeller, computational biologist, etc.) and complexity (short vs complex). Include grammatical errors and typos. 50 questions per tool (Set 1).
+
+**Models**: 537, 971, BIOMD0000000027 (use cases from the publication)
 
 **Tools**: `simulate_model`, `ask_question`, `custom_plotter`, `model_description`, `search_models`, `fetch_parameters`, `get_annotation`
 
@@ -63,7 +65,9 @@ You can include following variation with respect to the simulation conditions an
 * model id BIOMD0000000027 - up to 100 hours of simulation with an interval of 100 - species M, Mp (phosphorylated M) and MAPKK (map kinase kinase) in the cell.
  The example of the questions is "what is the concentration of c-reactive protein in the serum after 10 weeks of simulation when simulating model 537?" 
 
- I would like to benchmark the agentic tool system that simulates biological ordinary differential equation questions. Generate 20 questions for a tool simulate_model, which has following description: ["A tool to simulate a biomodel"]. The questions should be diverse with respect to their lenght, user's background (immunologist would be vague in terms of name of specific operations, modeller would be precise in terms of tool names and expected output) and complexity (short, concisue questions vs complex and convoluted questions). Include grammatical errors and typos. Rate each generated question with a score between 0 and 10, from 0 easy to comprehend for the tool to 10 very complex and difficult to comprehend questions, add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM. Return the questions and the scores in a JSON format.
+*Simulate model tool Set 1 (constant parameters -vary language)*
+
+ I would like to benchmark the agentic tool system that simulates biological ordinary differential equation questions. Generate 20 questions for a tool simulate_model, which has following description: ["A tool to simulate a biomodel"]. The questions should be diverse with respect to their lenght, user's background (immunologist would be vague in terms of name of specific operations, modeller would be precise in terms of tool names and expected output) and complexity (short, concisue questions vs casual vs complex and convoluted questions). Include grammatical errors and typos. Rate each generated question with a score between 0 and 10, from 0 easy to comprehend for the tool to 10 very complex and difficult to comprehend questions, add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. Return the questions and the scores in a JSON format.
 
  Do not vary simulation time and species. 
 
@@ -74,3 +78,4 @@ You can include following variation with respect to the simulation conditions an
 
 * model id BIOMD0000000027 - 1000 seconds of simulation with an interval of 1000 - species Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell - expected answer 48.1723 nmol/L.
 
+*Simulate model tool Set 2 (vary parameters)*
