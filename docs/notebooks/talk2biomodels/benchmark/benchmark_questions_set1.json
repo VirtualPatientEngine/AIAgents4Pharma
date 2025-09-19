@@ -904,26 +904,29 @@
   "metadata": {
     "total_questions": 90,
     "complexity_distribution": {
-      "score_1": 12,
-      "score_2": 24,
-      "score_3": 18,
-      "score_4": 12,
-      "score_5": 9,
-      "score_6": 9,
+      "score_1": 14,
+      "score_2": 28,
+      "score_3": 20,
+      "score_4": 14,
+      "score_5": 11,
+      "score_6": 11,
       "score_7": 3,
       "score_8": 2,
       "score_9": 1
     },
     "user_backgrounds": {
       "immunologist": 18,
-      "modeller": 15,
-      "computational_biologist": 37,
-      "epidemiologist": 20
+      "modeller": 17,
+      "computational_biologist": 45,
+      "epidemiologist": 30
     },
     "model_distribution": {
       "537": 30,
-      "971": 30,
-      "BIOMD0000000027": 30
+      "971": 40,
+      "BIOMD0000000027": 40
+    },
+    "tool_distribution": {
+      "simulate_model": 90
     },
     "simulation_parameters": {
       "537": {
