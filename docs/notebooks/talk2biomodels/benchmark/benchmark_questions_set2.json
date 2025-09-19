@@ -1,0 +1,656 @@
+{
+  "simulate_model_benchmark_questions_set2": [
+    {
+      "id": "sim_set2_001",
+      "question": "simulate model 537 with CRP{serum} concentration 0.01 for 2016 hours with interval 2016 and tell me the final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've simulated model 537 with CRP{serum} concentration 0.01 for 2016 hours (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164,
+        "CRP{liver}": 6.492506,
+        "IL6{serum}": 0.000641,
+        "STAT3{gut}": 9.133764
+      }
+    },
+    {
+      "id": "sim_set2_002",
+      "question": "run simulation for model 537, CRP{serum} at 1000 nmol/L, 20 hours duration, interval 100 and get the final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Simulation completed. Model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100). The final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005,
+        "CRP{liver}": 162.014501,
+        "IL6{serum}": 0.000676,
+        "STAT3{gut}": 0.332824
+      }
+    },
+    {
+      "id": "sim_set2_003",
+      "question": "I need to simulate model 537 with CRP{serum} concentration 2.6 for 2016 hours using interval 4032 and get the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{serum} concentration 2.6 for 2016 hours (interval 4032). The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568,
+        "CRP{liver}": 158.323640,
+        "IL6{serum}": 0.000436,
+        "STAT3{gut}": 0.596129
+      }
+    },
+    {
+      "id": "sim_set2_004",
+      "question": "simulate 537 IL6{serum} 4356.29 conc 1000h interval 1000 and tell me final IL6{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, IL6{serum} 4356.29 nmol/L, 1000h interval 1000. The final IL6{serum} concentration is 0.0006 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "CRP{serum}": 91.229032,
+        "CRP{liver}": 60.845307,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815264
+      }
+    },
+    {
+      "id": "sim_set2_005",
+      "question": "Please simulate model 537 with CRP{liver} concentration 1583.26 for 2016 hours using interval 1000 and get the final CRP{liver} concentration",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{liver} concentration 1583.26 for 2016 hours (interval 1000). The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{serum}": 91.229207,
+        "CRP{liver}": 60.845411,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815259
+      }
+    },
+    {
+      "id": "sim_set2_006",
+      "question": "run sim 537 STAT3{gut} 6.11e-06 500h interval 500 and get final STAT3{gut} concentration",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "expected_answer": "Simulation completed. Model 537, STAT3{gut} 6.11e-06 nmol/L, 500h interval 500. The final STAT3{gut} concentration is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "CRP{serum}": 215.333772,
+        "CRP{liver}": 154.668528,
+        "IL6{serum}": 0.000441,
+        "STAT3{gut}": 0.889972
+      }
+    },
+    {
+      "id": "sim_set2_007",
+      "question": "I need to understand the inflammatory response dynamics. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000 and get the final STAT3{gut} concentration",
+      "complexity_score": 5,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze inflammatory response dynamics. The final STAT3{gut} concentration is 9.14 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "CRP{serum}": 9.988212,
+        "CRP{liver}": 6.438947,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 9.136212
+      }
+    },
+    {
+      "id": "sim_set2_008",
+      "question": "simulate model 537 CRP{serum} 0.01 2016h interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with CRP{serum} 0.01 nmol/L for 2016h (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164,
+        "CRP{liver}": 6.492506,
+        "IL6{serum}": 0.000641,
+        "STAT3{gut}": 9.133764
+      }
+    },
+    {
+      "id": "sim_set2_009",
+      "question": "can you run a simulation for model 537 with CRP{serum} at 1000 nmol/L for 20 hours? use interval 100 and tell me the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I've run the simulation for model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100). The final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005,
+        "CRP{liver}": 162.014501,
+        "IL6{serum}": 0.000676,
+        "STAT3{gut}": 0.332824
+      }
+    },
+    {
+      "id": "sim_set2_010",
+      "question": "Execute simulation for model 537, CRP{serum} concentration 2.6, duration 2016 hours, interval 4032 and get the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Simulation executed. Model 537, CRP{serum} 2.6 nmol/L, 2016h duration, interval 4032. The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568,
+        "CRP{liver}": 158.323640,
+        "IL6{serum}": 0.000436,
+        "STAT3{gut}": 0.596129
+      }
+    },
+    {
+      "id": "sim_set2_011",
+      "question": "I'm working on a systems biology project and need to simulate model 537 with IL6{serum} concentration 4356.29 for 1000 hours using interval 1000. This is crucial for understanding the inflammatory cascade dynamics. Tell me the final IL6{serum} concentration",
+      "complexity_score": 7,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the simulation of model 537 with IL6{serum} concentration 4356.29 for 1000 hours (interval 1000) for your systems biology project. The final IL6{serum} concentration is 0.0006 nmol/L. This data is crucial for understanding the inflammatory cascade dynamics.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "CRP{serum}": 91.229032,
+        "CRP{liver}": 60.845307,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815264
+      }
+    },
+    {
+      "id": "sim_set2_012",
+      "question": "simulate 537 CRP{liver} 1583.26 2016h interval 1000 and get final CRP{liver} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, CRP{liver} 1583.26 nmol/L, 2016h interval 1000. The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{serum}": 91.229207,
+        "CRP{liver}": 60.845411,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815259
+      }
+    },
+    {
+      "id": "sim_set2_013",
+      "question": "what is the final STAT3{gut} concentration with initial 6.11e-06 nmol/L after 500 hours in model 537? use interval 500",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "With STAT3{gut} initial concentration 6.11e-06 nmol/L after 500 hours in model 537 (interval 500), the final STAT3{gut} concentration is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "CRP{serum}": 215.333772,
+        "CRP{liver}": 154.668528,
+        "IL6{serum}": 0.000441,
+        "STAT3{gut}": 0.889972
+      }
+    },
+    {
+      "id": "sim_set2_014",
+      "question": "I need to understand the temporal evolution of STAT3{gut} during inflammatory processes. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000. This information is critical for my research on signal transduction mechanisms. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 8,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've simulated model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze the temporal evolution during inflammatory processes. The final STAT3{gut} concentration is 9.14 nmol/L. This information is critical for understanding the signal transduction mechanisms.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "CRP{serum}": 9.988212,
+        "CRP{liver}": 6.438947,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 9.136212
+      }
+    },
+    {
+      "id": "sim_set2_015",
+      "question": "run sim 537 CRP{serum} 0.01 2016h interval 2016 and get final CRP{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation completed. Model 537, CRP{serum} 0.01 nmol/L, 2016h interval 2016. The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164,
+        "CRP{liver}": 6.492506,
+        "IL6{serum}": 0.000641,
+        "STAT3{gut}": 9.133764
+      }
+    },
+    {
+      "id": "sim_set2_016",
+      "question": "can you help me simulate model 537? i need CRP{serum} at 1000 for 20 hours with interval 100 and tell me the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I can help simulate model 537. With CRP{serum} at 1000 nmol/L for 20 hours (interval 100), the final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005,
+        "CRP{liver}": 162.014501,
+        "IL6{serum}": 0.000676,
+        "STAT3{gut}": 0.332824
+      }
+    },
+    {
+      "id": "sim_set2_017",
+      "question": "Execute 2016-hour simulation of model 537, CRP{serum} concentration 2.6, interval 4032, report the final CRP{serum} concentration at endpoint",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "expected_answer": "Simulation executed. Model 537, 2016-hour duration, CRP{serum} 2.6 nmol/L, interval 4032. The final CRP{serum} concentration at endpoint is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568,
+        "CRP{liver}": 158.323640,
+        "IL6{serum}": 0.000436,
+        "STAT3{gut}": 0.596129
+      }
+    },
+    {
+      "id": "sim_set2_018",
+      "question": "I'm conducting a comprehensive analysis of inflammatory biomarker dynamics and need to simulate model 537 with IL6{serum} concentration 4356.29 for 1000 hours using interval 1000. This data is essential for my clinical research on inflammatory disease progression. Tell me the final IL6{serum} concentration",
+      "complexity_score": 6,
+      "user_background": "immunologist",
+      "expected_answer": "I've completed the comprehensive simulation of model 537 with IL6{serum} concentration 4356.29 for 1000 hours (interval 1000) for your clinical research. The final IL6{serum} concentration is 0.0006 nmol/L. This data is essential for your inflammatory disease progression research.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "CRP{serum}": 91.229032,
+        "CRP{liver}": 60.845307,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815264
+      }
+    },
+    {
+      "id": "sim_set2_019",
+      "question": "simulate model 537 CRP{liver} 1583.26 2016h interval 1000 and tell me final CRP{liver} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with CRP{liver} 1583.26 nmol/L for 2016h (interval 1000). The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{serum}": 91.229207,
+        "CRP{liver}": 60.845411,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815259
+      }
+    },
+    {
+      "id": "sim_set2_020",
+      "question": "what is the final STAT3{gut} concentration after 500 hours of simulation using model 537 with initial concentration 6.11e-06? use interval 500",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "The final STAT3{gut} concentration after 500 hours of simulation using model 537 with initial concentration 6.11e-06 nmol/L (interval 500) is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "CRP{serum}": 215.333772,
+        "CRP{liver}": 154.668528,
+        "IL6{serum}": 0.000441,
+        "STAT3{gut}": 0.889972
+      }
+    },
+    {
+      "id": "sim_set2_021",
+      "question": "I need to understand the temporal evolution of STAT3{gut} during inflammatory processes. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000. This information is critical for my research on signal transduction mechanisms and cellular responses. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 9,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the complex simulation of model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze the temporal evolution during inflammatory processes. The final STAT3{gut} concentration is 9.14 nmol/L. This information is critical for understanding the signal transduction mechanisms and cellular responses in your research.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "CRP{serum}": 9.988212,
+        "CRP{liver}": 6.438947,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 9.136212
+      }
+    },
+    {
+      "id": "sim_set2_022",
+      "question": "pls run sim 537 CRP{serum} 0.01 2016h interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "immunologist",
+      "expected_answer": "I've run the simulation of model 537 with CRP{serum} 0.01 nmol/L for 2016h (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164,
+        "CRP{liver}": 6.492506,
+        "IL6{serum}": 0.000641,
+        "STAT3{gut}": 9.133764
+      }
+    },
+    {
+      "id": "sim_set2_023",
+      "question": "I'm a PhD student and need to simulate model 537 with CRP{serum} at 1000 nmol/L for 20 hours using interval 100 to get data for my thesis. Tell me the final CRP{serum} concentration",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100) for your thesis research. The final CRP{serum} concentration is 226.44 nmol/L. This should be useful for your thesis analysis.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005,
+        "CRP{liver}": 162.014501,
+        "IL6{serum}": 0.000676,
+        "STAT3{gut}": 0.332824
+      }
+    },
+    {
+      "id": "sim_set2_024",
+      "question": "simulate 537 CRP{serum} 2.6 2016h interval 4032 and get final CRP{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, CRP{serum} 2.6 nmol/L, 2016h interval 4032. The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568,
+        "CRP{liver}": 158.323640,
+        "IL6{serum}": 0.000436,
+        "STAT3{gut}": 0.596129
+      }
+    },
+    {
+      "id": "sim_set2_025",
+      "question": "Could you please help me understand the inflammatory response by running a 1000-hour simulation of model 537 with IL6{serum} concentration 4356.29? I need the data for my study on inflammatory pathways using interval 1000. Tell me the final IL6{serum} concentration",
+      "complexity_score": 5,
+      "user_background": "immunologist",
+      "expected_answer": "I've run the 1000-hour simulation of model 537 with IL6{serum} concentration 4356.29 (interval 1000) to help with your study on inflammatory pathways. The final IL6{serum} concentration is 0.0006 nmol/L. This should provide valuable insights for your inflammatory pathways research.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "CRP{serum}": 91.229032,
+        "CRP{liver}": 60.845307,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815264
+      }
+    },
+    {
+      "id": "sim_set2_026",
+      "question": "what is the final CRP{liver} concentration after 2016h in model 537 with 1583.26 initial? interval 1000",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "The final CRP{liver} concentration after 2016h in model 537 with 1583.26 nmol/L initial (interval 1000) is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{serum}": 91.229207,
+        "CRP{liver}": 60.845411,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 6.815259
+      }
+    },
+    {
+      "id": "sim_set2_027",
+      "question": "I need to run a comprehensive simulation of the inflammatory cascade using model 537. Please simulate with STAT3{gut} concentration 6.11e-06 for 500 hours using interval 500. This is for my research on kinase activation patterns and cellular responses. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 7,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the comprehensive simulation of model 537 with STAT3{gut} concentration 6.11e-06 for 500 hours (interval 500) for your research. The final STAT3{gut} concentration is 0.89 nmol/L. This data is valuable for your research on kinase activation patterns and cellular responses.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "CRP{serum}": 215.333772,
+        "CRP{liver}": 154.668528,
+        "IL6{serum}": 0.000441,
+        "STAT3{gut}": 0.889972
+      }
+    },
+    {
+      "id": "sim_set2_028",
+      "question": "simulate model 537 STAT3{gut} 6.11e-08 1500h interval 2000 and tell me final STAT3{gut} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with STAT3{gut} 6.11e-08 nmol/L for 1500h (interval 2000). The final STAT3{gut} concentration is 9.14 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "CRP{serum}": 9.988212,
+        "CRP{liver}": 6.438947,
+        "IL6{serum}": 0.000642,
+        "STAT3{gut}": 9.136212
+      }
+    },
+    {
+      "id": "sim_set2_029",
+      "question": "can u help me with model 537? i need CRP{serum} 0.01 for 2016h with interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I can help with model 537. With CRP{serum} 0.01 nmol/L for 2016h (interval 2016), the final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164,
+        "CRP{liver}": 6.492506,
+        "IL6{serum}": 0.000641,
+        "STAT3{gut}": 9.133764
+      }
+    },
+    {
+      "id": "sim_set2_030",
+      "question": "I'm working on a complex multi-scale modeling project involving inflammatory responses and need to simulate the CRP{serum} dynamics using model 537 with concentration 1000 for 20 hours using interval 100. This data is essential for understanding the temporal dynamics of inflammatory markers in our multi-scale biological model. Tell me the final CRP{serum} concentration",
+      "complexity_score": 8,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the complex simulation of model 537 with CRP{serum} concentration 1000 nmol/L for 20 hours (interval 100) for your multi-scale modeling project. The final CRP{serum} concentration is 226.44 nmol/L. This data is essential for understanding the temporal dynamics of inflammatory markers in your multi-scale biological model.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005,
+        "CRP{liver}": 162.014501,
+        "IL6{serum}": 0.000676,
+        "STAT3{gut}": 0.332824
+      }
+    }
+  ],
+  "metadata": {
+    "total_questions": 30,
+    "complexity_distribution": {
+      "score_1": 4,
+      "score_2": 8,
+      "score_3": 6,
+      "score_4": 3,
+      "score_5": 2,
+      "score_6": 1,
+      "score_7": 2,
+      "score_8": 2,
+      "score_9": 1
+    },
+    "user_backgrounds": {
+      "immunologist": 8,
+      "modeller": 12,
+      "computational_biologist": 10
+    },
+    "model_distribution": {
+      "537": 30
+    },
+    "simulation_parameters": {
+      "537": {
+        "variations": [
+          {
+            "interval": 2016,
+            "time": 2016,
+            "species": "CRP{serum}",
+            "concentration": 0.01,
+            "expected_values": {
+              "CRP{serum}": 10.019164,
+              "CRP{liver}": 6.492506,
+              "IL6{serum}": 0.000641,
+              "STAT3{gut}": 9.133764
+            }
+          },
+          {
+            "interval": 100,
+            "time": 20,
+            "species": "CRP{serum}",
+            "concentration": 1000,
+            "expected_values": {
+              "CRP{serum}": 226.440005,
+              "CRP{liver}": 162.014501,
+              "IL6{serum}": 0.000676,
+              "STAT3{gut}": 0.332824
+            }
+          },
+          {
+            "interval": 4032,
+            "time": 2016,
+            "species": "CRP{serum}",
+            "concentration": 2.6,
+            "expected_values": {
+              "CRP{serum}": 221.060568,
+              "CRP{liver}": 158.323640,
+              "IL6{serum}": 0.000436,
+              "STAT3{gut}": 0.596129
+            }
+          },
+          {
+            "interval": 1000,
+            "time": 1000,
+            "species": "IL6{serum}",
+            "concentration": 4356.288965511659,
+            "expected_values": {
+              "CRP{serum}": 91.229032,
+              "CRP{liver}": 60.845307,
+              "IL6{serum}": 0.000642,
+              "STAT3{gut}": 6.815264
+            }
+          },
+          {
+            "interval": 1000,
+            "time": 2016,
+            "species": "CRP{liver}",
+            "concentration": 1583.2584678161063,
+            "expected_values": {
+              "CRP{serum}": 91.229207,
+              "CRP{liver}": 60.845411,
+              "IL6{serum}": 0.000642,
+              "STAT3{gut}": 6.815259
+            }
+          },
+          {
+            "interval": 500,
+            "time": 500,
+            "species": "STAT3{gut}",
+            "concentration": 6.106360135082121e-06,
+            "expected_values": {
+              "CRP{serum}": 215.333772,
+              "CRP{liver}": 154.668528,
+              "IL6{serum}": 0.000441,
+              "STAT3{gut}": 0.889972
+            }
+          },
+          {
+            "interval": 2000,
+            "time": 1500,
+            "species": "STAT3{gut}",
+            "concentration": 6.106360135082121e-08,
+            "expected_values": {
+              "CRP{serum}": 9.988212,
+              "CRP{liver}": 6.438947,
+              "IL6{serum}": 0.000642,
+              "STAT3{gut}": 9.136212
+            }
+          }
+        ]
+      }
+    }
+  }
+}
