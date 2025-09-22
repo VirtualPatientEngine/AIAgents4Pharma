@@ -743,31 +743,247 @@
         "M": 0.000113,
         "Mp": 0.804322
       }
+    },
+    {
+      "id": "search_001",
+      "question": "how many models on crohn's disease are there in biomodels database?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I found 5 models related to Crohn's disease in the BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 – IBD Response to Anti-TNFα treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5
+    },
+    {
+      "id": "search_002",
+      "question": "Search for models on precision medicine, and then list the names of the models.",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7
+    },
+    {
+      "id": "search_003",
+      "question": "can u search biomodels for covid-19 models?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "expected_answer": "Sure! I found 43 models related to COVID-19 in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, SIR/SEIR models, and immune response models.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43
+    },
+    {
+      "id": "search_004",
+      "question": "I need to find models related to gut health and microbiome interactions for my research on inflammatory bowel disease. Please search the BioModels database and tell me how many models are available.",
+      "complexity_score": 6,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 models related to gut health and microbiome interactions in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering mucosal immunity, gut microbiome interactions, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58
+    },
+    {
+      "id": "search_005",
+      "question": "search biomodels crohn disease count",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Search completed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 – IBD Response to Anti-TNFα treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn disease",
+      "expected_count": 5
+    },
+    {
+      "id": "search_006",
+      "question": "As a researcher studying precision medicine approaches, I need to understand what computational models are available in the BioModels database. Could you please search for precision medicine models and provide me with the count?",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7
+    },
+    {
+      "id": "search_007",
+      "question": "what's the number of covid models in biomodels?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "There are 43 COVID-19 related models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
+      "tool": "search_models",
+      "search_query": "covid",
+      "expected_count": 43
+    },
+    {
+      "id": "search_008",
+      "question": "I'm working on a comprehensive analysis of gut microbiome models and need to know how many models are available in the BioModels database that focus on gut-related processes, including metabolism, immunity, and microbial interactions.",
+      "complexity_score": 7,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 models related to gut processes in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58
+    },
+    {
+      "id": "search_009",
+      "question": "run search crohn's disease models biomodels",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Search executed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 – IBD Response to Anti-TNFα treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5
+    },
+    {
+      "id": "search_010",
+      "question": "hey can you help me find precision medicine models in biomodels database?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Hey! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7
+    },
+    {
+      "id": "search_011",
+      "question": "Execute search for COVID-19 models in BioModels database, report model count",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Search executed. Found 43 COVID-19 models in BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43
+    },
+    {
+      "id": "search_012",
+      "question": "I need to understand the availability of gut-related models for my microbiome research. Please search the BioModels database for gut models and tell me how many are available.",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58
+    },
+    {
+      "id": "search_013",
+      "question": "search biomodels crohn disease how many",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 – IBD Response to Anti-TNFα treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn disease",
+      "expected_count": 5
+    },
+    {
+      "id": "search_014",
+      "question": "As a PhD student working on precision medicine applications, I need to identify available computational models in the BioModels database. Could you please search for precision medicine models and provide the count?",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7
+    },
+    {
+      "id": "search_015",
+      "question": "what models exist for covid in biomodels?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "There are 43 COVID-19 models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more including various epidemiological models, transmission dynamics models, and models studying the impact of public health interventions.",
+      "tool": "search_models",
+      "search_query": "covid",
+      "expected_count": 43
+    },
+    {
+      "id": "search_016",
+      "question": "I'm conducting a comprehensive review of gut microbiome modeling approaches and need to know the total number of gut-related models available in the BioModels database. This information is crucial for my systematic review on computational approaches to studying gut health.",
+      "complexity_score": 8,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity during infections, tissue-specific genome-scale metabolic networks, and detailed models of specific gut microbial species including Lactobacillus, Acetobacter, and other beneficial bacteria.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58
+    },
+    {
+      "id": "search_017",
+      "question": "pls search crohn's disease models biomodels count",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've searched for Crohn's disease models in BioModels. Found 5 models: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 – IBD Response to Anti-TNFα treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5
+    },
+    {
+      "id": "search_018",
+      "question": "can you help me find precision medicine models? i need the count for my research",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Sure! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7
+    },
+    {
+      "id": "search_019",
+      "question": "I need to run a search for COVID-19 models in the BioModels database and get the total count for my epidemiological modeling project",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've searched the BioModels database for COVID-19 models. Found 43 models. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering various aspects of the pandemic including transmission dynamics, public health interventions, and immune responses. This should provide a comprehensive resource for your epidemiological modeling project.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43
+    },
+    {
+      "id": "search_020",
+      "question": "search gut models biomodels how many",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Found 58 gut models in BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58
     }
   ],
   "metadata": {
-    "total_questions": 42,
+    "total_questions": 62,
     "complexity_distribution": {
-      "score_1": 6,
-      "score_2": 14,
-      "score_3": 8,
-      "score_4": 4,
-      "score_5": 6,
-      "score_6": 1,
-      "score_7": 2,
+      "score_1": 10,
+      "score_2": 20,
+      "score_3": 12,
+      "score_4": 6,
+      "score_5": 8,
+      "score_6": 2,
+      "score_7": 3,
       "score_8": 2,
       "score_9": 1
     },
     "user_backgrounds": {
-      "immunologist": 8,
-      "modeller": 15,
-      "computational_biologist": 13,
-      "epidemiologist": 6
+      "immunologist": 12,
+      "modeller": 21,
+      "computational_biologist": 19,
+      "epidemiologist": 10
+    },
+    "tool_distribution": {
+      "simulate_model": 42,
+      "search_models": 20
     },
     "model_distribution": {
       "537": 30,
       "971": 6,
       "BIOMD0000000027": 6
+    },
+    "search_queries": {
+      "crohn's disease": 5,
+      "precision medicine": 5,
+      "covid-19": 5,
+      "gut": 5
+    },
+    "expected_counts": {
+      "crohn's disease": 5,
+      "precision medicine": 7,
+      "covid-19": 43,
+      "gut": 58
     },
     "simulation_parameters": {
       "537": {
