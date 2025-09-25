@@ -42,6 +42,7 @@ class Talk2Biomodels(AgentState):
     # https://langchain-ai.github.io/langgraph/troubleshooting/errors/INVALID_CONCURRENT_GRAPH_UPDATE/
     model_id: Annotated[list, operator.add]
     sbml_file_path: Annotated[list, operator.add]
+    model_as_string: Annotated[list, operator.add]
     dic_simulated_data: Annotated[list[dict], add_data]
     dic_scanned_data: Annotated[list[dict], add_data]
     dic_steady_state_data: Annotated[list[dict], add_data]

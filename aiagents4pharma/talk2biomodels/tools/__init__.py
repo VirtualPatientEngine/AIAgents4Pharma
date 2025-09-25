@@ -10,6 +10,7 @@ from . import (
     load_biomodel,
     parameter_scan,
     query_article,
+    save_model,
     search_models,
     simulate_model,
     steady_state,

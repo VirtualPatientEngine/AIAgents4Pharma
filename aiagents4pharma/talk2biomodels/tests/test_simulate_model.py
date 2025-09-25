@@ -40,3 +40,5 @@ def test_simulate_model_tool():
     assert "1,3-bisphosphoglycerate" in dic_simulated_data[0]["data"]
     # Check if the data of the second model contains
     assert "mTORC2" in dic_simulated_data[1]["data"]
+    # Check if the model_as_string is not None
+    assert current_state.values["model_as_string"][-1] is not None

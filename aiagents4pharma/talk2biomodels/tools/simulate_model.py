@@ -7,6 +7,7 @@ Tool for simulating a model.
 import logging
 from typing import Annotated
 
+import basico
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool
 from langchain_core.tools.base import InjectedToolCallId
@@ -116,6 +117,7 @@ class SimulateModelTool(BaseTool):
             "model_id": [sys_bio_model.biomodel_id],
             "sbml_file_path": [sbml_file_path],
             "dic_simulated_data": [dic_simulated_data],
+            "model_as_string": [basico.model_io.save_model_to_string()],
         }.items():
             if value:
                 dic_updated_state_for_model[key] = value
