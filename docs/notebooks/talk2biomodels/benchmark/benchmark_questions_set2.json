@@ -2151,278 +2151,936 @@
         "steady_state",
         "ask_question"
       ]
+    },
+    {
+      "id": "custom_plotter_set2_001",
+      "question": "simulate the model 537 and plot the species IL6{serum}, CRP{serum}, sR{serum}, CRP{liver} and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, sR{serum}, CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_002",
+      "question": "run simulation for model 537 and create a plot showing CRP{serum} and IL6{serum} dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_003",
+      "question": "simulate model 537 and plot CRP{liver}, STAT3{gut}, and sR{serum} species",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}, STAT3{gut}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_004",
+      "question": "I need to visualize the inflammatory response. Please simulate model 537 and plot IL6{serum}, CRP{serum}, and STAT3{liver}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_005",
+      "question": "simulate model 537 and show me a plot of CRP{serum} concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_006",
+      "question": "run simulation for model 537 and plot all liver species: CRP{liver} and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_007",
+      "question": "simulate model 537 and create a visualization showing sR{serum} and STAT3{gut} dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "sR{serum}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_008",
+      "question": "I'm studying inflammatory markers. Please simulate model 537 and plot IL6{serum}, CRP{serum}, CRP{liver}, and STAT3{gut}",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, CRP{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_009",
+      "question": "simulate model 537 and plot the species STAT3{liver} and STAT3{gut}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_010",
+      "question": "run simulation for model 537 and show CRP{serum}, sR{serum}, and IL6{serum} in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, sR{serum}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_011",
+      "question": "simulate model 537 and plot CRP{liver} concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_012",
+      "question": "I need to analyze the gut-liver axis. Please simulate model 537 and plot STAT3{gut}, CRP{liver}, and IL6{serum}",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{gut}, CRP{liver}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_013",
+      "question": "simulate model 537 and create a plot showing sR{serum} dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_014",
+      "question": "run simulation for model 537 and plot IL6{serum}, CRP{liver}, STAT3{liver}, and sR{serum}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{liver}, STAT3{liver}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_015",
+      "question": "simulate model 537 and show me a visualization of STAT3{gut} and CRP{serum}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{gut}, CRP{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_016",
+      "question": "I'm investigating inflammatory pathways. Please simulate model 537 and plot IL6{serum}, CRP{serum}, CRP{liver}, STAT3{liver}, and STAT3{gut}",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, CRP{liver}, STAT3{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_017",
+      "question": "simulate model 537 and plot the species IL6{serum} and sR{serum}",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_018",
+      "question": "run simulation for model 537 and create a plot showing CRP{serum}, CRP{liver}, and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_019",
+      "question": "simulate model 537 and plot STAT3{liver} concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_020",
+      "question": "I need to visualize all serum markers. Please simulate model 537 and plot IL6{serum}, CRP{serum}, and sR{serum}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_021",
+      "question": "simulate the model 27 and plot the species Mpp, M, and Mp",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_022",
+      "question": "run simulation for model 27 and create a plot showing Mpp and M dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_023",
+      "question": "simulate model 27 and plot Mp concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_024",
+      "question": "I need to analyze the phosphorylation cascade. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_025",
+      "question": "simulate model 27 and show me a plot of Mpp concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_026",
+      "question": "run simulation for model 27 and plot M and Mp species",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_027",
+      "question": "simulate model 27 and create a visualization showing Mpp and Mp dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_028",
+      "question": "I'm studying MAPK signaling. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_029",
+      "question": "simulate model 27 and plot the species M concentration over time",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_030",
+      "question": "run simulation for model 27 and show Mpp and M in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_031",
+      "question": "simulate model 27 and plot Mp concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_032",
+      "question": "I need to visualize the phosphorylation states. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_033",
+      "question": "simulate model 27 and create a plot showing Mpp dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_034",
+      "question": "run simulation for model 27 and plot M, Mp, and Mpp species",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_035",
+      "question": "simulate model 27 and show me a visualization of M and Mp",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_036",
+      "question": "I'm analyzing kinase activity. Please simulate model 27 and plot Mpp, M, and Mp",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_037",
+      "question": "simulate model 27 and plot the species M and Mpp",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_038",
+      "question": "run simulation for model 27 and create a plot showing Mp and Mpp",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_039",
+      "question": "simulate model 27 and plot M concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_040",
+      "question": "I need to visualize all phosphorylation states. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_041",
+      "question": "simulate the model 971 and plot the species Infected, Susceptible, Recovered, Hospitalised, and Exposed",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Susceptible, Recovered, Hospitalised, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_042",
+      "question": "run simulation for model 971 and create a plot showing Infected and Susceptible dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_043",
+      "question": "simulate model 971 and plot Recovered concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_044",
+      "question": "I need to analyze the COVID-19 epidemic. Please simulate model 971 and plot Infected, Exposed, and Hospitalised",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Exposed, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_045",
+      "question": "simulate model 971 and show me a plot of Susceptible concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_046",
+      "question": "run simulation for model 971 and plot Exposed and Infected species",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed, Infected"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_047",
+      "question": "simulate model 971 and create a visualization showing Hospitalised and Recovered dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_048",
+      "question": "I'm studying disease transmission. Please simulate model 971 and plot Susceptible, Exposed, Infected, and Recovered",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_049",
+      "question": "simulate model 971 and plot the species Infected and Hospitalised",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_050",
+      "question": "run simulation for model 971 and show Susceptible, Infected, and Recovered in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_051",
+      "question": "simulate model 971 and plot Exposed concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_052",
+      "question": "I need to analyze healthcare capacity. Please simulate model 971 and plot Hospitalised, Infected, and Exposed",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised, Infected, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_053",
+      "question": "simulate model 971 and create a plot showing Infected dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_054",
+      "question": "run simulation for model 971 and plot Susceptible, Exposed, Infected, Hospitalised, and Recovered",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_055",
+      "question": "simulate model 971 and show me a visualization of Recovered and Susceptible",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Recovered, Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_056",
+      "question": "I'm investigating epidemic progression. Please simulate model 971 and plot Exposed, Infected, and Hospitalised",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed, Infected, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_057",
+      "question": "simulate model 971 and plot the species Hospitalised concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_058",
+      "question": "run simulation for model 971 and create a plot showing Infected and Recovered",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_059",
+      "question": "simulate model 971 and plot Susceptible and Exposed species",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_060",
+      "question": "I need to visualize all epidemic compartments. Please simulate model 971 and plot Susceptible, Exposed, Infected, Hospitalised, and Recovered",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
     }
   ],
   "metadata": {
-    "total_questions": 122,
+    "total_questions": 182,
     "complexity_distribution": {
-      "score_1": 16,
-      "score_2": 35,
-      "score_3": 21,
-      "score_4": 15,
-      "score_5": 18,
-      "score_6": 8,
-      "score_7": 6,
-      "score_8": 2,
-      "score_9": 1
+      "score_1": 36,
+      "score_2": 95,
+      "score_3": 41,
+      "score_4": 20
     },
     "user_backgrounds": {
-      "immunologist": 12,
-      "modeller": 51,
-      "computational_biologist": 49,
-      "epidemiologist": 10
+      "modeller": 91,
+      "computational_biologist": 91,
+      "epidemiologist": 0
     },
-    "tool_distribution": {
+    "question_types": {
       "simulate_model": 42,
-      "search_models": 20,
-      "steady_state": 60
+      "steady_state": 60,
+      "custom_plotter": 60
     },
     "model_distribution": {
-      "537": 30,
-      "971": 36,
-      "BIOMD0000000027": 36
+      "537": 81,
+      "27": 61,
+      "971": 40
     },
-    "search_queries": {
-      "crohn's disease": 5,
-      "precision medicine": 5,
-      "covid-19": 5,
-      "gut": 5
-    },
-    "expected_counts": {
-      "crohn's disease": 5,
-      "precision medicine": 7,
-      "covid-19": 43,
-      "gut": 58
-    },
-    "simulation_parameters": {
-      "537": {
-        "variations": [
-          {
-            "interval": 2016,
-            "time": 2016,
-            "species": "CRP{serum}",
-            "concentration": 0.01,
-            "expected_values": {
-              "CRP{serum}": 10.019164,
-              "CRP{liver}": 6.492506,
-              "IL6{serum}": 0.000641,
-              "STAT3{gut}": 9.133764
-            }
-          },
-          {
-            "interval": 100,
-            "time": 20,
-            "species": "CRP{serum}",
-            "concentration": 1000,
-            "expected_values": {
-              "CRP{serum}": 226.440005,
-              "CRP{liver}": 162.014501,
-              "IL6{serum}": 0.000676,
-              "STAT3{gut}": 0.332824
-            }
-          },
-          {
-            "interval": 4032,
-            "time": 2016,
-            "species": "CRP{serum}",
-            "concentration": 2.6,
-            "expected_values": {
-              "CRP{serum}": 221.060568,
-              "CRP{liver}": 158.32364,
-              "IL6{serum}": 0.000436,
-              "STAT3{gut}": 0.596129
-            }
-          },
-          {
-            "interval": 1000,
-            "time": 1000,
-            "species": "IL6{serum}",
-            "concentration": 4356.288965511659,
-            "expected_values": {
-              "CRP{serum}": 91.229032,
-              "CRP{liver}": 60.845307,
-              "IL6{serum}": 0.000642,
-              "STAT3{gut}": 6.815264
-            }
-          },
-          {
-            "interval": 1000,
-            "time": 2016,
-            "species": "CRP{liver}",
-            "concentration": 1583.2584678161063,
-            "expected_values": {
-              "CRP{serum}": 91.229207,
-              "CRP{liver}": 60.845411,
-              "IL6{serum}": 0.000642,
-              "STAT3{gut}": 6.815259
-            }
-          },
-          {
-            "interval": 500,
-            "time": 500,
-            "species": "STAT3{gut}",
-            "concentration": 6.106360135082121e-06,
-            "expected_values": {
-              "CRP{serum}": 215.333772,
-              "CRP{liver}": 154.668528,
-              "IL6{serum}": 0.000441,
-              "STAT3{gut}": 0.889972
-            }
-          },
-          {
-            "interval": 2000,
-            "time": 1500,
-            "species": "STAT3{gut}",
-            "concentration": 6.106360135082121e-08,
-            "expected_values": {
-              "CRP{serum}": 9.988212,
-              "CRP{liver}": 6.438947,
-              "IL6{serum}": 0.000642,
-              "STAT3{gut}": 9.136212
-            }
-          }
-        ]
-      },
-      "971": {
-        "variations": [
-          {
-            "interval": 100,
-            "time": 50,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 104338.5,
-              "Susceptible": 1017891,
-              "Recovered": 2231583,
-              "Hospitalised": 132514
-            }
-          },
-          {
-            "interval": 200,
-            "time": 100,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 71433.53,
-              "Susceptible": 1055609,
-              "Recovered": 4586298,
-              "Hospitalised": 86882.62
-            }
-          },
-          {
-            "interval": 400,
-            "time": 180,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 40316.62,
-              "Susceptible": 1055585,
-              "Recovered": 6955857,
-              "Hospitalised": 49019.75
-            }
-          },
-          {
-            "interval": 1000,
-            "time": 500,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 4090.069,
-              "Susceptible": 1055585,
-              "Recovered": 9714202,
-              "Hospitalised": 4972.991
-            }
-          },
-          {
-            "interval": 400,
-            "time": 20,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 120668.1,
-              "Susceptible": 3167693,
-              "Recovered": 163461.1,
-              "Hospitalised": 40760.04
-            }
-          },
-          {
-            "interval": 10,
-            "time": 10,
-            "species": "Infected",
-            "expected_values": {
-              "Infected": 3413.654,
-              "Susceptible": 10796200,
-              "Recovered": 2980.39,
-              "Hospitalised": 806.595
-            }
-          }
-        ]
-      },
-      "BIOMD0000000027": {
-        "variations": [
-          {
-            "time": 100,
-            "parameter_name": "k1cat",
-            "parameter_value": 0.1,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 317.356267,
-              "M": 154.982325,
-              "Mp": 27.661408
-            }
-          },
-          {
-            "time": 1000,
-            "parameter_name": "k1cat",
-            "parameter_value": 1,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 494.565011,
-              "M": 0.076041,
-              "Mp": 5.358948
-            }
-          },
-          {
-            "time": 180,
-            "parameter_name": "k1cat",
-            "parameter_value": 100,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 494.647985,
-              "M": 0.000758,
-              "Mp": 5.351257
-            }
-          },
-          {
-            "time": 500,
-            "parameter_name": "k2cat",
-            "parameter_value": 10,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 491.982136,
-              "M": 0.00114,
-              "Mp": 8.016723
-            }
-          },
-          {
-            "time": 20,
-            "parameter_name": "k2cat",
-            "parameter_value": 0.1,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 42.542954,
-              "M": 0.103107,
-              "Mp": 457.353939
-            }
-          },
-          {
-            "time": 10,
-            "parameter_name": "k2cat",
-            "parameter_value": 100,
-            "species": "Mpp",
-            "expected_values": {
-              "Mpp": 499.195565,
-              "M": 0.000113,
-              "Mp": 0.804322
-            }
-          }
-        ]
-      }
-    }
+    "expected_tools": [
+      "simulate_model",
+      "ask_question",
+      "steady_state",
+      "custom_plotter"
+    ]
   }
 }
