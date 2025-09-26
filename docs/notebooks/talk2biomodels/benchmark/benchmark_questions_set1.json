@@ -8,17 +8,25 @@
       "expected_answer": "I've successfully simulated model 537 for 12 weeks (2016 hours). The concentration of C-reactive protein (CRP) in serum at the end of the simulation is 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
-      "id": "sim_002", 
+      "id": "sim_002",
       "question": "can u run a sim for model 537 and tell me what CRP levels are at 12 weeks?",
       "complexity_score": 1,
       "user_background": "immunologist",
       "expected_answer": "Sure! I ran the simulation for model 537 for 12 weeks. The CRP concentration in serum is 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_003",
@@ -28,7 +36,11 @@
       "expected_answer": "I've completed the simulation of model 537 for 12 weeks. The C-reactive protein concentration in serum is 2.27 nmol/L at the end of the simulation period.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_004",
@@ -38,7 +50,11 @@
       "expected_answer": "I've simulated model 537 for 12 weeks. The CRP concentration in serum is 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_005",
@@ -48,7 +64,11 @@
       "expected_answer": "I've successfully executed the simulation of model 537 for 12 weeks to analyze the C-reactive protein dynamics. The final CRP concentration in serum is 2.27 nmol/L. This represents the steady-state level achieved after the 12-week simulation period.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_006",
@@ -58,7 +78,11 @@
       "expected_answer": "Simulation completed. Model 537, 12 weeks: CRP concentration = 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_007",
@@ -68,7 +92,11 @@
       "expected_answer": "I've completed the simulation of model 537 for 12 weeks to analyze the inflammatory response dynamics. The C-reactive protein concentration in serum at the end of the simulation period is 2.27 nmol/L. This value represents the steady-state concentration achieved after the full 12-week simulation, which is important for understanding the long-term inflammatory response patterns in your systems biology model.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_008",
@@ -78,7 +106,11 @@
       "expected_answer": "The CRP level after 12 weeks of simulation with model 537 is 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_009",
@@ -88,7 +120,11 @@
       "expected_answer": "I've executed the simulation of model 537 for 12 weeks. The final C-reactive protein concentration in serum is 2.27 nmol/L. This concentration represents the inflammatory response level achieved after the complete 12-week simulation period.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_010",
@@ -98,7 +134,11 @@
       "expected_answer": "Simulation of model 537 for 12 weeks completed. CRP concentration in serum: 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_011",
@@ -108,7 +148,11 @@
       "expected_answer": "I've run the simulation of model 537 for 12 weeks for your inflammation research. The C-reactive protein concentration in serum is 2.27 nmol/L at the end of the simulation.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_012",
@@ -118,7 +162,11 @@
       "expected_answer": "Of course! I've simulated model 537 for 12 weeks. The c-reactive protein level in serum is 2.27 nmol/L. This should be helpful for your inflammation study.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_013",
@@ -128,7 +176,11 @@
       "expected_answer": "Simulation executed successfully. Model 537, 12 weeks duration: CRP concentration at endpoint = 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_014",
@@ -138,7 +190,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model 537 for 12 weeks to analyze the C-reactive protein response dynamics. The final CRP concentration in serum is 2.27 nmol/L. This data point is crucial for your clinical research on inflammatory disease progression, as it represents the steady-state inflammatory biomarker level achieved after the full 12-week simulation period.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_015",
@@ -148,7 +204,11 @@
       "expected_answer": "Simulation completed. Model 537, 12 weeks: CRP concentration = 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_016",
@@ -158,7 +218,11 @@
       "expected_answer": "The CRP concentration after 12 weeks of simulation using model 537 is 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_017",
@@ -168,7 +232,11 @@
       "expected_answer": "I've simulated model 537 for 12 weeks to analyze the temporal evolution of C-reactive protein during inflammatory processes. The CRP concentration in serum at the end of the simulation period is 2.27 nmol/L. This information is critical for understanding the acute phase response mechanisms, as it represents the steady-state inflammatory marker level achieved after the complete 12-week simulation.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_018",
@@ -178,7 +246,11 @@
       "expected_answer": "Model 537 simulated for 12 weeks. CRP level in serum: 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_019",
@@ -188,7 +260,11 @@
       "expected_answer": "I've completed the complex simulation of model 537 for 12 weeks to analyze the C-reactive protein dynamics in your systems biology project. The concentration of C-reactive protein in serum at the end of the simulation is 2.27 nmol/L. This data is essential for understanding the temporal dynamics of the inflammatory response cascade in your cellular model, as it represents the steady-state inflammatory marker concentration achieved after the full 12-week simulation period, which is crucial for modeling the long-term inflammatory response patterns.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_020",
@@ -198,7 +274,11 @@
       "expected_answer": "I've run the simulation of model 537 for 12 weeks. The CRP level in serum is 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_021",
@@ -208,7 +288,11 @@
       "expected_answer": "Hey! I ran model 537 for 12 weeks. The CRP concentration in serum is 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_022",
@@ -218,7 +302,11 @@
       "expected_answer": "I've simulated model 537 for 12 weeks for your thesis research. The C-reactive protein concentration in serum is 2.27 nmol/L. This data should be useful for your inflammatory response analysis.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_023",
@@ -228,7 +316,11 @@
       "expected_answer": "Simulation complete. Model 537, 12w: CRP in serum = 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_024",
@@ -238,7 +330,11 @@
       "expected_answer": "I've run the 12-week simulation of model 537 to help with your clinical study on chronic inflammation. The final C-reactive protein concentration in serum is 2.27 nmol/L. This biomarker level should provide valuable data for your chronic inflammation research.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_025",
@@ -248,7 +344,11 @@
       "expected_answer": "CRP after 12 weeks with model 537: 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_026",
@@ -258,7 +358,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model 537 for 12 weeks to analyze the inflammatory cascade. The C-reactive protein concentration in serum is 2.27 nmol/L. This data is valuable for your research on acute phase response proteins and their role in systemic inflammation, representing the steady-state inflammatory marker level achieved after the full simulation period.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_027",
@@ -268,7 +372,11 @@
       "expected_answer": "Simulation completed. Model 537, 12 weeks: CRP level = 2.27 nmol/L in serum.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_028",
@@ -278,7 +386,11 @@
       "expected_answer": "Sure! I can help with model 537. I've run the simulation for 12 weeks and the CRP concentration in serum is 2.27 nmol/L. This should be helpful for your inflammation study.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_029",
@@ -288,7 +400,11 @@
       "expected_answer": "Simulation executed. Model 537, 12-week duration: C-reactive protein concentration in serum at endpoint = 2.27 nmol/L.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_030",
@@ -298,7 +414,11 @@
       "expected_answer": "I've completed the complex simulation of model 537 for 12 weeks to analyze the C-reactive protein dynamics in your multi-scale modeling project. The concentration of CRP in serum is 2.27 nmol/L. This data is essential for understanding the temporal dynamics of inflammatory markers in your multi-scale biological model, as it represents the steady-state inflammatory marker concentration achieved after the full 12-week simulation period, which is crucial for modeling the long-term inflammatory response patterns across different biological scales.",
       "model_id": "537",
       "simulation_time": "12 weeks (2016 hours)",
-      "species": "CRP (c-reactive protein) in serum"
+      "species": "CRP (c-reactive protein) in serum",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_031",
@@ -308,7 +428,11 @@
       "expected_answer": "I've simulated model 971 for 50 days. The infected patient count is 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_032",
@@ -318,7 +442,11 @@
       "expected_answer": "Sure! I ran the COVID model 971 for 50 days. There are 104339 infected patients.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_033",
@@ -328,7 +456,11 @@
       "expected_answer": "I've simulated the COVID-19 epidemic using model 971 for 50 days. The infected patient count is 104339, which shows the disease spread pattern.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_034",
@@ -338,7 +470,11 @@
       "expected_answer": "Simulation completed. Model 971, 50d: infected count = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_035",
@@ -348,7 +484,11 @@
       "expected_answer": "I've simulated model 971 for 50 days for your epidemiological analysis. The infected patient count is 104339. This data should be valuable for understanding the COVID-19 transmission dynamics in your public health research.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_036",
@@ -358,7 +498,11 @@
       "expected_answer": "The infected count after 50 days in COVID model 971 is 104339 patients.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_037",
@@ -368,7 +512,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model 971 for 50 days to analyze the COVID-19 pandemic. The infected patient count is 104339. This data is crucial for understanding the disease progression and healthcare resource planning, as it represents the cumulative number of infected patients after the 50-day simulation period.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_038",
@@ -378,7 +526,11 @@
       "expected_answer": "Simulation complete. Model 971, 50 days: infected patients = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_039",
@@ -388,7 +540,11 @@
       "expected_answer": "Hey! I can help with COVID model 971. I've run the simulation for 50 days and the infected count is 104339 patients.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_040",
@@ -398,7 +554,11 @@
       "expected_answer": "Simulation executed. Model 971, 50-day duration: infected patient count at endpoint = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_041",
@@ -408,7 +568,11 @@
       "expected_answer": "I've run the simulation of COVID model 971 for 50 days for your pandemic modeling research. The infected patient count is 104339 at the end of the simulation.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_042",
@@ -418,7 +582,11 @@
       "expected_answer": "Of course! I've simulated model 971 for 50 days. There are 104339 infected patients. This should be helpful for your COVID spread study.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_043",
@@ -428,7 +596,11 @@
       "expected_answer": "Simulation completed. Model 971, 50 days: infected count = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_044",
@@ -438,7 +610,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model 971 for 50 days to analyze the COVID-19 transmission dynamics. The infected patient count is 104339. This data is essential for your research on disease spread patterns, as it represents the cumulative number of infected patients after the 50-day simulation period.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_045",
@@ -448,7 +624,11 @@
       "expected_answer": "The infected patient count after 50 days of simulation using model 971 is 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_046",
@@ -458,7 +638,11 @@
       "expected_answer": "I've simulated model 971 for 50 days to analyze the temporal evolution of COVID-19 infection during the pandemic. The infected patient count at the end of the simulation period is 104339. This information is critical for understanding epidemic modeling, as it represents the cumulative number of infected patients after the complete 50-day simulation.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_047",
@@ -468,7 +652,11 @@
       "expected_answer": "Model 971 simulated for 50 days. Infected count: 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_048",
@@ -478,7 +666,11 @@
       "expected_answer": "I've completed the complex simulation of model 971 for 50 days to analyze the COVID-19 transmission in your epidemiological modeling project. The infected patient count is 104339. This data is essential for understanding the temporal dynamics of the pandemic in your population model, as it represents the cumulative number of infected patients achieved after the full 50-day simulation period, which is crucial for modeling the long-term disease spread patterns.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_049",
@@ -488,7 +680,11 @@
       "expected_answer": "I've run the simulation of model 971 for 50 days. The infected patient count is 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_050",
@@ -498,7 +694,11 @@
       "expected_answer": "I've simulated model 971 for 50 days for your thesis research. The infected patient count is 104339. This data should be useful for your COVID-19 spread analysis.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_051",
@@ -508,7 +708,11 @@
       "expected_answer": "Simulation complete. Model 971, 50d: infected = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_052",
@@ -518,7 +722,11 @@
       "expected_answer": "I've run the 50-day simulation of model 971 to help with your clinical study on pandemic response. The infected patient count is 104339. This data should provide valuable insights for your pandemic response research.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_053",
@@ -528,7 +736,11 @@
       "expected_answer": "Infected after 50 days with model 971: 104339 patients.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_054",
@@ -538,7 +750,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model 971 for 50 days to analyze the COVID-19 pandemic. The infected patient count is 104339. This data is valuable for your research on disease transmission and public health interventions, representing the cumulative number of infected patients after the full simulation period.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_055",
@@ -548,7 +764,11 @@
       "expected_answer": "Simulation completed. Model 971, 50 days: infected count = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_056",
@@ -558,7 +778,11 @@
       "expected_answer": "Sure! I can help with COVID model 971. I've run the simulation for 50 days and the infected count is 104339 patients. This should be helpful for your pandemic study.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_057",
@@ -568,7 +792,11 @@
       "expected_answer": "Simulation executed. Model 971, 50-day duration: infected patient count in population at endpoint = 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_058",
@@ -578,7 +806,11 @@
       "expected_answer": "I've completed the complex simulation of model 971 for 50 days to analyze the COVID-19 transmission in your multi-scale modeling project. The infected patient count is 104339. This data is essential for understanding the temporal dynamics of the pandemic in your multi-scale population model, as it represents the cumulative number of infected patients achieved after the full 50-day simulation period, which is crucial for modeling the long-term disease spread patterns across different population scales.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_059",
@@ -588,7 +820,11 @@
       "expected_answer": "I've run the simulation of model 971 for 50 days. The infected patient count is 104339.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_060",
@@ -598,7 +834,11 @@
       "expected_answer": "I've simulated model 971 for 50 days to analyze the COVID-19 epidemic dynamics for your research. The infected patient count at the end of the simulation period is 104339. This information is critical for your research on epidemic modeling and healthcare planning, as it represents the cumulative number of infected patients after the complete 50-day simulation.",
       "model_id": "971",
       "simulation_time": "50 days",
-      "species": "infected covid patients"
+      "species": "infected covid patients",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_061",
@@ -608,7 +848,11 @@
       "expected_answer": "I've simulated model BIOMD0000000027 for 1000 seconds. The Mpp concentration is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_062",
@@ -618,7 +862,11 @@
       "expected_answer": "Sure! I ran the MAPK model BIOMD0000000027 for 1000 seconds. The Mpp concentration is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_063",
@@ -628,7 +876,11 @@
       "expected_answer": "I've simulated the MAPK signaling pathway using model BIOMD0000000027 for 1000 seconds. The Mpp concentration is 48.17 nmol/L, which shows the phosphorylation dynamics.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_064",
@@ -638,7 +890,11 @@
       "expected_answer": "Simulation completed. Model BIOMD0000000027, 1000s: Mpp conc = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_065",
@@ -648,7 +904,11 @@
       "expected_answer": "I've simulated model BIOMD0000000027 for 1000 seconds for your signaling analysis. The Mpp concentration is 48.17 nmol/L. This data should be valuable for understanding the MAPK cascade dynamics in your systems biology research.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_066",
@@ -658,7 +918,11 @@
       "expected_answer": "The Mpp concentration after 1000 seconds in MAPK model BIOMD0000000027 is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_067",
@@ -668,7 +932,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling cascade. The Mpp concentration is 48.17 nmol/L. This data is crucial for understanding the phosphorylation cascade dynamics, as it represents the steady-state concentration of doubly phosphorylated MAPK1 after the 1000-second simulation period.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_068",
@@ -678,7 +946,11 @@
       "expected_answer": "Simulation complete. Model BIOMD0000000027, 1000 seconds: Mpp in cell = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_069",
@@ -688,7 +960,11 @@
       "expected_answer": "Hey! I can help with MAPK model BIOMD0000000027. I've run the simulation for 1000 seconds and the Mpp concentration is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_070",
@@ -698,7 +974,11 @@
       "expected_answer": "Simulation executed. Model BIOMD0000000027, 1000-second duration: Mpp concentration at endpoint = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_071",
@@ -708,7 +988,11 @@
       "expected_answer": "I've run the simulation of MAPK model BIOMD0000000027 for 1000 seconds for your cell signaling research. The Mpp concentration is 48.17 nmol/L at the end of the simulation.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_072",
@@ -718,7 +1002,11 @@
       "expected_answer": "Of course! I've simulated model BIOMD0000000027 for 1000 seconds. The Mpp level is 48.17 nmol/L. This should be helpful for your phosphorylation study.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_073",
@@ -728,7 +1016,11 @@
       "expected_answer": "Simulation completed. Model BIOMD0000000027, 1000 seconds: Mpp conc = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_074",
@@ -738,7 +1030,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling dynamics. The Mpp concentration is 48.17 nmol/L. This data is essential for your research on kinase activation patterns, as it represents the steady-state concentration of doubly phosphorylated MAPK1 after the 1000-second simulation period.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_075",
@@ -748,7 +1044,11 @@
       "expected_answer": "The Mpp concentration after 1000 seconds of simulation using model BIOMD0000000027 is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_076",
@@ -758,7 +1058,11 @@
       "expected_answer": "I've simulated model BIOMD0000000027 for 1000 seconds to analyze the temporal evolution of MAPK phosphorylation during cell signaling. The Mpp concentration at the end of the simulation period is 48.17 nmol/L. This information is critical for understanding signal transduction mechanisms, as it represents the steady-state concentration of doubly phosphorylated MAPK1 after the complete 1000-second simulation.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_077",
@@ -768,7 +1072,11 @@
       "expected_answer": "Model BIOMD0000000027 simulated for 1000 seconds. Mpp level: 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_078",
@@ -778,7 +1086,11 @@
       "expected_answer": "I've completed the complex simulation of model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling cascades in your systems biology project. The concentration of Mpp in the cell is 48.17 nmol/L. This data is essential for understanding the temporal dynamics of the phosphorylation cascade in your cellular model, as it represents the steady-state concentration of doubly phosphorylated MAPK1 achieved after the full 1000-second simulation period, which is crucial for modeling the long-term signaling response patterns.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_079",
@@ -788,7 +1100,11 @@
       "expected_answer": "I've run the simulation of model BIOMD0000000027 for 1000 seconds. The Mpp level in the cell is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_080",
@@ -798,7 +1114,11 @@
       "expected_answer": "I've simulated model BIOMD0000000027 for 1000 seconds for your thesis research. The Mpp concentration is 48.17 nmol/L. This data should be useful for your MAPK signaling analysis.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_081",
@@ -808,7 +1128,11 @@
       "expected_answer": "Simulation complete. Model BIOMD0000000027, 1000s: Mpp = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_082",
@@ -818,7 +1142,11 @@
       "expected_answer": "I've run the 1000-second simulation of model BIOMD0000000027 to help with your study on cell signaling pathways. The Mpp concentration is 48.17 nmol/L. This data should provide valuable insights for your MAPK cascade research.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_083",
@@ -828,7 +1156,11 @@
       "expected_answer": "Mpp after 1000 seconds with model BIOMD0000000027: 48.17 nmol/L in the cell.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_084",
@@ -838,7 +1170,11 @@
       "expected_answer": "I've completed the comprehensive simulation of model BIOMD0000000027 for 1000 seconds to analyze the MAPK pathway. The Mpp concentration is 48.17 nmol/L. This data is valuable for your research on kinase cascades and cellular responses, representing the steady-state concentration of doubly phosphorylated MAPK1 after the full simulation period.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_085",
@@ -848,7 +1184,11 @@
       "expected_answer": "Simulation completed. Model BIOMD0000000027, 1000 seconds: Mpp conc = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_086",
@@ -858,7 +1198,11 @@
       "expected_answer": "Sure! I can help with MAPK model BIOMD0000000027. I've run the simulation for 1000 seconds and the Mpp concentration is 48.17 nmol/L. This should be helpful for your signaling study.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_087",
@@ -868,7 +1212,11 @@
       "expected_answer": "Simulation executed. Model BIOMD0000000027, 1000-second duration: Mpp concentration in cell at endpoint = 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_088",
@@ -878,7 +1226,11 @@
       "expected_answer": "I've completed the complex simulation of model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling in your multi-scale modeling project. The Mpp concentration is 48.17 nmol/L. This data is essential for understanding the temporal dynamics of the signaling cascade in your multi-scale cellular model, as it represents the steady-state concentration of doubly phosphorylated MAPK1 achieved after the full 1000-second simulation period, which is crucial for modeling the long-term signaling response patterns across different cellular scales.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_089",
@@ -888,7 +1240,11 @@
       "expected_answer": "I've run the simulation of model BIOMD0000000027 for 1000 seconds. The Mpp concentration is 48.17 nmol/L.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_090",
@@ -898,7 +1254,11 @@
       "expected_answer": "I've simulated model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling dynamics for your research. The Mpp concentration at the end of the simulation period is 48.17 nmol/L. This information is critical for your research on signal transduction and cellular responses, as it represents the steady-state concentration of doubly phosphorylated MAPK1 after the complete 1000-second simulation.",
       "model_id": "BIOMD0000000027",
       "simulation_time": "1000 seconds",
-      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell"
+      "species": "Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell",
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     }
   ],
   "metadata": {
