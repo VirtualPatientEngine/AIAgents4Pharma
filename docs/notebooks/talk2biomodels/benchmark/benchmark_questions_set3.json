@@ -1,0 +1,1712 @@
+{
+  "get_modelinfo_benchmark_questions_set3": [
+    {
+      "id": "get_modelinfo_set3_001",
+      "question": "what are the species do you have in the model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_002",
+      "question": "what is the time unit in the model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_003",
+      "question": "list all compartments in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_004",
+      "question": "what parameters are available in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_005",
+      "question": "I need to understand the model structure. Can you tell me what species are present in model 971?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_006",
+      "question": "what is the quantity unit for model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_007",
+      "question": "show me the compartment information for model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_008",
+      "question": "can you list all the parameters in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_009",
+      "question": "what species are defined in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_010",
+      "question": "what is the length unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_011",
+      "question": "what compartments exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_012",
+      "question": "I'm working on a systems biology project and need to understand the model structure. What species are available in model 537?",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_013",
+      "question": "what is the area unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_014",
+      "question": "list all parameters in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_015",
+      "question": "what is the volume unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_016",
+      "question": "can you show me the compartment details for model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_017",
+      "question": "what species are present in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_018",
+      "question": "what is the time unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_019",
+      "question": "I need to analyze the model parameters. Can you provide me with all parameters in model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_020",
+      "question": "what compartments are defined in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_021",
+      "question": "what is the time unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_022",
+      "question": "what is the quantity unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_023",
+      "question": "what is the length unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_024",
+      "question": "what is the area unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_025",
+      "question": "what is the volume unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_026",
+      "question": "what is the time unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_027",
+      "question": "what is the quantity unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_028",
+      "question": "what is the length unit in model 27?",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_029",
+      "question": "what is the area unit in model 27?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_030",
+      "question": "what is the volume unit in model 27?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_031",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_032",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_033",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_034",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_035",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_036",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_037",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_038",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_039",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_040",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_041",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_042",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_043",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_044",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_045",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_046",
+      "question": "list all species in model 27",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_047",
+      "question": "list all species in model 27",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_048",
+      "question": "list all species in model 27",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_049",
+      "question": "list all species in model 27",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_050",
+      "question": "list all species in model 27",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_051",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_052",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_053",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_054",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_055",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_056",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_057",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_058",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_059",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_060",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_061",
+      "question": "what is the time unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_062",
+      "question": "what is the quantity unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_063",
+      "question": "what is the length unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_064",
+      "question": "what is the area unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_065",
+      "question": "what is the volume unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_066",
+      "question": "what is the time unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_067",
+      "question": "what is the quantity unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_068",
+      "question": "what is the length unit in model 537?",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_069",
+      "question": "what is the area unit in model 537?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_070",
+      "question": "what is the volume unit in model 537?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_071",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_072",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_073",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_074",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_075",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_076",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_077",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_078",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_079",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_080",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_081",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_082",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_083",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_084",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_085",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_086",
+      "question": "list all species in model 537",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_087",
+      "question": "list all species in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_088",
+      "question": "list all species in model 537",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_089",
+      "question": "list all species in model 537",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_090",
+      "question": "list all species in model 537",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_091",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_092",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_093",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_094",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_095",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_096",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_097",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_098",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_099",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_100",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_101",
+      "question": "what is the time unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_102",
+      "question": "what is the quantity unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_103",
+      "question": "what is the length unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_104",
+      "question": "what is the area unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_105",
+      "question": "what is the volume unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_106",
+      "question": "what is the time unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_107",
+      "question": "what is the quantity unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_108",
+      "question": "what is the length unit in model 971?",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_109",
+      "question": "what is the area unit in model 971?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_110",
+      "question": "what is the volume unit in model 971?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_111",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_112",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_113",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_114",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_115",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_116",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_117",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_118",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_119",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set3_120",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ]
+    }
+  ],
+  "metadata": {
+    "total_questions": 120,
+    "complexity_distribution": {
+      "score_2": 26,
+      "score_1": 67,
+      "score_3": 19,
+      "score_4": 8
+    },
+    "user_backgrounds": {
+      "modeller": 57,
+      "computational_biologist": 33,
+      "epidemiologist": 30
+    },
+    "question_types": {
+      "species": 25,
+      "units": 36,
+      "compartments": 35,
+      "parameters": 24
+    },
+    "model_distribution": {
+      "971": 26,
+      "27": 47,
+      "537": 47
+    },
+    "expected_tools": [
+      "get_modelinfo"
+    ]
+  }
+}
