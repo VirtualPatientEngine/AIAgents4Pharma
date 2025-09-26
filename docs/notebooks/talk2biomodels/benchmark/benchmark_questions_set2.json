@@ -1,5 +1,5 @@
 {
-  "simulate_model_benchmark_questions_set2": [
+  "simulate_model_benchmark_questions": [
     {
       "id": "sim_set2_001",
       "question": "simulate model 537 with CRP{serum} concentration 0.01 for 2016 hours with interval 2016 and tell me the final CRP{serum} concentration",
@@ -16,7 +16,11 @@
         "CRP{liver}": 6.492506,
         "IL6{serum}": 0.000641,
         "STAT3{gut}": 9.133764
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_002",
@@ -34,7 +38,11 @@
         "CRP{liver}": 162.014501,
         "IL6{serum}": 0.000676,
         "STAT3{gut}": 0.332824
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_003",
@@ -49,10 +57,14 @@
       "initial_concentration": 2.6,
       "expected_values": {
         "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.323640,
+        "CRP{liver}": 158.32364,
         "IL6{serum}": 0.000436,
         "STAT3{gut}": 0.596129
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_004",
@@ -70,7 +82,11 @@
         "CRP{liver}": 60.845307,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815264
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_005",
@@ -88,7 +104,11 @@
         "CRP{liver}": 60.845411,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815259
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_006",
@@ -106,7 +126,11 @@
         "CRP{liver}": 154.668528,
         "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_007",
@@ -124,7 +148,11 @@
         "CRP{liver}": 6.438947,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_008",
@@ -142,7 +170,11 @@
         "CRP{liver}": 6.492506,
         "IL6{serum}": 0.000641,
         "STAT3{gut}": 9.133764
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_009",
@@ -160,7 +192,11 @@
         "CRP{liver}": 162.014501,
         "IL6{serum}": 0.000676,
         "STAT3{gut}": 0.332824
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_010",
@@ -175,10 +211,14 @@
       "initial_concentration": 2.6,
       "expected_values": {
         "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.323640,
+        "CRP{liver}": 158.32364,
         "IL6{serum}": 0.000436,
         "STAT3{gut}": 0.596129
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_011",
@@ -196,7 +236,11 @@
         "CRP{liver}": 60.845307,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815264
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_012",
@@ -214,7 +258,11 @@
         "CRP{liver}": 60.845411,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815259
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_013",
@@ -232,7 +280,11 @@
         "CRP{liver}": 154.668528,
         "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_014",
@@ -250,7 +302,11 @@
         "CRP{liver}": 6.438947,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_015",
@@ -268,7 +324,11 @@
         "CRP{liver}": 6.492506,
         "IL6{serum}": 0.000641,
         "STAT3{gut}": 9.133764
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_016",
@@ -286,7 +346,11 @@
         "CRP{liver}": 162.014501,
         "IL6{serum}": 0.000676,
         "STAT3{gut}": 0.332824
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_017",
@@ -301,10 +365,14 @@
       "initial_concentration": 2.6,
       "expected_values": {
         "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.323640,
+        "CRP{liver}": 158.32364,
         "IL6{serum}": 0.000436,
         "STAT3{gut}": 0.596129
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_018",
@@ -322,7 +390,11 @@
         "CRP{liver}": 60.845307,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815264
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_019",
@@ -340,7 +412,11 @@
         "CRP{liver}": 60.845411,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815259
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_020",
@@ -358,7 +434,11 @@
         "CRP{liver}": 154.668528,
         "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_021",
@@ -376,7 +456,11 @@
         "CRP{liver}": 6.438947,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_022",
@@ -394,7 +478,11 @@
         "CRP{liver}": 6.492506,
         "IL6{serum}": 0.000641,
         "STAT3{gut}": 9.133764
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_023",
@@ -412,7 +500,11 @@
         "CRP{liver}": 162.014501,
         "IL6{serum}": 0.000676,
         "STAT3{gut}": 0.332824
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_024",
@@ -427,10 +519,14 @@
       "initial_concentration": 2.6,
       "expected_values": {
         "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.323640,
+        "CRP{liver}": 158.32364,
         "IL6{serum}": 0.000436,
         "STAT3{gut}": 0.596129
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_025",
@@ -448,7 +544,11 @@
         "CRP{liver}": 60.845307,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815264
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_026",
@@ -466,7 +566,11 @@
         "CRP{liver}": 60.845411,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 6.815259
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_027",
@@ -484,7 +588,11 @@
         "CRP{liver}": 154.668528,
         "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_028",
@@ -502,7 +610,11 @@
         "CRP{liver}": 6.438947,
         "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_029",
@@ -520,7 +632,11 @@
         "CRP{liver}": 6.492506,
         "IL6{serum}": 0.000641,
         "STAT3{gut}": 9.133764
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_030",
@@ -538,7 +654,11 @@
         "CRP{liver}": 162.014501,
         "IL6{serum}": 0.000676,
         "STAT3{gut}": 0.332824
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_031",
@@ -555,7 +675,11 @@
         "Susceptible": 1017891,
         "Recovered": 2231583,
         "Hospitalised": 132514
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_032",
@@ -572,7 +696,11 @@
         "Susceptible": 1055609,
         "Recovered": 4586298,
         "Hospitalised": 86882.62
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_033",
@@ -589,7 +717,11 @@
         "Susceptible": 1055585,
         "Recovered": 6955857,
         "Hospitalised": 49019.75
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_034",
@@ -606,7 +738,11 @@
         "Susceptible": 1055585,
         "Recovered": 9714202,
         "Hospitalised": 4972.991
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_035",
@@ -623,7 +759,11 @@
         "Susceptible": 3167693,
         "Recovered": 163461.1,
         "Hospitalised": 40760.04
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_036",
@@ -640,7 +780,11 @@
         "Susceptible": 10796200,
         "Recovered": 2980.39,
         "Hospitalised": 806.595
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_037",
@@ -657,7 +801,11 @@
         "Mpp": 317.356267,
         "M": 154.982325,
         "Mp": 27.661408
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_038",
@@ -674,7 +822,11 @@
         "Mpp": 494.565011,
         "M": 0.076041,
         "Mp": 5.358948
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_039",
@@ -691,7 +843,11 @@
         "Mpp": 494.647985,
         "M": 0.000758,
         "Mp": 5.351257
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_040",
@@ -706,9 +862,13 @@
       "species": "M",
       "expected_values": {
         "Mpp": 491.982136,
-        "M": 0.001140,
+        "M": 0.00114,
         "Mp": 8.016723
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_041",
@@ -725,7 +885,11 @@
         "Mpp": 42.542954,
         "M": 0.103107,
         "Mp": 457.353939
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "sim_set2_042",
@@ -742,7 +906,11 @@
         "Mpp": 499.195565,
         "M": 0.000113,
         "Mp": 0.804322
-      }
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
     },
     {
       "id": "search_001",
@@ -752,7 +920,11 @@
       "expected_answer": "I found 5 models related to Crohn's disease in the BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
       "tool": "search_models",
       "search_query": "crohn's disease",
-      "expected_count": 5
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_002",
@@ -762,7 +934,11 @@
       "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
       "tool": "search_models",
       "search_query": "precision medicine",
-      "expected_count": 7
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_003",
@@ -772,7 +948,11 @@
       "expected_answer": "Sure! I found 43 models related to COVID-19 in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, SIR/SEIR models, and immune response models.",
       "tool": "search_models",
       "search_query": "covid-19",
-      "expected_count": 43
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_004",
@@ -782,7 +962,11 @@
       "expected_answer": "I found 58 models related to gut health and microbiome interactions in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering mucosal immunity, gut microbiome interactions, and tissue-specific metabolic networks.",
       "tool": "search_models",
       "search_query": "gut",
-      "expected_count": 58
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_005",
@@ -792,7 +976,11 @@
       "expected_answer": "Search completed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
       "tool": "search_models",
       "search_query": "crohn disease",
-      "expected_count": 5
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_006",
@@ -802,7 +990,11 @@
       "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
       "tool": "search_models",
       "search_query": "precision medicine",
-      "expected_count": 7
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_007",
@@ -812,7 +1004,11 @@
       "expected_answer": "There are 43 COVID-19 related models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
       "tool": "search_models",
       "search_query": "covid",
-      "expected_count": 43
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_008",
@@ -822,7 +1018,11 @@
       "expected_answer": "I found 58 models related to gut processes in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
       "tool": "search_models",
       "search_query": "gut",
-      "expected_count": 58
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_009",
@@ -832,7 +1032,11 @@
       "expected_answer": "Search executed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
       "tool": "search_models",
       "search_query": "crohn's disease",
-      "expected_count": 5
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_010",
@@ -842,7 +1046,11 @@
       "expected_answer": "Hey! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
       "tool": "search_models",
       "search_query": "precision medicine",
-      "expected_count": 7
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_011",
@@ -852,7 +1060,11 @@
       "expected_answer": "Search executed. Found 43 COVID-19 models in BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
       "tool": "search_models",
       "search_query": "covid-19",
-      "expected_count": 43
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_012",
@@ -862,7 +1074,11 @@
       "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
       "tool": "search_models",
       "search_query": "gut",
-      "expected_count": 58
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_013",
@@ -872,7 +1088,11 @@
       "expected_answer": "Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
       "tool": "search_models",
       "search_query": "crohn disease",
-      "expected_count": 5
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_014",
@@ -882,7 +1102,11 @@
       "expected_answer": "I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
       "tool": "search_models",
       "search_query": "precision medicine",
-      "expected_count": 7
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_015",
@@ -892,7 +1116,11 @@
       "expected_answer": "There are 43 COVID-19 models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more including various epidemiological models, transmission dynamics models, and models studying the impact of public health interventions.",
       "tool": "search_models",
       "search_query": "covid",
-      "expected_count": 43
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_016",
@@ -902,7 +1130,11 @@
       "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity during infections, tissue-specific genome-scale metabolic networks, and detailed models of specific gut microbial species including Lactobacillus, Acetobacter, and other beneficial bacteria.",
       "tool": "search_models",
       "search_query": "gut",
-      "expected_count": 58
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_017",
@@ -912,7 +1144,11 @@
       "expected_answer": "I've searched for Crohn's disease models in BioModels. Found 5 models: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
       "tool": "search_models",
       "search_query": "crohn's disease",
-      "expected_count": 5
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_018",
@@ -922,7 +1158,11 @@
       "expected_answer": "Sure! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
       "tool": "search_models",
       "search_query": "precision medicine",
-      "expected_count": 7
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_019",
@@ -932,7 +1172,11 @@
       "expected_answer": "I've searched the BioModels database for COVID-19 models. Found 43 models. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering various aspects of the pandemic including transmission dynamics, public health interventions, and immune responses. This should provide a comprehensive resource for your epidemiological modeling project.",
       "tool": "search_models",
       "search_query": "covid-19",
-      "expected_count": 43
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "search_020",
@@ -942,7 +1186,11 @@
       "expected_answer": "Found 58 gut models in BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more.",
       "tool": "search_models",
       "search_query": "gut",
-      "expected_count": 58
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_001",
@@ -954,7 +1202,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_002",
@@ -966,7 +1218,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_003",
@@ -978,7 +1234,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_004",
@@ -990,7 +1250,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_005",
@@ -1002,7 +1266,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_006",
@@ -1014,7 +1282,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_007",
@@ -1026,7 +1298,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_008",
@@ -1038,7 +1314,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_009",
@@ -1050,7 +1330,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_010",
@@ -1062,7 +1346,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_011",
@@ -1074,7 +1362,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_012",
@@ -1086,7 +1378,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_013",
@@ -1098,7 +1394,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_014",
@@ -1110,7 +1410,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_015",
@@ -1122,7 +1426,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_016",
@@ -1134,7 +1442,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_017",
@@ -1146,7 +1458,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_018",
@@ -1158,7 +1474,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_019",
@@ -1170,7 +1490,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_020",
@@ -1182,7 +1506,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_021",
@@ -1194,7 +1522,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_022",
@@ -1206,7 +1538,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_023",
@@ -1218,7 +1554,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_024",
@@ -1230,7 +1570,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_025",
@@ -1242,7 +1586,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_026",
@@ -1254,7 +1602,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_027",
@@ -1266,7 +1618,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_028",
@@ -1278,7 +1634,11 @@
       "tool": "steady_state",
       "species": "Mpp",
       "expected_concentration": 494.565011,
-      "transition_time": 62.278
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_029",
@@ -1290,7 +1650,11 @@
       "tool": "steady_state",
       "species": "M",
       "expected_concentration": 0.076041,
-      "transition_time": 1.012
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_030",
@@ -1302,7 +1666,11 @@
       "tool": "steady_state",
       "species": "Mp",
       "expected_concentration": 5.358948,
-      "transition_time": 0.669
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_031",
@@ -1314,7 +1682,11 @@
       "tool": "steady_state",
       "species": "Susceptible",
       "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27
+      "transition_time": 1.376e+27,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_032",
@@ -1326,7 +1698,11 @@
       "tool": "steady_state",
       "species": "Exposed",
       "expected_concentration": -5.661e-22,
-      "transition_time": 7.000
+      "transition_time": 7.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_033",
@@ -1338,7 +1714,11 @@
       "tool": "steady_state",
       "species": "Infected",
       "expected_concentration": -1.541e-22,
-      "transition_time": 2.160
+      "transition_time": 2.16,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_034",
@@ -1350,7 +1730,11 @@
       "tool": "steady_state",
       "species": "Asymptomatic",
       "expected_concentration": -8.028e-23,
-      "transition_time": 7.154
+      "transition_time": 7.154,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_035",
@@ -1362,7 +1746,11 @@
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
       "expected_concentration": -1.074e-20,
-      "transition_time": 14.000
+      "transition_time": 14.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_036",
@@ -1374,7 +1762,11 @@
       "tool": "steady_state",
       "species": "Exposed_quarantined",
       "expected_concentration": -1.222e-28,
-      "transition_time": 7.943
+      "transition_time": 7.943,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_037",
@@ -1386,7 +1778,11 @@
       "tool": "steady_state",
       "species": "Hospitalised",
       "expected_concentration": -1.873e-22,
-      "transition_time": 8.602
+      "transition_time": 8.602,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_038",
@@ -1398,7 +1794,11 @@
       "tool": "steady_state",
       "species": "Recovered",
       "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29
+      "transition_time": 1.195e+29,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_039",
@@ -1410,7 +1810,11 @@
       "tool": "steady_state",
       "species": "Susceptible",
       "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27
+      "transition_time": 1.376e+27,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_040",
@@ -1422,7 +1826,11 @@
       "tool": "steady_state",
       "species": "Infected",
       "expected_concentration": -1.541e-22,
-      "transition_time": 2.160
+      "transition_time": 2.16,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_041",
@@ -1434,7 +1842,11 @@
       "tool": "steady_state",
       "species": "Exposed",
       "expected_concentration": -5.661e-22,
-      "transition_time": 7.000
+      "transition_time": 7.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_042",
@@ -1446,7 +1858,11 @@
       "tool": "steady_state",
       "species": "Asymptomatic",
       "expected_concentration": -8.028e-23,
-      "transition_time": 7.154
+      "transition_time": 7.154,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_043",
@@ -1458,7 +1874,11 @@
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
       "expected_concentration": -1.074e-20,
-      "transition_time": 14.000
+      "transition_time": 14.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_044",
@@ -1470,7 +1890,11 @@
       "tool": "steady_state",
       "species": "Exposed_quarantined",
       "expected_concentration": -1.222e-28,
-      "transition_time": 7.943
+      "transition_time": 7.943,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_045",
@@ -1482,7 +1906,11 @@
       "tool": "steady_state",
       "species": "Hospitalised",
       "expected_concentration": -1.873e-22,
-      "transition_time": 8.602
+      "transition_time": 8.602,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_046",
@@ -1494,7 +1922,11 @@
       "tool": "steady_state",
       "species": "Recovered",
       "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29
+      "transition_time": 1.195e+29,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_047",
@@ -1506,7 +1938,11 @@
       "tool": "steady_state",
       "species": "Susceptible",
       "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27
+      "transition_time": 1.376e+27,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_048",
@@ -1518,7 +1954,11 @@
       "tool": "steady_state",
       "species": "Infected",
       "expected_concentration": -1.541e-22,
-      "transition_time": 2.160
+      "transition_time": 2.16,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_049",
@@ -1530,7 +1970,11 @@
       "tool": "steady_state",
       "species": "Exposed",
       "expected_concentration": -5.661e-22,
-      "transition_time": 7.000
+      "transition_time": 7.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_050",
@@ -1542,7 +1986,11 @@
       "tool": "steady_state",
       "species": "Asymptomatic",
       "expected_concentration": -8.028e-23,
-      "transition_time": 7.154
+      "transition_time": 7.154,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_051",
@@ -1554,7 +2002,11 @@
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
       "expected_concentration": -1.074e-20,
-      "transition_time": 14.000
+      "transition_time": 14.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_052",
@@ -1566,7 +2018,11 @@
       "tool": "steady_state",
       "species": "Exposed_quarantined",
       "expected_concentration": -1.222e-28,
-      "transition_time": 7.943
+      "transition_time": 7.943,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_053",
@@ -1578,7 +2034,11 @@
       "tool": "steady_state",
       "species": "Hospitalised",
       "expected_concentration": -1.873e-22,
-      "transition_time": 8.602
+      "transition_time": 8.602,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_054",
@@ -1590,7 +2050,11 @@
       "tool": "steady_state",
       "species": "Recovered",
       "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29
+      "transition_time": 1.195e+29,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_055",
@@ -1602,7 +2066,11 @@
       "tool": "steady_state",
       "species": "Susceptible",
       "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27
+      "transition_time": 1.376e+27,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_056",
@@ -1614,7 +2082,11 @@
       "tool": "steady_state",
       "species": "Infected",
       "expected_concentration": -1.541e-22,
-      "transition_time": 2.160
+      "transition_time": 2.16,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_057",
@@ -1626,7 +2098,11 @@
       "tool": "steady_state",
       "species": "Exposed",
       "expected_concentration": -5.661e-22,
-      "transition_time": 7.000
+      "transition_time": 7.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_058",
@@ -1638,7 +2114,11 @@
       "tool": "steady_state",
       "species": "Asymptomatic",
       "expected_concentration": -8.028e-23,
-      "transition_time": 7.154
+      "transition_time": 7.154,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_059",
@@ -1650,7 +2130,11 @@
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
       "expected_concentration": -1.074e-20,
-      "transition_time": 14.000
+      "transition_time": 14.0,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     },
     {
       "id": "steady_060",
@@ -1662,7 +2146,11 @@
       "tool": "steady_state",
       "species": "Exposed_quarantined",
       "expected_concentration": -1.222e-28,
-      "transition_time": 7.943
+      "transition_time": 7.943,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
     }
   ],
   "metadata": {
@@ -1740,7 +2228,7 @@
             "concentration": 2.6,
             "expected_values": {
               "CRP{serum}": 221.060568,
-              "CRP{liver}": 158.323640,
+              "CRP{liver}": 158.32364,
               "IL6{serum}": 0.000436,
               "STAT3{gut}": 0.596129
             }
@@ -1907,7 +2395,7 @@
             "species": "Mpp",
             "expected_values": {
               "Mpp": 491.982136,
-              "M": 0.001140,
+              "M": 0.00114,
               "Mp": 8.016723
             }
           },
