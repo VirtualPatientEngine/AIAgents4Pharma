@@ -1198,3 +1198,80 @@ The example question and expected answer in json format is here:
       ]
     }
 
+## SET4
+Questions about getting annotations and parameter scan.
+* Here benchmark wheter the agent returns the correct annoaton ID.
+
+**Get annotations**
+
+Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool `get_annotation`.
+This tool returns the annotation ID, if user asks for a specific species or annotations for all the species in the model.
+
+Create 20 questions for each model id 27, 537 and 971 and add them to the set 4 in a similar fashion as are the questions in the set2 and set3. Make sure the questions are diverse and include different species and different number of species. Ask specificallly for the annotations of the species. Expected values should be the annotation ID, one species can return multiple annotation IDs. Expected tools should be get_annotation.
+
+Use these ground truths for the questions and answer generation:
+
+Model id 27
+M
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+Mp
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+Mpp
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+MAPKK
+{'descriptions': [{'id': 'Q05116', 'qualifier': 'is', 'uri': 'http://identifiers.org/uniprot/Q05116', 'resource': 'UniProt Knowledgebase'}]}
+MKP3
+{'descriptions': [{'id': 'Q90W58', 'qualifier': 'is', 'uri': 'http://identifiers.org/uniprot/Q90W58', 'resource': 'UniProt Knowledgebase'}]}
+
+Model id 537:
+
+
+Model id 971:
+
+Susceptible
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Exposed
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': '0000597', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000597', 'resource': 'Infectious Disease Ontology'}]}
+Asymptomatic
+{'descriptions': [{'id': '0000569', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000569', 'resource': 'Infectious Disease Ontology'}, {'id': '0000511', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000511', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Susceptible_quarantined
+{'descriptions': [{'id': 'C71902', 'qualifier': 'is', 'uri': 'http://identifiers.org/ncit/C71902', 'resource': 'NCIt'}, {'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Exposed_quarantined
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C71902', 'qualifier': 'is', 'uri': 'http://identifiers.org/ncit/C71902', 'resource': 'NCIt'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': '0000597', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000597', 'resource': 'Infectious Disease Ontology'}]}
+Hospitalised
+{'descriptions': [{'id': '0000511', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ido/0000511', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': 'C25179', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ncit/C25179', 'resource': 'NCIt'}]}
+Recovered
+{'descriptions': [{'id': '0000621', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000621', 'resource': 'Infectious Disease Ontology'}]}
+
+Example question in json format:
+    {
+      "id": "annotation_set4_001",
+      "question": "get the annotation for the species IL6{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": "P05231"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    }
+
+Example question in json format:
+    {
+      "id": "annotation_set4_001",
+      "question": "get the annotation for the species IL6{liver} and pSTAT3{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": ["P05231"],
+        "pSTAT3{liver}": ["PR:000002089",SBO:0000216]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    }
