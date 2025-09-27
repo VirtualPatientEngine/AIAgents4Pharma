@@ -921,5 +921,28 @@
         "get_annotation"
       ]
     }
-  ]
+  ],
+  "metadata": {
+    "total_questions": 60,
+    "complexity_distribution": {
+      "score_1": 17,
+      "score_2": 26,
+      "score_3": 12,
+      "score_4": 5
+    },
+    "user_backgrounds": {
+      "modeller": 60
+    },
+    "question_types": {
+      "get_annotation": 60
+    },
+    "model_distribution": {
+      "27": 20,
+      "537": 20,
+      "971": 20
+    },
+    "expected_tools": [
+      "get_annotation"
+    ]
+  }
 }
