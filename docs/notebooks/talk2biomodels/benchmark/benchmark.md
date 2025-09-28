@@ -1198,6 +1198,8 @@ The example question and expected answer in json format is here:
       ]
     }
 
+
+
 ## SET4
 Questions about getting annotations and parameter scan.
 * Here benchmark wheter the agent returns the correct annoaton ID.
@@ -1224,7 +1226,94 @@ MKP3
 {'descriptions': [{'id': 'Q90W58', 'qualifier': 'is', 'uri': 'http://identifiers.org/uniprot/Q90W58', 'resource': 'UniProt Knowledgebase'}]}
 
 Model id 537:
-
+IL6{serum}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{serum}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{serum}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRP{serum}
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sR{serum}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6{serum}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'CHEBI:52217', 'qualifier': 'has property', 'uri': 'http://identifiers.org/CHEBI:52217', 'resource': 'ChEBI'}]}
+Ab_sR{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR_IL6{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRP Suppression (%)
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+CRP (% of baseline)
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+gp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+R_IL6_gp130{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+sR_IL6{liver}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+R
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+IL6{liver}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+R_IL6
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ractive{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0002354', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0002354', 'resource': 'PATO'}, {'id': 'SBO:0000286', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000286', 'resource': 'Systems Biology Ontology'}]}
+STAT3{liver}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}]}
+pSTAT3{liver}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}, {'id': 'SBO:0000216', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000216', 'resource': 'Systems Biology Ontology'}]}
+CRP{liver}
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sR{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRPExtracellular
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR{liver}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{liver}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab_R
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ab_sR_IL6{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+gp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+R_IL6_gp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ractive{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0002354', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0002354', 'resource': 'PATO'}, {'id': 'SBO:0000286', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000286', 'resource': 'Systems Biology Ontology'}]}
+STAT3{gut}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}]}
+pSTAT3{gut}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}, {'id': 'SBO:0000216', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000216', 'resource': 'Systems Biology Ontology'}]}
+geneProduct
+{'descriptions': [{'id': 'CCO:U0000003', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/CCO:U0000003', 'resource': 'Cell Cycle Ontology'}]}
+sR{gut}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{gut}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{gut}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab_sR{gut}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR_IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has property', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has property', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}, {'id': 'FMA:62871', 'qualifier': 'has property', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab{peripheral}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
 
 Model id 971:
 
@@ -1275,3 +1364,200 @@ Example question in json format:
         "get_annotation"
       ]
     }
+
+## Set5
+
+**Parameter scan**
+
+Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool `parameter_scan`.
+This tool returns the parameter scan results for the model.
+
+Create 20 questions for each model id 27, 537 and 971 and add them to the set 5 in a similar fashion as are the questions in the set2 and set4. Make sure the questions are diverse and include different parameters and different number of parameters. Ask specifically for the parameter scan results. Expected values should be the parameter scan results in a csv file. Expected tools should be parameter_scan.
+
+Use the following combination to mix and match the questions with answers:
+
+EXAMPLE:
+Model 537
+Question 1: Run a param scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.
+
+name = 'IL6{gut}'
+output = 'CRP{serum}'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e+02
+stepsize_scan = (stop_scan-start_scan)/5.
+filename = './tables/scan_IL6_CRP_537.csv'
+
+Example in JSON format:
+
+    {
+      "id": "scan_IL6_CRP_537_001",
+      "question": "Run a param scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameter_scan",
+      "arguments": {
+        "species_names": ["IL6{gut}"],
+        "species_output": "CRP{serum}",
+        "species_parameter_values": [2.101100e-08, 2.101100e+02],
+        "stepsize_scan": 42.02,
+        "time": 100,
+        "intervals": 10,
+        "filename": "tables/scan_IL6_CRP_537.csv"
+      },
+      "expected_values": {
+        "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+      },
+      "expected_tools": [
+        "parameter_scan"
+      ]
+    }
+
+Combination parameters for model 537:
+
+* scan1
+name = 'IL6{gut}'
+output = 'CRP{serum}'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e+02
+stepsize_scan = (stop_scan-start_scan)/5.
+time = 100
+intervals = 10
+filename = './tables/scan_IL6_CRP_537.csv'
+
+* scan2
+name = 'kdegIL6Gut'
+output = 'IL6{gut}'
+start_scan = 1e-3
+stop_scan = 10
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_kdegIL6Gut_IL6_537.csv'
+
+* scan3
+name = 'kdegIL6Gut'
+output = 'CRP{serum}'
+start_scan = 1e-3
+stop_scan = 100
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_kdegIL6Gut_CRP_537.csv'
+
+* scan4
+name = 'Dose'
+output = 'CRP{serum}'
+start_scan = 10
+stop_scan = 600
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_Dose_CRP_537.csv'
+
+
+Model 971
+
+* scan1
+name = 'Exposed'
+output = 'Recovered'
+start_scan = 1
+stop_scan = 10000
+stepsize_scan = (stop_scan-start_scan)/5.
+time = 100
+intervals = 10
+filename = './tables/scan_Exposed_Recovered_971.csv'
+
+* scan2
+name = 'beta'
+output = 'Hospitalised'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e-05
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_beta_Hospitalised_971.csv'
+
+* scan3
+name = 'beta'
+output = 'Infected'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e-05
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_beta_Infected_971.csv'
+
+* scan4
+name = 'sigma'
+output = 'Hospitalised'
+start_scan = 1.428570e-03
+stop_scan = 1.428570
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_sigma_Hospitalised_971.csv'
+
+* scan5
+name = 'sigma'
+output = 'Infected'
+start_scan = 1.428570e-03
+stop_scan = 1.428570
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_sigma_Infected_971.csv'
+
+
+Model 27
+
+* scan1
+name = 'k1cat'
+output = 'Mpp'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+print(stepsize_scan)
+filename = './tables/scan_k1cat_Mpp_27.csv'
+
+* scan2
+name = 'k1cat'
+output = 'M'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k1cat_M_27.csv'
+
+* scan3
+name = 'k2cat'
+output = 'Mpp'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k2cat_Mpp_27.csv'
+
+* scan4
+name = 'k1cat'
+output = 'M'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k1cat_M_27.csv'
+
+* scan5
+name = 'MAPKK'
+output = 'Mpp'
+start_scan = 1
+stop_scan = 100
+stepsize_scan = (stop_scan-start_scan)/10.
+time = 100
+intervals = 10
+filename = './tables/scan_MAPKK_Mpp_27.csv'

@@ -1,0 +1,1407 @@
+{
+  "parameter_scan_benchmark_questions_set5": [
+    {
+      "id": "scan_IL6_CRP_537_001",
+    "question": "Run a parameter scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "IL6{gut}",
+      "species_parameter_values": [2.101100e-08, 2.101100e+02],
+      "stepsize_scan": 42.02,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_IL6_537_002",
+    "question": "Perform a parameter scan in model 537 to analyze how the degradation rate constant kdegIL6Gut affects the concentration of IL6{gut} over time. Scan from 1e-3 to 10 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["IL6{gut}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 10],
+      "stepsize_scan": 2.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_CRP_537_003",
+    "question": "Run a parameter scan in model 537 to investigate the impact of kdegIL6Gut parameter on CRP{serum} concentration dynamics. Use range from 1e-3 to 100 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 100],
+      "stepsize_scan": 25.0,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Dose_CRP_537_004",
+    "question": "Execute a parameter scan in model 537 to examine how the Dose parameter influences CRP{serum} concentration over time. Scan from 10 to 600 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "Dose",
+      "species_parameter_values": [10, 600],
+      "stepsize_scan": 147.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_IL6_CRP_537_005",
+    "question": "Analyze the sensitivity of CRP{serum} to IL6{gut} initial concentration in model 537. Perform parameter scan from 2.101100e-08 to 2.101100e+02 with step size of 42.02.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "IL6{gut}",
+      "species_parameter_values": [2.101100e-08, 2.101100e+02],
+      "stepsize_scan": 42.02,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_IL6_537_006",
+    "question": "Study the effect of kdegIL6Gut on IL6{gut} dynamics in model 537. Run parameter scan with values from 1e-3 to 10 divided into 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["IL6{gut}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 10],
+      "stepsize_scan": 2.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_CRP_537_007",
+    "question": "Investigate how kdegIL6Gut parameter variation affects CRP{serum} concentration in model 537. Use parameter scan from 1e-3 to 100 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 100],
+      "stepsize_scan": 25.0,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Dose_CRP_537_008",
+    "question": "Examine the relationship between Dose parameter and CRP{serum} concentration in model 537. Perform parameter scan from 10 to 600 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "Dose",
+      "species_parameter_values": [10, 600],
+      "stepsize_scan": 147.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_IL6_CRP_537_009",
+    "question": "Run parameter scan in model 537 to observe CRP{serum} response to IL6{gut} initial concentration changes from 2.101100e-08 to 2.101100e+02 with step size 42.02.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "IL6{gut}",
+      "species_parameter_values": [2.101100e-08, 2.101100e+02],
+      "stepsize_scan": 42.02,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_IL6_537_010",
+    "question": "Perform sensitivity analysis of IL6{gut} concentration to kdegIL6Gut parameter in model 537. Scan from 1e-3 to 10 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["IL6{gut}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 10],
+      "stepsize_scan": 2.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_CRP_537_011",
+    "question": "Analyze CRP{serum} concentration sensitivity to kdegIL6Gut parameter variation in model 537. Use parameter scan from 1e-3 to 100 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 100],
+      "stepsize_scan": 25.0,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Dose_CRP_537_012",
+    "question": "Study Dose parameter impact on CRP{serum} concentration dynamics in model 537. Execute parameter scan from 10 to 600 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "Dose",
+      "species_parameter_values": [10, 600],
+      "stepsize_scan": 147.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_IL6_CRP_537_013",
+    "question": "Investigate IL6{gut} initial concentration effect on CRP{serum} in model 537. Run parameter scan from 2.101100e-08 to 2.101100e+02 with step size 42.02.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "IL6{gut}",
+      "species_parameter_values": [2.101100e-08, 2.101100e+02],
+      "stepsize_scan": 42.02,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_IL6_537_014",
+    "question": "Examine kdegIL6Gut parameter influence on IL6{gut} concentration in model 537. Perform parameter scan from 1e-3 to 10 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["IL6{gut}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 10],
+      "stepsize_scan": 2.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_CRP_537_015",
+    "question": "Run parameter scan in model 537 to analyze CRP{serum} response to kdegIL6Gut parameter changes from 1e-3 to 100 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 100],
+      "stepsize_scan": 25.0,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Dose_CRP_537_016",
+    "question": "Analyze Dose parameter sensitivity on CRP{serum} concentration in model 537. Use parameter scan from 10 to 600 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "Dose",
+      "species_parameter_values": [10, 600],
+      "stepsize_scan": 147.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_IL6_CRP_537_017",
+    "question": "Study CRP{serum} concentration changes in response to IL6{gut} initial concentration variation in model 537. Scan from 2.101100e-08 to 2.101100e+02 with step size 42.02.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "IL6{gut}",
+      "species_parameter_values": [2.101100e-08, 2.101100e+02],
+      "stepsize_scan": 42.02,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_IL6_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_IL6_537_018",
+    "question": "Investigate how kdegIL6Gut parameter affects IL6{gut} concentration dynamics in model 537. Perform parameter scan from 1e-3 to 10 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["IL6{gut}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 10],
+      "stepsize_scan": 2.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_IL6_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_kdegIL6Gut_CRP_537_019",
+    "question": "Examine CRP{serum} concentration sensitivity to kdegIL6Gut parameter in model 537. Run parameter scan from 1e-3 to 100 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "kdegIL6Gut",
+      "species_parameter_values": [1e-3, 100],
+      "stepsize_scan": 25.0,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_kdegIL6Gut_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Dose_CRP_537_020",
+    "question": "Analyze Dose parameter impact on CRP{serum} concentration over time in model 537. Use parameter scan from 10 to 600 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "537",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["CRP{serum}"],
+      "species_parameter_name": "Dose",
+      "species_parameter_values": [10, 600],
+      "stepsize_scan": 147.5,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Dose_CRP_537.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Exposed_Recovered_971_001",
+    "question": "Run a parameter scan in model 971 to observe change in concentration of Recovered over time if initial value of the species Exposed is changed from 1 to 10000 with a step size of 1999.8.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Recovered"],
+      "species_parameter_name": "Exposed",
+      "species_parameter_values": [1, 10000],
+      "stepsize_scan": 1999.8,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Hospitalised_971_002",
+    "question": "Perform a parameter scan in model 971 to analyze how the beta parameter affects the concentration of Hospitalised over time. Scan from 2.101100e-08 to 2.101100e-05 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Infected_971_003",
+    "question": "Run a parameter scan in model 971 to investigate the impact of beta parameter on Infected concentration dynamics. Use range from 2.101100e-08 to 2.101100e-05 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Hospitalised_971_004",
+    "question": "Execute a parameter scan in model 971 to examine how the sigma parameter influences Hospitalised concentration over time. Scan from 1.428570e-03 to 1.428570 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Infected_971_005",
+    "question": "Analyze the sensitivity of Infected to sigma parameter in model 971. Perform parameter scan from 1.428570e-03 to 1.428570 with step size of 0.356785.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Exposed_Recovered_971_006",
+    "question": "Study the effect of Exposed initial concentration on Recovered dynamics in model 971. Run parameter scan with values from 1 to 10000 divided into 5 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Recovered"],
+      "species_parameter_name": "Exposed",
+      "species_parameter_values": [1, 10000],
+      "stepsize_scan": 1999.8,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Hospitalised_971_007",
+    "question": "Investigate how beta parameter variation affects Hospitalised concentration in model 971. Use parameter scan from 2.101100e-08 to 2.101100e-05 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Infected_971_008",
+    "question": "Examine the relationship between beta parameter and Infected concentration in model 971. Perform parameter scan from 2.101100e-08 to 2.101100e-05 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Hospitalised_971_009",
+    "question": "Run parameter scan in model 971 to observe Hospitalised response to sigma parameter changes from 1.428570e-03 to 1.428570 with step size 0.356785.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Infected_971_010",
+    "question": "Perform sensitivity analysis of Infected concentration to sigma parameter in model 971. Scan from 1.428570e-03 to 1.428570 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Exposed_Recovered_971_011",
+    "question": "Analyze Recovered concentration sensitivity to Exposed initial concentration variation in model 971. Use parameter scan from 1 to 10000 with 5 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Recovered"],
+      "species_parameter_name": "Exposed",
+      "species_parameter_values": [1, 10000],
+      "stepsize_scan": 1999.8,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Hospitalised_971_012",
+    "question": "Study beta parameter impact on Hospitalised concentration dynamics in model 971. Execute parameter scan from 2.101100e-08 to 2.101100e-05 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Infected_971_013",
+    "question": "Investigate beta parameter effect on Infected concentration in model 971. Run parameter scan from 2.101100e-08 to 2.101100e-05 with step size 5.25275e-06.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Hospitalised_971_014",
+    "question": "Examine sigma parameter influence on Hospitalised concentration in model 971. Perform parameter scan from 1.428570e-03 to 1.428570 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Infected_971_015",
+    "question": "Run parameter scan in model 971 to analyze Infected response to sigma parameter changes from 1.428570e-03 to 1.428570 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_Exposed_Recovered_971_016",
+    "question": "Analyze Exposed parameter sensitivity on Recovered concentration in model 971. Use parameter scan from 1 to 10000 with 5 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Recovered"],
+      "species_parameter_name": "Exposed",
+      "species_parameter_values": [1, 10000],
+      "stepsize_scan": 1999.8,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_Exposed_Recovered_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Hospitalised_971_017",
+    "question": "Study Hospitalised concentration changes in response to beta parameter variation in model 971. Scan from 2.101100e-08 to 2.101100e-05 with step size 5.25275e-06.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_beta_Infected_971_018",
+    "question": "Investigate how beta parameter affects Infected concentration dynamics in model 971. Perform parameter scan from 2.101100e-08 to 2.101100e-05 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "beta",
+      "species_parameter_values": [2.101100e-08, 2.101100e-05],
+      "stepsize_scan": 5.25275e-06,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_beta_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Hospitalised_971_019",
+    "question": "Examine Hospitalised concentration sensitivity to sigma parameter in model 971. Run parameter scan from 1.428570e-03 to 1.428570 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Hospitalised"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Hospitalised_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_sigma_Infected_971_020",
+    "question": "Analyze sigma parameter impact on Infected concentration over time in model 971. Use parameter scan from 1.428570e-03 to 1.428570 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "971",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Infected"],
+      "species_parameter_name": "sigma",
+      "species_parameter_values": [1.428570e-03, 1.428570],
+      "stepsize_scan": 0.356785,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_sigma_Infected_971.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_Mpp_27_001",
+    "question": "Run a parameter scan in model 27 to observe change in concentration of Mpp over time if the parameter k1cat is changed from 0.01 to 1 with a step size of 0.2475.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_002",
+    "question": "Perform a parameter scan in model 27 to analyze how the k1cat parameter affects the concentration of M over time. Scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k2cat_Mpp_27_003",
+    "question": "Run a parameter scan in model 27 to investigate the impact of k2cat parameter on Mpp concentration dynamics. Use range from 0.01 to 1 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k2cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_004",
+    "question": "Execute a parameter scan in model 27 to examine how the k1cat parameter influences M concentration over time. Scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_MAPKK_Mpp_27_005",
+    "question": "Analyze the sensitivity of Mpp to MAPKK parameter in model 27. Perform parameter scan from 1 to 100 with step size of 9.9.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "MAPKK",
+      "species_parameter_values": [1, 100],
+      "stepsize_scan": 9.9,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_Mpp_27_006",
+    "question": "Study the effect of k1cat parameter on Mpp dynamics in model 27. Run parameter scan with values from 0.01 to 1 divided into 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_007",
+    "question": "Investigate how k1cat parameter variation affects M concentration in model 27. Use parameter scan from 0.01 to 1 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k2cat_Mpp_27_008",
+    "question": "Examine the relationship between k2cat parameter and Mpp concentration in model 27. Perform parameter scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k2cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_009",
+    "question": "Run parameter scan in model 27 to observe M response to k1cat parameter changes from 0.01 to 1 with step size 0.2475.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_MAPKK_Mpp_27_010",
+    "question": "Perform sensitivity analysis of Mpp concentration to MAPKK parameter in model 27. Scan from 1 to 100 with 10 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "MAPKK",
+      "species_parameter_values": [1, 100],
+      "stepsize_scan": 9.9,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_Mpp_27_011",
+    "question": "Analyze Mpp concentration sensitivity to k1cat parameter variation in model 27. Use parameter scan from 0.01 to 1 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_012",
+    "question": "Study k1cat parameter impact on M concentration dynamics in model 27. Execute parameter scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k2cat_Mpp_27_013",
+    "question": "Investigate k2cat parameter effect on Mpp concentration in model 27. Run parameter scan from 0.01 to 1 with step size 0.2475.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k2cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_014",
+    "question": "Examine k1cat parameter influence on M concentration in model 27. Perform parameter scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_MAPKK_Mpp_27_015",
+    "question": "Run parameter scan in model 27 to analyze Mpp response to MAPKK parameter changes from 1 to 100 with 10 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "MAPKK",
+      "species_parameter_values": [1, 100],
+      "stepsize_scan": 9.9,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_Mpp_27_016",
+    "question": "Analyze k1cat parameter sensitivity on Mpp concentration in model 27. Use parameter scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_017",
+    "question": "Study M concentration changes in response to k1cat parameter variation in model 27. Scan from 0.01 to 1 with step size 0.2475.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k2cat_Mpp_27_018",
+    "question": "Investigate how k2cat parameter affects Mpp concentration dynamics in model 27. Perform parameter scan from 0.01 to 1 with 4 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "k2cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k2cat_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_k1cat_M_27_019",
+    "question": "Examine M concentration sensitivity to k1cat parameter in model 27. Run parameter scan from 0.01 to 1 with 4 intervals.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["M"],
+      "species_parameter_name": "k1cat",
+      "species_parameter_values": [0.01, 1],
+      "stepsize_scan": 0.2475,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_k1cat_M_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  },
+  {
+    "id": "scan_MAPKK_Mpp_27_020",
+    "question": "Analyze MAPKK parameter impact on Mpp concentration over time in model 27. Use parameter scan from 1 to 100 with 10 steps.",
+    "complexity_score": 2,
+    "user_background": "modeller",
+    "model_id": "27",
+    "question_type": "parameter_scan",
+    "arguments": {
+      "species_names": ["Mpp"],
+      "species_parameter_name": "MAPKK",
+      "species_parameter_values": [1, 100],
+      "stepsize_scan": 9.9,
+      "time": 100,
+      "intervals": 10,
+      "filename": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_values": {
+      "parameter_scan": "tables/scan_MAPKK_Mpp_27.csv"
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+    }
+  ],
+  "metadata": {
+    "total_questions": 60,
+    "complexity_distribution": {
+      "score_1": 0,
+      "score_2": 60,
+      "score_3": 0,
+      "score_4": 0
+    },
+    "user_backgrounds": {
+      "modeller": 60
+    },
+    "question_types": {
+      "parameter_scan": 60
+    },
+    "model_distribution": {
+      "27": 20,
+      "537": 20,
+      "971": 20
+    },
+    "expected_tools": [
+      "parameter_scan"
+    ]
+  }
+}
