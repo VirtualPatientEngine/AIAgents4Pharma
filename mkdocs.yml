@@ -32,10 +32,14 @@ nav:
       - Tools:
           - Search models: talk2biomodels/tools/search_models.md
           - Model information: talk2biomodels/tools/get_modelinfo.md
+          - Model annotation: talk2biomodels/tools/get_annotation.md
           - Simulate model: talk2biomodels/tools/simulate_model.md
           - Ask questions: talk2biomodels/tools/ask_question.md
           - Custom plots: talk2biomodels/tools/custom_plotter.md
           - Load biomodel: talk2biomodels/tools/load_biomodel.md
+          - Save model: talk2biomodels/tools/save_model.md
+          - Parameter scan: talk2biomodels/tools/parameter_scan.md
+          - Steady state: talk2biomodels/tools/steady_state.md
 
   - Talk2Cells:
       - Introduction: talk2cells/intro.md

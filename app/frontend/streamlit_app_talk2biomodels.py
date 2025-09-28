@@ -70,10 +70,7 @@ if needs("NVIDIA/"):
 
 missing = [var for var in needed_env if var not in os.environ]
 if missing:
-    st.warning(
-        "Missing environment settings for the selected provider(s): "
-        + ", ".join(missing)
-    )
+    st.warning("Missing environment settings for the selected provider(s): " + ", ".join(missing))
 
 ########################################################################################
 # Streamlit app
@@ -209,12 +206,8 @@ with main_col2:
                                     validate=r"^http://.*$",  # Ensure the link is valid
                                     display_text=r"^http://identifiers\.org/(.*?)$",
                                 ),
-                                "Species Name": st.column_config.TextColumn(
-                                    "Species Name"
-                                ),
-                                "Description": st.column_config.TextColumn(
-                                    "Description"
-                                ),
+                                "Species Name": st.column_config.TextColumn("Species Name"),
+                                "Description": st.column_config.TextColumn("Description"),
                                 "Database": st.column_config.TextColumn("Database"),
                             },
                         )
@@ -234,9 +227,7 @@ with main_col2:
                                 ),
                                 "name": st.column_config.TextColumn("Name"),
                                 "format": st.column_config.TextColumn("Format"),
-                                "submissionDate": st.column_config.TextColumn(
-                                    "Submission Date"
-                                ),
+                                "submissionDate": st.column_config.TextColumn("Submission Date"),
                             },
                         )
                 else:
@@ -266,15 +257,19 @@ with main_col2:
                             ),
                         },
                     )
-                    intro_prompt = "Tell your name and about yourself. Always start with a greeting."
-                    intro_prompt += " and tell about the tools you can run to perform analysis with short description."
-                    intro_prompt += " We have provided starter questions (separately) outisde your response."
+                    intro_prompt = (
+                        "Tell your name and about yourself. Always start with a greeting."
+                    )
+                    intro_prompt += " and tell about every tools you can run to perform analysis with short description."
+                    intro_prompt += (
+                        " We have provided starter questions (separately) outisde your response."
+                    )
                     intro_prompt += " Do not provide any questions by yourself. Let the users know that they can"
                     intro_prompt += " simply click on the questions to execute them."
+                    intro_prompt += " Let them know that they can check out the use cases"
                     intro_prompt += (
-                        " Let them know that they can check out the use cases"
+                        " and FAQs described in the link below. Be friendly and helpful."
                     )
-                    intro_prompt += " and FAQs described in the link below. Be friendly and helpful."
                     intro_prompt += "\n"
                     intro_prompt += "Here is the link to the use cases: [Use Cases](https://virtualpatientengine.github.io/AIAgents4Pharma/talk2biomodels/cases/Case_1/)"
                     intro_prompt += "\n"
@@ -290,15 +285,11 @@ with main_col2:
                     assistant_msg = ChatMessage(
                         current_state.values["messages"][-1].content, role="assistant"
                     )
-                    st.session_state.messages.append(
-                        {"type": "message", "content": assistant_msg}
-                    )
+                    st.session_state.messages.append({"type": "message", "content": assistant_msg})
                     st.empty()
         if len(st.session_state.messages) <= 1:
             for count, question in enumerate(streamlit_utils.sample_questions()):
-                if st.button(
-                    f"Q{count+1}. {question}", key=f"sample_question_{count+1}"
-                ):
+                if st.button(f"Q{count + 1}. {question}", key=f"sample_question_{count + 1}"):
                     # Trigger the question
                     prompt = question
                 # Add button click to chat history
@@ -306,8 +297,8 @@ with main_col2:
                     {
                         "type": "button",
                         "question": question,
-                        "content": f"Q{count+1}. {question}",
-                        "key": f"sample_question_{count+1}",
+                        "content": f"Q{count + 1}. {question}",
+                        "key": f"sample_question_{count + 1}",
                     }
                 )
 
@@ -315,9 +306,7 @@ with main_col2:
         if prompt:
             # Create a key 'uploaded_file' to read the uploaded file
             if uploaded_sbml_file:
-                st.session_state.sbml_file_path = uploaded_sbml_file.read().decode(
-                    "utf-8"
-                )
+                st.session_state.sbml_file_path = uploaded_sbml_file.read().decode("utf-8")
 
             # Display user prompt
             prompt_msg = ChatMessage(prompt, role="user")

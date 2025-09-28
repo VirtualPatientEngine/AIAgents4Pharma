@@ -25,8 +25,12 @@ class SaveModelInput(BaseModel):
     Input schema for the save model tool.
     """
 
-    path: str = Field(
-        description="Path to save the model. Keep it None if not provided.", default=None
+    path_to_folder: str = Field(
+        description="Path to folder to save the model. Keep it to . if not provided.", default="."
+    )
+    output_filename: str = Field(
+        description="Filename to save the model as. Default is 'saved_model.xml'.",
+        default="saved_model.xml",
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
     state: Annotated[dict, InjectedState]
@@ -40,7 +44,9 @@ class SaveModelTool(BaseTool):
     """
 
     name: str = "save_model"
-    description: str = "Save a model to a specified path."
+    description: str = "A tool to save the current biomodel to a \
+                        user specified path with the default filename\
+                         'saved_model.xml'"
     args_schema: type[BaseModel] = SaveModelInput
     return_direct: bool = False
 
@@ -48,7 +54,8 @@ class SaveModelTool(BaseTool):
         self,
         tool_call_id: Annotated[str, InjectedToolCallId],
         state: Annotated[dict, InjectedState],
-        path: str = None,
+        path_to_folder: str = ".",
+        output_filename: str = "saved_model.xml",
     ) -> Command:
         """
         Run the tool.
@@ -62,19 +69,20 @@ class SaveModelTool(BaseTool):
         """
         logger.log(
             logging.INFO,
-            "Saving model to path: %s",
-            path,
+            "Saving model to path: %s with filename: %s",
+            path_to_folder,
+            output_filename,
         )
         # Check if path does not exist
-        if not os.path.exists(path):
-            content = f"Error: Path {path} does not exist."
+        if not os.path.exists(path_to_folder):
+            content = f"Error: Path {path_to_folder} does not exist."
             logger.error(content)
         else:
             logger.info("Saving now")
             # Save the model to the specified path
-            with open(os.path.join(path, "saved_model.xml"), "w", encoding="utf-8") as f:
+            with open(os.path.join(path_to_folder, output_filename), "w", encoding="utf-8") as f:
                 f.write(state["model_as_string"][-1])
-            content = f"Model saved successfully to {os.path.join(path, 'saved_model.xml')}."
+            content = f"Model saved successfully to {path_to_folder}/{output_filename}."
             logger.info(content)
         # Return the updated state of the tool
         return Command(
