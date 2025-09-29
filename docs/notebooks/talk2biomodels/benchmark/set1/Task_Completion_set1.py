@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from statistics import mean, median, pstdev, stdev
+from statistics import StatisticsError
+
 from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import TaskCompletionMetric
 from deepeval.tracing import observe
@@ -25,8 +28,8 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
 BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
-# Set to a list of question IDs to run a small sample; switch to None for the full set.
-QUESTION_SAMPLE_IDS: Optional[List[str]] = ["sim_001", "sim_002", "sim_003"]
+# Set to a list of question IDs to run a focused sample; leave as None for the full set.
+QUESTION_SAMPLE_IDS: Optional[List[str]] = None
 
 
 # Cell 2 Load Benchmark Questions
@@ -52,6 +55,16 @@ question_lookup: Dict[str, Dict[str, Any]] = {
     item["id"]: item for item in benchmark_questions
 }
 
+
+def _safe_stdev(values: List[float]) -> float:
+    if len(values) < 2:
+        return 0.0
+    try:
+        return stdev(values)
+    except StatisticsError:
+        return 0.0
+
+
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 thread_prefix = "task-completion-set1"
@@ -59,25 +72,24 @@ t2b_agent = get_t2b_agent(thread_prefix, llm_model)
 
 judge_model_name = "gpt-4o"
 
-goldens: List[Golden] = []
-for question in benchmark_questions:
-    goldens.append(
-        Golden(
-            input=question["question"],
-            name=question["id"],
-            additional_metadata={
-                "expected_answer": question.get("expected_answer"),
-                "expected_tools": question.get("expected_tools"),
-                "model_id": question.get("model_id"),
-                "simulation_time": question.get("simulation_time"),
-                "species": question.get("species"),
-            },
-            custom_column_key_values={
-                "question_id": question["id"],
-                "model_id": question.get("model_id"),
-            },
-        )
+goldens: List[Golden] = [
+    Golden(
+        input=question["question"],
+        name=question["id"],
+        additional_metadata={
+            "expected_answer": question.get("expected_answer"),
+            "expected_tools": question.get("expected_tools"),
+            "model_id": question.get("model_id"),
+            "simulation_time": question.get("simulation_time"),
+            "species": question.get("species"),
+        },
+        custom_column_key_values={
+            "question_id": question["id"],
+            "model_id": question.get("model_id"),
+        },
     )
+    for question in benchmark_questions
+]
 
 dataset = EvaluationDataset(goldens=goldens)
 
@@ -265,6 +277,21 @@ average_task_completion = (
 task_completion_summary = {
     "question_count": len(run_results),
     "average_score": average_task_completion,
+    "median_score": median(metric_scores) if metric_scores else 0.0,
+    "stdev_sample": _safe_stdev(metric_scores),
+    "stdev_population": pstdev(metric_scores) if len(metric_scores) > 1 else 0.0,
+    "minimum_score": min(metric_scores) if metric_scores else 0.0,
+    "maximum_score": max(metric_scores) if metric_scores else 0.0,
+    "pass_rate_threshold_0.5": (
+        sum(score >= 0.5 for score in metric_scores) / len(metric_scores)
+        if metric_scores
+        else 0.0
+    ),
+    "pass_rate_threshold_0.7": (
+        sum(score >= 0.7 for score in metric_scores) / len(metric_scores)
+        if metric_scores
+        else 0.0
+    ),
     "per_question": [
         {
             "question_id": result.question_id,
@@ -281,4 +308,17 @@ print("Task Completion evaluation complete.")
 print(
     f"Evaluated {task_completion_summary['question_count']} questions. "
     f"Average score: {task_completion_summary['average_score']:.3f}"
+)
+print(f"Median score: {task_completion_summary['median_score']:.3f}")
+print(
+    f"Sample stdev: {task_completion_summary['stdev_sample']:.3f} | "
+    f"Population stdev: {task_completion_summary['stdev_population']:.3f}"
+)
+print(
+    f"Min score: {task_completion_summary['minimum_score']:.3f} | "
+    f"Max score: {task_completion_summary['maximum_score']:.3f}"
+)
+print(
+    f"Pass rate >=0.5: {task_completion_summary['pass_rate_threshold_0.5']:.3f} | "
+    f"Pass rate >=0.7: {task_completion_summary['pass_rate_threshold_0.7']:.3f}"
 )
