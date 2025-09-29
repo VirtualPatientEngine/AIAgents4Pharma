@@ -6,14 +6,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from statistics import StatisticsError, mean, median, pstdev, stdev
+MAX_TRACE_STRING_LENGTH = 2000
+MAX_TRACE_LIST_ITEMS = 200
+MAX_TRACE_DEPTH = 6
 
-from deepeval.dataset import EvaluationDataset, Golden
+from statistics import StatisticsError, median, pstdev, stdev
+
 from deepeval.metrics import ArgumentCorrectnessMetric
 from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval.tracing import observe
 from deepeval.tracing.tracing import trace_manager
-from deepeval.utils import dataclass_to_dict
 from langchain_openai import ChatOpenAI
 
 try:  # LangChain >= 0.1.0
@@ -59,7 +61,6 @@ benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAM
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 thread_prefix = "argument-correctness-set1"
-t2b_agent = get_t2b_agent(thread_prefix, llm_model)
 
 judge_model_name = "gpt-4o"
 
@@ -74,6 +75,7 @@ class AgentRunResult:
     trace: Optional[Dict[str, Any]]
     trace_tree: Optional[Dict[str, Any]]
     tool_calls: List[ToolCall]
+    thread_id: str
 
 
 def build_initial_state(question_text: str) -> Talk2Biomodels:
@@ -93,15 +95,16 @@ def build_initial_state(question_text: str) -> Talk2Biomodels:
 
 
 class T2BAgentRunner:
-    def __init__(self, agent, base_thread_prefix: str):
-        self.agent = agent
+    def __init__(self, *, base_thread_prefix: str, llm):
         self.base_thread_prefix = base_thread_prefix
+        self.llm = llm
 
     @observe(type="agent")
     def invoke(self, *, question_text: str, question_id: str) -> Dict[str, Any]:
         state = build_initial_state(question_text)
         invocation_thread = f"{self.base_thread_prefix}-{question_id}"
-        result_state = self.agent.invoke(
+        agent = get_t2b_agent(invocation_thread, self.llm)
+        result_state = agent.invoke(
             state,
             config={"configurable": {"thread_id": invocation_thread}},
         )
@@ -116,10 +119,18 @@ class T2BAgentRunner:
         serializable_state = {
             "model_id": result_state.get("model_id", []),
             "sbml_file_path": result_state.get("sbml_file_path", []),
-            "dic_simulated_data": result_state.get("dic_simulated_data", []),
-            "dic_scanned_data": result_state.get("dic_scanned_data", []),
-            "dic_steady_state_data": result_state.get("dic_steady_state_data", []),
-            "dic_annotations_data": result_state.get("dic_annotations_data", []),
+            "dic_simulated_data": summarize_value(
+                result_state.get("dic_simulated_data", [])
+            ),
+            "dic_scanned_data": summarize_value(
+                result_state.get("dic_scanned_data", [])
+            ),
+            "dic_steady_state_data": summarize_value(
+                result_state.get("dic_steady_state_data", [])
+            ),
+            "dic_annotations_data": summarize_value(
+                result_state.get("dic_annotations_data", [])
+            ),
         }
 
         return {
@@ -127,6 +138,7 @@ class T2BAgentRunner:
             "assistant_messages": assistant_messages,
             "all_messages": normalized_messages,
             "state_fields": serializable_state,
+            "thread_id": invocation_thread,
         }
 
     @staticmethod
@@ -164,6 +176,24 @@ def build_trace_dict(trace_obj: Any) -> Optional[Dict[str, Any]]:
         return None
     root_span = root_spans[0]
     return trace_manager.create_nested_spans_dict(root_span)
+
+
+def summarize_value(value: Any) -> Any:
+    if isinstance(value, list):
+        summary: Dict[str, Any] = {"type": "list", "length": len(value)}
+        if value:
+            summary["preview"] = summarize_value(value[0])
+        return summary
+
+    if isinstance(value, dict):
+        keys = list(value.keys())
+        return {
+            "type": "dict",
+            "key_count": len(keys),
+            "keys_preview": keys[:10],
+        }
+
+    return value
 
 
 def extract_tool_calls_from_messages(messages: List[Dict[str, Any]]) -> List[ToolCall]:
@@ -204,17 +234,59 @@ def serialize_tool_calls(tool_calls: List[ToolCall]) -> List[Dict[str, Any]]:
             "description": tc.description,
             "reasoning": tc.reasoning,
             "output": tc.output,
-            "input_parameters": tc.input_parameters,
+            "input_parameters": summarize_value(tc.input_parameters),
         }
         for tc in tool_calls
     ]
+
+
+def _truncate_trace_value(value: Any, depth: int = 0) -> Any:
+    if depth >= MAX_TRACE_DEPTH:
+        return "<truncated depth>"
+
+    if isinstance(value, str):
+        if len(value) > MAX_TRACE_STRING_LENGTH:
+            return value[:MAX_TRACE_STRING_LENGTH] + "... <truncated>"
+        return value
+
+    if isinstance(value, list):
+        if not value:
+            return []
+        truncated = [
+            _truncate_trace_value(item, depth + 1)
+            for item in value[:MAX_TRACE_LIST_ITEMS]
+        ]
+        if len(value) > MAX_TRACE_LIST_ITEMS:
+            truncated.append(
+                f"<truncated {len(value) - MAX_TRACE_LIST_ITEMS} additional items>"
+            )
+        return truncated
+
+    if isinstance(value, dict):
+        pruned: Dict[str, Any] = {}
+        for key, item in value.items():
+            if key in {"input", "output"}:
+                pruned[key] = summarize_value(item)
+            else:
+                pruned[key] = _truncate_trace_value(item, depth + 1)
+        return pruned
+
+    return value
+
+
+def sanitize_trace_tree(
+    trace_tree: Optional[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    if trace_tree is None:
+        return None
+    return _truncate_trace_value(trace_tree)
 
 
 def reset_traces() -> None:
     trace_manager.clear_traces()
 
 
-t2b_runner = T2BAgentRunner(t2b_agent, thread_prefix)
+t2b_runner = T2BAgentRunner(base_thread_prefix=thread_prefix, llm=llm_model)
 
 
 # Cell 4 Execute Evaluation Loop
@@ -238,9 +310,13 @@ for question_index, question in enumerate(benchmark_questions, start=1):
         question_id=question_id,
     )
 
+    thread_id = agent_payload["thread_id"]
+    print(f"→ Thread {question_index:03d}: {thread_id} (question={question_id})")
+
     trace_obj = get_latest_trace()
     trace_tree = build_trace_dict(trace_obj)
-    serialized_trace = dataclass_to_dict(trace_obj) if trace_obj else None
+    sanitized_trace_tree = sanitize_trace_tree(trace_tree)
+    serialized_trace = sanitized_trace_tree
     tool_calls = extract_tool_calls_from_messages(agent_payload["all_messages"])
 
     metric_instance = ArgumentCorrectnessMetric(
@@ -264,6 +340,9 @@ for question_index, question in enumerate(benchmark_questions, start=1):
         name=question_id,
     )
 
+    if sanitized_trace_tree is not None:
+        test_case._trace_dict = sanitized_trace_tree
+
     score = metric_instance.measure(test_case)
     reason = metric_instance.reason or ""
 
@@ -275,8 +354,9 @@ for question_index, question in enumerate(benchmark_questions, start=1):
             all_messages=agent_payload["all_messages"],
             state_fields=agent_payload["state_fields"],
             trace=serialized_trace,
-            trace_tree=trace_tree,
+            trace_tree=sanitized_trace_tree,
             tool_calls=tool_calls,
+            thread_id=thread_id,
         )
     )
 
@@ -328,6 +408,7 @@ argument_correctness_summary = {
             "verbose_logs": metric_details[idx]["verbose_logs"],
             "answer": result.answer,
             "trace_available": result.trace is not None,
+            "thread_id": result.thread_id,
         }
         for idx, result in enumerate(run_results)
     ],
