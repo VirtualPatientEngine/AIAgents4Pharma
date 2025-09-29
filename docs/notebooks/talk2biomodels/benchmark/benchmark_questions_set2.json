@@ -12,10 +12,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 0.01,
       "expected_values": {
-        "CRP{serum}": 10.019164,
-        "CRP{liver}": 6.492506,
-        "IL6{serum}": 0.000641,
-        "STAT3{gut}": 9.133764
+        "CRP{serum}": 10.019164
       },
       "expected_tools": [
         "simulate_model",
@@ -34,10 +31,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 1000,
       "expected_values": {
-        "CRP{serum}": 226.440005,
-        "CRP{liver}": 162.014501,
-        "IL6{serum}": 0.000676,
-        "STAT3{gut}": 0.332824
+        "CRP{serum}": 226.440005
       },
       "expected_tools": [
         "simulate_model",
@@ -56,10 +50,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 2.6,
       "expected_values": {
-        "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.32364,
-        "IL6{serum}": 0.000436,
-        "STAT3{gut}": 0.596129
+        "CRP{serum}": 221.060568
       },
       "expected_tools": [
         "simulate_model",
@@ -78,10 +69,7 @@
       "species": "IL6{serum}",
       "initial_concentration": 4356.288965511659,
       "expected_values": {
-        "CRP{serum}": 91.229032,
-        "CRP{liver}": 60.845307,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815264
+        "IL6{serum}": 0.000642
       },
       "expected_tools": [
         "simulate_model",
@@ -100,10 +88,7 @@
       "species": "CRP{liver}",
       "initial_concentration": 1583.2584678161063,
       "expected_values": {
-        "CRP{serum}": 91.229207,
-        "CRP{liver}": 60.845411,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815259
+        "CRP{liver}": 60.845411
       },
       "expected_tools": [
         "simulate_model",
@@ -122,9 +107,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-06,
       "expected_values": {
-        "CRP{serum}": 215.333772,
-        "CRP{liver}": 154.668528,
-        "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
       },
       "expected_tools": [
@@ -144,9 +126,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-08,
       "expected_values": {
-        "CRP{serum}": 9.988212,
-        "CRP{liver}": 6.438947,
-        "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
       },
       "expected_tools": [
@@ -166,10 +145,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 0.01,
       "expected_values": {
-        "CRP{serum}": 10.019164,
-        "CRP{liver}": 6.492506,
-        "IL6{serum}": 0.000641,
-        "STAT3{gut}": 9.133764
+        "CRP{serum}": 10.019164
       },
       "expected_tools": [
         "simulate_model",
@@ -188,10 +164,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 1000,
       "expected_values": {
-        "CRP{serum}": 226.440005,
-        "CRP{liver}": 162.014501,
-        "IL6{serum}": 0.000676,
-        "STAT3{gut}": 0.332824
+        "CRP{serum}": 226.440005
       },
       "expected_tools": [
         "simulate_model",
@@ -210,10 +183,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 2.6,
       "expected_values": {
-        "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.32364,
-        "IL6{serum}": 0.000436,
-        "STAT3{gut}": 0.596129
+        "CRP{serum}": 221.060568
       },
       "expected_tools": [
         "simulate_model",
@@ -232,10 +202,7 @@
       "species": "IL6{serum}",
       "initial_concentration": 4356.288965511659,
       "expected_values": {
-        "CRP{serum}": 91.229032,
-        "CRP{liver}": 60.845307,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815264
+        "IL6{serum}": 0.000642
       },
       "expected_tools": [
         "simulate_model",
@@ -254,10 +221,7 @@
       "species": "CRP{liver}",
       "initial_concentration": 1583.2584678161063,
       "expected_values": {
-        "CRP{serum}": 91.229207,
-        "CRP{liver}": 60.845411,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815259
+        "CRP{liver}": 60.845411
       },
       "expected_tools": [
         "simulate_model",
@@ -276,9 +240,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-06,
       "expected_values": {
-        "CRP{serum}": 215.333772,
-        "CRP{liver}": 154.668528,
-        "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
       },
       "expected_tools": [
@@ -298,9 +259,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-08,
       "expected_values": {
-        "CRP{serum}": 9.988212,
-        "CRP{liver}": 6.438947,
-        "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
       },
       "expected_tools": [
@@ -320,10 +278,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 0.01,
       "expected_values": {
-        "CRP{serum}": 10.019164,
-        "CRP{liver}": 6.492506,
-        "IL6{serum}": 0.000641,
-        "STAT3{gut}": 9.133764
+        "CRP{serum}": 10.019164
       },
       "expected_tools": [
         "simulate_model",
@@ -342,10 +297,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 1000,
       "expected_values": {
-        "CRP{serum}": 226.440005,
-        "CRP{liver}": 162.014501,
-        "IL6{serum}": 0.000676,
-        "STAT3{gut}": 0.332824
+        "CRP{serum}": 226.440005
       },
       "expected_tools": [
         "simulate_model",
@@ -364,10 +316,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 2.6,
       "expected_values": {
-        "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.32364,
-        "IL6{serum}": 0.000436,
-        "STAT3{gut}": 0.596129
+        "CRP{serum}": 221.060568
       },
       "expected_tools": [
         "simulate_model",
@@ -386,10 +335,7 @@
       "species": "IL6{serum}",
       "initial_concentration": 4356.288965511659,
       "expected_values": {
-        "CRP{serum}": 91.229032,
-        "CRP{liver}": 60.845307,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815264
+        "IL6{serum}": 0.000642
       },
       "expected_tools": [
         "simulate_model",
@@ -408,10 +354,7 @@
       "species": "CRP{liver}",
       "initial_concentration": 1583.2584678161063,
       "expected_values": {
-        "CRP{serum}": 91.229207,
-        "CRP{liver}": 60.845411,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815259
+        "CRP{liver}": 60.845411
       },
       "expected_tools": [
         "simulate_model",
@@ -430,9 +373,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-06,
       "expected_values": {
-        "CRP{serum}": 215.333772,
-        "CRP{liver}": 154.668528,
-        "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
       },
       "expected_tools": [
@@ -452,9 +392,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-08,
       "expected_values": {
-        "CRP{serum}": 9.988212,
-        "CRP{liver}": 6.438947,
-        "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
       },
       "expected_tools": [
@@ -474,10 +411,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 0.01,
       "expected_values": {
-        "CRP{serum}": 10.019164,
-        "CRP{liver}": 6.492506,
-        "IL6{serum}": 0.000641,
-        "STAT3{gut}": 9.133764
+        "CRP{serum}": 10.019164
       },
       "expected_tools": [
         "simulate_model",
@@ -496,10 +430,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 1000,
       "expected_values": {
-        "CRP{serum}": 226.440005,
-        "CRP{liver}": 162.014501,
-        "IL6{serum}": 0.000676,
-        "STAT3{gut}": 0.332824
+        "CRP{serum}": 226.440005
       },
       "expected_tools": [
         "simulate_model",
@@ -518,10 +449,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 2.6,
       "expected_values": {
-        "CRP{serum}": 221.060568,
-        "CRP{liver}": 158.32364,
-        "IL6{serum}": 0.000436,
-        "STAT3{gut}": 0.596129
+        "CRP{serum}": 221.060568
       },
       "expected_tools": [
         "simulate_model",
@@ -540,10 +468,7 @@
       "species": "IL6{serum}",
       "initial_concentration": 4356.288965511659,
       "expected_values": {
-        "CRP{serum}": 91.229032,
-        "CRP{liver}": 60.845307,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815264
+        "IL6{serum}": 0.000642
       },
       "expected_tools": [
         "simulate_model",
@@ -562,10 +487,7 @@
       "species": "CRP{liver}",
       "initial_concentration": 1583.2584678161063,
       "expected_values": {
-        "CRP{serum}": 91.229207,
-        "CRP{liver}": 60.845411,
-        "IL6{serum}": 0.000642,
-        "STAT3{gut}": 6.815259
+        "CRP{liver}": 60.845411
       },
       "expected_tools": [
         "simulate_model",
@@ -584,9 +506,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-06,
       "expected_values": {
-        "CRP{serum}": 215.333772,
-        "CRP{liver}": 154.668528,
-        "IL6{serum}": 0.000441,
         "STAT3{gut}": 0.889972
       },
       "expected_tools": [
@@ -606,9 +525,6 @@
       "species": "STAT3{gut}",
       "initial_concentration": 6.106360135082121e-08,
       "expected_values": {
-        "CRP{serum}": 9.988212,
-        "CRP{liver}": 6.438947,
-        "IL6{serum}": 0.000642,
         "STAT3{gut}": 9.136212
       },
       "expected_tools": [
@@ -628,10 +544,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 0.01,
       "expected_values": {
-        "CRP{serum}": 10.019164,
-        "CRP{liver}": 6.492506,
-        "IL6{serum}": 0.000641,
-        "STAT3{gut}": 9.133764
+        "CRP{serum}": 10.019164
       },
       "expected_tools": [
         "simulate_model",
@@ -650,10 +563,7 @@
       "species": "CRP{serum}",
       "initial_concentration": 1000,
       "expected_values": {
-        "CRP{serum}": 226.440005,
-        "CRP{liver}": 162.014501,
-        "IL6{serum}": 0.000676,
-        "STAT3{gut}": 0.332824
+        "CRP{serum}": 226.440005
       },
       "expected_tools": [
         "simulate_model",
@@ -671,10 +581,7 @@
       "interval": 100,
       "species": "Infected",
       "expected_values": {
-        "Infected": 104338.5,
-        "Susceptible": 1017891,
-        "Recovered": 2231583,
-        "Hospitalised": 132514
+        "Infected": 104338.5
       },
       "expected_tools": [
         "simulate_model",
@@ -692,10 +599,7 @@
       "interval": 200,
       "species": "Infected",
       "expected_values": {
-        "Infected": 71433.53,
-        "Susceptible": 1055609,
-        "Recovered": 4586298,
-        "Hospitalised": 86882.62
+        "Infected": 71433.53
       },
       "expected_tools": [
         "simulate_model",
@@ -734,10 +638,7 @@
       "interval": 1000,
       "species": "Infected",
       "expected_values": {
-        "Infected": 4090.069,
-        "Susceptible": 1055585,
-        "Recovered": 9714202,
-        "Hospitalised": 4972.991
+        "Infected": 4090.069
       },
       "expected_tools": [
         "simulate_model",
@@ -755,10 +656,7 @@
       "interval": 400,
       "species": "Infected",
       "expected_values": {
-        "Infected": 120668.1,
-        "Susceptible": 3167693,
-        "Recovered": 163461.1,
-        "Hospitalised": 40760.04
+        "Infected": 120668.1
       },
       "expected_tools": [
         "simulate_model",
@@ -776,10 +674,7 @@
       "interval": 10,
       "species": "Infected",
       "expected_values": {
-        "Infected": 3413.654,
-        "Susceptible": 10796200,
-        "Recovered": 2980.39,
-        "Hospitalised": 806.595
+        "Infected": 3413.654
       },
       "expected_tools": [
         "simulate_model",
@@ -861,9 +756,7 @@
       "parameter_value": 10,
       "species": "M",
       "expected_values": {
-        "Mpp": 491.982136,
-        "M": 0.00114,
-        "Mp": 8.016723
+        "M": 0.00114
       },
       "expected_tools": [
         "simulate_model",
@@ -882,9 +775,7 @@
       "parameter_value": 0.1,
       "species": "Mp",
       "expected_values": {
-        "Mpp": 42.542954,
-        "M": 0.103107,
-        "Mp": 457.353939
+        "M": 0.103107
       },
       "expected_tools": [
         "simulate_model",
@@ -903,9 +794,7 @@
       "parameter_value": 100,
       "species": "Mpp",
       "expected_values": {
-        "Mpp": 499.195565,
-        "M": 0.000113,
-        "Mp": 0.804322
+        "Mpp": 499.195565
       },
       "expected_tools": [
         "simulate_model",
@@ -1313,8 +1202,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
-      "transition_time": 1.012,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1329,7 +1220,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "transition_time": 0.669,
       "expected_tools": [
         "steady_state",
@@ -1345,7 +1239,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "transition_time": 62.278,
       "expected_tools": [
         "steady_state",
@@ -1361,7 +1258,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "transition_time": 1.012,
       "expected_tools": [
         "steady_state",
@@ -1377,7 +1277,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "transition_time": 0.669,
       "expected_tools": [
         "steady_state",
@@ -1393,7 +1296,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "transition_time": 62.278,
       "expected_tools": [
         "steady_state",
@@ -1409,7 +1315,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "transition_time": 1.012,
       "expected_tools": [
         "steady_state",
@@ -1425,7 +1334,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "transition_time": 0.669,
       "expected_tools": [
         "steady_state",
@@ -1441,7 +1353,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "transition_time": 62.278,
       "expected_tools": [
         "steady_state",
@@ -1457,7 +1372,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "transition_time": 1.012,
       "expected_tools": [
         "steady_state",
@@ -1473,7 +1391,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
+        "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "transition_time": 0.669,
       "expected_tools": [
         "steady_state",
@@ -1489,7 +1410,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "transition_time": 62.278,
       "expected_tools": [
         "steady_state",
@@ -1505,7 +1429,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "transition_time": 1.012,
       "expected_tools": [
         "steady_state",
@@ -1521,7 +1448,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "transition_time": 0.669,
       "expected_tools": [
         "steady_state",
@@ -1537,7 +1467,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "transition_time": 62.278,
       "expected_tools": [
         "steady_state",
@@ -1553,8 +1486,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
-      "transition_time": 1.012,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1569,8 +1504,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
-      "transition_time": 0.669,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1585,8 +1522,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
-      "transition_time": 62.278,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1601,8 +1540,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
-      "transition_time": 1.012,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1617,8 +1558,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
-      "transition_time": 0.669,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1633,8 +1576,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mpp",
-      "expected_concentration": 494.565011,
-      "transition_time": 62.278,
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1649,8 +1594,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "M",
-      "expected_concentration": 0.076041,
-      "transition_time": 1.012,
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1665,8 +1612,10 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-      "expected_concentration": 5.358948,
-      "transition_time": 0.669,
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1681,8 +1630,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible",
-      "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27,
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1697,8 +1648,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed",
-      "expected_concentration": -5.661e-22,
-      "transition_time": 7.0,
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1713,8 +1666,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Infected",
-      "expected_concentration": -1.541e-22,
-      "transition_time": 2.16,
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1729,8 +1684,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Asymptomatic",
-      "expected_concentration": -8.028e-23,
-      "transition_time": 7.154,
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1745,8 +1702,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
-      "expected_concentration": -1.074e-20,
-      "transition_time": 14.0,
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1761,8 +1720,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed_quarantined",
-      "expected_concentration": -1.222e-28,
-      "transition_time": 7.943,
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1777,8 +1738,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Hospitalised",
-      "expected_concentration": -1.873e-22,
-      "transition_time": 8.602,
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1793,8 +1756,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Recovered",
-      "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29,
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1809,8 +1774,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible",
-      "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27,
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1825,8 +1792,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Infected",
-      "expected_concentration": -1.541e-22,
-      "transition_time": 2.16,
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1841,8 +1810,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed",
-      "expected_concentration": -5.661e-22,
-      "transition_time": 7.0,
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1857,8 +1828,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Asymptomatic",
-      "expected_concentration": -8.028e-23,
-      "transition_time": 7.154,
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1873,8 +1846,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
-      "expected_concentration": -1.074e-20,
-      "transition_time": 14.0,
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1889,8 +1864,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed_quarantined",
-      "expected_concentration": -1.222e-28,
-      "transition_time": 7.943,
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1905,8 +1882,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Hospitalised",
-      "expected_concentration": -1.873e-22,
-      "transition_time": 8.602,
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1921,8 +1900,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Recovered",
-      "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29,
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1937,8 +1918,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible",
-      "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27,
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1953,8 +1936,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Infected",
-      "expected_concentration": -1.541e-22,
-      "transition_time": 2.16,
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1969,8 +1954,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed",
-      "expected_concentration": -5.661e-22,
-      "transition_time": 7.0,
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -1985,8 +1972,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Asymptomatic",
-      "expected_concentration": -8.028e-23,
-      "transition_time": 7.154,
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2001,8 +1990,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
-      "expected_concentration": -1.074e-20,
-      "transition_time": 14.0,
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2017,8 +2008,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed_quarantined",
-      "expected_concentration": -1.222e-28,
-      "transition_time": 7.943,
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2033,8 +2026,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Hospitalised",
-      "expected_concentration": -1.873e-22,
-      "transition_time": 8.602,
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2049,8 +2044,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Recovered",
-      "expected_concentration": 10025626.335858,
-      "transition_time": 1.195e+29,
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2065,8 +2062,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible",
-      "expected_concentration": 1055585.406125,
-      "transition_time": 1.376e+27,
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2081,8 +2080,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Infected",
-      "expected_concentration": -1.541e-22,
-      "transition_time": 2.16,
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2097,8 +2098,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed",
-      "expected_concentration": -5.661e-22,
-      "transition_time": 7.0,
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2113,8 +2116,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Asymptomatic",
-      "expected_concentration": -8.028e-23,
-      "transition_time": 7.154,
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2129,8 +2134,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Susceptible_quarantined",
-      "expected_concentration": -1.074e-20,
-      "transition_time": 14.0,
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
@@ -2145,8 +2152,10 @@
       "model_id": "971",
       "tool": "steady_state",
       "species": "Exposed_quarantined",
-      "expected_concentration": -1.222e-28,
-      "transition_time": 7.943,
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
       "expected_tools": [
         "steady_state",
         "ask_question"
