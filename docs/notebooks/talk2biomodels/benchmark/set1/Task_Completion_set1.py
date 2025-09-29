@@ -69,7 +69,6 @@ def _safe_stdev(values: List[float]) -> float:
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 thread_prefix = "task-completion-set1"
-t2b_agent = get_t2b_agent(thread_prefix, llm_model)
 
 judge_model_name = "gpt-4o"
 
@@ -105,6 +104,7 @@ class AgentRunResult:
     state_fields: Dict[str, Any]
     trace: Optional[Dict[str, Any]]
     trace_tree: Optional[Dict[str, Any]]
+    thread_id: str
 
 
 def build_initial_state(question_text: str) -> Talk2Biomodels:
@@ -124,15 +124,16 @@ def build_initial_state(question_text: str) -> Talk2Biomodels:
 
 
 class T2BAgentRunner:
-    def __init__(self, agent, base_thread_prefix: str):
-        self.agent = agent
+    def __init__(self, *, base_thread_prefix: str, llm):
         self.base_thread_prefix = base_thread_prefix
+        self.llm = llm
 
     @observe(type="agent")
     def invoke(self, *, question_text: str, question_id: str) -> Dict[str, Any]:
         state = build_initial_state(question_text)
         invocation_thread = f"{self.base_thread_prefix}-{question_id}"
-        result_state = self.agent.invoke(
+        agent = get_t2b_agent(invocation_thread, self.llm)
+        result_state = agent.invoke(
             state,
             config={"configurable": {"thread_id": invocation_thread}},
         )
@@ -160,6 +161,7 @@ class T2BAgentRunner:
             "assistant_messages": assistant_messages,
             "all_messages": normalized_messages,
             "state_fields": serializable_state,
+            "thread_id": invocation_thread,
         }
 
     @staticmethod
@@ -205,7 +207,7 @@ def reset_traces() -> None:
     trace_manager.clear_traces()
 
 
-t2b_runner = T2BAgentRunner(t2b_agent, thread_prefix)
+t2b_runner = T2BAgentRunner(base_thread_prefix=thread_prefix, llm=llm_model)
 
 # Cell 5 Execute Evaluation Loop (Sample Run)
 run_results: List[AgentRunResult] = []
@@ -228,6 +230,9 @@ for question in benchmark_questions:
         question_text=question_text,
         question_id=question_id,
     )
+    thread_id = agent_payload["thread_id"]
+
+    print(f"→ Thread {current_index:03d}: {thread_id} (question={question_id})")
 
     trace_obj = get_latest_trace()
     trace_tree = build_trace_dict(trace_obj)
@@ -268,6 +273,7 @@ for question in benchmark_questions:
             state_fields=agent_payload["state_fields"],
             trace=serialized_trace,
             trace_tree=trace_tree,
+            thread_id=thread_id,
         )
     )
 
@@ -322,6 +328,7 @@ task_completion_summary = {
             "verbose_logs": metric_details[idx]["verbose_logs"],
             "answer": result.answer,
             "trace_available": result.trace is not None,
+            "thread_id": result.thread_id,
         }
         for idx, result in enumerate(run_results)
     ],

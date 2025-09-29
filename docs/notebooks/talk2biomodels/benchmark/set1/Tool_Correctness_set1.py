@@ -2,14 +2,16 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
-from statistics import StatisticsError, mean, median, pstdev, stdev
+from statistics import median, pstdev, stdev
+from statistics import StatisticsError
 
-from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import ToolCorrectnessMetric
+from deepeval.metrics.tool_correctness.tool_correctness import ToolCallParams
 from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval.tracing import observe
 from deepeval.tracing.tracing import trace_manager
@@ -37,11 +39,22 @@ def load_benchmark_questions(
 ) -> List[Dict[str, Any]]:
     with json_path.open("r", encoding="utf-8") as f:
         raw_payload = json.load(f)
+
     questions = raw_payload["simulate_model_benchmark_questions"]
     if selected_ids is None:
         return questions
+
     question_by_id = {question["id"]: question for question in questions}
-    return [question_by_id[qid] for qid in selected_ids if qid in question_by_id]
+    ordered_subset = [
+        question_by_id[qid] for qid in selected_ids if qid in question_by_id
+    ]
+    return ordered_subset
+
+
+benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAMPLE_IDS)
+question_lookup: Dict[str, Dict[str, Any]] = {
+    item["id"]: item for item in benchmark_questions
+}
 
 
 def _safe_stdev(values: List[float]) -> float:
@@ -53,29 +66,12 @@ def _safe_stdev(values: List[float]) -> float:
         return 0.0
 
 
-benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAMPLE_IDS)
-
-
-# Cell 3 Initialize Models and Metric
+# Cell 3 Initialize LLM
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 thread_prefix = "tool-correctness-set1"
-t2b_agent = get_t2b_agent(thread_prefix, llm_model)
-
-judge_model_name = "gpt-4o"
 
 
-@dataclass
-class AgentRunResult:
-    question_id: str
-    answer: Optional[str]
-    assistant_messages: List[Dict[str, Any]]
-    all_messages: List[Dict[str, Any]]
-    state_fields: Dict[str, Any]
-    trace: Optional[Dict[str, Any]]
-    trace_tree: Optional[Dict[str, Any]]
-    tool_calls: List[ToolCall]
-
-
+# Cell 4 Helper Functions
 def build_initial_state(question_text: str) -> Talk2Biomodels:
     state = Talk2Biomodels(
         llm_model=llm_model,
@@ -92,22 +88,270 @@ def build_initial_state(question_text: str) -> Talk2Biomodels:
     return state
 
 
+def normalize_message(message: Any) -> Dict[str, Any]:
+    if isinstance(message, dict):
+        return {
+            "role": message.get("role"),
+            "content": message.get("content"),
+            **{k: v for k, v in message.items() if k not in {"role", "content"}},
+        }
+
+    if isinstance(message, BaseMessage):
+        payload = {
+            "role": getattr(message, "type", None),
+            "content": getattr(message, "content", None),
+        }
+        additional = getattr(message, "additional_kwargs", None)
+        if isinstance(additional, dict):
+            payload.update(additional)
+        return payload
+
+    return {"role": type(message).__name__, "content": str(message)}
+
+
+def reset_traces() -> None:
+    trace_manager.clear_traces()
+
+
+def get_latest_trace() -> Optional[Any]:
+    traces = trace_manager.get_all_traces()
+    if traces:
+        return traces[-1]
+    return None
+
+
+def build_trace_dict(trace_obj: Any) -> Optional[Dict[str, Any]]:
+    if trace_obj is None:
+        return None
+    root_spans = getattr(trace_obj, "root_spans", None)
+    if not root_spans:
+        return None
+    root_span = root_spans[0]
+    return trace_manager.create_nested_spans_dict(root_span)
+
+
+def _strip_none_values(payload: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in payload.items() if v is not None}
+
+
+def _parse_simulation_duration(simulation_time: Optional[str]) -> Optional[float]:
+    if not simulation_time:
+        return None
+    matches = re.findall(r"[0-9]+(?:\.[0-9]+)?", simulation_time)
+    if not matches:
+        return None
+    try:
+        return float(matches[0])
+    except ValueError:
+        return None
+
+
+def _canonicalize_input_parameters(
+    tool_name: Optional[str], raw_input: Any
+) -> Optional[Dict[str, Any]]:
+    if not isinstance(raw_input, dict):
+        return None
+
+    if tool_name == "simulate_model":
+        sys_bio_model = raw_input.get("sys_bio_model", {})
+        arg_data = raw_input.get("arg_data", {})
+        time_data = arg_data.get("time_data", {})
+
+        raw_duration = time_data.get("duration")
+        try:
+            duration = float(raw_duration) if raw_duration is not None else None
+        except (TypeError, ValueError):
+            duration = None
+
+        canonical = {
+            "model_id": (
+                str(sys_bio_model.get("biomodel_id"))
+                if sys_bio_model.get("biomodel_id") is not None
+                else None
+            ),
+            "duration": duration,
+        }
+        return _strip_none_values(canonical)
+
+    if tool_name == "ask_question":
+        canonical = {
+            "question_context": raw_input.get("question_context"),
+        }
+        return _strip_none_values(canonical)
+
+    return raw_input
+
+
+def extract_tool_events_from_trace(
+    trace_tree: Optional[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    if not trace_tree:
+        return []
+
+    extracted: List[Dict[str, Any]] = []
+    stack: List[Dict[str, Any]] = [trace_tree]
+
+    while stack:
+        node = stack.pop()
+        children = node.get("children", []) or []
+        stack.extend(children)
+
+        tools_called = node.get("toolsCalled") or node.get("tools_called") or []
+        if tools_called:
+            for tool_entry in tools_called:
+                if isinstance(tool_entry, dict):
+                    extracted.append(tool_entry)
+        else:
+            node_type = node.get("type")
+            if isinstance(node_type, str) and node_type.lower() == "tool":
+                extracted.append(
+                    {
+                        "name": node.get("name"),
+                        "inputParameters": node.get("input")
+                        or node.get("inputParameters"),
+                        "output": node.get("output"),
+                        "raw": node,
+                    }
+                )
+
+    return extracted
+
+
+def to_tool_call(entry: Dict[str, Any]) -> ToolCall:
+    name = entry.get("name") or entry.get("toolName")
+    input_parameters = (
+        entry.get("inputParameters")
+        or entry.get("input_parameters")
+        or entry.get("input")
+    )
+    input_parameters = _canonicalize_input_parameters(name, input_parameters)
+    output = entry.get("output")
+    description = entry.get("description")
+    reasoning = entry.get("reasoning")
+    return ToolCall(
+        name=name or "unknown",
+        description=description,
+        reasoning=reasoning,
+        output=output,
+        input_parameters=input_parameters,
+    )
+
+
+def extract_tool_events_from_messages(
+    messages: Sequence[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    extracted: List[Dict[str, Any]] = []
+    for message in messages or []:
+        if not isinstance(message, dict):
+            continue
+
+        raw_calls: List[Any] = []
+        if "tool_calls" in message and isinstance(message["tool_calls"], list):
+            raw_calls.extend(message["tool_calls"])
+
+        function_call = message.get("function_call")
+        if isinstance(function_call, dict):
+            raw_calls.append(function_call)
+
+        for call in raw_calls:
+            if not isinstance(call, dict):
+                continue
+
+            name = None
+            input_parameters = None
+            output = call.get("output")
+
+            if "function" in call and isinstance(call["function"], dict):
+                function_payload = call["function"]
+                name = function_payload.get("name")
+                arguments = function_payload.get("arguments")
+            else:
+                name = call.get("name")
+                arguments = call.get("arguments")
+
+            if isinstance(arguments, str):
+                try:
+                    input_parameters = json.loads(arguments)
+                except json.JSONDecodeError:
+                    input_parameters = arguments
+            elif isinstance(arguments, dict):
+                input_parameters = arguments
+
+            extracted.append(
+                {
+                    "name": name,
+                    "inputParameters": input_parameters,
+                    "output": output,
+                    "raw": call,
+                }
+            )
+
+    return extracted
+
+
+def build_expected_tool_calls(question: Dict[str, Any]) -> List[ToolCall]:
+    expected_tools = question.get("expected_tools", []) or []
+    tool_calls: List[ToolCall] = []
+    for tool_name in expected_tools:
+        input_parameters: Optional[Dict[str, Any]] = None
+
+        if tool_name == "simulate_model":
+            expected_duration = _parse_simulation_duration(
+                question.get("simulation_time")
+            )
+            canonical = {
+                "model_id": (
+                    str(question.get("model_id"))
+                    if question.get("model_id") is not None
+                    else None
+                ),
+                "duration": expected_duration,
+            }
+            input_parameters = _strip_none_values(canonical)
+
+        if tool_name == "ask_question":
+            input_parameters = {"question_context": "simulation"}
+        tool_calls.append(
+            ToolCall(
+                name=tool_name,
+                input_parameters=input_parameters,
+            )
+        )
+    return tool_calls
+
+
+@dataclass
+class AgentRunResult:
+    question_id: str
+    answer: Optional[str]
+    assistant_messages: List[Dict[str, Any]]
+    all_messages: List[Dict[str, Any]]
+    state_fields: Dict[str, Any]
+    trace: Optional[Dict[str, Any]]
+    trace_tree: Optional[Dict[str, Any]]
+    thread_id: str
+    tools_called: List[Dict[str, Any]]
+
+
 class T2BAgentRunner:
-    def __init__(self, agent, base_thread_prefix: str):
-        self.agent = agent
+    def __init__(self, *, base_thread_prefix: str, llm):
         self.base_thread_prefix = base_thread_prefix
+        self.llm = llm
 
     @observe(type="agent")
     def invoke(self, *, question_text: str, question_id: str) -> Dict[str, Any]:
         state = build_initial_state(question_text)
         invocation_thread = f"{self.base_thread_prefix}-{question_id}"
-        result_state = self.agent.invoke(
+        agent = get_t2b_agent(invocation_thread, self.llm)
+        result_state = agent.invoke(
             state,
             config={"configurable": {"thread_id": invocation_thread}},
         )
 
         messages = result_state.get("messages", [])
-        normalized_messages = [self._normalize_message(msg) for msg in messages]
+        normalized_messages: List[Dict[str, Any]] = [
+            normalize_message(msg) for msg in messages
+        ]
         assistant_messages = [
             msg for msg in normalized_messages if msg.get("role") in {"assistant", "ai"}
         ]
@@ -127,100 +371,14 @@ class T2BAgentRunner:
             "assistant_messages": assistant_messages,
             "all_messages": normalized_messages,
             "state_fields": serializable_state,
+            "thread_id": invocation_thread,
         }
 
-    @staticmethod
-    def _normalize_message(message: Any) -> Dict[str, Any]:
-        if isinstance(message, dict):
-            return {
-                "role": message.get("role"),
-                "content": message.get("content"),
-                **{k: v for k, v in message.items() if k not in {"role", "content"}},
-            }
-        if isinstance(message, BaseMessage):
-            payload = {
-                "role": getattr(message, "type", None),
-                "content": getattr(message, "content", None),
-            }
-            additional = getattr(message, "additional_kwargs", None)
-            if isinstance(additional, dict):
-                payload.update(additional)
-            return payload
-        return {"role": type(message).__name__, "content": str(message)}
+
+t2b_runner = T2BAgentRunner(base_thread_prefix=thread_prefix, llm=llm_model)
 
 
-def get_latest_trace() -> Optional[Any]:
-    traces = trace_manager.get_all_traces_dict()
-    if traces:
-        return traces[-1]
-    return None
-
-
-def build_trace_dict(trace_obj: Any) -> Optional[Dict[str, Any]]:
-    if trace_obj is None:
-        return None
-    root_spans = getattr(trace_obj, "root_spans", None)
-    if not root_spans:
-        return None
-    root_span = root_spans[0]
-    return trace_manager.create_nested_spans_dict(root_span)
-
-
-def extract_tool_calls_from_messages(messages: List[Dict[str, Any]]) -> List[ToolCall]:
-    collected: List[ToolCall] = []
-    for message in messages:
-        role = message.get("role")
-        if role not in {"ai", "assistant"}:
-            continue
-        tool_calls = message.get("tool_calls") or []
-        for tool_call in tool_calls:
-            function_block = tool_call.get("function", {}) or {}
-            tool_name = function_block.get("name")
-            if not tool_name:
-                continue
-            arguments_raw = function_block.get("arguments")
-            try:
-                if isinstance(arguments_raw, str):
-                    import json as _json
-
-                    arguments = _json.loads(arguments_raw)
-                else:
-                    arguments = arguments_raw
-            except Exception:
-                arguments = arguments_raw
-
-            collected.append(
-                ToolCall(
-                    name=tool_name,
-                    input_parameters=arguments,
-                    description=tool_call.get("id"),
-                )
-            )
-    return collected
-
-
-def tool_call_to_dict(tool_call: ToolCall) -> Dict[str, Any]:
-    return {
-        "name": tool_call.name,
-        "description": tool_call.description,
-        "reasoning": tool_call.reasoning,
-        "output": tool_call.output,
-        "input_parameters": tool_call.input_parameters,
-    }
-
-
-def serialize_tool_calls(tool_calls: List[ToolCall]) -> List[Dict[str, Any]]:
-    return [tool_call_to_dict(tc) for tc in tool_calls]
-
-
-def reset_traces() -> None:
-    trace_manager.clear_traces()
-
-
-t2b_runner = T2BAgentRunner(t2b_agent, thread_prefix)
-
-
-# Cell 4 Execute Evaluation Loop
+# Cell 5 Execute Evaluation Loop
 run_results: List[AgentRunResult] = []
 metric_scores: List[float] = []
 metric_reasons: List[str] = []
@@ -228,11 +386,12 @@ metric_details: List[Dict[str, Any]] = []
 
 total_questions = len(benchmark_questions)
 
-for question_index, question in enumerate(benchmark_questions, start=1):
+for question in benchmark_questions:
     question_id = question["id"]
     question_text = question["question"]
 
-    print(f"Processing {question_index:03d}/{total_questions:03d}: {question_id}")
+    current_index = len(run_results) + 1
+    print(f"Processing {current_index:03d}/{total_questions:03d}: {question_id}")
 
     reset_traces()
 
@@ -241,29 +400,35 @@ for question_index, question in enumerate(benchmark_questions, start=1):
         question_id=question_id,
     )
 
+    thread_id = agent_payload["thread_id"]
+    print(f"→ Thread {current_index:03d}: {thread_id} (question={question_id})")
+
     trace_obj = get_latest_trace()
     trace_tree = build_trace_dict(trace_obj)
     serialized_trace = dataclass_to_dict(trace_obj) if trace_obj else None
-    tool_calls = extract_tool_calls_from_messages(agent_payload["all_messages"])
+    tool_events = extract_tool_events_from_trace(trace_tree)
+    if not tool_events:
+        tool_events = extract_tool_events_from_messages(agent_payload["all_messages"])
+    actual_tool_calls: List[ToolCall] = [to_tool_call(event) for event in tool_events]
+
+    expected_tool_calls: List[ToolCall] = build_expected_tool_calls(question)
 
     metric_instance = ToolCorrectnessMetric(
         include_reason=True,
         threshold=0.5,
         verbose_mode=True,
+        should_consider_ordering=True,
+        evaluation_params=[ToolCallParams.INPUT_PARAMETERS],
     )
-
-    expected_tool_calls = [
-        ToolCall(name=name) for name in question.get("expected_tools", [])
-    ]
 
     test_case = LLMTestCase(
         input=question_text,
         actual_output=agent_payload["answer"],
-        tools_called=tool_calls,
+        tools_called=actual_tool_calls,
         expected_tools=expected_tool_calls,
         additional_metadata={
             "model_id": question.get("model_id"),
-            "expected_tools": question.get("expected_tools"),
+            "expected_tools_raw": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
             "species": question.get("species"),
         },
@@ -272,6 +437,16 @@ for question_index, question in enumerate(benchmark_questions, start=1):
 
     score = metric_instance.measure(test_case)
     reason = metric_instance.reason or ""
+
+    metric_scores.append(score)
+    metric_reasons.append(reason)
+    metric_details.append(
+        {
+            "question_id": question_id,
+            "reason": reason,
+            "verbose_logs": getattr(metric_instance, "verbose_logs", None),
+        }
+    )
 
     run_results.append(
         AgentRunResult(
@@ -282,20 +457,9 @@ for question_index, question in enumerate(benchmark_questions, start=1):
             state_fields=agent_payload["state_fields"],
             trace=serialized_trace,
             trace_tree=trace_tree,
-            tool_calls=tool_calls,
+            thread_id=thread_id,
+            tools_called=tool_events,
         )
-    )
-
-    metric_scores.append(score)
-    metric_reasons.append(reason)
-    metric_details.append(
-        {
-            "question_id": question_id,
-            "reason": reason,
-            "tools_called": tool_calls,
-            "expected_tools": expected_tool_calls,
-            "verbose_logs": getattr(metric_instance, "verbose_logs", None),
-        }
     )
 
     print(f"[Tool Correctness] {question_id}: score={score:.3f}")
@@ -303,14 +467,12 @@ for question_index, question in enumerate(benchmark_questions, start=1):
     reset_traces()
 
 
-# Cell 5 Aggregate Results
-average_tool_correctness = (
-    sum(metric_scores) / len(metric_scores) if metric_scores else 0.0
-)
+# Cell 6 Aggregate Results
+average_score = sum(metric_scores) / len(metric_scores) if metric_scores else 0.0
 
 tool_correctness_summary = {
     "question_count": len(run_results),
-    "average_score": average_tool_correctness,
+    "average_score": average_score,
     "median_score": median(metric_scores) if metric_scores else 0.0,
     "stdev_sample": _safe_stdev(metric_scores),
     "stdev_population": pstdev(metric_scores) if len(metric_scores) > 1 else 0.0,
@@ -331,11 +493,17 @@ tool_correctness_summary = {
             "question_id": result.question_id,
             "score": metric_scores[idx],
             "reason": metric_reasons[idx],
-            "tools_called": serialize_tool_calls(metric_details[idx]["tools_called"]),
-            "expected_tools": serialize_tool_calls(metric_details[idx]["expected_tools"]),
-            "verbose_logs": metric_details[idx]["verbose_logs"],
-            "answer": result.answer,
+            "thread_id": result.thread_id,
+            "tools_called": result.tools_called,
             "trace_available": result.trace is not None,
+            "expected_tools": [
+                (
+                    tc.model_dump(exclude_none=True)
+                    if hasattr(tc, "model_dump")
+                    else tc.__dict__
+                )
+                for tc in build_expected_tool_calls(question_lookup[result.question_id])
+            ],
         }
         for idx, result in enumerate(run_results)
     ],
@@ -364,6 +532,7 @@ output_payload = {
     "summary": tool_correctness_summary,
     "scores": metric_scores,
     "reasons": metric_reasons,
+    "details": metric_details,
 }
 
 with TOOL_CORRECTNESS_OUTPUT_PATH.open("w", encoding="utf-8") as f:
