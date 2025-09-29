@@ -210,10 +210,16 @@ t2b_runner = T2BAgentRunner(t2b_agent, thread_prefix)
 run_results: List[AgentRunResult] = []
 metric_scores: List[float] = []
 metric_reasons: List[str] = []
+metric_details: List[Dict[str, Any]] = []
+
+total_questions = len(benchmark_questions)
 
 for question in benchmark_questions:
     question_id = question["id"]
     question_text = question["question"]
+
+    current_index = len(run_results) + 1
+    print(f"Processing {current_index:03d}/{total_questions:03d}: {question_id}")
 
     reset_traces()
 
@@ -230,6 +236,7 @@ for question in benchmark_questions:
         model=judge_model_name,
         include_reason=True,
         async_mode=False,
+        verbose_mode=True,
     )
 
     test_case = LLMTestCase(
@@ -264,6 +271,16 @@ for question in benchmark_questions:
 
     metric_scores.append(score)
     metric_reasons.append(reason)
+    metric_details.append(
+        {
+            "question_id": question_id,
+            "task": getattr(metric_instance, "task", None),
+            "outcome": getattr(metric_instance, "outcome", None),
+            "verdict": getattr(metric_instance, "verdict", None),
+            "reason": reason,
+            "verbose_logs": getattr(metric_instance, "verbose_logs", None),
+        }
+    )
 
     print(f"[Task Completion] {question_id}: score={score:.3f}")
 
@@ -297,6 +314,10 @@ task_completion_summary = {
             "question_id": result.question_id,
             "score": metric_scores[idx],
             "reason": metric_reasons[idx],
+            "verdict": metric_details[idx]["verdict"],
+            "task": metric_details[idx]["task"],
+            "outcome": metric_details[idx]["outcome"],
+            "verbose_logs": metric_details[idx]["verbose_logs"],
             "answer": result.answer,
             "trace_available": result.trace is not None,
         }
