@@ -1391,7 +1391,7 @@
       "model_id": "BIOMD0000000027",
       "tool": "steady_state",
       "species": "Mp",
-        "expected_values": {
+      "expected_values": {
         "Mp": 5.358948,
         "transition_time": 0.669
       },
@@ -3060,36 +3060,647 @@
         "simulate_model",
         "custom_plotter"
       ]
+    },
+    {
+      "id": "get_modelinfo_set2_001",
+      "question": "what are the species do you have in the model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 8 species: Susceptible (Wuhan) - 11081000.0 #/ml, Exposed (Wuhan) - 105.1 #/ml, Infected (Wuhan) - 27.679 #/ml, Asymptomatic (Wuhan) - 53.539 #/ml, Susceptible_quarantined (Wuhan) - 739.0 #/ml, Exposed_quarantined (Wuhan) - 1.1642 #/ml, Hospitalised (Wuhan) - 1.0 #/ml, and Recovered (Wuhan) - 2.0 #/ml."
+    },
+    {
+      "id": "get_modelinfo_set2_002",
+      "question": "what is the time unit in the model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_003",
+      "question": "list all compartments in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_004",
+      "question": "what parameters are available in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_005",
+      "question": "I need to understand the model structure. Can you tell me what species are present in model 971?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 8 species: Susceptible (Wuhan) - 11081000.0 #/ml, Exposed (Wuhan) - 105.1 #/ml, Infected (Wuhan) - 27.679 #/ml, Asymptomatic (Wuhan) - 53.539 #/ml, Susceptible_quarantined (Wuhan) - 739.0 #/ml, Exposed_quarantined (Wuhan) - 1.1642 #/ml, Hospitalised (Wuhan) - 1.0 #/ml, and Recovered (Wuhan) - 2.0 #/ml."
+    },
+    {
+      "id": "get_modelinfo_set2_006",
+      "question": "what is the quantity unit for model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_007",
+      "question": "show me the compartment information for model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_008",
+      "question": "can you list all the parameters in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 16 parameters: Values[c] (14.781), Values[beta] (2.1011e-08), Values[q] (1.8887e-07), Values[sigma] (0.142857), Values[lambda] (0.0714285), Values[rho] (0.86834), Values[delta_I] (0.13266), Values[delta_q] (0.1259), Values[gamma_I] (0.33029), Values[gamma_A] (0.13978), Values[gamma_H] (0.11624), Values[alpha] (1.7826e-05), Values[theta] (1.0), Values[c_lockdown] (14.781), Values[q_lockdown] (1.8887e-07), and Values[Infected] (81.218)."
+    },
+    {
+      "id": "get_modelinfo_set2_009",
+      "question": "what species are defined in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 5 species: M (uVol) - 500.0 nmol/l, Mp (uVol) - 0.0 nmol/l, Mpp (uVol) - 0.0 nmol/l, MAPKK (uVol) - 50.0 nmol/l, and MKP3 (uVol) - 100.0 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_010",
+      "question": "what is the length unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_011",
+      "question": "what compartments exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[uVol] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_012",
+      "question": "I'm working on a systems biology project and need to understand the model structure. What species are available in model 537?",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_013",
+      "question": "what is the area unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_014",
+      "question": "list all parameters in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 53 parameters: Values[kRLOn] (0.384), Values[kRLOff] (1.92), Values[kgp130On] (20.52), Values[kgp130Off] (1.026), Values[kRAct] (155.0), Values[kRint] (1.96), Values[kRsynth] (0.0685), Values[kRintBasal] (0.1561), Values[ksynthIL6] (0.0063), Values[kdegIL6] (34.82), Values[kdegCRP] (0.36), Values[KmSTATDephos] (5.34), Values[VmSTATDephos] (0.62), Values[VmRDephos] (0.525), Values[KmRDephos] (155.3), Values[kcatSTATPhos] (145.0), Values[KmSTATPhos] (219.0), Values[KmProtSynth] (10.0), Values[VmProtSynth] (330.0), Values[kCRPSecretion] (0.5), Values[ksynthCRP] (0.42), Values[ksynthsR] (0.1), Values[kdegsR] (0.3), Values[ksynthsgp130] (3.9), Values[kdegsgp130] (1.0), Values[ksynthIL6Gut] (0.036), Values[kdegIL6Gut] (1.0), Values[kdistTissueToSerum] (0.8473), Values[kdistSerumToTissue] (1.2125), Values[kRShedding] (0.0054), Values[kintActiveR] (0.01), Values[kIL6RBind] (1000.0), Values[kIL6RUnbind] (2.5), Values[infusionTime] (1.0), Values[kAbSerumToLiver] (0.020833333333333332), Values[kAbLiverToSerum] (0.020833333333333332), Values[kAbSerumToGut] (0.010416666666666666), Values[kAbGutToSerum] (0.020833333333333332), Values[VSerum] (2.88), Values[VLiver] (2.88), Values[VGut] (1.44), Values[VPeriph] (0.576), Values[QSerumLiver] (0.06), Values[QSerumGut] (0.03), Values[QSerumPeriph] (0.001), Values[kAbSerumToPeriph] (0.00034722222222222224), Values[kAbPeriphToSerum] (0.0017361111111111112), Values[kdegAb] (0.0018), Values[Dose] (300.0), Values[DoseQ2W] (0.0), Values[Initial for CRP] (221.06367608557), Values[Initial for DoseQ2W] (0.0), and Values[Initial for Dose] (300.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_015",
+      "question": "what is the volume unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_016",
+      "question": "can you show me the compartment details for model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[Wuhan] (1.0 ml)."
+    },
+    {
+      "id": "get_modelinfo_set2_017",
+      "question": "what species are present in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_018",
+      "question": "what is the time unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_019",
+      "question": "I need to analyze the model parameters. Can you provide me with all parameters in model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_020",
+      "question": "what compartments are defined in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_021",
+      "question": "what is the time unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_022",
+      "question": "what is the quantity unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_023",
+      "question": "what is the length unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_024",
+      "question": "what is the area unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_031",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[uVol] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_041",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 5 species: M (uVol) - 500.0 nmol/l, Mp (uVol) - 0.0 nmol/l, Mpp (uVol) - 0.0 nmol/l, MAPKK (uVol) - 50.0 nmol/l, and MKP3 (uVol) - 100.0 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_051",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_061",
+      "question": "what is the time unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_062",
+      "question": "what is the quantity unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_064",
+      "question": "what is the area unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_065",
+      "question": "what is the volume unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_071",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_081",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_091",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 53 parameters: Values[kRLOn] (0.384), Values[kRLOff] (1.92), Values[kgp130On] (20.52), Values[kgp130Off] (1.026), Values[kRAct] (155.0), Values[kRint] (1.96), Values[kRsynth] (0.0685), Values[kRintBasal] (0.1561), Values[ksynthIL6] (0.0063), Values[kdegIL6] (34.82), Values[kdegCRP] (0.36), Values[KmSTATDephos] (5.34), Values[VmSTATDephos] (0.62), Values[VmRDephos] (0.525), Values[KmRDephos] (155.3), Values[kcatSTATPhos] (145.0), Values[KmSTATPhos] (219.0), Values[KmProtSynth] (10.0), Values[VmProtSynth] (330.0), Values[kCRPSecretion] (0.5), Values[ksynthCRP] (0.42), Values[ksynthsR] (0.1), Values[kdegsR] (0.3), Values[ksynthsgp130] (3.9), Values[kdegsgp130] (1.0), Values[ksynthIL6Gut] (0.036), Values[kdegIL6Gut] (1.0), Values[kdistTissueToSerum] (0.8473), Values[kdistSerumToTissue] (1.2125), Values[kRShedding] (0.0054), Values[kintActiveR] (0.01), Values[kIL6RBind] (1000.0), Values[kIL6RUnbind] (2.5), Values[infusionTime] (1.0), Values[kAbSerumToLiver] (0.020833333333333332), Values[kAbLiverToSerum] (0.020833333333333332), Values[kAbSerumToGut] (0.010416666666666666), Values[kAbGutToSerum] (0.020833333333333332), Values[VSerum] (2.88), Values[VLiver] (2.88), Values[VGut] (1.44), Values[VPeriph] (0.576), Values[QSerumLiver] (0.06), Values[QSerumGut] (0.03), Values[QSerumPeriph] (0.001), Values[kAbSerumToPeriph] (0.00034722222222222224), Values[kAbPeriphToSerum] (0.0017361111111111112), Values[kdegAb] (0.0018), Values[Dose] (300.0), Values[DoseQ2W] (0.0), Values[Initial for CRP] (221.06367608557), Values[Initial for DoseQ2W] (0.0), and Values[Initial for Dose] (300.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_101",
+      "question": "what is the time unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_102",
+      "question": "what is the quantity unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_103",
+      "question": "what is the length unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_104",
+      "question": "what is the area unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_105",
+      "question": "what is the volume unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_111",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[Wuhan] (1.0 ml)."
     }
   ],
   "metadata": {
-    "total_questions": 182,
+    "total_questions": 222,
     "complexity_distribution": {
-      "score_1": 36,
-      "score_2": 95,
-      "score_3": 41,
-      "score_4": 20
+      "score_2": 75,
+      "score_3": 36,
+      "score_1": 64,
+      "score_4": 18,
+      "score_5": 12,
+      "score_7": 5,
+      "score_8": 3,
+      "score_6": 8,
+      "score_9": 1
     },
     "user_backgrounds": {
-      "modeller": 91,
-      "computational_biologist": 91,
-      "epidemiologist": 0
+      "modeller": 104,
+      "immunologist": 14,
+      "computational_biologist": 60,
+      "epidemiologist": 44
     },
     "question_types": {
-      "simulate_model": 42,
-      "steady_state": 60,
-      "custom_plotter": 60
+      "simulation": 122,
+      "custom_plotter": 60,
+      "species": 7,
+      "units": 19,
+      "compartments": 8,
+      "parameters": 6
     },
     "model_distribution": {
-      "537": 81,
-      "27": 61,
-      "971": 40
+      "537": 64,
+      "971": 68,
+      "27": 90
     },
     "expected_tools": [
-      "simulate_model",
       "ask_question",
-      "steady_state",
-      "custom_plotter"
+      "custom_plotter",
+      "get_modelinfo",
+      "search_models",
+      "simulate_model",
+      "steady_state"
     ]
   }
 }
