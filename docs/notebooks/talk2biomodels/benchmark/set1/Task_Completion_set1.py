@@ -30,6 +30,7 @@ from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biom
 BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
 # Set to a list of question IDs to run a focused sample; leave as None for the full set.
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
+TASK_COMPLETION_OUTPUT_PATH = Path("task_completion_set1_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -236,6 +237,7 @@ for question in benchmark_questions:
         model=judge_model_name,
         include_reason=True,
         async_mode=False,
+        threshold=0.5,
         verbose_mode=True,
     )
 
@@ -343,3 +345,14 @@ print(
     f"Pass rate >=0.5: {task_completion_summary['pass_rate_threshold_0.5']:.3f} | "
     f"Pass rate >=0.7: {task_completion_summary['pass_rate_threshold_0.7']:.3f}"
 )
+
+output_payload = {
+    "summary": task_completion_summary,
+    "scores": metric_scores,
+    "reasons": metric_reasons,
+}
+
+with TASK_COMPLETION_OUTPUT_PATH.open("w", encoding="utf-8") as f:
+    json.dump(output_payload, f, indent=2)
+
+print(f"Task Completion results saved to {TASK_COMPLETION_OUTPUT_PATH}")
