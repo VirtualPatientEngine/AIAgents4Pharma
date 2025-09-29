@@ -28,9 +28,9 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 )
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
-BENCHMARK_JSON_PATH = Path("../benchmark_questions_set2.json")
+BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
-TOOL_CORRECTNESS_OUTPUT_PATH = Path("tool_correctness_set2_results.json")
+TOOL_CORRECTNESS_OUTPUT_PATH = Path("tool_correctness_set1_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -68,7 +68,7 @@ def _safe_stdev(values: List[float]) -> float:
 
 # Cell 3 Initialize LLM
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-thread_prefix = "tool-correctness-set2"
+thread_prefix = "tool-correctness-set1"
 
 
 # Cell 4 Helper Functions
@@ -149,11 +149,8 @@ def _parse_simulation_duration(simulation_time: Optional[str]) -> Optional[float
 def _canonicalize_input_parameters(
     tool_name: Optional[str], raw_input: Any
 ) -> Optional[Dict[str, Any]]:
-    if raw_input is None:
-        return {}
-
     if not isinstance(raw_input, dict):
-        return raw_input
+        return None
 
     if tool_name == "simulate_model":
         sys_bio_model = raw_input.get("sys_bio_model", {})
@@ -166,41 +163,6 @@ def _canonicalize_input_parameters(
         except (TypeError, ValueError):
             duration = None
 
-        interval_raw = time_data.get("interval")
-        try:
-            interval = float(interval_raw) if interval_raw is not None else None
-        except (TypeError, ValueError):
-            interval = None
-
-        species_data = arg_data.get("species_to_be_analyzed_before_experiment")
-        if not species_data:
-            species_data = raw_input.get("species_to_be_analyzed_before_experiment")
-
-        species_name = None
-        species_concentration = None
-        if isinstance(species_data, dict):
-            names = species_data.get("species_name")
-            concs = species_data.get("species_concentration")
-
-            if isinstance(names, list):
-                species_name = names[0] if names else None
-            elif isinstance(names, str):
-                species_name = names
-
-            if isinstance(concs, list):
-                species_concentration = concs[0] if concs else None
-            else:
-                species_concentration = concs
-
-        try:
-            species_concentration = (
-                float(species_concentration)
-                if species_concentration is not None
-                else None
-            )
-        except (TypeError, ValueError):
-            pass
-
         canonical = {
             "model_id": (
                 str(sys_bio_model.get("biomodel_id"))
@@ -208,9 +170,6 @@ def _canonicalize_input_parameters(
                 else None
             ),
             "duration": duration,
-            "interval": interval,
-            "species": species_name,
-            "initial_concentration": species_concentration,
         }
         return _strip_none_values(canonical)
 
@@ -220,14 +179,7 @@ def _canonicalize_input_parameters(
         }
         return _strip_none_values(canonical)
 
-    if tool_name == "search_models":
-        canonical = {
-            "query": raw_input.get("query") or raw_input.get("search_query"),
-            "number": raw_input.get("number") or raw_input.get("top_k"),
-        }
-        return _strip_none_values(canonical)
-
-    return raw_input if raw_input is not None else {}
+    return raw_input
 
 
 def extract_tool_events_from_trace(
@@ -354,36 +306,11 @@ def build_expected_tool_calls(question: Dict[str, Any]) -> List[ToolCall]:
                     else None
                 ),
                 "duration": expected_duration,
-                "interval": (
-                    float(question.get("interval"))
-                    if question.get("interval") is not None
-                    else None
-                ),
-                "species": question.get("species"),
-                "initial_concentration": (
-                    float(question.get("initial_concentration"))
-                    if question.get("initial_concentration") is not None
-                    else None
-                ),
             }
             input_parameters = _strip_none_values(canonical)
 
         if tool_name == "ask_question":
-            canonical = {
-                "question_context": "simulation",
-            }
-            input_parameters = canonical
-
-        if tool_name == "search_models":
-            canonical = {
-                "query": question.get("search_query"),
-                "number": question.get("expected_count"),
-            }
-            input_parameters = _strip_none_values(canonical)
-
-        if input_parameters is None:
-            input_parameters = {}
-
+            input_parameters = {"question_context": "simulation"}
         tool_calls.append(
             ToolCall(
                 name=tool_name,
@@ -503,10 +430,7 @@ for question in benchmark_questions:
             "model_id": question.get("model_id"),
             "expected_tools_raw": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
-            "interval": question.get("interval"),
-            "initial_concentration": question.get("initial_concentration"),
             "species": question.get("species"),
-            "expected_values": question.get("expected_values"),
         },
         name=question_id,
     )
@@ -580,14 +504,6 @@ tool_correctness_summary = {
                 )
                 for tc in build_expected_tool_calls(question_lookup[result.question_id])
             ],
-            "interval": question_lookup.get(result.question_id, {}).get("interval"),
-            "initial_concentration": question_lookup.get(result.question_id, {}).get(
-                "initial_concentration"
-            ),
-            "species": question_lookup.get(result.question_id, {}).get("species"),
-            "expected_values": question_lookup.get(result.question_id, {}).get(
-                "expected_values"
-            ),
         }
         for idx, result in enumerate(run_results)
     ],

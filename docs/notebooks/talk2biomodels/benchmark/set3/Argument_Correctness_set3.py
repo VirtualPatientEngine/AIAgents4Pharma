@@ -10,15 +10,12 @@ MAX_TRACE_STRING_LENGTH = 2000
 MAX_TRACE_LIST_ITEMS = 200
 MAX_TRACE_DEPTH = 6
 
-from statistics import mean, median, pstdev, stdev
-from statistics import StatisticsError
+from statistics import StatisticsError, median, pstdev, stdev
 
-from deepeval.dataset import EvaluationDataset, Golden
-from deepeval.metrics import TaskCompletionMetric
+from deepeval.metrics import ArgumentCorrectnessMetric
+from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval.tracing import observe
 from deepeval.tracing.tracing import trace_manager
-from deepeval.test_case import LLMTestCase
-from deepeval.utils import dataclass_to_dict
 from langchain_openai import ChatOpenAI
 
 try:  # LangChain >= 0.1.0
@@ -31,10 +28,9 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 )
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
-BENCHMARK_JSON_PATH = Path("../benchmark_questions_set2.json")
-# Set to a list of question IDs to run a focused sample; leave as None for the full set.
+BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
-TASK_COMPLETION_OUTPUT_PATH = Path("task_completion_set2_results.json")
+ARGUMENT_CORRECTNESS_OUTPUT_PATH = Path("argument_correctness_set1_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -43,22 +39,11 @@ def load_benchmark_questions(
 ) -> List[Dict[str, Any]]:
     with json_path.open("r", encoding="utf-8") as f:
         raw_payload = json.load(f)
-
     questions = raw_payload["simulate_model_benchmark_questions"]
     if selected_ids is None:
         return questions
-
     question_by_id = {question["id"]: question for question in questions}
-    ordered_subset = [
-        question_by_id[qid] for qid in selected_ids if qid in question_by_id
-    ]
-    return ordered_subset
-
-
-benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAMPLE_IDS)
-question_lookup: Dict[str, Dict[str, Any]] = {
-    item["id"]: item for item in benchmark_questions
-}
+    return [question_by_id[qid] for qid in selected_ids if qid in question_by_id]
 
 
 def _safe_stdev(values: List[float]) -> float:
@@ -70,39 +55,16 @@ def _safe_stdev(values: List[float]) -> float:
         return 0.0
 
 
+benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAMPLE_IDS)
+
+
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-thread_prefix = "task-completion-set2"
+thread_prefix = "argument-correctness-set1"
 
 judge_model_name = "gpt-4o"
 
-goldens: List[Golden] = [
-    Golden(
-        input=question["question"],
-        name=question["id"],
-        additional_metadata={
-            "expected_answer": question.get("expected_answer"),
-            "expected_tools": question.get("expected_tools"),
-            "model_id": question.get("model_id"),
-            "simulation_time": question.get("simulation_time"),
-            "species": question.get("species"),
-        },
-        custom_column_key_values={
-            "question_id": question["id"],
-            "model_id": (
-                str(question.get("model_id"))
-                if question.get("model_id") is not None
-                else ""
-            ),
-        },
-    )
-    for question in benchmark_questions
-]
 
-dataset = EvaluationDataset(goldens=goldens)
-
-
-# Cell 4 Helper Functions and Runner
 @dataclass
 class AgentRunResult:
     question_id: str
@@ -112,6 +74,7 @@ class AgentRunResult:
     state_fields: Dict[str, Any]
     trace: Optional[Dict[str, Any]]
     trace_tree: Optional[Dict[str, Any]]
+    tool_calls: List[ToolCall]
     thread_id: str
 
 
@@ -147,9 +110,7 @@ class T2BAgentRunner:
         )
 
         messages = result_state.get("messages", [])
-        normalized_messages: List[Dict[str, Any]] = [
-            self._normalize_message(msg) for msg in messages
-        ]
+        normalized_messages = [self._normalize_message(msg) for msg in messages]
         assistant_messages = [
             msg for msg in normalized_messages if msg.get("role") in {"assistant", "ai"}
         ]
@@ -170,16 +131,6 @@ class T2BAgentRunner:
             "dic_annotations_data": summarize_value(
                 result_state.get("dic_annotations_data", [])
             ),
-            "interval": question_lookup.get(question_id, {}).get("interval"),
-            "initial_concentration": question_lookup.get(question_id, {}).get(
-                "initial_concentration"
-            ),
-            "expected_values": question_lookup.get(question_id, {}).get(
-                "expected_values"
-            ),
-            "search_query": question_lookup.get(question_id, {}).get("search_query"),
-            "expected_count": question_lookup.get(question_id, {}).get("expected_count"),
-            "tool": question_lookup.get(question_id, {}).get("tool"),
         }
 
         return {
@@ -198,7 +149,6 @@ class T2BAgentRunner:
                 "content": message.get("content"),
                 **{k: v for k, v in message.items() if k not in {"role", "content"}},
             }
-
         if isinstance(message, BaseMessage):
             payload = {
                 "role": getattr(message, "type", None),
@@ -208,7 +158,6 @@ class T2BAgentRunner:
             if isinstance(additional, dict):
                 payload.update(additional)
             return payload
-
         return {"role": type(message).__name__, "content": str(message)}
 
 
@@ -247,6 +196,50 @@ def summarize_value(value: Any) -> Any:
     return value
 
 
+def extract_tool_calls_from_messages(messages: List[Dict[str, Any]]) -> List[ToolCall]:
+    collected: List[ToolCall] = []
+    for message in messages:
+        role = message.get("role")
+        if role not in {"ai", "assistant"}:
+            continue
+        tool_calls = message.get("tool_calls") or []
+        for tool_call in tool_calls:
+            function_block = tool_call.get("function", {}) or {}
+            tool_name = function_block.get("name")
+            if not tool_name:
+                continue
+            arguments_raw = function_block.get("arguments")
+            try:
+                if isinstance(arguments_raw, str):
+                    parsed_args = json.loads(arguments_raw)
+                else:
+                    parsed_args = arguments_raw
+            except Exception:
+                parsed_args = arguments_raw
+
+            collected.append(
+                ToolCall(
+                    name=tool_name,
+                    description=tool_call.get("id"),
+                    input_parameters=parsed_args,
+                )
+            )
+    return collected
+
+
+def serialize_tool_calls(tool_calls: List[ToolCall]) -> List[Dict[str, Any]]:
+    return [
+        {
+            "name": tc.name,
+            "description": tc.description,
+            "reasoning": tc.reasoning,
+            "output": tc.output,
+            "input_parameters": summarize_value(tc.input_parameters),
+        }
+        for tc in tool_calls
+    ]
+
+
 def _truncate_trace_value(value: Any, depth: int = 0) -> Any:
     if depth >= MAX_TRACE_DEPTH:
         return "<truncated depth>"
@@ -272,7 +265,7 @@ def _truncate_trace_value(value: Any, depth: int = 0) -> Any:
     if isinstance(value, dict):
         pruned: Dict[str, Any] = {}
         for key, item in value.items():
-            if key in {"output", "input"}:
+            if key in {"input", "output"}:
                 pruned[key] = summarize_value(item)
             else:
                 pruned[key] = _truncate_trace_value(item, depth + 1)
@@ -295,7 +288,8 @@ def reset_traces() -> None:
 
 t2b_runner = T2BAgentRunner(base_thread_prefix=thread_prefix, llm=llm_model)
 
-# Cell 5 Execute Evaluation Loop (Sample Run)
+
+# Cell 4 Execute Evaluation Loop
 run_results: List[AgentRunResult] = []
 metric_scores: List[float] = []
 metric_reasons: List[str] = []
@@ -303,12 +297,11 @@ metric_details: List[Dict[str, Any]] = []
 
 total_questions = len(benchmark_questions)
 
-for question in benchmark_questions:
+for question_index, question in enumerate(benchmark_questions, start=1):
     question_id = question["id"]
     question_text = question["question"]
 
-    current_index = len(run_results) + 1
-    print(f"Processing {current_index:03d}/{total_questions:03d}: {question_id}")
+    print(f"Processing {question_index:03d}/{total_questions:03d}: {question_id}")
 
     reset_traces()
 
@@ -316,41 +309,37 @@ for question in benchmark_questions:
         question_text=question_text,
         question_id=question_id,
     )
-    thread_id = agent_payload["thread_id"]
 
-    print(f"→ Thread {current_index:03d}: {thread_id} (question={question_id})")
+    thread_id = agent_payload["thread_id"]
+    print(f"→ Thread {question_index:03d}: {thread_id} (question={question_id})")
 
     trace_obj = get_latest_trace()
     trace_tree = build_trace_dict(trace_obj)
     sanitized_trace_tree = sanitize_trace_tree(trace_tree)
     serialized_trace = sanitized_trace_tree
+    tool_calls = extract_tool_calls_from_messages(agent_payload["all_messages"])
 
-    metric_instance = TaskCompletionMetric(
+    metric_instance = ArgumentCorrectnessMetric(
         model=judge_model_name,
         include_reason=True,
-        async_mode=False,
         threshold=0.5,
+        async_mode=False,
         verbose_mode=True,
     )
 
     test_case = LLMTestCase(
         input=question_text,
         actual_output=agent_payload["answer"],
-        expected_output=question.get("expected_answer"),
+        tools_called=tool_calls,
         additional_metadata={
             "model_id": question.get("model_id"),
             "expected_tools": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
-            "interval": question.get("interval"),
-            "initial_concentration": question.get("initial_concentration"),
             "species": question.get("species"),
-            "expected_values": question.get("expected_values"),
-            "search_query": question.get("search_query"),
-            "expected_count": question.get("expected_count"),
-            "tool": question.get("tool"),
         },
         name=question_id,
     )
+
     if sanitized_trace_tree is not None:
         test_case._trace_dict = sanitized_trace_tree
 
@@ -366,6 +355,7 @@ for question in benchmark_questions:
             state_fields=agent_payload["state_fields"],
             trace=serialized_trace,
             trace_tree=sanitized_trace_tree,
+            tool_calls=tool_calls,
             thread_id=thread_id,
         )
     )
@@ -375,26 +365,25 @@ for question in benchmark_questions:
     metric_details.append(
         {
             "question_id": question_id,
-            "task": getattr(metric_instance, "task", None),
-            "outcome": getattr(metric_instance, "outcome", None),
-            "verdict": getattr(metric_instance, "verdict", None),
             "reason": reason,
+            "tools_called": serialize_tool_calls(tool_calls),
             "verbose_logs": getattr(metric_instance, "verbose_logs", None),
         }
     )
 
-    print(f"[Task Completion] {question_id}: score={score:.3f}")
+    print(f"[Argument Correctness] {question_id}: score={score:.3f}")
 
     reset_traces()
 
-# Cell 6 Aggregate Results
-average_task_completion = (
+
+# Cell 5 Aggregate Results
+average_argument_correctness = (
     sum(metric_scores) / len(metric_scores) if metric_scores else 0.0
 )
 
-task_completion_summary = {
+argument_correctness_summary = {
     "question_count": len(run_results),
-    "average_score": average_task_completion,
+    "average_score": average_argument_correctness,
     "median_score": median(metric_scores) if metric_scores else 0.0,
     "stdev_sample": _safe_stdev(metric_scores),
     "stdev_population": pstdev(metric_scores) if len(metric_scores) > 1 else 0.0,
@@ -415,54 +404,42 @@ task_completion_summary = {
             "question_id": result.question_id,
             "score": metric_scores[idx],
             "reason": metric_reasons[idx],
-            "verdict": metric_details[idx]["verdict"],
-            "task": metric_details[idx]["task"],
-            "outcome": metric_details[idx]["outcome"],
+            "tools_called": metric_details[idx]["tools_called"],
             "verbose_logs": metric_details[idx]["verbose_logs"],
             "answer": result.answer,
             "trace_available": result.trace is not None,
             "thread_id": result.thread_id,
-            "interval": question_lookup.get(result.question_id, {}).get("interval"),
-            "initial_concentration": question_lookup.get(result.question_id, {}).get(
-                "initial_concentration"
-            ),
-            "expected_values": question_lookup.get(result.question_id, {}).get(
-                "expected_values"
-            ),
-            "search_query": question_lookup.get(result.question_id, {}).get("search_query"),
-            "expected_count": question_lookup.get(result.question_id, {}).get("expected_count"),
-            "tool": question_lookup.get(result.question_id, {}).get("tool"),
         }
         for idx, result in enumerate(run_results)
     ],
 }
 
-print("Task Completion evaluation complete.")
+print("Argument Correctness evaluation complete.")
 print(
-    f"Evaluated {task_completion_summary['question_count']} questions. "
-    f"Average score: {task_completion_summary['average_score']:.3f}"
+    f"Evaluated {argument_correctness_summary['question_count']} questions. "
+    f"Average score: {argument_correctness_summary['average_score']:.3f}"
 )
-print(f"Median score: {task_completion_summary['median_score']:.3f}")
+print(f"Median score: {argument_correctness_summary['median_score']:.3f}")
 print(
-    f"Sample stdev: {task_completion_summary['stdev_sample']:.3f} | "
-    f"Population stdev: {task_completion_summary['stdev_population']:.3f}"
-)
-print(
-    f"Min score: {task_completion_summary['minimum_score']:.3f} | "
-    f"Max score: {task_completion_summary['maximum_score']:.3f}"
+    f"Sample stdev: {argument_correctness_summary['stdev_sample']:.3f} | "
+    f"Population stdev: {argument_correctness_summary['stdev_population']:.3f}"
 )
 print(
-    f"Pass rate >=0.5: {task_completion_summary['pass_rate_threshold_0.5']:.3f} | "
-    f"Pass rate >=0.7: {task_completion_summary['pass_rate_threshold_0.7']:.3f}"
+    f"Min score: {argument_correctness_summary['minimum_score']:.3f} | "
+    f"Max score: {argument_correctness_summary['maximum_score']:.3f}"
+)
+print(
+    f"Pass rate >=0.5: {argument_correctness_summary['pass_rate_threshold_0.5']:.3f} | "
+    f"Pass rate >=0.7: {argument_correctness_summary['pass_rate_threshold_0.7']:.3f}"
 )
 
 output_payload = {
-    "summary": task_completion_summary,
+    "summary": argument_correctness_summary,
     "scores": metric_scores,
     "reasons": metric_reasons,
 }
 
-with TASK_COMPLETION_OUTPUT_PATH.open("w", encoding="utf-8") as f:
+with ARGUMENT_CORRECTNESS_OUTPUT_PATH.open("w", encoding="utf-8") as f:
     json.dump(output_payload, f, indent=2)
 
-print(f"Task Completion results saved to {TASK_COMPLETION_OUTPUT_PATH}")
+print(f"Argument Correctness results saved to {ARGUMENT_CORRECTNESS_OUTPUT_PATH}")

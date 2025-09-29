@@ -31,10 +31,10 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 )
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
-BENCHMARK_JSON_PATH = Path("../benchmark_questions_set2.json")
+BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
 # Set to a list of question IDs to run a focused sample; leave as None for the full set.
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
-TASK_COMPLETION_OUTPUT_PATH = Path("task_completion_set2_results.json")
+TASK_COMPLETION_OUTPUT_PATH = Path("task_completion_set1_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -72,7 +72,7 @@ def _safe_stdev(values: List[float]) -> float:
 
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-thread_prefix = "task-completion-set2"
+thread_prefix = "task-completion-set1"
 
 judge_model_name = "gpt-4o"
 
@@ -89,11 +89,7 @@ goldens: List[Golden] = [
         },
         custom_column_key_values={
             "question_id": question["id"],
-            "model_id": (
-                str(question.get("model_id"))
-                if question.get("model_id") is not None
-                else ""
-            ),
+            "model_id": question.get("model_id"),
         },
     )
     for question in benchmark_questions
@@ -170,16 +166,6 @@ class T2BAgentRunner:
             "dic_annotations_data": summarize_value(
                 result_state.get("dic_annotations_data", [])
             ),
-            "interval": question_lookup.get(question_id, {}).get("interval"),
-            "initial_concentration": question_lookup.get(question_id, {}).get(
-                "initial_concentration"
-            ),
-            "expected_values": question_lookup.get(question_id, {}).get(
-                "expected_values"
-            ),
-            "search_query": question_lookup.get(question_id, {}).get("search_query"),
-            "expected_count": question_lookup.get(question_id, {}).get("expected_count"),
-            "tool": question_lookup.get(question_id, {}).get("tool"),
         }
 
         return {
@@ -341,13 +327,7 @@ for question in benchmark_questions:
             "model_id": question.get("model_id"),
             "expected_tools": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
-            "interval": question.get("interval"),
-            "initial_concentration": question.get("initial_concentration"),
             "species": question.get("species"),
-            "expected_values": question.get("expected_values"),
-            "search_query": question.get("search_query"),
-            "expected_count": question.get("expected_count"),
-            "tool": question.get("tool"),
         },
         name=question_id,
     )
@@ -422,16 +402,6 @@ task_completion_summary = {
             "answer": result.answer,
             "trace_available": result.trace is not None,
             "thread_id": result.thread_id,
-            "interval": question_lookup.get(result.question_id, {}).get("interval"),
-            "initial_concentration": question_lookup.get(result.question_id, {}).get(
-                "initial_concentration"
-            ),
-            "expected_values": question_lookup.get(result.question_id, {}).get(
-                "expected_values"
-            ),
-            "search_query": question_lookup.get(result.question_id, {}).get("search_query"),
-            "expected_count": question_lookup.get(result.question_id, {}).get("expected_count"),
-            "tool": question_lookup.get(result.question_id, {}).get("tool"),
         }
         for idx, result in enumerate(run_results)
     ],
