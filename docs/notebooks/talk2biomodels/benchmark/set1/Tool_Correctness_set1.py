@@ -28,6 +28,7 @@ from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biom
 
 BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
+TOOL_CORRECTNESS_OUTPUT_PATH = Path("tool_correctness_set1_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -198,6 +199,20 @@ def extract_tool_calls_from_messages(messages: List[Dict[str, Any]]) -> List[Too
     return collected
 
 
+def tool_call_to_dict(tool_call: ToolCall) -> Dict[str, Any]:
+    return {
+        "name": tool_call.name,
+        "description": tool_call.description,
+        "reasoning": tool_call.reasoning,
+        "output": tool_call.output,
+        "input_parameters": tool_call.input_parameters,
+    }
+
+
+def serialize_tool_calls(tool_calls: List[ToolCall]) -> List[Dict[str, Any]]:
+    return [tool_call_to_dict(tc) for tc in tool_calls]
+
+
 def reset_traces() -> None:
     trace_manager.clear_traces()
 
@@ -233,6 +248,7 @@ for question_index, question in enumerate(benchmark_questions, start=1):
 
     metric_instance = ToolCorrectnessMetric(
         include_reason=True,
+        threshold=0.5,
         verbose_mode=True,
     )
 
@@ -315,8 +331,8 @@ tool_correctness_summary = {
             "question_id": result.question_id,
             "score": metric_scores[idx],
             "reason": metric_reasons[idx],
-            "tools_called": metric_details[idx]["tools_called"],
-            "expected_tools": metric_details[idx]["expected_tools"],
+            "tools_called": serialize_tool_calls(metric_details[idx]["tools_called"]),
+            "expected_tools": serialize_tool_calls(metric_details[idx]["expected_tools"]),
             "verbose_logs": metric_details[idx]["verbose_logs"],
             "answer": result.answer,
             "trace_available": result.trace is not None,
@@ -343,3 +359,14 @@ print(
     f"Pass rate >=0.5: {tool_correctness_summary['pass_rate_threshold_0.5']:.3f} | "
     f"Pass rate >=0.7: {tool_correctness_summary['pass_rate_threshold_0.7']:.3f}"
 )
+
+output_payload = {
+    "summary": tool_correctness_summary,
+    "scores": metric_scores,
+    "reasons": metric_reasons,
+}
+
+with TOOL_CORRECTNESS_OUTPUT_PATH.open("w", encoding="utf-8") as f:
+    json.dump(output_payload, f, indent=2)
+
+print(f"Tool Correctness results saved to {TOOL_CORRECTNESS_OUTPUT_PATH}")
