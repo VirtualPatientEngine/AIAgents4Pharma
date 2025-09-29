@@ -1,12 +1,22 @@
 # Benchmark
 
-## Expected output
+## Evaluation results
 
 | Dataset | Task completion  | Tool Correctness | Argument correctness | Table correctness |
 |----------|----------|----------|----------|----------|
 | Set 1    | Row 1    | Row 1    | Row 1    | Row 1    |
 | Set 2    | Row 2    | Row 2    | Row 2    | Row 2    |
 | Set 3    | Row 3    | Row 3    | Row 3    | Row 3    |
+
+
+## Dataset summary
+
+| Set | Description | Tools | Focus | Questions | Example |
+|-----|-------------|-------|-------|-----------|---------|
+| Set 1 | User input variability with respect to background, grammar and clarity. Captures extreme cases in how users can address the agent. | simulate_model, ask_question | Communication variability | 90 | "pls run sim BIOMD0000000027 1000 seconds get Mpp concentration" vs "I need to understand the MAPK signaling dynamics for my research..." |
+| Set 2 | Variability in user inputs relative to the number of provided parameters and tools, requested through generally well-formulated and grammatically correct questions. | simulate_model, search_models, steady_state, ask_question, custom_plotter, get_modelinfo | Parameter variability | 222 | "Search for models on precision medicine, and then list the names of the models." |
+| Set 3 | Tabular data matching | steady_state, parameter_scan | Tabular data | 79 | "Analyze MAPKK parameter impact on Mpp concentration over time in model 27. Use parameter scan from 1 to 100 with 10 steps." |
+| Set 4 | Annotation id matching | get_annotation | Annotation matching | 60 | "what are the annotations for Mp and MKP3 in model 27?" |
 
 
 
