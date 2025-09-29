@@ -6,6 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+MAX_TRACE_STRING_LENGTH = 2000
+MAX_TRACE_LIST_ITEMS = 200
+MAX_TRACE_DEPTH = 6
+
 from statistics import mean, median, pstdev, stdev
 from statistics import StatisticsError
 
@@ -150,10 +154,18 @@ class T2BAgentRunner:
         serializable_state = {
             "model_id": result_state.get("model_id", []),
             "sbml_file_path": result_state.get("sbml_file_path", []),
-            "dic_simulated_data": result_state.get("dic_simulated_data", []),
-            "dic_scanned_data": result_state.get("dic_scanned_data", []),
-            "dic_steady_state_data": result_state.get("dic_steady_state_data", []),
-            "dic_annotations_data": result_state.get("dic_annotations_data", []),
+            "dic_simulated_data": summarize_value(
+                result_state.get("dic_simulated_data", [])
+            ),
+            "dic_scanned_data": summarize_value(
+                result_state.get("dic_scanned_data", [])
+            ),
+            "dic_steady_state_data": summarize_value(
+                result_state.get("dic_steady_state_data", [])
+            ),
+            "dic_annotations_data": summarize_value(
+                result_state.get("dic_annotations_data", [])
+            ),
         }
 
         return {
@@ -203,6 +215,66 @@ def build_trace_dict(trace_obj: Any) -> Optional[Dict[str, Any]]:
     return trace_manager.create_nested_spans_dict(root_span)
 
 
+def summarize_value(value: Any) -> Any:
+    if isinstance(value, list):
+        summary: Dict[str, Any] = {"type": "list", "length": len(value)}
+        if value:
+            summary["preview"] = summarize_value(value[0])
+        return summary
+
+    if isinstance(value, dict):
+        keys = list(value.keys())
+        return {
+            "type": "dict",
+            "key_count": len(keys),
+            "keys_preview": keys[:10],
+        }
+
+    return value
+
+
+def _truncate_trace_value(value: Any, depth: int = 0) -> Any:
+    if depth >= MAX_TRACE_DEPTH:
+        return "<truncated depth>"
+
+    if isinstance(value, str):
+        if len(value) > MAX_TRACE_STRING_LENGTH:
+            return value[:MAX_TRACE_STRING_LENGTH] + "... <truncated>"
+        return value
+
+    if isinstance(value, list):
+        if not value:
+            return []
+        truncated = [
+            _truncate_trace_value(item, depth + 1)
+            for item in value[:MAX_TRACE_LIST_ITEMS]
+        ]
+        if len(value) > MAX_TRACE_LIST_ITEMS:
+            truncated.append(
+                f"<truncated {len(value) - MAX_TRACE_LIST_ITEMS} additional items>"
+            )
+        return truncated
+
+    if isinstance(value, dict):
+        pruned: Dict[str, Any] = {}
+        for key, item in value.items():
+            if key in {"output", "input"}:
+                pruned[key] = summarize_value(item)
+            else:
+                pruned[key] = _truncate_trace_value(item, depth + 1)
+        return pruned
+
+    return value
+
+
+def sanitize_trace_tree(
+    trace_tree: Optional[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    if trace_tree is None:
+        return None
+    return _truncate_trace_value(trace_tree)
+
+
 def reset_traces() -> None:
     trace_manager.clear_traces()
 
@@ -236,7 +308,8 @@ for question in benchmark_questions:
 
     trace_obj = get_latest_trace()
     trace_tree = build_trace_dict(trace_obj)
-    serialized_trace = dataclass_to_dict(trace_obj) if trace_obj else None
+    sanitized_trace_tree = sanitize_trace_tree(trace_tree)
+    serialized_trace = sanitized_trace_tree
 
     metric_instance = TaskCompletionMetric(
         model=judge_model_name,
@@ -258,8 +331,8 @@ for question in benchmark_questions:
         },
         name=question_id,
     )
-    if trace_tree is not None:
-        test_case._trace_dict = trace_tree
+    if sanitized_trace_tree is not None:
+        test_case._trace_dict = sanitized_trace_tree
 
     score = metric_instance.measure(test_case)
     reason = metric_instance.reason or ""
@@ -272,7 +345,7 @@ for question in benchmark_questions:
             all_messages=agent_payload["all_messages"],
             state_fields=agent_payload["state_fields"],
             trace=serialized_trace,
-            trace_tree=trace_tree,
+            trace_tree=sanitized_trace_tree,
             thread_id=thread_id,
         )
     )
