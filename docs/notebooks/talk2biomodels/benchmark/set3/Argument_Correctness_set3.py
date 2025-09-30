@@ -28,9 +28,9 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 )
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
-BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
+BENCHMARK_JSON_PATH = Path("../benchmark_questions_set3.json")
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
-ARGUMENT_CORRECTNESS_OUTPUT_PATH = Path("argument_correctness_set1_results.json")
+ARGUMENT_CORRECTNESS_OUTPUT_PATH = Path("argument_correctness_set3_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -39,7 +39,11 @@ def load_benchmark_questions(
 ) -> List[Dict[str, Any]]:
     with json_path.open("r", encoding="utf-8") as f:
         raw_payload = json.load(f)
-    questions = raw_payload["simulate_model_benchmark_questions"]
+    questions = (
+        raw_payload.get("simulate_model_benchmark_questions")
+        or raw_payload.get("get_modelinfo_benchmark_questions_set3")
+        or []
+    )
     if selected_ids is None:
         return questions
     question_by_id = {question["id"]: question for question in questions}
@@ -58,9 +62,13 @@ def _safe_stdev(values: List[float]) -> float:
 benchmark_questions = load_benchmark_questions(BENCHMARK_JSON_PATH, QUESTION_SAMPLE_IDS)
 
 
+question_lookup: Dict[str, Dict[str, Any]] = {
+    item["id"]: item for item in benchmark_questions
+}
+
 # Cell 3 Initialize Models and Metric
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-thread_prefix = "argument-correctness-set1"
+thread_prefix = "argument-correctness-set3"
 
 judge_model_name = "gpt-4o"
 
@@ -116,6 +124,7 @@ class T2BAgentRunner:
         ]
         answer = assistant_messages[-1].get("content") if assistant_messages else None
 
+        question_meta = question_lookup.get(question_id, {})
         serializable_state = {
             "model_id": result_state.get("model_id", []),
             "sbml_file_path": result_state.get("sbml_file_path", []),
@@ -131,6 +140,13 @@ class T2BAgentRunner:
             "dic_annotations_data": summarize_value(
                 result_state.get("dic_annotations_data", [])
             ),
+            "question_type": question_meta.get("question_type"),
+            "interval": question_meta.get("interval"),
+            "initial_concentration": question_meta.get("initial_concentration"),
+            "search_query": question_meta.get("search_query"),
+            "expected_count": question_meta.get("expected_count"),
+            "tool": question_meta.get("tool"),
+            "expected_values": question_meta.get("expected_values"),
         }
 
         return {
@@ -335,7 +351,15 @@ for question_index, question in enumerate(benchmark_questions, start=1):
             "model_id": question.get("model_id"),
             "expected_tools": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
+            "question_type": question.get("question_type"),
+            "interval": question.get("interval"),
+            "initial_concentration": question.get("initial_concentration"),
             "species": question.get("species"),
+            "arguments": question.get("arguments"),
+            "search_query": question.get("search_query"),
+            "expected_count": question.get("expected_count"),
+            "tool": question.get("tool"),
+            "expected_values": question.get("expected_values"),
         },
         name=question_id,
     )
@@ -368,6 +392,7 @@ for question_index, question in enumerate(benchmark_questions, start=1):
             "reason": reason,
             "tools_called": serialize_tool_calls(tool_calls),
             "verbose_logs": getattr(metric_instance, "verbose_logs", None),
+            "question_type": question.get("question_type"),
         }
     )
 
@@ -409,6 +434,13 @@ argument_correctness_summary = {
             "answer": result.answer,
             "trace_available": result.trace is not None,
             "thread_id": result.thread_id,
+            "question_type": question_lookup.get(result.question_id, {}).get("question_type"),
+            "interval": question_lookup.get(result.question_id, {}).get("interval"),
+            "initial_concentration": question_lookup.get(result.question_id, {}).get("initial_concentration"),
+            "expected_values": question_lookup.get(result.question_id, {}).get("expected_values"),
+            "search_query": question_lookup.get(result.question_id, {}).get("search_query"),
+            "expected_count": question_lookup.get(result.question_id, {}).get("expected_count"),
+            "tool": question_lookup.get(result.question_id, {}).get("tool"),
         }
         for idx, result in enumerate(run_results)
     ],

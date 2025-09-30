@@ -28,9 +28,9 @@ from aiagents4pharma.talk2biomodels.agents.t2b_agent import (
 )
 from aiagents4pharma.talk2biomodels.states.state_talk2biomodels import Talk2Biomodels
 
-BENCHMARK_JSON_PATH = Path("../benchmark_questions_set1.json")
+BENCHMARK_JSON_PATH = Path("../benchmark_questions_set3.json")
 QUESTION_SAMPLE_IDS: Optional[List[str]] = None
-TOOL_CORRECTNESS_OUTPUT_PATH = Path("tool_correctness_set1_results.json")
+TOOL_CORRECTNESS_OUTPUT_PATH = Path("tool_correctness_set3_results.json")
 
 
 # Cell 2 Load Benchmark Questions
@@ -40,7 +40,11 @@ def load_benchmark_questions(
     with json_path.open("r", encoding="utf-8") as f:
         raw_payload = json.load(f)
 
-    questions = raw_payload["simulate_model_benchmark_questions"]
+    questions = (
+        raw_payload.get("simulate_model_benchmark_questions")
+        or raw_payload.get("get_modelinfo_benchmark_questions_set3")
+        or []
+    )
     if selected_ids is None:
         return questions
 
@@ -68,7 +72,7 @@ def _safe_stdev(values: List[float]) -> float:
 
 # Cell 3 Initialize LLM
 llm_model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-thread_prefix = "tool-correctness-set1"
+thread_prefix = "tool-correctness-set3"
 
 
 # Cell 4 Helper Functions
@@ -134,6 +138,192 @@ def _strip_none_values(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in payload.items() if v is not None}
 
 
+def _to_float(value: Any) -> Optional[float]:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _normalize_species_list(value: Any) -> Optional[List[str]]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        value = [value]
+    if isinstance(value, (list, tuple)):
+        cleaned = [str(item).strip() for item in value if item is not None]
+        return sorted(set(cleaned)) if cleaned else None
+    return [str(value).strip()]
+
+
+def _normalize_numeric_sequence(value: Any) -> Optional[List[float]]:
+    if value is None:
+        return None
+    if isinstance(value, dict):
+        return [
+            _to_float(v)
+            for _, v in sorted(value.items(), key=lambda item: str(item[0]))
+        ]
+    if not isinstance(value, (list, tuple)):
+        return [_to_float(value)]
+    normalized: List[float] = []
+    for item in value:
+        normalized.append(_to_float(item))
+    return normalized
+
+
+def parse_species_from_question(question_text: str) -> Optional[str]:
+    if not question_text:
+        return None
+    lower = question_text.lower()
+    marker = "species "
+    if marker in lower:
+        start = lower.find(marker) + len(marker)
+        remainder = question_text[start:]
+        token = remainder.split(" in ")[0]
+        return token.strip(" ?.")
+    return None
+
+
+def _canon_simulate_model_params(params: Dict[str, Any]) -> Dict[str, Any]:
+    sys_bio_model = params.get("sys_bio_model", {})
+    arg_data = params.get("arg_data", {})
+    time_data = arg_data.get("time_data", {})
+
+    raw_duration = time_data.get("duration")
+    duration = _to_float(raw_duration)
+
+    interval = _to_float(time_data.get("interval"))
+
+    species_data = arg_data.get("species_to_be_analyzed_before_experiment")
+    if not species_data:
+        species_data = params.get("species_to_be_analyzed_before_experiment")
+
+    species_name = None
+    species_concentration = None
+    if isinstance(species_data, dict):
+        names = species_data.get("species_name")
+        concs = species_data.get("species_concentration")
+
+        species_names = _normalize_species_list(names)
+        if species_names:
+            species_name = species_names[0] if len(species_names) == 1 else species_names
+
+        if isinstance(concs, (list, tuple)):
+            species_concentration = _to_float(concs[0]) if concs else None
+        else:
+            species_concentration = _to_float(concs)
+
+    return _strip_none_values(
+        {
+            "model_id": (
+                str(sys_bio_model.get("biomodel_id"))
+                if sys_bio_model.get("biomodel_id") is not None
+                else None
+            ),
+            "duration": duration,
+            "interval": interval,
+            "species": species_name,
+            "initial_concentration": species_concentration,
+        }
+    )
+
+
+def _canon_steady_state_params(
+    params: Dict[str, Any], question: Optional[Dict[str, Any]], for_expected: bool
+) -> Dict[str, Any]:
+    species = params.get("species_names") or params.get("species")
+    species_list = _normalize_species_list(species)
+    if species_list is None and for_expected and question is not None:
+        fallback = question.get("species") or parse_species_from_question(
+            question.get("question", "")
+        )
+        species_list = _normalize_species_list(fallback)
+
+    model_id = params.get("model_id")
+    if model_id is None and for_expected and question is not None:
+        model_id = question.get("model_id")
+
+    return _strip_none_values(
+        {
+            "model_id": str(model_id) if model_id is not None else None,
+            "species": species_list,
+        }
+    )
+
+
+def _canon_parameter_scan_params(
+    params: Dict[str, Any], question: Optional[Dict[str, Any]], for_expected: bool
+) -> Dict[str, Any]:
+    source = {}
+    if isinstance(params, dict):
+        source.update(params)
+    if for_expected and question is not None:
+        arguments = question.get("arguments", {})
+        if isinstance(arguments, dict):
+            for key, value in arguments.items():
+                source.setdefault(key, value)
+
+    canonical = {
+        "species_parameter_name": source.get("species_parameter_name"),
+        "species_parameter_values": _normalize_numeric_sequence(
+            source.get("species_parameter_values")
+        ),
+        "stepsize_scan": _to_float(source.get("stepsize_scan")),
+        "time": _to_float(source.get("time")),
+        "intervals": _to_float(source.get("intervals")),
+        "filename": None,
+        "species_names": _normalize_species_list(source.get("species_names")),
+    }
+
+    filename = source.get("filename") or source.get("output_filename")
+    if filename:
+        canonical["filename"] = Path(str(filename)).name
+
+    return _strip_none_values(canonical)
+
+
+def canonicalize_tool_input(
+    tool_name: Optional[str],
+    params: Any,
+    question: Optional[Dict[str, Any]],
+    *,
+    for_expected: bool = False,
+) -> Dict[str, Any]:
+    if params is None:
+        params_dict: Dict[str, Any] = {}
+    elif isinstance(params, dict):
+        params_dict = params.copy()
+    else:
+        return {}
+
+    if tool_name == "simulate_model":
+        return _canon_simulate_model_params(params_dict)
+
+    if tool_name == "steady_state":
+        return _canon_steady_state_params(params_dict, question, for_expected)
+
+    if tool_name == "parameter_scan":
+        return _canon_parameter_scan_params(params_dict, question, for_expected)
+
+    if tool_name == "search_models":
+        canonical = {
+            "query": params_dict.get("query") or params_dict.get("search_query")
+        }
+        number = params_dict.get("number") or params_dict.get("top_k")
+        if number is not None:
+            canonical["number"] = _to_float(number)
+        if for_expected and question is not None:
+            canonical.setdefault("query", question.get("search_query"))
+            canonical.setdefault("number", _to_float(question.get("expected_count")))
+        return _strip_none_values(canonical)
+
+    if tool_name == "ask_question":
+        return {}
+
+    return _strip_none_values(params_dict)
+
+
 def _parse_simulation_duration(simulation_time: Optional[str]) -> Optional[float]:
     if not simulation_time:
         return None
@@ -146,38 +336,15 @@ def _parse_simulation_duration(simulation_time: Optional[str]) -> Optional[float
         return None
 
 
-def _canonicalize_input_parameters(
-    tool_name: Optional[str], raw_input: Any
-) -> Optional[Dict[str, Any]]:
-    if not isinstance(raw_input, dict):
+def _parse_input_parameters(raw_input: Any) -> Any:
+    if raw_input is None:
         return None
 
-    if tool_name == "simulate_model":
-        sys_bio_model = raw_input.get("sys_bio_model", {})
-        arg_data = raw_input.get("arg_data", {})
-        time_data = arg_data.get("time_data", {})
-
-        raw_duration = time_data.get("duration")
+    if isinstance(raw_input, str):
         try:
-            duration = float(raw_duration) if raw_duration is not None else None
-        except (TypeError, ValueError):
-            duration = None
-
-        canonical = {
-            "model_id": (
-                str(sys_bio_model.get("biomodel_id"))
-                if sys_bio_model.get("biomodel_id") is not None
-                else None
-            ),
-            "duration": duration,
-        }
-        return _strip_none_values(canonical)
-
-    if tool_name == "ask_question":
-        canonical = {
-            "question_context": raw_input.get("question_context"),
-        }
-        return _strip_none_values(canonical)
+            return json.loads(raw_input)
+        except Exception:
+            return raw_input
 
     return raw_input
 
@@ -224,7 +391,7 @@ def to_tool_call(entry: Dict[str, Any]) -> ToolCall:
         or entry.get("input_parameters")
         or entry.get("input")
     )
-    input_parameters = _canonicalize_input_parameters(name, input_parameters)
+    input_parameters = _parse_input_parameters(input_parameters)
     output = entry.get("output")
     description = entry.get("description")
     reasoning = entry.get("reasoning")
@@ -293,24 +460,19 @@ def build_expected_tool_calls(question: Dict[str, Any]) -> List[ToolCall]:
     expected_tools = question.get("expected_tools", []) or []
     tool_calls: List[ToolCall] = []
     for tool_name in expected_tools:
-        input_parameters: Optional[Dict[str, Any]] = None
-
-        if tool_name == "simulate_model":
-            expected_duration = _parse_simulation_duration(
-                question.get("simulation_time")
-            )
-            canonical = {
-                "model_id": (
-                    str(question.get("model_id"))
-                    if question.get("model_id") is not None
-                    else None
-                ),
-                "duration": expected_duration,
+        params_source = None
+        if tool_name == "parameter_scan":
+            params_source = question.get("arguments", {})
+        elif tool_name == "steady_state":
+            params_source = question.get("arguments", {})
+        elif tool_name == "search_models":
+            params_source = {
+                "query": question.get("search_query"),
+                "number": question.get("expected_count"),
             }
-            input_parameters = _strip_none_values(canonical)
-
-        if tool_name == "ask_question":
-            input_parameters = {"question_context": "simulation"}
+        input_parameters = canonicalize_tool_input(
+            tool_name, params_source, question, for_expected=True
+        )
         tool_calls.append(
             ToolCall(
                 name=tool_name,
@@ -409,7 +571,14 @@ for question in benchmark_questions:
     tool_events = extract_tool_events_from_trace(trace_tree)
     if not tool_events:
         tool_events = extract_tool_events_from_messages(agent_payload["all_messages"])
-    actual_tool_calls: List[ToolCall] = [to_tool_call(event) for event in tool_events]
+    actual_tool_calls: List[ToolCall] = []
+    for event in tool_events:
+        call = to_tool_call(event)
+        canonical_inputs = canonicalize_tool_input(
+            call.name, call.input_parameters, question, for_expected=False
+        )
+        call.input_parameters = canonical_inputs
+        actual_tool_calls.append(call)
 
     expected_tool_calls: List[ToolCall] = build_expected_tool_calls(question)
 
@@ -430,7 +599,15 @@ for question in benchmark_questions:
             "model_id": question.get("model_id"),
             "expected_tools_raw": question.get("expected_tools"),
             "simulation_time": question.get("simulation_time"),
+            "question_type": question.get("question_type"),
+            "interval": question.get("interval"),
+            "initial_concentration": question.get("initial_concentration"),
             "species": question.get("species"),
+            "arguments": question.get("arguments"),
+            "search_query": question.get("search_query"),
+            "expected_count": question.get("expected_count"),
+            "tool": question.get("tool"),
+            "expected_values": question.get("expected_values"),
         },
         name=question_id,
     )
@@ -445,6 +622,31 @@ for question in benchmark_questions:
             "question_id": question_id,
             "reason": reason,
             "verbose_logs": getattr(metric_instance, "verbose_logs", None),
+            "question_type": question.get("question_type"),
+            "actual_tool_calls": [
+                call.model_dump(exclude_none=True)
+                if hasattr(call, "model_dump")
+                else {
+                    "name": call.name,
+                    "description": call.description,
+                    "reasoning": call.reasoning,
+                    "output": call.output,
+                    "input_parameters": call.input_parameters,
+                }
+                for call in actual_tool_calls
+            ],
+            "expected_tool_calls": [
+                call.model_dump(exclude_none=True)
+                if hasattr(call, "model_dump")
+                else {
+                    "name": call.name,
+                    "description": call.description,
+                    "reasoning": call.reasoning,
+                    "output": call.output,
+                    "input_parameters": call.input_parameters,
+                }
+                for call in expected_tool_calls
+            ],
         }
     )
 
@@ -458,7 +660,18 @@ for question in benchmark_questions:
             trace=serialized_trace,
             trace_tree=trace_tree,
             thread_id=thread_id,
-            tools_called=tool_events,
+            tools_called=[
+                call.model_dump(exclude_none=True)
+                if hasattr(call, "model_dump")
+                else {
+                    "name": call.name,
+                    "description": call.description,
+                    "reasoning": call.reasoning,
+                    "output": call.output,
+                    "input_parameters": call.input_parameters,
+                }
+                for call in actual_tool_calls
+            ],
         )
     )
 
@@ -496,6 +709,13 @@ tool_correctness_summary = {
             "thread_id": result.thread_id,
             "tools_called": result.tools_called,
             "trace_available": result.trace is not None,
+            "question_type": question_lookup.get(result.question_id, {}).get("question_type"),
+            "interval": question_lookup.get(result.question_id, {}).get("interval"),
+            "initial_concentration": question_lookup.get(result.question_id, {}).get("initial_concentration"),
+            "expected_values": question_lookup.get(result.question_id, {}).get("expected_values"),
+            "search_query": question_lookup.get(result.question_id, {}).get("search_query"),
+            "expected_count": question_lookup.get(result.question_id, {}).get("expected_count"),
+            "tool": question_lookup.get(result.question_id, {}).get("tool"),
             "expected_tools": [
                 (
                     tc.model_dump(exclude_none=True)
