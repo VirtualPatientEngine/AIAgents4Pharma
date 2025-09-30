@@ -1425,45 +1425,36 @@ Example in JSON format:
 
 Combination parameters for model 537:
 
-* scan1
-name = 'IL6{gut}'
-output = 'CRP{serum}'
-start_scan = 2.101100e-08
-stop_scan = 2.101100e+02
-stepsize_scan = (stop_scan-start_scan)/5.
+* sca5
+name = 'R'
+output = 'CRPExtracellular'
+start_scan = 0.0043
+stop_scan = 8.0043
+stepsize_scan = (stop_scan-start_scan)/4.
 time = 100
 intervals = 10
-filename = './tables/scan_IL6_CRP_537.csv'
+filename = './tables/scan_R_CRPExtracellular_537.csv'
 
-* scan2
+* scan6
+name = 'R'
+output = 'R_IL6'
+start_scan = 0.0043
+stop_scan = 8.0043
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_R_IL6_537.csv' 
+
+* scan7
 name = 'kdegIL6Gut'
-output = 'IL6{gut}'
+output = 'R_IL6'
 start_scan = 1e-3
 stop_scan = 10
 stepsize_scan = (stop_scan-start_scan)/4.
 time = 100
 intervals = 10
-filename = './tables/scan_kdegIL6Gut_IL6_537.csv'
+filename = './tables/scan_kdegIL6Gut_R_537.csv'
 
-* scan3
-name = 'kdegIL6Gut'
-output = 'CRP{serum}'
-start_scan = 1e-3
-stop_scan = 100
-stepsize_scan = (stop_scan-start_scan)/4.
-time = 100
-intervals = 10
-filename = './tables/scan_kdegIL6Gut_CRP_537.csv'
-
-* scan4
-name = 'Dose'
-output = 'CRP{serum}'
-start_scan = 10
-stop_scan = 600
-stepsize_scan = (stop_scan-start_scan)/4.
-time = 100
-intervals = 10
-filename = './tables/scan_Dose_CRP_537.csv'
 
 
 Model 971
