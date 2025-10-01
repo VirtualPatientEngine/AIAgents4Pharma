@@ -10,6 +10,18 @@
 
 For detailed results, please refer to log files for [set 1](results/task_completion_set1_results.json) and [set 2](results/task_completion_set2_results.json).
 
+### Example evaluation
+
+"id": "sim_090" (set 1)
+Question: "I need to understand the MAPK signaling dynamics for my research. Please simulate model BIOMD0000000027 for 1000 seconds and provide the Mpp concentration at the end of the simulation period. This information is critical for my research on signal transduction and cellular responses."
+Expected answer: "I've simulated model BIOMD0000000027 for 1000 seconds to analyze the MAPK signaling dynamics for your research. The Mpp concentration at the end of the simulation period is 48.17 nmol/L. This information is critical for your research on signal transduction and cellular responses, as it represents the steady-state concentration of doubly phosphorylated MAPK1 after the complete 1000-second simulation."
+
+Answer during benchmark: "The concentration of Mpp at the end of the 1000 seconds simulation is approximately 48.18 nmol. This information should be useful for your research on signal transduction and cellular responses.",
+
+Task completion score: 0.7
+LLM-as-a-judge verdict: "The system successfully processed the input data and provided an answer, which aligns with the task of answering a question. However, the inclusion of additional keys such as 'assistant_messages', 'all_messages', 'state_fields', and 'thread_id' suggests that the output was more complex than necessary for the task. The lack of additional tools or handoffs indicates a straightforward approach, but the extra information may not have been directly relevant to answering the question."
+
+
 
 ## Description
 We would like to benchmark the performance on *Task Completion* of the T2B agent using [DeepEval framework](https://deepeval.com/docs/getting-started). Here, T2B's generated response is evaluated against the ground truth answer using a LLM-as-a-judge.
