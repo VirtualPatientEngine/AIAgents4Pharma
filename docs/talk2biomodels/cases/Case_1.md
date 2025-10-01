@@ -594,3 +594,15 @@ How will the concentration of CRP in serum change, if the parameter `kIL6RUnbind
 <summary>Answer</summary>
 <img src="../figures/C1_q14.png" width="600"/>
 </details>
+
+### Saving the model
+**Q:** Save the model as `saved_model.xml` in the directory of your choice.
+
+```
+Save the model to C:\code\model.xml
+```
+
+<details>
+<summary>Answer</summary>
+<p>The model has been saved successfully saved! </p>
+</details>
