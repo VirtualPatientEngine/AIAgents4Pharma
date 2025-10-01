@@ -1,0 +1,5 @@
+type,unit,initial_size,initial_expression,dimensionality,expression,size,rate,key,sbml_id,display_name
+fixed,l,1.0,,3,,1.0,0.0,Compartment_0,mw53ffe9e6_beef_45c4_90a5_a79197ed506e,Compartments[serum]
+fixed,l,1.0,,3,,1.0,0.0,Compartment_1,mw88ca8d9a_f5cf_41bf_9d9d_fc48f6e1a19e,Compartments[liver]
+fixed,l,1.0,,3,,1.0,0.0,Compartment_2,mwe9501423_9fb4_494b_b5b6_288f3fcb17b5,Compartments[gut]
+fixed,l,1.0,,3,,1.0,0.0,Compartment_3,mw8fbcbf3b_47d8_4adc_8ad4_f9fc547d3e87,Compartments[peripheral]
