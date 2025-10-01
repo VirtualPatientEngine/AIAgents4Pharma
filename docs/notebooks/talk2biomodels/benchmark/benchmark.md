@@ -1,13 +1,14 @@
 # Benchmark
 
 ## Evaluation results
-
 | Dataset | Task completion (mean ± std)  | 
 |----------|----------|
 | Set 1    | 0.712 ± 0.021   |
 | Set 2    | 0.707 ± 0.028   |
 | Set 3    | pending  | 
 | Set 4    | pending  |
+
+For detailed results, please refer to log files for [set 1](results/task_completion_set1_results.json) and [set 2](results/task_completion_set2_results.json).
 
 
 ## Description
@@ -32,4 +33,6 @@ Specifically, we would like to benchmarkt the following aspects of the T2B agent
 
 1. Generate set of prompts and ground truth answers for each set. The ground truth answers are generated using the [basico library](https://github.com/copasi/basico) and textualized using a LLM. Each set should represent a different output types (textual, tabular, dictionary, etc.) and different tool calling patterns (single parameter, multiple parameters, multiple tools, etc.). The prompts that were used to generate the ground truth answers can be found [here](generating_QnA_pairs.md) and the ground truth data can be found [here](expected_asnwers_basico.ipynb).
 
-2. Runn Task Completion benchmark for each set.
+2. Runn Task Completion benchmark for each set. 
+
+The code used for the benchmark can be found here for [set 1](results/Task_Completion_set1.py) and [set 2](results/Task_Completion_set2.py).
