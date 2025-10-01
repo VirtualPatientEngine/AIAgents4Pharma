@@ -1,10 +1,6 @@
 # Generating QnA pairs with a LLM and ground truth data
 
-
-# Prompt generation
-
-
-**Simulate model**
+## Simulate model tool
 
 *Simulate model tool Set 1 (constant parameters -vary language)*
 
@@ -31,10 +27,10 @@ You can include following variation with respect to the simulation conditions an
 
 You can include following variation with respect to the simulation conditions and model id (see attached dictionary of model ids and parameters). Question should ask for the final concentration of the given species. Match the expected answer for each species with the key in the dictionary and the parameters that were used to generate the expected answer (interval, time, species name, initial concentration of this species):
 
-### Model id 537
+**Model id 537**
 *(varying interval, time and species concentrations)*
 
-#### Interval: 2016, Time: 2016, Initial CRP(serum) concentration: 0.01
+Interval: 2016, Time: 2016, Initial CRP(serum) concentration: 0.01
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 10.301993 |
@@ -42,7 +38,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.000641 |
 | STAT3(gut) | 9.124980 |
 
-#### Interval: 100, Time: 20, Initial CRP(serum) concentration: 1000
+Interval: 100, Time: 20, Initial CRP(serum) concentration: 1000
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 243.477247 |
@@ -50,7 +46,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.003962 |
 | STAT3(gut) | 0.291445 |
 
-#### Interval: 4032, Time: 2016, Initial CRP(serum) concentration: 2.6
+Interval: 4032, Time: 2016, Initial CRP(serum) concentration: 2.6
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 10.302718 |
@@ -58,7 +54,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.000641 |
 | STAT3(gut) | 9.124957 |
 
-#### Interval: 1000, Time: 1000, Initial IL6(serum) concentration: 435628.90
+Interval: 1000, Time: 1000, Initial IL6(serum) concentration: 435628.90
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 91.299723 |
@@ -66,7 +62,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.000642 |
 | STAT3(gut) | 6.813039 |
 
-#### Interval: 1000, Time: 2016, Initial CRP(liver) concentration: 1583.26
+Interval: 1000, Time: 2016, Initial CRP(liver) concentration: 1583.26
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 10.328675 |
@@ -74,7 +70,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.000641 |
 | STAT3(gut) | 9.124149 |
 
-#### Interval: 500, Time: 500, Initial STAT3(gut) concentration: 6.11e-08
+Interval: 500, Time: 500, Initial STAT3(gut) concentration: 6.11e-08
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 215.468283 |
@@ -82,7 +78,7 @@ You can include following variation with respect to the simulation conditions an
 | IL6(serum) | 0.000441 |
 | STAT3(gut) | 0.884170 |
 
-#### Interval: 2000, Time: 1500, Initial STAT3(gut) concentration: 6.11e-10
+Interval: 2000, Time: 1500, Initial STAT3(gut) concentration: 6.11e-10
 | Species | Value |
 |---------|-------|
 | CRP(serum) | 159.484293 |
@@ -91,10 +87,10 @@ You can include following variation with respect to the simulation conditions an
 | STAT3(gut) | 4.080634 |
  
 
-### Model id 971 
+**Model id 971**
 *(varying interval and time)*
 
-#### Interval: 100, Time: 50
+Interval: 100, Time: 50
 | Species | Value |
 |---------|-------|
 | Infected | 1.043385e+05 |
@@ -102,7 +98,7 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 2.231583e+06 |
 | Hospitalised | 1.325140e+05 |
 
-#### Interval: 200, Time: 100
+Interval: 200, Time: 100
 | Species | Value |
 |---------|-------|
 | Infected | 7.143353e+04 |
@@ -110,7 +106,7 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 4.586298e+06 |
 | Hospitalised | 8.688262e+04 |
 
-#### Interval: 400, Time: 180
+Interval: 400, Time: 180
 | Species | Value |
 |---------|-------|
 | Infected | 4.031662e+04 |
@@ -118,7 +114,7 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 6.955857e+06 |
 | Hospitalised | 4.901975e+04 |
 
-#### Interval: 1000, Time: 500
+Interval: 1000, Time: 500
 | Species | Value |
 |---------|-------|
 | Infected | 4.090069e+03 |
@@ -126,7 +122,7 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 9.714202e+06 |
 | Hospitalised | 4.972991e+03 |
 
-#### Interval: 400, Time: 20
+Interval: 400, Time: 20
 | Species | Value |
 |---------|-------|
 | Infected | 1.206681e+05 |
@@ -134,7 +130,7 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 1.634611e+05 |
 | Hospitalised | 4.076004e+04 |
 
-#### Interval: 10, Time: 10
+Interval: 10, Time: 10
 | Species | Value |
 |---------|-------|
 | Infected | 3.413654e+03 |
@@ -142,52 +138,52 @@ You can include following variation with respect to the simulation conditions an
 | Recovered | 2.980390e+03 |
 | Hospitalised | 8.065950e+02 |
 
-### Model id BIOMD0000000027 
+**Model id BIOMD0000000027**
 *(varying time and parameter name/value)*
 
-#### Time: 100s, Parameter: k1cat = 0.1
+Time: 100s, Parameter: k1cat = 0.1
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 317.356267 |
 | M | 154.982325 |
 | Mp | 27.661408 |
 
-#### Time: 1000s, Parameter: k1cat = 1.0
+Time: 1000s, Parameter: k1cat = 1.0
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 494.565011 |
 | M | 0.076041 |
 | Mp | 5.358948 |
 
-#### Time: 180s, Parameter: k1cat = 100
+Time: 180s, Parameter: k1cat = 100
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 494.647985 |
 | M | 0.000758 |
 | Mp | 5.351257 |
 
-#### Time: 500s, Parameter: k2cat = 10
+Time: 500s, Parameter: k2cat = 10
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 491.982136 |
 | M | 0.001140 |
 | Mp | 8.016723 |
 
-#### Time: 20s, Parameter: k2cat = 0.1
+Time: 20s, Parameter: k2cat = 0.1
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 42.542954 |
 | M | 0.103107 |
 | Mp | 457.353939 |
 
-#### Time: 10s, Parameter: k2cat = 100
+Time: 10s, Parameter: k2cat = 100
 | Species | Concentration |
 |---------|--------------|
 | Mpp | 499.195565 |
 | M | 0.000113 |
 | Mp | 0.804322 |
 
-**Steady state**
+## Steady state tool
 
  I would like to benchmark the agentic tool system that simulates biological ordinary differential equation models. I am benchamrking a tool steady_state, which brings a model to steady state. 
 
@@ -200,16 +196,16 @@ You can include following variation with respect to the simulation conditions an
 
   ASk a question if the model reaches steady state and what is the steady state concentration for the model species written in the table below. Add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. The answers should be obtained from the table below. Return the questions and the scores in a JSON format.
 
-For model 537 (ibd IL6 signaling model) steady state cannot be found. 
+For model 537, steady state cannot be found. 
 
-For model 27:
+**Model 27:**
 | Name | Concentration [nmol/l] | Transition Time [s] |
 |------|----------------------|-------------------|
 | M | 0.076041 | 1.012 |
 | Mp | 5.358948 | 0.669 |
 | Mpp | 494.565011 | 62.278 |
 
-For model 971 (covid model):
+**Model 971 (covid model):**
 | Name | Concentration [#/ml] | Transition Time [d] |
 |------|---------------------|-------------------|
 | Susceptible | 1055585.406125 | 1.376e+27 |
@@ -221,7 +217,7 @@ For model 971 (covid model):
 | Hospitalised | -1.873e-22 | 8.602 |
 | Recovered | 10025626.335858 | 1.195e+29 |
 
-**Search models**
+## Search models tool
 
  I would like to benchmark the agentic tool system that searches for models in the BioModels database. Generate 20 questions for a tool search_models, which has following description: ["A tool to search for curated models in the BioModels database"]. The questions should be diverse with respect to their lenght, and complexity (short, concisue questions vs casual vs complex and convoluted questions). Include grammatical errors and typos. Rate each generated question with a score between 0 and 10, from 0 easy to comprehend for the tool to 10 very complex and difficult to comprehend questions, add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. Return the questions and the scores in a JSON format.
 
@@ -1030,7 +1026,7 @@ Precision medicine: 7 models
   'submitter': 'William Scott',
   'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405300001'}]
 
-**Custom plotter**
+## Custom plotter tool
 Create a set of questions to test a tool custom_plotter (A visualization tool designed to extract and display a subset
 of the larger simulation plot generated by the simulate_model tool.
 It allows users to specify particular species for the y-axis,
@@ -1070,12 +1066,7 @@ The example question and expected answer in json format is here:
       ]
     }
 
-
-## Set3: Questions regarding units, compartments, and species
-These set returns tables or dictionaries.
-
-
-**Get model info**
+## Get model info tool
 Create a questions for set3 in a similar fashion as are the questions in the set2 for the tool `get_modelinfo`.
 Extract detailed information about the model, including species, parameters, and compartments.
 
@@ -1113,7 +1104,7 @@ Questions regarding **parameters** (please generate 10 questions for each model 
     }
 
 
-**Steady state**
+## Steady state tool
 Create a questions for set3 in a similar fashion as are the questions in the set2 for the tool `steady_state`.
 
 Questions regarding **steady state** (please generate 10 questions for each model id 27 and 971) can ask about the steady state concentration and transition time of the species in the model.
@@ -1139,11 +1130,7 @@ The example question and expected answer in json format is here:
 
 
 
-## SET4
-Questions about getting annotations and parameter scan.
-* Here benchmark wheter the agent returns the correct annoaton ID.
-
-**Get annotations**
+## Get annotation tool
 
 Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool `get_annotation`.
 This tool returns the annotation ID, if user asks for a specific species or annotations for all the species in the model.
@@ -1304,9 +1291,7 @@ Example question in json format:
       ]
     }
 
-## Set5
-
-**Parameter scan**
+## Parameter scan tool
 
 Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool `parameter_scan`.
 This tool returns the parameter scan results for the model.
@@ -1316,7 +1301,7 @@ Create 20 questions for each model id 27, 537 and 971 and add them to the set 5 
 Use the following combination to mix and match the questions with answers:
 
 EXAMPLE:
-Model 537
+**Model 537**
 Question 1: Run a param scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.
 
 name = 'IL6{gut}'
@@ -1352,7 +1337,7 @@ Example in JSON format:
       ]
     }
 
-Combination parameters for model 537:
+Combination parameters for **model 537**:
 
 * sca1
 name = 'R'
@@ -1385,7 +1370,7 @@ intervals = 10
 filename = './tables/scan_kdegIL6Gut_R_537.csv'
 
 
-Model 971
+**Model 971**
 
 * scan1
 name = 'Exposed'
@@ -1438,7 +1423,7 @@ intervals = 10
 filename = './tables/scan_sigma_Infected_971.csv'
 
 
-Model 27
+**Model 27**
 
 * scan1
 name = 'k1cat'
