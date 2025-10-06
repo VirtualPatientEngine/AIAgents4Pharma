@@ -1,0 +1,8 @@
+﻿drug_exposure_id,person_id,drug_concept_id,drug_exposure_start_date,drug_exposure_start_datetime,drug_exposure_end_date,drug_exposure_end_datetime,verbatim_end_date,drug_type_concept_id,stop_reason,refills,quantity,days_supply,sig,route_concept_id,lot_number,provider_id,visit_occurrence_id,visit_detail_id,drug_source_value,drug_source_concept_id,route_source_value,dose_unit_source_value
+8271614598,42779731,41148645,11/23/2024,,11/23/2024,,,32855,,,5,,,,,,10775402167,,sgp130 ,41148645,,5
+8061616898,42779731,41148645,12/7/2024,,12/7/2024,,,32855,,,5,,,,,,2242067096,,sgp130 ,41148645,,5
+6992990348,42779731,41148645,1/2/2025,,1/2/2025,,,32855,,,5,,,,,,3731844854,,sgp130 ,41148645,,5
+4581581787,42779731,41148645,3/1/2025,,3/1/2025,,,32855,,,5,,,,,,11797111425,,sgp130 ,41148645,,5
+5559027625,42779731,41148645,4/25/2025,,4/25/2025,,,32855,,,5,,,,,,1543100189,,sgp130 ,41148645,,5
+1499571345,42779731,41148645,6/20/2025,,6/20/2025,,,32855,,,5,,,,,,10555805378,,sgp130 ,41148645,,5
+5300238993,10866894,41148645,8/8/2021,,8/8/2021,,,32855,,,40,,,,,,10919348788,,sgp130 ,41148645,,40
