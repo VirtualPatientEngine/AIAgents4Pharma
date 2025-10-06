@@ -79,7 +79,7 @@ RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu24
     libcusparse-12-6 \
   && rm -rf /var/lib/apt/lists/*
 
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64
 
 # Copy UV virtual environment from build stage
 COPY --from=uv-install /opt/venv /opt/venv
