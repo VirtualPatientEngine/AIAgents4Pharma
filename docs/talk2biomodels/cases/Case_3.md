@@ -248,3 +248,15 @@ How will the concentration of Mpp change, if the initial value of MAPKK were to 
 <summary>Answer</summary>
 <img src="../figures/C3_q6.png" width="600"/>
 </details>
+
+### Saving the model
+**Q:** Save the model as `saved_model.xml` in the directory of your choice.
+
+```
+Save the model to C:\code\model.xml
+```
+
+<details>
+<summary>Answer</summary>
+<p>The model has been saved successfully saved! </p>
+</details>

@@ -150,6 +150,7 @@ class DynamicDataLoader:
         self.normalize_vectors = self.use_gpu  # Only normalize for GPU (original logic)
         self.vector_index_type = "GPU_CAGRA" if self.use_gpu else "HNSW"
         self.metric_type = "IP" if self.use_gpu else "COSINE"
+        self.vector_index_params = self._build_vector_index_params()
 
         logger.info("Loader Configuration:")
         logger.info("  Using GPU acceleration: %s", self.use_gpu)
@@ -283,6 +284,29 @@ class DynamicDataLoader:
                 return data.to_arrow().to_pylist()
             else:
                 return list(data)
+
+    def _build_vector_index_params(self) -> dict[str, Any]:
+        """Return index params tuned for the selected backend."""
+        base_params: dict[str, Any] = {
+            "index_type": self.vector_index_type,
+            "metric_type": self.metric_type,
+        }
+
+        if self.vector_index_type == "GPU_CAGRA":
+            base_params["params"] = {
+                "graph_degree": int(os.getenv("CAGRA_GRAPH_DEGREE", "32")),
+                "intermediate_graph_degree": int(
+                    os.getenv("CAGRA_INTERMEDIATE_GRAPH_DEGREE", "40")
+                ),
+                "search_width": int(os.getenv("CAGRA_SEARCH_WIDTH", "64")),
+            }
+        elif self.vector_index_type == "HNSW":
+            base_params["params"] = {
+                "M": int(os.getenv("HNSW_M", "16")),
+                "efConstruction": int(os.getenv("HNSW_EF_CONSTRUCTION", "200")),
+            }
+
+        return base_params
 
     def connect_to_milvus(self):
         """Connect to Milvus and setup database."""
@@ -442,10 +466,7 @@ class DynamicDataLoader:
         )
         collection.create_index(
             field_name="desc_emb",
-            index_params={
-                "index_type": self.vector_index_type,
-                "metric_type": self.metric_type,
-            },
+            index_params=self.vector_index_params.copy(),
             index_name="desc_emb_index",
         )
 
@@ -569,18 +590,12 @@ class DynamicDataLoader:
             )
             collection.create_index(
                 field_name="desc_emb",
-                index_params={
-                    "index_type": self.vector_index_type,
-                    "metric_type": self.metric_type,
-                },
+                index_params=self.vector_index_params.copy(),
                 index_name="desc_emb_index",
             )
             collection.create_index(
                 field_name="feat_emb",
-                index_params={
-                    "index_type": self.vector_index_type,
-                    "metric_type": self.metric_type,
-                },
+                index_params=self.vector_index_params.copy(),
                 index_name="feat_emb_index",
             )
 
@@ -706,10 +721,7 @@ class DynamicDataLoader:
         )
         collection.create_index(
             field_name="feat_emb",
-            index_params={
-                "index_type": self.vector_index_type,
-                "metric_type": self.metric_type,
-            },
+            index_params=self.vector_index_params.copy(),
             index_name="feat_emb_index",
         )
 
@@ -796,8 +808,7 @@ class DynamicDataLoader:
                 logger.info("  %s: %d entities", coll, collection.num_entities)
 
         except Exception:
-            logger.error("Error occurred during data loading")
-            logger.debug("Detailed error information available in debug mode")
+            logger.exception("Error occurred during data loading")
             raise
 
 
@@ -867,8 +878,7 @@ def main():
         logger.info("Data loading interrupted by user")
         sys.exit(1)
     except Exception:
-        logger.error("Fatal error occurred during data loading")
-        logger.debug("Detailed error information available in debug mode")
+        logger.exception("Fatal error occurred during data loading")
         sys.exit(1)
 
 

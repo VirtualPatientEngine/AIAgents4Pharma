@@ -142,3 +142,15 @@ The values of infected cases at the end of the simulations are as follows:
   <li>For the experiment model_high_lockdown, the value is approximately <strong>7,275.49</strong></li>
 </ul>
 </details>
+
+### Saving the model
+**Q:** Save the model as `saved_model.xml` in the directory of your choice.
+
+```
+Save the model to C:\code\model.xml
+```
+
+<details>
+<summary>Answer</summary>
+<p>The model has been saved successfully saved! </p>
+</details>

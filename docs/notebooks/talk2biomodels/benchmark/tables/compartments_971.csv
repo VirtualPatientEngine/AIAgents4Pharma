@@ -1,0 +1,2 @@
+type,unit,initial_size,initial_expression,dimensionality,expression,size,rate,key,sbml_id,display_name
+fixed,ml,1.0,,3,,1.0,0.0,Compartment_4,Wuhan,Compartments[Wuhan]
