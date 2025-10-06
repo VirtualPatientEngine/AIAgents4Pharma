@@ -58,6 +58,7 @@ LABEL description="AI Agents for Pharma - Streamlit Application"
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
+  gnupg \
   libmagic1 \
   libopenblas0 \
   libomp5 \
@@ -65,6 +66,20 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   && rm -rf /var/lib/apt/lists/* \
   && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 \
   && update-alternatives --install /usr/bin/python python /usr/bin/python${PYTHON_VERSION} 1
+
+# Install CUDA runtime libraries required by cudf/cupy
+RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/3bf863cc.pub \
+    | gpg --dearmor -o /usr/share/keyrings/nvidia-cuda-keyring.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/nvidia-cuda-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /" \
+    > /etc/apt/sources.list.d/nvidia-cuda.list \
+  && apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    cuda-cudart-12-6 \
+    libcublas-12-6 \
+    libcusparse-12-6 \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
 
 # Copy UV virtual environment from build stage
 COPY --from=uv-install /opt/venv /opt/venv
