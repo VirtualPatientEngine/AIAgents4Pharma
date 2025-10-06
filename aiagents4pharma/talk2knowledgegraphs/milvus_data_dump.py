@@ -808,8 +808,7 @@ class DynamicDataLoader:
                 logger.info("  %s: %d entities", coll, collection.num_entities)
 
         except Exception:
-            logger.error("Error occurred during data loading")
-            logger.debug("Detailed error information available in debug mode")
+            logger.exception("Error occurred during data loading")
             raise
 
 
@@ -879,8 +878,7 @@ def main():
         logger.info("Data loading interrupted by user")
         sys.exit(1)
     except Exception:
-        logger.error("Fatal error occurred during data loading")
-        logger.debug("Detailed error information available in debug mode")
+        logger.exception("Fatal error occurred during data loading")
         sys.exit(1)
 
 
