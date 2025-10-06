@@ -75,8 +75,9 @@ RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu24
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     cuda-cudart-12-6 \
+    cuda-cudart-dev-12-6 \
     cuda-nvrtc-12-6 \
-    cuda-toolkit-12-6 \
+    cuda-nvrtc-dev-12-6 \
     libcublas-12-6 \
     libcusparse-12-6 \
   && rm -rf /var/lib/apt/lists/*
