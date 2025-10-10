@@ -18,10 +18,9 @@ nav:
           - Epidemiology: talk2biomodels/cases/Case_2.md
           - Emergent system properties: talk2biomodels/cases/Case_3.md
       - Tutorials:
-          - Model Examples: ./notebooks/talk2biomodels/example_models.md
-          - Load Model Tutorial: ./notebooks/talk2biomodels/tutorial_load_model.ipynb
-          - Parameter Estimation: ./notebooks/talk2biomodels/tutorial_parameter_estimation.ipynb
-          - Sensitivity Analysis: ./notebooks/talk2biomodels/tutorial_sensitivity_analysis.ipynb
+          - Model Examples: ./notebooks/talk2biomodels/basico_tutorials/example_models.md
+      - Benchmark:
+          - Description: ./notebooks/talk2biomodels/benchmark/benchmark.md
       - Agents:
           - T2B agent: talk2biomodels/agents/t2b_agent.md
       - States:

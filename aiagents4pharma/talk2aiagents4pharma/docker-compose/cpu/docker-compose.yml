@@ -4,7 +4,7 @@ services:
   # talk2aiagents4pharma with automatic data loading via entrypoint
   talk2aiagents4pharma:
     container_name: talk2aiagents4pharma
-    image: vpatientengine/talk2aiagents4pharma:latest
+    image: vpatientengine/talk2aiagents4pharma:latest-cpu
     platform: linux/amd64
     ports:
       - "8501:8501"

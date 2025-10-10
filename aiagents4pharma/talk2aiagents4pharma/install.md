@@ -53,7 +53,7 @@ LANGCHAIN_API_KEY=your_langchain_api_key_here
 NVIDIA_API_KEY=your_nvidia_api_key_here
 
 # Set environment variables for data loader
-MILVUS_HOST=localhost
+MILVUS_HOST=milvus-standalone
 MILVUS_PORT=19530
 MILVUS_USER=root
 MILVUS_PASSWORD=Milvus
@@ -121,3 +121,34 @@ To resolve permission issues, you can:
 
 - Review the official Docker documentation on [Windows permission requirements](https://docs.docker.com/desktop/setup/install/windows-permission-requirements/).
 - Alternatively, follow the community discussion and solutions on [Docker Community Forums](https://forums.docker.com/t/error-when-trying-to-run-windows-containers-docker-client-must-be-run-with-elevated-privileges/136619).
+
+---
+
+### Build Images Locally
+
+If you prefer to build the images yourself:
+
+```sh
+git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma.git
+cd AIAgents4Pharma
+```
+
+**GPU build** (overwrites the `latest-gpu` tag locally)
+
+```sh
+docker build --platform=linux/amd64 \
+  -t vpatientengine/talk2aiagents4pharma:latest-gpu \
+  -f aiagents4pharma/talk2aiagents4pharma/Dockerfile \
+  --build-arg INSTALL_CUDA=true \
+  .
+```
+
+**CPU build** (overwrites the `latest-cpu` tag locally)
+
+```sh
+docker build --platform=linux/amd64 \
+  -t vpatientengine/talk2aiagents4pharma:latest-cpu \
+  -f aiagents4pharma/talk2aiagents4pharma/Dockerfile \
+  --build-arg INSTALL_CUDA=false \
+  .
+```

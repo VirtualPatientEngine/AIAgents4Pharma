@@ -8,39 +8,119 @@ on:
     branches:
       - main
   # Keep existing triggers for flexibility
-  # push:
-  #   branches:
-  #     - main
-  # workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   # Detect which modules have changed
   changes:
     runs-on: ubuntu-latest
     outputs:
-      talk2biomodels: ${{ steps.filter.outputs.talk2biomodels }}
-      talk2scholars: ${{ steps.filter.outputs.talk2scholars }}
-      talk2aiagents4pharma: ${{ steps.filter.outputs.talk2aiagents4pharma }}
-      talk2knowledgegraphs: ${{ steps.filter.outputs.talk2knowledgegraphs }}
-      app: ${{ steps.filter.outputs.app }}
+      talk2biomodels: ${{ steps.set-module-outputs.outputs.talk2biomodels }}
+      talk2scholars: ${{ steps.set-module-outputs.outputs.talk2scholars }}
+      talk2aiagents4pharma: ${{ steps.set-module-outputs.outputs.talk2aiagents4pharma }}
+      talk2knowledgegraphs: ${{ steps.set-module-outputs.outputs.talk2knowledgegraphs }}
+      app: ${{ steps.set-module-outputs.outputs.app }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
-      - name: Check for changes (simplified for workflow_run)
-        id: filter
+      - name: Set module outputs
+        id: set-module-outputs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
-          # For workflow_run, always build all components when triggered by release
-          echo "talk2biomodels=true" >> $GITHUB_OUTPUT
-          echo "talk2scholars=true" >> $GITHUB_OUTPUT
-          echo "talk2aiagents4pharma=true" >> $GITHUB_OUTPUT
-          echo "talk2knowledgegraphs=true" >> $GITHUB_OUTPUT
-          echo "app=true" >> $GITHUB_OUTPUT
-          echo "All components will be built after release"
+          set -euo pipefail
 
+          if [ "$EVENT_NAME" != "workflow_run" ]; then
+            echo "talk2aiagents4pharma=true" >> "$GITHUB_OUTPUT"
+            echo "talk2knowledgegraphs=true" >> "$GITHUB_OUTPUT"
+            echo "talk2biomodels=true" >> "$GITHUB_OUTPUT"
+            echo "talk2scholars=true" >> "$GITHUB_OUTPUT"
+            echo "app=true" >> "$GITHUB_OUTPUT"
+            echo "Non-release trigger detected; forcing rebuild of all components"
+            exit 0
+          fi
+
+          git checkout "$HEAD_SHA"
+
+          if git rev-list --max-count=2 "$HEAD_SHA" >/dev/null 2>&1; then
+            BASE_SHA=$(git rev-parse "$HEAD_SHA^")
+            echo "Comparing changes between $BASE_SHA and $HEAD_SHA"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            echo "No previous commit found; treating all files as changed"
+            CHANGED_FILES=$(git ls-tree -r "$HEAD_SHA" --name-only)
+          fi
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "talk2aiagents4pharma=false" >> "$GITHUB_OUTPUT"
+            echo "talk2knowledgegraphs=false" >> "$GITHUB_OUTPUT"
+            echo "talk2biomodels=false" >> "$GITHUB_OUTPUT"
+            echo "talk2scholars=false" >> "$GITHUB_OUTPUT"
+            echo "app=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected since previous commit."
+            exit 0
+          fi
+
+          # Helper to check if any changed file matches patterns
+          has_match() {
+            local pattern="$1"
+            echo "$CHANGED_FILES" | grep -E "^${pattern}" >/dev/null 2>&1
+          }
+
+          T2AA4P=false
+          T2KG=false
+          T2B=false
+          T2S=false
+          APP=false
+
+          if has_match "aiagents4pharma/talk2aiagents4pharma/"; then
+            T2AA4P=true
+          fi
+          if has_match "aiagents4pharma/talk2knowledgegraphs/"; then
+            T2KG=true
+            T2AA4P=true
+          fi
+          if has_match "aiagents4pharma/talk2biomodels/"; then
+            T2B=true
+            T2AA4P=true
+          fi
+          if has_match "aiagents4pharma/talk2scholars/"; then
+            T2S=true
+          fi
+          if has_match "app/"; then
+            APP=true
+            T2AA4P=true
+            T2KG=true
+            T2B=true
+            T2S=true
+          fi
+          if echo "$CHANGED_FILES" | grep -E "^pyproject\.toml$" >/dev/null 2>&1; then
+            APP=true
+            T2AA4P=true
+            T2KG=true
+            T2B=true
+            T2S=true
+          fi
+          if echo "$CHANGED_FILES" | grep -E "^uv\.lock$" >/dev/null 2>&1; then
+            APP=true
+            T2AA4P=true
+            T2KG=true
+            T2B=true
+            T2S=true
+          fi
+
+          echo "talk2aiagents4pharma=$T2AA4P" >> "$GITHUB_OUTPUT"
+          echo "talk2knowledgegraphs=$T2KG" >> "$GITHUB_OUTPUT"
+          echo "talk2biomodels=$T2B" >> "$GITHUB_OUTPUT"
+          echo "talk2scholars=$T2S" >> "$GITHUB_OUTPUT"
+          echo "app=$APP" >> "$GITHUB_OUTPUT"
   # Generate version for the build
   version:
     runs-on: ubuntu-latest
@@ -75,13 +155,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          sudo docker system prune -af || true
+          sudo docker builder prune -af || true
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push GPU Image
         uses: docker/build-push-action@v6
         with:
           file: aiagents4pharma/talk2aiagents4pharma/Dockerfile
@@ -89,7 +177,23 @@ jobs:
           tags: |
             vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
             vpatientengine/talk2aiagents4pharma:latest
+            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}-gpu
+            vpatientengine/talk2aiagents4pharma:latest-gpu
           platforms: linux/amd64
+          build-args: |
+            INSTALL_CUDA=true
+
+      - name: Build and Push CPU Image
+        uses: docker/build-push-action@v6
+        with:
+          file: aiagents4pharma/talk2aiagents4pharma/Dockerfile
+          push: true
+          tags: |
+            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}-cpu
+            vpatientengine/talk2aiagents4pharma:latest-cpu
+          platforms: linux/amd64
+          build-args: |
+            INSTALL_CUDA=false
 
   # Separate job for talk2biomodels
   build-talk2biomodels:
@@ -99,6 +203,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          sudo docker system prune -af || true
+          sudo docker builder prune -af || true
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -125,6 +237,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          sudo docker system prune -af || true
+          sudo docker builder prune -af || true
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -150,13 +270,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          sudo docker system prune -af || true
+          sudo docker builder prune -af || true
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push GPU Image
         uses: docker/build-push-action@v6
         with:
           file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
@@ -164,4 +292,20 @@ jobs:
           tags: |
             vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
             vpatientengine/talk2knowledgegraphs:latest
+            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}-gpu
+            vpatientengine/talk2knowledgegraphs:latest-gpu
           platforms: linux/amd64
+          build-args: |
+            INSTALL_CUDA=true
+
+      - name: Build and Push CPU Image
+        uses: docker/build-push-action@v6
+        with:
+          file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
+          push: true
+          tags: |
+            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}-cpu
+            vpatientengine/talk2knowledgegraphs:latest-cpu
+          platforms: linux/amd64
+          build-args: |
+            INSTALL_CUDA=false

@@ -4,7 +4,7 @@ services:
   # talk2knowledgegraphs with automatic data loading via entrypoint
   talk2knowledgegraphs:
     container_name: talk2knowledgegraphs
-    image: vpatientengine/talk2knowledgegraphs:latest
+    image: vpatientengine/talk2knowledgegraphs:latest-gpu
     platform: linux/amd64
     ports:
       - "8501:8501"
