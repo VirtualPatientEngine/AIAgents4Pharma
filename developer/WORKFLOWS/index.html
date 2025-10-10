@@ -1,0 +1,7925 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../TESTING_LINTING/">
+      
+      
+        <link rel="next" href="../STREAMLIT_SECURITY/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>GitHub Workflows - AIAgents4Pharma</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../VPE.png">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#github-workflows-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AIAgents4Pharma" class="md-header__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../assets/VPE.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AIAgents4Pharma
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GitHub Workflows
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="black"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2aiagents4pharma/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2AIAgents4Pharma
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2biomodels/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Biomodels
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2cells/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Cells
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2knowledgegraphs/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2KnowledgeGraphs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../talk2scholars/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Scholars
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Documentation
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AIAgents4Pharma" class="md-nav__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../assets/VPE.png" alt="logo">
+
+    </a>
+    AIAgents4Pharma
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2AIAgents4Pharma
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2AIAgents4Pharma
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2aiagents4pharma/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2aiagents4pharma/agents/main_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2AA4P agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2aiagents4pharma/states/state_talk2aiagents4pharma/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2AA4P state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Biomodels
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Biomodels
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Case Studies
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Case Studies
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/cases/Case_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Precision medicine
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/cases/Case_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Epidemiology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/cases/Case_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Emergent system properties
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2biomodels/basico_tutorials/example_models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Benchmark
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Benchmark
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2biomodels/benchmark/benchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Description
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/agents/t2b_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2B agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/states/state_talk2biomodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2B state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/models/sys_bio_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Bio Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/models/basico_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basico Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/search_models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/get_modelinfo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model information
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/get_annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model annotation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/simulate_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Simulate model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/ask_question/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ask questions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/custom_plotter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/load_biomodel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Load biomodel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/save_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Save model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/parameter_scan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parameter scan
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2biomodels/tools/steady_state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Steady state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Cells
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2cells/tutorial_c2s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell annotations with cell2sentence
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2cells/tutorial_cell_annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Annotation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2cells/tutorial_cell_discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Discovery
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2cells/tutorial_UMAP_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UMAP Visualization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2cells/tutorial_cell_type_proportion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Type Proportion
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/agents/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/agents/scp_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SCP Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/states/state_talk2cells/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/tools/search_studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search studies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2cells/tools/display_studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Display studies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2KnowledgeGraphs
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2KnowledgeGraphs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/deployment/custom_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/deployment/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_subgraph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Subgraph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_ibd_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG (IBD) Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Textual Embeddings for StarkQA-PrimeKG using all-MiniLM-L6-v1
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Textual Embeddings for StarkQA-PrimeKG using nomic-embed-text
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_textual_enrichments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Drug Enrichments/Embeddings (SMILES/molmim)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_enrichment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Enrichment and Embedding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Protein Embeddings for BioBridge-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal Embeddings Alignment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG Evaluation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_talk2kg_agentic_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KGs Agentic Tools
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_pyg2dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PyG2DataFrame
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_uniprot_mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UniProt ID Mapping
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Milvus Vector DB Setup
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            Milvus Vector DB Setup
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_ibd_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG (IBD) Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_milvus_ibd_primekg_dump/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG (IBD) Multimodal Data Dump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_biobridge_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2knowledgegraphs/tutorial_primekg_milvus_data_dump/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG Multimodal Data Dump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Datasets
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            Datasets
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/datasets/dataset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/datasets/primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/datasets/starkqa_primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/datasets/biobridge_primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_1" id="__nav_5_7_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Database
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Database
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/database/milvus_connection_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MilvusConnectionManager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_2" id="__nav_5_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Embeddings
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Embeddings
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/embeddings/embeddings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Embeddings
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/embeddings/sentence_transformer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithSentenceTransformer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/embeddings/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithHuggingFace
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/embeddings/ollama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithOllama
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/embeddings/nim_molmim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithMOLMIM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_3" id="__nav_5_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Enrichments
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Enrichments
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/enrichments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Enrichments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/ollama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithOllama
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/pubchem_strings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithPubChem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/uniprot_proteins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithUniProt
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/reactome_pathways/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithReactome
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/enrichments/ols_terms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithOLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_4" id="__nav_5_7_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Extractions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            Extractions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/extractions/pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/extractions/multimodal_pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST (Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/utils/extractions/milvus_multimodal_pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST (Milvus Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/agents/t2kg_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KG Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/states/state_talk2knowledgegraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KG State
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/multimodal_subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction (Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/milvus_multimodal_subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction (Milvus Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/subgraph_summarization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Summarization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/graphrag_reasoning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GraphRAG Reasoning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2knowledgegraphs/tools/load_arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Load Arguments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Scholars
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Scholars
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/talk2scholars/tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/agents/main_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Main Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/agents/s2_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    S2 Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/agents/paper_download_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Download Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/agents/zotero_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/agents/pdf_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PDF Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/states/state_talk2scholars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2Scholars state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Papers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/single_paper_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Single Paper Recommendation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/multi_paper_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi Paper Recommendation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/display_dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Display Dataframe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/query_dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Dataframe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/retrieve_semantic_scholar_paper_id/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Retrieve Semantic Scholar ID
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/paper_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/question_and_answer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Question and answer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/zotero_read/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Read
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/zotero_write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Write
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/tools/zotero_review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Review
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_1" id="__nav_6_6_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    S2 Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            S2 Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/search_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/single_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Single Paper Recommendation Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/multi_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi Paper Recommendation Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_2" id="__nav_6_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    PDF Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            PDF Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/vector_store/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vector Store
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/singleton_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Singleton Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/gpu_detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPU Detection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/collection_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Collection Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/get_vectorstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Vector Store
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/document_processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Document Processor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/paper_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/batch_processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Batch Processor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/rag_pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RAG Pipeline
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/vector_normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vector Normalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/retrieve_chunks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Retrieve Chunks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/nvidia_nim_reranker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Nvidia NIM Reranker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/generate_answer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Generate Answer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/answer_formatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Answer Formatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/tool_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tool Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_3" id="__nav_6_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Paper Download Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Paper Download Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/base_paper_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base Paper Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/arxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Arxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/biorxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Biorxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/medrxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Medrxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/pubmed_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pubmed Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_4" id="__nav_6_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Zotero Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Zotero Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/write_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Write Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/read_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Read Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/review_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Review Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/zotero_path/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Path
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../talk2scholars/utils/zotero_pdf_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero PDF Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Developer Guides
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_1" id="__nav_7_1_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Developer Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING_LINTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing & Linting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    GitHub Workflows
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    GitHub Workflows
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Categories
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Testing Workflows
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Security &amp; Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐳 Build &amp; Deploy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-workflows_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests-talk2scholars" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tests Talk2Scholars
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tests Talk2Scholars">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-code-quality-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Code Quality Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cross-platform-testing-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Cross-Platform Testing Matrix
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-quality-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security &amp; Quality Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security &amp; Quality Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Audit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dependency-security-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Dependency Security Scan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sarif-upload-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. SARIF Upload &amp; Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-security-summary-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Security Summary Generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-sonarcloud-security-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. SonarCloud Security Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonarcloud-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      SonarCloud Analysis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-deploy-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build &amp; Deploy Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; Deploy Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose Release
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      Package Build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocs-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      MkDocs Deploy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-architecture-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Architecture Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Architecture Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-uv-first-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. UV-First Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-security-first-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Security-First Design
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-quality-assurance" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Quality Assurance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dependency-management-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Dependency Management &amp; Reliability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-semantic-release-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Semantic Release Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-integration-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Integration &amp; Reporting
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables &amp; Secrets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment Variables &amp; Secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Secrets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Best Practices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring &amp; Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring &amp; Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-status-badges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Status Badges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-issues-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues &amp; Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Issues &amp; Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependency Conflicts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-test-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Test Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-threshold-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage Threshold Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-platform-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Platform Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maintenance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regular-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regular Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Summary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#successfully-modernized" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Successfully Modernized:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Key Improvements:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STREAMLIT_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streamlit Security
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SONARCLOUD_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SonarCloud Setup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AZURE_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Azure Deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Operations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ops/Documentation_intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operations Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ops/CodeOps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Operations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ops/DevOps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev Operations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Guidelines
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Project Guidelines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Categories
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Testing Workflows
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Security &amp; Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐳 Build &amp; Deploy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-workflows_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests-talk2scholars" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tests Talk2Scholars
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tests Talk2Scholars">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-code-quality-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Code Quality Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cross-platform-testing-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Cross-Platform Testing Matrix
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-quality-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security &amp; Quality Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security &amp; Quality Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Audit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dependency-security-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Dependency Security Scan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sarif-upload-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. SARIF Upload &amp; Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-security-summary-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Security Summary Generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-sonarcloud-security-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. SonarCloud Security Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonarcloud-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      SonarCloud Analysis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-deploy-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build &amp; Deploy Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build &amp; Deploy Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose Release
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      Package Build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocs-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      MkDocs Deploy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-architecture-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Architecture Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Architecture Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-uv-first-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. UV-First Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-security-first-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Security-First Design
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-quality-assurance" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Quality Assurance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dependency-management-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Dependency Management &amp; Reliability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-semantic-release-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Semantic Release Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-integration-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Integration &amp; Reporting
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables &amp; Secrets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment Variables &amp; Secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Secrets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Best Practices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring &amp; Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring &amp; Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-status-badges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Status Badges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-issues-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues &amp; Solutions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Issues &amp; Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependency Conflicts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-test-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Test Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-threshold-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage Threshold Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-platform-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Platform Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maintenance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regular-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regular Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Summary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#successfully-modernized" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Successfully Modernized:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Key Improvements:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="github-workflows-documentation">GitHub Workflows Documentation</h1>
+<p>This document provides a comprehensive overview of all GitHub Actions workflows in the AIAgents4Pharma repository, detailing their purpose, triggers, and functionality.</p>
+<h2 id="overview">Overview</h2>
+<p>Our CI/CD pipeline uses <strong>UV</strong> for fast, reliable dependency management across all workflows. All workflows are designed to be efficient, secure, and provide comprehensive quality assurance.</p>
+<h2 id="workflow-categories">Workflow Categories</h2>
+<h3 id="testing-workflows">🧪 Testing Workflows</h3>
+<ul>
+<li><a href="#tests-talk2aiagents4pharma"><code>tests_talk2aiagents4pharma.yml</code></a></li>
+<li><a href="#tests-talk2biomodels"><code>tests_talk2biomodels.yml</code></a></li>
+<li><a href="#tests-talk2knowledgegraphs"><code>tests_talk2knowledgegraphs.yml</code></a></li>
+<li><a href="#tests-talk2scholars"><code>tests_talk2scholars.yml</code></a></li>
+<li><a href="#tests-talk2cells"><code>tests_talk2cells.yml</code></a></li>
+</ul>
+<h3 id="security-quality">🔒 Security &amp; Quality</h3>
+<ul>
+<li><a href="#security-audit"><code>security_audit.yml</code></a></li>
+<li><a href="#sonarcloud-analysis"><code>sonarcloud.yml</code></a></li>
+</ul>
+<h3 id="build-deploy">🐳 Build &amp; Deploy</h3>
+<ul>
+<li><a href="#docker-build"><code>docker_build.yml</code></a></li>
+<li><a href="#docker-compose-release"><code>docker_compose_release.yml</code></a></li>
+<li><a href="#release"><code>release.yml</code></a></li>
+</ul>
+<h3 id="documentation">📚 Documentation</h3>
+<ul>
+<li><a href="#mkdocs-deploy"><code>mkdocs_deploy.yml</code></a></li>
+</ul>
+<hr />
+<h2 id="testing-workflows_1">Testing Workflows</h2>
+<h3 id="tests-talk2scholars">Tests Talk2Scholars</h3>
+<p><strong>File:</strong> <code>tests_talk2scholars.yml</code></p>
+<p><strong>Purpose:</strong> Comprehensive testing and quality checks for the Talk2Scholars component</p>
+<p><strong>Triggers:</strong>
+- Pull requests to <code>main</code> with changes to:
+  - <code>aiagents4pharma/talk2scholars/**</code>
+  - <code>pyproject.toml</code>
+  - <code>uv.lock</code>
+- Manual workflow dispatch</p>
+<p><strong>Jobs:</strong></p>
+<h4 id="1-code-quality-checks">1. Code Quality Checks</h4>
+<ul>
+<li><strong>Runner:</strong> Ubuntu Latest</li>
+<li><strong>Dependencies:</strong> UV sync with frozen lockfile</li>
+<li><strong>Checks:</strong></li>
+<li>Pylint analysis with specific disabled rules</li>
+<li>Ruff linting for code style</li>
+<li>Bandit security scanning</li>
+</ul>
+<h4 id="2-cross-platform-testing-matrix">2. Cross-Platform Testing Matrix</h4>
+<ul>
+<li><strong>Strategy:</strong> Fail-fast disabled for comprehensive testing</li>
+<li><strong>Matrix:</strong></li>
+<li>OS: Ubuntu Latest, macOS 15, Windows Latest</li>
+<li>Python: 3.12</li>
+<li><strong>Steps:</strong></li>
+<li>UV dependency installation</li>
+<li>Test execution with coverage</li>
+<li>Coverage reporting and XML generation</li>
+<li><strong>100% coverage requirement</strong> (builds fail if not met)</li>
+<li>Codecov upload (Ubuntu only)</li>
+</ul>
+<p><strong>Environment Variables:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">OPENAI_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.OPENAI_API_KEY }}</span>
+<span class="nt">ZOTERO_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.ZOTERO_API_KEY }}</span>
+<span class="nt">ZOTERO_USER_ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.ZOTERO_USER_ID }}</span>
+</code></pre></div></p>
+<hr />
+<h2 id="security-quality-workflows">Security &amp; Quality Workflows</h2>
+<h3 id="security-audit">Security Audit</h3>
+<p><strong>File:</strong> <code>security_audit.yml</code></p>
+<p><strong>Purpose:</strong> Focused dependency security monitoring and vulnerability detection</p>
+<p><strong>Triggers:</strong>
+- Weekly schedule (Sundays at 2 AM UTC)
+- Push to <code>main</code> affecting <code>pyproject.toml</code> or <code>uv.lock</code>
+- Pull requests to <code>main</code> affecting dependency files
+- Manual workflow dispatch</p>
+<p><strong>Jobs:</strong></p>
+<h4 id="1-dependency-security-scan">1. Dependency Security Scan</h4>
+<ul>
+<li><strong>Tools:</strong> pip-audit, safety</li>
+<li><strong>Outputs:</strong> JSON and Markdown reports</li>
+<li><strong>Features:</strong> Continues on error to allow other jobs</li>
+</ul>
+<h4 id="2-sarif-upload-processing">2. SARIF Upload &amp; Processing</h4>
+<ul>
+<li><strong>Purpose:</strong> Integration with GitHub Security tab</li>
+<li><strong>Process:</strong></li>
+<li>Downloads all security reports</li>
+<li>Processes vulnerability findings</li>
+<li>Uploads consolidated reports</li>
+<li><strong>Focus:</strong> Dependency vulnerabilities only</li>
+</ul>
+<h4 id="3-security-summary-generation">3. Security Summary Generation</h4>
+<ul>
+<li><strong>Output:</strong> Markdown summary with vulnerability counts</li>
+<li><strong>Purpose:</strong> Weekly dependency vulnerability monitoring</li>
+<li><strong>Note:</strong> Code security handled by test workflows via bandit</li>
+</ul>
+<h4 id="4-sonarcloud-security-integration">4. SonarCloud Security Integration</h4>
+<ul>
+<li><strong>Trigger:</strong> Push to main branch only</li>
+<li><strong>Features:</strong></li>
+<li>Downloads security reports</li>
+<li>Generates coverage for SonarCloud</li>
+<li>Performs dependency-focused security analysis</li>
+</ul>
+<p><strong>Key Features:</strong>
+- ✅ Focused dependency vulnerability monitoring
+- ✅ Weekly automated security scanning schedule
+- ✅ Streamlined workflow for reliable security checks
+- ✅ Integration with GitHub Security dashboard</p>
+<h3 id="sonarcloud-analysis">SonarCloud Analysis</h3>
+<p><strong>File:</strong> <code>sonarcloud.yml</code></p>
+<p><strong>Purpose:</strong> Advanced code quality analysis and technical debt tracking</p>
+<p><strong>Triggers:</strong>
+- Push to <code>main</code> branch
+- Pull requests to <code>main</code>
+- Manual workflow dispatch</p>
+<p><strong>Environment Variables:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">OPENAI_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.OPENAI_API_KEY }}</span><span class="w">  </span><span class="c1"># Required for test execution</span>
+</code></pre></div></p>
+<p><strong>Process:</strong>
+1. <strong>Setup:</strong> UV dependency installation with dev dependencies
+2. <strong>Testing:</strong> Full test suite with coverage generation
+3. <strong>Analysis:</strong> Pylint JSON output with standard disable flags
+4. <strong>Upload:</strong> SonarCloud analysis with all reports</p>
+<p><strong>Key Features:</strong>
+- ✅ OPENAI_API_KEY environment for test compatibility
+- ✅ Pylint analysis with standard disable flags: <code>--disable=R0801,R0902,W0221,W0122</code>
+- ✅ Comprehensive code quality analysis
+- ✅ Streamlined security and quality reporting</p>
+<p><strong>Artifacts:</strong>
+- Coverage XML
+- Pylint JSON report
+- 30-day retention period</p>
+<hr />
+<h2 id="build-deploy-workflows">Build &amp; Deploy Workflows</h2>
+<h3 id="docker-build">Docker Build</h3>
+<p><strong>File:</strong> <code>docker_build.yml</code></p>
+<p><strong>Purpose:</strong> Build and push Docker images for all agents</p>
+<p><strong>Features:</strong>
+- Multi-stage builds for optimized image sizes
+- Pinned base images (no <code>latest</code> tags)
+- Separate CPU and GPU variants
+- Health check implementations
+- Push to Docker Hub registry</p>
+<h3 id="docker-compose-release">Docker Compose Release</h3>
+<p><strong>File:</strong> <code>docker_compose_release.yml</code></p>
+<p><strong>Purpose:</strong> Release management for Docker Compose configurations</p>
+<p><strong>Features:</strong>
+- Separate compose files for CPU and GPU deployments
+- Production-ready configurations
+- Version tagging and release automation</p>
+<h3 id="package-build">Package Build</h3>
+<p><strong>File:</strong> <code>package_build.yml</code></p>
+<p><strong>Purpose:</strong> Python package validation and testing</p>
+<p><strong>Triggers:</strong>
+- Pull requests to <code>main</code> with changes to:
+  - <code>pyproject.toml</code>
+  - <code>uv.lock</code>
+  - <code>aiagents4pharma/**</code>
+- Manual workflow dispatch</p>
+<p><strong>Features:</strong>
+- <strong>VCS Versioning:</strong> Uses git tags via hatch-vcs for version management
+- <strong>Quality Checks:</strong> Ruff linting and Bandit security scanning
+- <strong>Cross-Platform Testing:</strong> Ubuntu, macOS 15, Windows Latest
+- <strong>Package Validation:</strong> Builds wheel/sdist and tests installation
+- <strong>Dependency Resolution:</strong> Fixed PyArrow compatibility issues with uv</p>
+<p><strong>Key Features:</strong>
+- ✅ VCS git tag versioning with hatch-vcs
+- ✅ Compatible dependencies with <code>pyarrow&gt;=14.0.0</code> and <code>datasets&gt;=4.0.0</code>
+- ✅ Cross-platform virtual environment handling (Windows/Unix)
+- ✅ Uses latest available git tag for PR testing</p>
+<h3 id="release">Release</h3>
+<p><strong>File:</strong> <code>release.yml</code></p>
+<p><strong>Purpose:</strong> Automated release management with semantic versioning</p>
+<p><strong>Triggers:</strong>
+- Push to <code>main</code> branch with changes to:
+  - <code>aiagents4pharma/**</code>
+  - <code>pyproject.toml</code>
+  - <code>uv.lock</code>
+- Manual workflow dispatch</p>
+<p><strong>Features:</strong>
+- <strong>Semantic Release:</strong> Automatic version bumping based on commit messages
+- <strong>Auto-Tagging:</strong> Creates git tags automatically (feat:/fix:/BREAKING CHANGE:)
+- <strong>Quality Gates:</strong> Ruff linting and Bandit security before release
+- <strong>PyPI Publishing:</strong> Automated package distribution
+- <strong>GitHub Releases:</strong> Auto-generated with changelogs</p>
+<p><strong>Semantic Release Convention:</strong>
+<div class="highlight"><pre><span></span><code>feat:<span class="w"> </span>new<span class="w"> </span>feature<span class="w">     </span>→<span class="w"> </span>Minor<span class="w"> </span>version<span class="w"> </span>bump<span class="w"> </span><span class="o">(</span><span class="m">1</span>.0.0<span class="w"> </span>→<span class="w"> </span><span class="m">1</span>.1.0<span class="o">)</span>
+fix:<span class="w"> </span>bug<span class="w"> </span>fix<span class="w">         </span>→<span class="w"> </span>Patch<span class="w"> </span>version<span class="w"> </span>bump<span class="w"> </span><span class="o">(</span><span class="m">1</span>.0.0<span class="w"> </span>→<span class="w"> </span><span class="m">1</span>.0.1<span class="o">)</span>
+BREAKING<span class="w"> </span>CHANGE:<span class="w">     </span>→<span class="w"> </span>Major<span class="w"> </span>version<span class="w"> </span>bump<span class="w"> </span><span class="o">(</span><span class="m">1</span>.0.0<span class="w"> </span>→<span class="w"> </span><span class="m">2</span>.0.0<span class="o">)</span>
+</code></pre></div></p>
+<p><strong>Key Features:</strong>
+- ✅ Semantic-release automation with conventional commits
+- ✅ Modern uv dependency management for fast builds
+- ✅ Triggers on main branch pushes for continuous deployment
+- ✅ Auto-creates tags and triggers publishing pipeline</p>
+<hr />
+<h2 id="documentation-workflows">Documentation Workflows</h2>
+<h3 id="mkdocs-deploy">MkDocs Deploy</h3>
+<p><strong>File:</strong> <code>mkdocs-deploy.yml</code></p>
+<p><strong>Purpose:</strong> Automated documentation deployment to GitHub Pages</p>
+<p><strong>Triggers:</strong>
+- Push to <code>main</code> branch with changes to:
+  - <code>docs/**</code>
+  - <code>mkdocs.yml</code>
+  - <code>aiagents4pharma/**</code>
+  - <code>pyproject.toml</code>
+- Manual workflow dispatch</p>
+<p><strong>Features:</strong>
+- <strong>Modern UV Setup:</strong> Uses project dependencies instead of manual pip installs
+- <strong>Jupyter Integration:</strong> Notebook rendering with mkdocs-jupyter
+- <strong>Material Theme:</strong> Modern styling with mkdocs-material
+- <strong>Auto-Deploy:</strong> GitHub Pages deployment with force push
+- <strong>Smart Triggers:</strong> Only runs when documentation-related files change</p>
+<p><strong>Key Features:</strong>
+- ✅ Modern UV dependency management with <code>uv sync --frozen</code>
+- ✅ Uses project dependencies from pyproject.toml
+- ✅ Streamlined deployment process
+- ✅ Path-based triggers for efficient builds</p>
+<hr />
+<h2 id="workflow-architecture-principles">Workflow Architecture Principles</h2>
+<h3 id="1-uv-first-approach">1. <strong>UV-First Approach</strong></h3>
+<p>All workflows use UV for fast, reliable dependency management:
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install uv</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">astral-sh/setup-uv@v4</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv python install 3.12</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uv sync --frozen --extra dev</span>
+</code></pre></div></p>
+<h3 id="2-security-first-design">2. <strong>Security-First Design</strong></h3>
+<ul>
+<li>Comprehensive security scanning in test workflows</li>
+<li>Weekly dependency vulnerability monitoring</li>
+<li>Integration with GitHub Security dashboard</li>
+<li>Bandit skips for legitimate ML/data science patterns</li>
+</ul>
+<h3 id="3-quality-assurance">3. <strong>Quality Assurance</strong></h3>
+<ul>
+<li>Multi-platform testing matrices (Ubuntu, macOS, Windows)</li>
+<li>100% code coverage requirements with flexible LLM test handling</li>
+<li>Multiple linting tools (ruff, pylint) with consistent disable flags</li>
+<li>Cross-platform compatibility (Windows PowerShell vs Unix bash)</li>
+</ul>
+<h3 id="4-dependency-management-reliability">4. <strong>Dependency Management &amp; Reliability</strong></h3>
+<ul>
+<li><strong>Streamlined approach</strong> for simplicity and reliability</li>
+<li><strong>Dependency conflict resolution</strong> via uv (PyArrow/datasets compatibility)</li>
+<li><strong>Frozen lockfile usage</strong> for reproducible builds</li>
+<li><strong>VCS versioning</strong> with hatch-vcs for automatic version management</li>
+</ul>
+<h3 id="5-semantic-release-automation">5. <strong>Semantic Release Automation</strong></h3>
+<ul>
+<li><strong>Automatic tagging</strong> based on commit message conventions</li>
+<li><strong>Version bumping</strong> following semantic versioning rules</li>
+<li><strong>Auto-publishing</strong> to PyPI on main branch merges</li>
+<li><strong>Changelog generation</strong> and GitHub releases</li>
+</ul>
+<h3 id="6-integration-reporting">6. <strong>Integration &amp; Reporting</strong></h3>
+<ul>
+<li>SonarCloud integration for advanced analysis</li>
+<li>Codecov for coverage tracking</li>
+<li>GitHub Security tab integration</li>
+<li>Automated artifact management</li>
+</ul>
+<h2 id="environment-variables-secrets">Environment Variables &amp; Secrets</h2>
+<h3 id="required-secrets">Required Secrets</h3>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">OPENAI_API_KEY</span><span class="w">          </span><span class="c1"># OpenAI API access (test execution)</span>
+<span class="l l-Scalar l-Scalar-Plain">ZOTERO_API_KEY</span><span class="w">          </span><span class="c1"># Zotero integration (Talk2Scholars)</span>
+<span class="l l-Scalar l-Scalar-Plain">ZOTERO_USER_ID</span><span class="w">          </span><span class="c1"># Zotero user identification</span>
+<span class="l l-Scalar l-Scalar-Plain">CODECOV_TOKEN</span><span class="w">           </span><span class="c1"># Coverage reporting</span>
+<span class="l l-Scalar l-Scalar-Plain">SONAR_TOKEN</span><span class="w">             </span><span class="c1"># SonarCloud analysis</span>
+<span class="l l-Scalar l-Scalar-Plain">PYPI_API_TOKEN</span><span class="w">          </span><span class="c1"># PyPI publishing (semantic-release)</span>
+<span class="l l-Scalar l-Scalar-Plain">GITHUB_TOKEN</span><span class="w">            </span><span class="c1"># GitHub API access (auto-provided)</span>
+</code></pre></div>
+<h3 id="security-best-practices">Security Best Practices</h3>
+<ul>
+<li>All secrets managed through GitHub Secrets</li>
+<li>No hardcoded credentials in workflows</li>
+<li>Minimal permission scopes</li>
+<li>Secure artifact handling</li>
+</ul>
+<h2 id="monitoring-troubleshooting">Monitoring &amp; Troubleshooting</h2>
+<h3 id="workflow-status-badges">Workflow Status Badges</h3>
+<p>Add these badges to your README for real-time status monitoring:</p>
+<div class="highlight"><pre><span></span><code>[<span class="nt">![Security Audit</span>](<span class="na">https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/security_audit.yml/badge.svg</span>)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/security_audit.yml)
+[<span class="nt">![SonarCloud</span>](<span class="na">https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/sonarcloud.yml/badge.svg</span>)](https://github.com/VirtualPatientEngine/AIAgents4Pharma/actions/workflows/sonarcloud.yml)
+</code></pre></div>
+<h3 id="common-issues-solutions">Common Issues &amp; Solutions</h3>
+<h4 id="dependency-conflicts">Dependency Conflicts</h4>
+<p>If you encounter dependency issues:
+<div class="highlight"><pre><span></span><code><span class="c1"># Use uv to update conflicting packages</span>
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;package&gt;=new-version&quot;</span>
+uv<span class="w"> </span>lock<span class="w"> </span>--upgrade
+</code></pre></div></p>
+<h4 id="llm-test-failures">LLM Test Failures</h4>
+<p>Some tests may fail in CI due to non-deterministic LLM responses:
+- Tests include fallback logic for access failures
+- Uses flexible keyword matching instead of exact strings
+- Reports "unable to access" as valid responses</p>
+<h4 id="coverage-threshold-failures">Coverage Threshold Failures</h4>
+<p>The workflows enforce 100% coverage. To handle this:
+1. Add proper tests for uncovered code
+2. Use coverage exclusions in <code>pyproject.toml</code> for legitimate cases
+3. Check for import-time code paths not triggered in CI</p>
+<h4 id="cross-platform-issues">Cross-Platform Issues</h4>
+<p>For Windows/Unix compatibility:
+- Use <code>shell: bash</code> for consistent shell behavior
+- Handle path differences (<code>.venv/Scripts/activate</code> vs <code>.venv/bin/activate</code>)
+- Avoid PowerShell-specific commands</p>
+<h2 id="maintenance">Maintenance</h2>
+<h3 id="regular-updates">Regular Updates</h3>
+<ul>
+<li><strong>Dependencies:</strong> Dependabot manages updates automatically</li>
+<li><strong>Actions:</strong> Update action versions quarterly</li>
+<li><strong>Python:</strong> Update matrix versions as new releases become available</li>
+</ul>
+<h3 id="performance-optimization">Performance Optimization</h3>
+<ul>
+<li><strong>Streamlined Design:</strong> Simplified approach for reliability over speed</li>
+<li><strong>Parallelization:</strong> Jobs run in parallel where possible</li>
+<li><strong>Dependency Resolution:</strong> UV handles conflicts automatically</li>
+<li><strong>Resource Usage:</strong> Optimized for GitHub Actions limits</li>
+</ul>
+<h2 id="migration-summary">Migration Summary</h2>
+<p>This documentation reflects the complete migration from pip-based to UV-based workflows:</p>
+<h3 id="successfully-modernized">✅ <strong>Successfully Modernized:</strong></h3>
+<ul>
+<li>All test workflows with cross-platform compatibility</li>
+<li>Semantic release automation (restored from old system)</li>
+<li>Dependency conflict resolution (PyArrow/datasets)</li>
+<li>Security audit streamlining</li>
+<li>Package build validation</li>
+<li>Documentation deployment</li>
+</ul>
+<h3 id="key-improvements">✅ <strong>Key Improvements:</strong></h3>
+<ul>
+<li>Faster dependency installation with UV</li>
+<li>Automatic version management with VCS</li>
+<li>Streamlined workflow architecture</li>
+<li>Better error handling for LLM tests</li>
+<li>Cross-platform virtual environment support</li>
+</ul>
+<p>This workflow architecture provides comprehensive quality assurance, security scanning, and deployment automation with modern tooling while maintaining full automation capabilities.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.top", "navigation.tabs", "navigation.instant", "navigation.expand", "navigation.sections", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "navigation.scrollable"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

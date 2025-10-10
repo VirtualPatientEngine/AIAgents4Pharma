@@ -1,0 +1,6 @@
+name,compartment,type,unit,initial_concentration,display_name
+M,uVol,reactions,nmol/l,500.0,M
+Mp,uVol,reactions,nmol/l,0.0,Mp
+Mpp,uVol,reactions,nmol/l,0.0,Mpp
+MAPKK,uVol,fixed,nmol/l,50.0,MAPKK
+MKP3,uVol,fixed,nmol/l,100.0,MKP3

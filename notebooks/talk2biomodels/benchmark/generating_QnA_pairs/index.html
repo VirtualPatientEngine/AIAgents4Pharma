@@ -1,0 +1,7983 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Generating QnA pairs with a LLM and ground truth data - AIAgents4Pharma</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../../VPE.png">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#generating-qna-pairs-with-a-llm-and-ground-truth-data" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="AIAgents4Pharma" class="md-header__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../../../assets/VPE.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AIAgents4Pharma
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Generating QnA pairs with a LLM and ground truth data
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="white" data-md-color-accent="black"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../talk2aiagents4pharma/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2AIAgents4Pharma
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../talk2biomodels/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Biomodels
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../talk2cells/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Cells
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../talk2knowledgegraphs/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2KnowledgeGraphs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../talk2scholars/intro/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Talk2Scholars
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../developer/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Documentation
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="AIAgents4Pharma" class="md-nav__button md-logo" aria-label="AIAgents4Pharma" data-md-component="logo">
+      
+  <img src="../../../../assets/VPE.png" alt="logo">
+
+    </a>
+    AIAgents4Pharma
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/VirtualPatientEngine/AIAgents4Pharma" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    VPE/AIAgents4Pharma
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2AIAgents4Pharma
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2AIAgents4Pharma
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2aiagents4pharma/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2aiagents4pharma/agents/main_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2AA4P agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2aiagents4pharma/states/state_talk2aiagents4pharma/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2AA4P state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Biomodels
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Biomodels
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Case Studies
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Case Studies
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/cases/Case_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Precision medicine
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/cases/Case_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Epidemiology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/cases/Case_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Emergent system properties
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../basico_tutorials/example_models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Benchmark
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Benchmark
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Description
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/agents/t2b_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2B agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/states/state_talk2biomodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    T2B state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/models/sys_bio_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Bio Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/models/basico_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basico Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/search_models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/get_modelinfo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model information
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/get_annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Model annotation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/simulate_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Simulate model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/ask_question/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ask questions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/custom_plotter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/load_biomodel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Load biomodel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/save_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Save model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/parameter_scan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parameter scan
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2biomodels/tools/steady_state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Steady state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Cells
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2cells/tutorial_c2s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell annotations with cell2sentence
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2cells/tutorial_cell_annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Annotation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2cells/tutorial_cell_discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Discovery
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2cells/tutorial_UMAP_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UMAP Visualization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2cells/tutorial_cell_type_proportion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cell Type Proportion
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/agents/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/agents/scp_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SCP Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/states/state_talk2cells/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2Cells
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/tools/search_studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search studies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2cells/tools/display_studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Display studies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2KnowledgeGraphs
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2KnowledgeGraphs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/deployment/custom_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/deployment/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_starkqa_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_primekg_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_subgraph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Subgraph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_ibd_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG (IBD) Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_all_minilm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Textual Embeddings for StarkQA-PrimeKG using all-MiniLM-L6-v1
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_starkqa_primekg_textual_embeddings_nomic_embed_text/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Textual Embeddings for StarkQA-PrimeKG using nomic-embed-text
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_starkqa_primekg_textual_enrichments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_smiles_enrich_embed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Drug Enrichments/Embeddings (SMILES/molmim)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_enrichment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG Enrichment and Embedding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_primekg_protein_embeddings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Protein Embeddings for BioBridge-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_multimodal_embeddings_alignment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal Embeddings Alignment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_starkqa_primekg_evaluation_vss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG Evaluation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_talk2kg_agentic_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KGs Agentic Tools
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_pyg2dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PyG2DataFrame
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_uniprot_mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    UniProt ID Mapping
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Milvus Vector DB Setup
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            Milvus Vector DB Setup
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_ibd_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG (IBD) Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_milvus_ibd_primekg_dump/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG (IBD) Multimodal Data Dump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_biobridge_multimodal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multimodal BioBridge-PrimeKG Graph Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2knowledgegraphs/tutorial_primekg_milvus_data_dump/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG Multimodal Data Dump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Datasets
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            Datasets
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/datasets/dataset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/datasets/primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/datasets/starkqa_primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StarkQA-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/datasets/biobridge_primekg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BioBridge-PrimeKG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_1" id="__nav_5_7_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Database
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Database
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/database/milvus_connection_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MilvusConnectionManager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_2" id="__nav_5_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Embeddings
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Embeddings
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/embeddings/embeddings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Embeddings
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/embeddings/sentence_transformer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithSentenceTransformer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/embeddings/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithHuggingFace
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/embeddings/ollama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithOllama
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/embeddings/nim_molmim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EmbeddingWithMOLMIM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_3" id="__nav_5_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Enrichments
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Enrichments
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/enrichments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Enrichments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/ollama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithOllama
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/pubchem_strings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithPubChem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/uniprot_proteins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithUniProt
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/reactome_pathways/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithReactome
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/enrichments/ols_terms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    EnrichmentWithOLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_4" id="__nav_5_7_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Extractions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            Extractions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/extractions/pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/extractions/multimodal_pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST (Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/utils/extractions/milvus_multimodal_pcst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PCST (Milvus Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/agents/t2kg_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KG Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/states/state_talk2knowledgegraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2KG State
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/multimodal_subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction (Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/milvus_multimodal_subgraph_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Extraction (Milvus Multimodal)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/subgraph_summarization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subgraph Summarization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/graphrag_reasoning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GraphRAG Reasoning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2knowledgegraphs/tools/load_arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Load Arguments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Talk2Scholars
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Talk2Scholars
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../talk2scholars/tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Agents
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/agents/main_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Main Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/agents/s2_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    S2 Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/agents/paper_download_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Download Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/agents/zotero_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/agents/pdf_agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    PDF Agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    States
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            States
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/states/state_talk2scholars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Talk2Scholars state
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Papers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/single_paper_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Single Paper Recommendation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/multi_paper_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi Paper Recommendation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/display_dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Display Dataframe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/query_dataframe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Query Dataframe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/retrieve_semantic_scholar_paper_id/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Retrieve Semantic Scholar ID
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/paper_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/question_and_answer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Question and answer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/zotero_read/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Read
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/zotero_write/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Write
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/tools/zotero_review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Review
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Utils
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_1" id="__nav_6_6_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    S2 Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            S2 Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/search_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/single_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Single Paper Recommendation Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/multi_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi Paper Recommendation Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_2" id="__nav_6_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    PDF Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            PDF Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/vector_store/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vector Store
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/singleton_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Singleton Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/gpu_detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPU Detection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/collection_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Collection Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/get_vectorstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get Vector Store
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/document_processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Document Processor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/paper_loader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paper Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/batch_processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Batch Processor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/rag_pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RAG Pipeline
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/vector_normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vector Normalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/retrieve_chunks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Retrieve Chunks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/nvidia_nim_reranker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Nvidia NIM Reranker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/generate_answer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Generate Answer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/answer_formatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Answer Formatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/tool_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tool Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_3" id="__nav_6_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Paper Download Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Paper Download Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/base_paper_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base Paper Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/arxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Arxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/biorxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Biorxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/medrxiv_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Medrxiv Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/pubmed_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pubmed Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6_4" id="__nav_6_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Zotero Agent
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Zotero Agent
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/write_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Write Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/read_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Read Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/review_helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Review Helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/zotero_path/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero Path
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../talk2scholars/utils/zotero_pdf_downloader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zotero PDF Downloader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../developer/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Developer Guides
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Developer Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer/TESTING_LINTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing & Linting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer/WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GitHub Workflows
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer/STREAMLIT_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streamlit Security
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer/SONARCLOUD_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SonarCloud Setup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer/AZURE_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Azure Deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Operations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ops/Documentation_intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operations Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ops/CodeOps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Operations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ops/DevOps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev Operations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Guidelines
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            Project Guidelines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simulate-model-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulate model tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steady-state-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Steady state tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-models-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search models tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-plotter-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom plotter tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-model-info-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get model info tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steady-state-tool_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Steady state tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-annotation-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get annotation tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameter-scan-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameter scan tool
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="generating-qna-pairs-with-a-llm-and-ground-truth-data">Generating QnA pairs with a LLM and ground truth data</h1>
+<h2 id="simulate-model-tool">Simulate model tool</h2>
+<p><em>Simulate model tool Set 1 (constant parameters -vary language)</em></p>
+<p>I would like to benchmark the agentic tool system that simulates biological ordinary differential equation questions. Generate 20 questions for a tool simulate_model, which has following description: ["A tool to simulate a biomodel"]. The questions should be diverse with respect to their lenght, user's background (immunologist would be vague in terms of name of specific operations, modeller would be precise in terms of tool names and expected output) and complexity (short, concisue questions vs casual vs complex and convoluted questions). Include grammatical errors and typos. Rate each generated question with a score between 0 and 10, from 0 easy to comprehend for the tool to 10 very complex and difficult to comprehend questions, add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. Return the questions and the scores in a JSON format.</p>
+<p>Do not vary simulation time and species. </p>
+<p>You can include following variation with respect to the simulation conditions and model id:
+* model id 537 - 12 weeks of simulation input in the prompt should be in hours - species CRP (c-reactive protein) in serum - expected answer 2.26913 nmol/L.</p>
+<ul>
+<li>
+<p>model id 971 - 50 days of simulation with an interval of 50 - species infected covid patients - expected answer 104339.</p>
+</li>
+<li>
+<p>model id BIOMD0000000027 - 1000 seconds of simulation with an interval of 1000 - species Mpp (doubel posphorylated Mitogen-activated protein kinase 1) in the cell - expected answer 48.1723 nmol/L.</p>
+</li>
+</ul>
+<p><em>Simulate model tool Set 2 (vary parameters: time interval and species)</em></p>
+<p>I would like to benchmark the agentic tool system that simulates biological ordinary differential equation questions. Generate 30 questions for each model id for a tool simulate_model, which has following description: ["A tool to simulate a biomodel"]. </p>
+<p>The aim of these questions is to test the stability of the outputs depending on the specified input parameters. Keep prompt quality and context with a slight variation, vary only parameters.</p>
+<p>The questions should be somewhat diverse with respect to their lenght and complexity (short, concisue questions vs casual vs complex and convoluted questions). The questions should ask for the final concentration of the given species Add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. Return the questions and the scores in a JSON format. </p>
+<p>Now vary simulation time, interval and concentration of species to be simulated accodring to the instructions for each model id provided below. </p>
+<p>You can include following variation with respect to the simulation conditions and model id (see attached dictionary of model ids and parameters). Question should ask for the final concentration of the given species. Match the expected answer for each species with the key in the dictionary and the parameters that were used to generate the expected answer (interval, time, species name, initial concentration of this species):</p>
+<p><strong>Model id 537</strong>
+<em>(varying interval, time and species concentrations)</em></p>
+<p>Interval: 2016, Time: 2016, Initial CRP(serum) concentration: 0.01
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 10.301993 |
+| CRP(liver) | 6.707914 |
+| IL6(serum) | 0.000641 |
+| STAT3(gut) | 9.124980 |</p>
+<p>Interval: 100, Time: 20, Initial CRP(serum) concentration: 1000
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 243.477247 |
+| CRP(liver) | 162.273954 |
+| IL6(serum) | 0.003962 |
+| STAT3(gut) | 0.291445 |</p>
+<p>Interval: 4032, Time: 2016, Initial CRP(serum) concentration: 2.6
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 10.302718 |
+| CRP(liver) | 6.708469 |
+| IL6(serum) | 0.000641 |
+| STAT3(gut) | 9.124957 |</p>
+<p>Interval: 1000, Time: 1000, Initial IL6(serum) concentration: 435628.90
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 91.299723 |
+| CRP(liver) | 60.894795 |
+| IL6(serum) | 0.000642 |
+| STAT3(gut) | 6.813039 |</p>
+<p>Interval: 1000, Time: 2016, Initial CRP(liver) concentration: 1583.26
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 10.328675 |
+| CRP(liver) | 6.728273 |
+| IL6(serum) | 0.000641 |
+| STAT3(gut) | 9.124149 |</p>
+<p>Interval: 500, Time: 500, Initial STAT3(gut) concentration: 6.11e-08
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 215.468283 |
+| CRP(liver) | 154.750841 |
+| IL6(serum) | 0.000441 |
+| STAT3(gut) | 0.884170 |</p>
+<p>Interval: 2000, Time: 1500, Initial STAT3(gut) concentration: 6.11e-10
+| Species | Value |
+|---------|-------|
+| CRP(serum) | 159.484293 |
+| CRP(liver) | 110.490735 |
+| IL6(serum) | 0.000643 |
+| STAT3(gut) | 4.080634 |</p>
+<p><strong>Model id 971</strong>
+<em>(varying interval and time)</em></p>
+<p>Interval: 100, Time: 50
+| Species | Value |
+|---------|-------|
+| Infected | 1.043385e+05 |
+| Susceptible | 1.017891e+06 |
+| Recovered | 2.231583e+06 |
+| Hospitalised | 1.325140e+05 |</p>
+<p>Interval: 200, Time: 100
+| Species | Value |
+|---------|-------|
+| Infected | 7.143353e+04 |
+| Susceptible | 1.055609e+06 |
+| Recovered | 4.586298e+06 |
+| Hospitalised | 8.688262e+04 |</p>
+<p>Interval: 400, Time: 180
+| Species | Value |
+|---------|-------|
+| Infected | 4.031662e+04 |
+| Susceptible | 1.055585e+06 |
+| Recovered | 6.955857e+06 |
+| Hospitalised | 4.901975e+04 |</p>
+<p>Interval: 1000, Time: 500
+| Species | Value |
+|---------|-------|
+| Infected | 4.090069e+03 |
+| Susceptible | 1.055585e+06 |
+| Recovered | 9.714202e+06 |
+| Hospitalised | 4.972991e+03 |</p>
+<p>Interval: 400, Time: 20
+| Species | Value |
+|---------|-------|
+| Infected | 1.206681e+05 |
+| Susceptible | 3.167693e+06 |
+| Recovered | 1.634611e+05 |
+| Hospitalised | 4.076004e+04 |</p>
+<p>Interval: 10, Time: 10
+| Species | Value |
+|---------|-------|
+| Infected | 3.413654e+03 |
+| Susceptible | 1.079620e+07 |
+| Recovered | 2.980390e+03 |
+| Hospitalised | 8.065950e+02 |</p>
+<p><strong>Model id BIOMD0000000027</strong>
+<em>(varying time and parameter name/value)</em></p>
+<p>Time: 100s, Parameter: k1cat = 0.1
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 317.356267 |
+| M | 154.982325 |
+| Mp | 27.661408 |</p>
+<p>Time: 1000s, Parameter: k1cat = 1.0
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 494.565011 |
+| M | 0.076041 |
+| Mp | 5.358948 |</p>
+<p>Time: 180s, Parameter: k1cat = 100
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 494.647985 |
+| M | 0.000758 |
+| Mp | 5.351257 |</p>
+<p>Time: 500s, Parameter: k2cat = 10
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 491.982136 |
+| M | 0.001140 |
+| Mp | 8.016723 |</p>
+<p>Time: 20s, Parameter: k2cat = 0.1
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 42.542954 |
+| M | 0.103107 |
+| Mp | 457.353939 |</p>
+<p>Time: 10s, Parameter: k2cat = 100
+| Species | Concentration |
+|---------|--------------|
+| Mpp | 499.195565 |
+| M | 0.000113 |
+| Mp | 0.804322 |</p>
+<h2 id="steady-state-tool">Steady state tool</h2>
+<p>I would like to benchmark the agentic tool system that simulates biological ordinary differential equation models. I am benchamrking a tool steady_state, which brings a model to steady state. </p>
+<p>The aim of these questions is to test the stability of the outputs depending on the specified input parameters. Keep prompt quality and context with a slight variation, vary only parameters.</p>
+<p>Generate 30 questions for each model id for a steady state and ask question tools. Add generated questions to the set 2.</p>
+<p>Example question: "Bring biomodel 27 to a steady state, and then determine the Mpp concentration at the steady state."</p>
+<p>ASk a question if the model reaches steady state and what is the steady state concentration for the model species written in the table below. Add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. The answers should be obtained from the table below. Return the questions and the scores in a JSON format.</p>
+<p>For model 537, steady state cannot be found. </p>
+<p><strong>Model 27:</strong>
+| Name | Concentration [nmol/l] | Transition Time [s] |
+|------|----------------------|-------------------|
+| M | 0.076041 | 1.012 |
+| Mp | 5.358948 | 0.669 |
+| Mpp | 494.565011 | 62.278 |</p>
+<p><strong>Model 971 (covid model):</strong>
+| Name | Concentration [#/ml] | Transition Time [d] |
+|------|---------------------|-------------------|
+| Susceptible | 1055585.406125 | 1.376e+27 |
+| Exposed | -5.661e-22 | 7.000 |
+| Infected | -1.541e-22 | 2.160 |
+| Asymptomatic | -8.028e-23 | 7.154 |
+| Susceptible_quarantined | -1.074e-20 | 14.000 |
+| Exposed_quarantined | -1.222e-28 | 7.943 |
+| Hospitalised | -1.873e-22 | 8.602 |
+| Recovered | 10025626.335858 | 1.195e+29 |</p>
+<h2 id="search-models-tool">Search models tool</h2>
+<p>I would like to benchmark the agentic tool system that searches for models in the BioModels database. Generate 20 questions for a tool search_models, which has following description: ["A tool to search for curated models in the BioModels database"]. The questions should be diverse with respect to their lenght, and complexity (short, concisue questions vs casual vs complex and convoluted questions). Include grammatical errors and typos. Rate each generated question with a score between 0 and 10, from 0 easy to comprehend for the tool to 10 very complex and difficult to comprehend questions, add an id for every question. Add expected answer to the question as a text that would typically be returned by the tool based on LLM, but include expected answer, which can be rounded. Return the questions and the scores in a JSON format.</p>
+<p>The questions should ask for the number of models found for the given query. The query should be diverse with respect to the length, complexity and context.</p>
+<p>Example question: "Search for models on precision medicine, and then list the names of the models.", "how many models on crohn's disease are there in biomodels database?"</p>
+<p>Use these keywords: " crohn's disease; precision medicine, covid-19, gut.</p>
+<p>Precision medicine: 7 models
+[{'format': 'SBML',
+  'id': 'BIOMD0000000583',
+  'lastModified': None,
+  'name': 'Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection',
+  'submissionDate': '2015-07-19T23:00:00Z',
+  'submitter': 'Andrew Leber',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000583'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000962',
+  'lastModified': None,
+  'name': 'Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China',
+  'submissionDate': '2020-08-25T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000962'},
+ {'format': 'SBML',
+  'id': 'MODEL2106070001',
+  'lastModified': None,
+  'name': 'Montagud2022 - Prostate cancer Boolean model',
+  'submissionDate': '2021-06-06T23:00:00Z',
+  'submitter': 'Arnau Montagud',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2106070001'},
+ {'format': 'SBML',
+  'id': 'MODEL2203300001',
+  'lastModified': None,
+  'name': 'Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1',
+  'submissionDate': '2022-03-29T23:00:00Z',
+  'submitter': 'Bridget Bannerman',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2203300001'},
+ {'format': 'SBML',
+  'id': 'MODEL2203300002',
+  'lastModified': None,
+  'name': 'Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196)',
+  'submissionDate': '2022-03-29T23:00:00Z',
+  'submitter': 'Bridget Bannerman',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2203300002'},
+ {'format': 'SBML',
+  'id': 'MODEL2402290001',
+  'lastModified': None,
+  'name': 'Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC',
+  'submissionDate': '2024-02-29T00:00:00Z',
+  'submitter': 'Shailza Singh',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2402290001'},
+ {'format': 'Open Neural Network Exchange',
+  'id': 'MODEL2407230001',
+  'lastModified': None,
+  'name': 'YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer',
+  'submissionDate': '2024-07-22T23:00:00Z',
+  'submitter': 'Akshat Pandey',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2407230001'}]</p>
+<p>crohn's disease: 5 models
+  [{'format': 'SBML',
+  'id': 'BIOMD0000000534',
+  'lastModified': None,
+  'name': 'Dwivedi2014 - Healthy Volunteer IL6 Model',
+  'submissionDate': '2014-08-04T23:00:00Z',
+  'submitter': 'Vincent Knight-Schrijver',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000534'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000535',
+  'lastModified': None,
+  'name': 'Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody',
+  'submissionDate': '2014-08-04T23:00:00Z',
+  'submitter': 'Vincent Knight-Schrijver',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000535'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000536',
+  'lastModified': None,
+  'name': 'Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity',
+  'submissionDate': '2014-08-04T23:00:00Z',
+  'submitter': 'Vincent Knight-Schrijver',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000536'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000537',
+  'lastModified': None,
+  'name': 'Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody',
+  'submissionDate': '2014-08-04T23:00:00Z',
+  'submitter': 'Vincent Knight-Schrijver',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000537'},
+ {'format': 'SBML',
+  'id': 'MODEL2505090001',
+  'lastModified': None,
+  'name': 'Lo2016 – IBD Response to Anti-TNFα treatment',
+  'submissionDate': '2025-05-08T23:00:00Z',
+  'submitter': 'bastien chassagnol',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2505090001'}]</p>
+<p>covid-19: 43 models
+  [{'format': 'SBML',
+  'id': 'BIOMD0000000955',
+  'lastModified': None,
+  'name': 'Giordano2020 - SIDARTHE model of COVID-19 spread in Italy',
+  'submissionDate': '2020-07-27T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000955'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000956',
+  'lastModified': None,
+  'name': 'Bertozzi2020 - SIR model of scenarios of COVID-19 spread in CA and NY',
+  'submissionDate': '2020-08-06T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000956'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000957',
+  'lastModified': None,
+  'name': 'Roda2020 - SIR model of COVID-19 spread in Wuhan',
+  'submissionDate': '2020-08-10T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000957'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000958',
+  'lastModified': None,
+  'name': 'Ndairou2020 - early-stage transmission dynamics of COVID-19 in Wuhan',
+  'submissionDate': '2020-08-13T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000958'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000960',
+  'lastModified': None,
+  'name': 'Paiva2020 - SEIAHRD model of transmission dynamics of COVID-19',
+  'submissionDate': '2020-08-19T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000960'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000962',
+  'lastModified': None,
+  'name': 'Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China',
+  'submissionDate': '2020-08-25T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000962'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000963',
+  'lastModified': None,
+  'name': 'Weitz2020 - SIR model of COVID-19 transmission with shielding',
+  'submissionDate': '2020-09-15T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000963'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000964',
+  'lastModified': None,
+  'name': 'Mwalili2020 - SEIR model of COVID-19 transmission and environmental pathogen prevalence',
+  'submissionDate': '2020-09-20T23:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000964'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000969',
+  'lastModified': None,
+  'name': 'Cuadros2020 - SIHRD spatiotemporal model of COVID-19 transmission in Ohio',
+  'submissionDate': '2020-10-27T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000969'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000970',
+  'lastModified': None,
+  'name': 'Hou2020 - SEIR model of COVID-19 transmission in Wuhan',
+  'submissionDate': '2020-10-28T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000970'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000971',
+  'lastModified': None,
+  'name': 'Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions',
+  'submissionDate': '2020-11-02T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000971'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000972',
+  'lastModified': None,
+  'name': 'Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions - update',
+  'submissionDate': '2020-11-03T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000972'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000974',
+  'lastModified': None,
+  'name': 'Carcione2020 - Deterministic SEIR simulation of a COVID-19 outbreak',
+  'submissionDate': '2020-11-03T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000974'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000976',
+  'lastModified': None,
+  'name': 'Ghanbari2020 - forecasting the second wave of COVID-19 in Iran',
+  'submissionDate': '2020-11-23T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000976'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000977',
+  'lastModified': None,
+  'name': 'Sarkar2020 - SAIR model of COVID-19 transmission with quarantine measures in India',
+  'submissionDate': '2020-11-30T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000977'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000978',
+  'lastModified': None,
+  'name': 'Mukandavire2020 - SEIR model of early COVID-19 transmission in South Africa',
+  'submissionDate': '2020-12-01T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000978'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000979',
+  'lastModified': None,
+  'name': 'Malkov2020 - SEIRS model of COVID-19 transmission with reinfection',
+  'submissionDate': '2020-12-04T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000979'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000980',
+  'lastModified': None,
+  'name': 'Malkov2020 - SEIRS model of COVID-19 transmission with time-varying R values and reinfection',
+  'submissionDate': '2020-12-07T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000980'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000981',
+  'lastModified': None,
+  'name': 'Wan2020 - risk estimation and prediction of the transmission of COVID-19 in maninland China excluding Hubei province',
+  'submissionDate': '2020-12-09T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000981'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000982',
+  'lastModified': None,
+  'name': 'Law2020 - SIR model of COVID-19 transmission in Malyasia with time-varying parameters',
+  'submissionDate': '2020-12-24T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000982'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000983',
+  'lastModified': None,
+  'name': 'Zongo2020 - model of COVID-19 transmission dynamics under containment measures in France',
+  'submissionDate': '2021-01-15T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000983'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000984',
+  'lastModified': None,
+  'name': 'Fang2020 - SEIR model of COVID-19 transmission considering government interventions in Wuhan',
+  'submissionDate': '2021-01-19T00:00:00Z',
+  'submitter': 'Kausthubh Ramachandran',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000984'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000988',
+  'lastModified': None,
+  'name': 'Westerhoff2020 - systems biology model of the coronavirus pandemic 2020',
+  'submissionDate': '2021-02-12T00:00:00Z',
+  'submitter': 'Paul Jonas Jost',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000988'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000991',
+  'lastModified': None,
+  'name': 'Okuonghae2020 - SEAIR model of COVID-19 transmission in Lagos, Nigeria',
+  'submissionDate': '2021-02-18T00:00:00Z',
+  'submitter': 'Paul Jonas Jost',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000991'},
+ {'format': 'COMBINE archive',
+  'id': 'MODEL2003020001',
+  'lastModified': None,
+  'name': 'Renz2020 - GEM of Human alveolar macrophage with SARS-CoV-2',
+  'submissionDate': '2020-03-02T00:00:00Z',
+  'submitter': 'Andreas Dräger',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2003020001'},
+ {'format': 'SBML',
+  'id': 'MODEL2007210001',
+  'lastModified': None,
+  'name': 'Bannerman2020 - Integrated model of the human airway epithelial cell and the SARS-CoV-2 virus',
+  'submissionDate': '2020-07-20T23:00:00Z',
+  'submitter': 'Bridget Bannerman',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2007210001'},
+ {'format': 'SBML',
+  'id': 'MODEL2109130003',
+  'lastModified': None,
+  'name': 'COVID-19 immunotherapy A mathematical model',
+  'submissionDate': '2022-06-20T23:00:00Z',
+  'submitter': 'João Nuno Domingues Tavares',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2109130003'},
+ {'format': 'SBML',
+  'id': 'MODEL2111170001',
+  'lastModified': None,
+  'name': 'Leander2021 - innate immune response to SARS-CoV-2 in the alveolar epithelium',
+  'submissionDate': '2021-11-17T00:00:00Z',
+  'submitter': 'Krishna Kumar Tiwari',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2111170001'},
+ {'format': 'SBML',
+  'id': 'MODEL2202230002',
+  'lastModified': None,
+  'name': 'COVID-19 immunotherapy A mathematical model',
+  'submissionDate': '2022-02-23T00:00:00Z',
+  'submitter': 'João Nuno Domingues Tavares',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2202230002'},
+ {'format': 'COMBINE archive',
+  'id': 'MODEL2202240001',
+  'lastModified': None,
+  'name': 'New workflow predicts drug targets against SARS-CoV-2 via metabolic changes in infected cells',
+  'submissionDate': '2023-01-18T00:00:00Z',
+  'submitter': 'Andreas Dräger',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2202240001'},
+ {'format': 'SBML',
+  'id': 'MODEL2203300001',
+  'lastModified': None,
+  'name': 'Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1',
+  'submissionDate': '2022-03-29T23:00:00Z',
+  'submitter': 'Bridget Bannerman',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2203300001'},
+ {'format': 'SBML',
+  'id': 'MODEL2203300002',
+  'lastModified': None,
+  'name': 'Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196)',
+  'submissionDate': '2022-03-29T23:00:00Z',
+  'submitter': 'Bridget Bannerman',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2203300002'},
+ {'format': 'MATLAB (Octave)',
+  'id': 'MODEL2205010001',
+  'lastModified': None,
+  'name': 'PraneshPadmanabhan2022 - SARS-CoV-2 virus dynamics model (human)',
+  'submissionDate': '2022-04-30T23:00:00Z',
+  'submitter': 'Rajat Desikan',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2205010001'},
+ {'format': 'Other',
+  'id': 'MODEL2209020001',
+  'lastModified': None,
+  'name': 'BY-COVID Knowledge Graph: A comprehensive network integrating various data resources of BY-COVID project',
+  'submissionDate': '2022-09-01T23:00:00Z',
+  'submitter': 'Reagon Karki',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2209020001'},
+ {'format': 'Other',
+  'id': 'MODEL2212160001',
+  'lastModified': None,
+  'name': 'Gianlupi2022 - Antiviral Timing, Potency, and Heterogeneity Effects on an Epithelial Tissue Patch Infected by SARS-CoV-2',
+  'submissionDate': '2022-12-16T00:00:00Z',
+  'submitter': 'Juliano Ferrari Gianlupi',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2212160001'},
+ {'format': 'SBML',
+  'id': 'MODEL2212310001',
+  'lastModified': None,
+  'name': 'Model-based prediction of SARS-CoV-2 in Ethiopia: Extended SEIR model',
+  'submissionDate': '2022-12-31T00:00:00Z',
+  'submitter': 'Simon Merkt',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2212310001'},
+ {'format': 'Other',
+  'id': 'MODEL2401170001',
+  'lastModified': None,
+  'name': 'Pradeep2024 - A Mechanical modelling framework for studying endothelial permeability',
+  'submissionDate': '2024-01-17T00:00:00Z',
+  'submitter': 'Pradeep Keshavanarayana',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2401170001'},
+ {'format': 'Python',
+  'id': 'MODEL2405080005',
+  'lastModified': None,
+  'name': 'Zeng2022 - Prediction of molecular properties and drug targets using a self-supervised learning framework',
+  'submissionDate': '2024-05-07T23:00:00Z',
+  'submitter': 'Zainab Ashimiyu-Abdusalam',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405080005'},
+ {'format': 'Python',
+  'id': 'MODEL2405080006',
+  'lastModified': None,
+  'name': 'Stokes2020 - Antibiotics discovery using deep learning approach (Antiviral implementation)',
+  'submissionDate': '2024-05-07T23:00:00Z',
+  'submitter': 'Zainab Ashimiyu-Abdusalam',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405080006'},
+ {'format': 'Python',
+  'id': 'MODEL2405130001',
+  'lastModified': None,
+  'name': 'Zeng2022 - Prediction of HIV Growth Inhibition using ImageMol',
+  'submissionDate': '2024-05-12T23:00:00Z',
+  'submitter': 'Zainab Ashimiyu-Abdusalam',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405130001'},
+ {'format': 'Python',
+  'id': 'MODEL2405130004',
+  'lastModified': None,
+  'name': 'KC2021 - A machine learning platform to estimate anti-SARS-CoV-2 activities',
+  'submissionDate': '2024-05-12T23:00:00Z',
+  'submitter': 'Zainab Ashimiyu-Abdusalam',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405130004'},
+ {'format': 'COMBINE archive',
+  'id': 'MODEL2503040001',
+  'lastModified': None,
+  'name': 'Miroshnichenko2025 - A modular model of immune response to SARS-CoV-2 infection',
+  'submissionDate': '2025-03-04T00:00:00Z',
+  'submitter': 'Max',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2503040001'},
+ {'format': 'SBML',
+  'id': 'MODEL2504120001',
+  'lastModified': None,
+  'name': 'Merkt2024 - SEIR based model of SARS-CoV-2 variant spread and cross-immunity in Ethiopia',
+  'submissionDate': '2025-04-11T23:00:00Z',
+  'submitter': 'Simon Merkt',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2504120001'}]</p>
+<p>gut: 58 models
+[{'format': 'SBML',
+  'id': 'BIOMD0000000451',
+  'lastModified': None,
+  'name': 'Carbo2013 - Cytokine driven CD4+ T Cell differentiation and phenotype plasticity',
+  'submissionDate': '2013-04-22T23:00:00Z',
+  'submitter': 'Adria Carbo',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000451'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000527',
+  'lastModified': None,
+  'name': 'Kaiser2014 - Salmonella persistence after ciprofloxacin treatment',
+  'submissionDate': '2013-12-17T00:00:00Z',
+  'submitter': 'Roland Regoes',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000527'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000583',
+  'lastModified': None,
+  'name': 'Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection',
+  'submissionDate': '2015-07-19T23:00:00Z',
+  'submitter': 'Andrew Leber',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000583'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000619',
+  'lastModified': None,
+  'name': 'Sluka2016  - Acetaminophen PBPK',
+  'submissionDate': '2015-09-22T23:00:00Z',
+  'submitter': 'Vijayalakshmi Chelliah',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000619'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000000947',
+  'lastModified': None,
+  'name': 'Lee2017 - Paracetamol first-pass metabolism PK model',
+  'submissionDate': '2018-03-05T00:00:00Z',
+  'submitter': 'Matthew Roberts',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000000947'},
+ {'format': 'SBML',
+  'id': 'BIOMD0000001062',
+  'lastModified': None,
+  'name': 'Kim2021 - Development of a Genome-Scale Metabolic Model and Phenome Analysis of the Probiotic Escherichia coli Strain Nissle 1917',
+  'submissionDate': '2022-04-17T23:00:00Z',
+  'submitter': 'Dohyeon Kim',
+  'url': 'https://www.ebi.ac.uk/biomodels/BIOMD0000001062'},
+ {'format': 'SBML',
+  'id': 'MODEL1210260004',
+  'lastModified': None,
+  'name': 'Viladomiu2012 - PPARgamma role in C.diff associated disease',
+  'submissionDate': '2012-10-25T23:00:00Z',
+  'submitter': 'Monica Viladomiu',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1210260004'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220000',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Brain medulla',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220000'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220001',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Embryonic tissue',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220001'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220002',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Cerebellum',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220002'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220003',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220003'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220004',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Eye',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220004'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220005',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Diaphragm',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220005'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220006',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Brown fat',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220006'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220007',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Jejunum',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220007'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220008',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Kidney medulla',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220008'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220009',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220009'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220010',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220010'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220011',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Adrenal gland',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220011'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220012',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Kidney cortex',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220012'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220013',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Brain cortex',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220013'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220014',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Heart',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220014'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220015',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Lung',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220015'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220016',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Muscle',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220016'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220017',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Liver',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220017'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220018',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Midbrain',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220018'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220019',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Thymus',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220019'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220020',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Spleeen',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220020'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220021',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Stomach',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220021'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220022',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Salivary gland',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220022'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220023',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ovary',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220023'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220024',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Pancreas',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220024'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220025',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Olfactory bulb',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220025'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220026',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - White fat',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220026'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220027',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Uterus',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220027'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220028',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Generic mouse genome-scale metabolic network (MMR)',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220028'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220029',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Curated tissue-specific genome-scale metabolic network - Liver',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220029'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220030',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Curated tissue-specific genome-scale metabolic network  - Colon',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220030'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220031',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Curated tissue-specific genome-scale metabolic network - Adipose',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220031'},
+ {'format': 'SBML',
+  'id': 'MODEL1509220032',
+  'lastModified': None,
+  'name': 'Mardinoglu2015 - Curated tissue-specific genome-scale metabolic model - Small intestine',
+  'submissionDate': '2015-09-21T23:00:00Z',
+  'submitter': 'Nicolas Rodriguez',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL1509220032'},
+ {'format': 'SBML',
+  'id': 'MODEL2002040002',
+  'lastModified': None,
+  'name': 'Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Acetobacter fabarum',
+  'submissionDate': '2020-02-04T00:00:00Z',
+  'submitter': 'Nana Y D Ankrah',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002040002'},
+ {'format': 'SBML',
+  'id': 'MODEL2002040003',
+  'lastModified': None,
+  'name': 'Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Acetobacter pomorum',
+  'submissionDate': '2020-02-04T00:00:00Z',
+  'submitter': 'Nana Y D Ankrah',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002040003'},
+ {'format': 'SBML',
+  'id': 'MODEL2002040004',
+  'lastModified': None,
+  'name': 'Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Acetobacter tropicalis',
+  'submissionDate': '2020-02-04T00:00:00Z',
+  'submitter': 'Nana Y D Ankrah',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002040004'},
+ {'format': 'SBML',
+  'id': 'MODEL2002040005',
+  'lastModified': None,
+  'name': 'Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus brevis',
+  'submissionDate': '2020-02-04T00:00:00Z',
+  'submitter': 'Nana Y D Ankrah',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002040005'},
+ {'format': 'SBML',
+  'id': 'MODEL2002040006',
+  'lastModified': None,
+  'name': 'Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum',
+  'submissionDate': '2020-02-04T00:00:00Z',
+  'submitter': 'Nana Y D Ankrah',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002040006'},
+ {'format': 'SBML',
+  'id': 'MODEL2002070001',
+  'lastModified': None,
+  'name': 'Geißert2020 - Yersinia enterocolitica co-infection in mice',
+  'submissionDate': '2020-02-07T00:00:00Z',
+  'submitter': 'Andreas Dräger',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2002070001'},
+ {'format': 'SBML',
+  'id': 'MODEL2010130002',
+  'lastModified': None,
+  'name': 'Subrmanian2015 - Energy metabolism of Leishmania infantum, constrain-based metabolic model',
+  'submissionDate': '2020-10-12T23:00:00Z',
+  'submitter': 'Abhishek Subramanian',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2010130002'},
+ {'format': 'SBML',
+  'id': 'MODEL2110210002',
+  'lastModified': None,
+  'name': 'MirhakkakSchaeuble2021 - a Candida albicans genome-scale metabolic model reconstruction',
+  'submissionDate': '2021-10-20T23:00:00Z',
+  'submitter': 'Sascha Schäuble',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2110210002'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190001',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus casei subsp. casei ATCC 393',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190001'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190002',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus casei BL23',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190002'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190003',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus casei LC5',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190003'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190004',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus fermentum ATCC 14931',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190004'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190006',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus plantarum ATCC8014',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190006'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190007',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus plantarum JDM1',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190007'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190008',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactobacillus salivarius ATCC 11741',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190008'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190009',
+  'lastModified': None,
+  'name': 'Koduru2022 - Lactococcus lactis subsp. cremoris NZ9000',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190009'},
+ {'format': 'SBML',
+  'id': 'MODEL2210190012',
+  'lastModified': None,
+  'name': 'Koduru2022 - Leuconostoc mesenteroides subsp. mesenteroides ATCC 8293',
+  'submissionDate': '2022-10-18T23:00:00Z',
+  'submitter': 'Yi Qing Lee',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2210190012'},
+ {'format': 'Other',
+  'id': 'MODEL2405300001',
+  'lastModified': None,
+  'name': 'Ioannou2024 - Synthetic Human Infant Gut Microbial Community with Human Milk Oligosaccharides',
+  'submissionDate': '2024-05-29T23:00:00Z',
+  'submitter': 'William Scott',
+  'url': 'https://www.ebi.ac.uk/biomodels/MODEL2405300001'}]</p>
+<h2 id="custom-plotter-tool">Custom plotter tool</h2>
+<p>Create a set of questions to test a tool custom_plotter (A visualization tool designed to extract and display a subset
+of the larger simulation plot generated by the simulate_model tool.
+It allows users to specify particular species for the y-axis,
+providing a more targeted view of key species without the clutter
+of the full plot.).</p>
+<p>Run time course and plot only speceis that are specified in the question.The evaluation framework will check if the certain species are plotted in the plot that is returned by the agent.</p>
+<p>Model species in model 537, e.g, IL6{serum}, CRP{serum}, sR{serum}, CRP{liver} and STAT3{liver}.</p>
+<p>Model species in model 27, e.g, Mpp, M, Mp.</p>
+<p>Model species in model 971, e.g, Infected, Susceptible, Recovered, Hospitalised, Exposed.</p>
+<p>Create a questions that ask to simulate the respective model first (allways ask to simulate the model first) and plot the species that are specified in the question (mix species).</p>
+<p>The key "species" should contain the species names that are plotted in the plot.</p>
+<p>Create diverse 20 questions for each model id 537, 27 and 971 and add them to the set 2 in a similar fashion as are the questions in the set2.</p>
+<p>The example question and expected answer in json format is here:</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;id&quot;: &quot;custom_plotter_set2_001&quot;,
+  &quot;question&quot;: &quot;simulate the model 537 and plot the species IL6{serum}, CRP{serum}, sR{serum}, CRP{liver} and STAT3{liver}&quot;,
+  &quot;complexity_score&quot;: 2,
+  &quot;user_background&quot;: &quot;modeller&quot;,
+  &quot;model_id&quot;: &quot;537&quot;,
+  &quot;question_type&quot;: &quot;custom_plotter&quot;,
+  &quot;expected_values&quot;: {
+    &quot;species&quot;: &quot;IL6{serum}, CRP{serum}, sR{serum}, CRP{liver}, STAT3{liver}&quot;
+  },
+  &quot;expected_tools&quot;: [
+    &quot;simulate_model&quot;,
+    &quot;custom_plotter&quot;
+  ]
+}
+</code></pre></div>
+<h2 id="get-model-info-tool">Get model info tool</h2>
+<p>Create a questions for set3 in a similar fashion as are the questions in the set2 for the tool <code>get_modelinfo</code>.
+Extract detailed information about the model, including species, parameters, and compartments.</p>
+<p>Template questions: 
+* "What are the species do you have in the model 971?
+* "what is the time unit in the model 27?"</p>
+<p>Ask the question about these three different models and include expected answer to the question based on the template below:</p>
+<p>Questions regarding <strong>units</strong> (please generate 10 questions for each model id 27, 537 and 971) can ask about time unit, quantity unit, length unit, area unit and volume unit.</p>
+<p>Questions regarding <strong>compartments</strong> (please generate 10 questions for each model id 27, 537 and 971) can ask about the compartment name and size in the model.</p>
+<p>Questions regarding <strong>species</strong> (please generate 10 questions for each model id 27, 537 and 971) can ask about the species name, compartment, type, unit, initial concentration and display name.</p>
+<p>Questions regarding <strong>parameters</strong> (please generate 10 questions for each model id 27, 537 and 971) can ask about the parameter name, type, unit, initial value and display name.</p>
+<p>The ground truths for each question is in the tables or pickle files in the <code>tables</code> folder, depending on whether the quesiton is asked about units, compartments, species or parameters.</p>
+<p>The example question and expected answer in json format is here:</p>
+<div class="highlight"><pre><span></span><code>  {
+  &quot;id&quot;: &quot;get_modelinfo_set3_001&quot;,
+  &quot;question&quot;: &quot;what are the species do you have in the model 971?&quot;,
+  &quot;complexity_score&quot;: 2,
+  &quot;user_background&quot;: &quot;modeller&quot;,
+  &quot;model_id&quot;: &quot;971&quot;,
+  &quot;question_type&quot;: &quot;table&quot;,
+  &quot;expected_values&quot;: {
+    &quot;species&quot;: &quot;tables/species_971.csv&quot;
+  },
+  &quot;expected_tools&quot;: [
+    &quot;get_modelinfo&quot;
+  ]
+}
+</code></pre></div>
+<h2 id="steady-state-tool_1">Steady state tool</h2>
+<p>Create a questions for set3 in a similar fashion as are the questions in the set2 for the tool <code>steady_state</code>.</p>
+<p>Questions regarding <strong>steady state</strong> (please generate 10 questions for each model id 27 and 971) can ask about the steady state concentration and transition time of the species in the model.</p>
+<p>The ground truths for each question is in the tables in the <code>tables</code> folder, depending on model id.</p>
+<p>The example question and expected answer in json format is here:</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;id&quot;: &quot;steady_state_set3_001&quot;, 
+  &quot;question&quot;: &quot;what is the steady state concentration of species M in model 27?&quot;,
+  &quot;complexity_score&quot;: 2,
+  &quot;user_background&quot;: &quot;modeller&quot;,
+  &quot;model_id&quot;: &quot;27&quot;,
+  &quot;question_type&quot;: &quot;steady_state&quot;,
+  &quot;expected_values&quot;: {
+    &quot;steady_state&quot;: &quot;tables/stst_27.csv&quot;
+  },
+  &quot;expected_tools&quot;: [
+    &quot;steady_state&quot;
+  ]
+}
+</code></pre></div>
+<h2 id="get-annotation-tool">Get annotation tool</h2>
+<p>Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool <code>get_annotation</code>.
+This tool returns the annotation ID, if user asks for a specific species or annotations for all the species in the model.</p>
+<p>Create 20 questions for each model id 27, 537 and 971 and add them to the set 4 in a similar fashion as are the questions in the set2 and set3. Make sure the questions are diverse and include different species and different number of species. Ask specificallly for the annotations of the species. Expected values should be the annotation ID, one species can return multiple annotation IDs. Expected tools should be get_annotation.</p>
+<p>Use these ground truths for the questions and answer generation:</p>
+<p>Model id 27
+M
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+Mp
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+Mpp
+{'descriptions': [{'id': 'P26696', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P26696', 'resource': 'UniProt Knowledgebase'}]}
+MAPKK
+{'descriptions': [{'id': 'Q05116', 'qualifier': 'is', 'uri': 'http://identifiers.org/uniprot/Q05116', 'resource': 'UniProt Knowledgebase'}]}
+MKP3
+{'descriptions': [{'id': 'Q90W58', 'qualifier': 'is', 'uri': 'http://identifiers.org/uniprot/Q90W58', 'resource': 'UniProt Knowledgebase'}]}</p>
+<p>Model id 537:
+IL6{serum}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{serum}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{serum}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRP{serum}
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sR{serum}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6{serum}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'CHEBI:52217', 'qualifier': 'has property', 'uri': 'http://identifiers.org/CHEBI:52217', 'resource': 'ChEBI'}]}
+Ab_sR{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR_IL6{serum}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRP Suppression (%)
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+CRP (% of baseline)
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+gp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+R_IL6_gp130{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+sR_IL6{liver}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+R
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+IL6{liver}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+R_IL6
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ractive{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0002354', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0002354', 'resource': 'PATO'}, {'id': 'SBO:0000286', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000286', 'resource': 'Systems Biology Ontology'}]}
+STAT3{liver}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}]}
+pSTAT3{liver}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}, {'id': 'SBO:0000216', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000216', 'resource': 'Systems Biology Ontology'}]}
+CRP{liver}
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sR{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+CRPExtracellular
+{'descriptions': [{'id': 'P02741', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P02741', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{liver}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR{liver}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{liver}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab_R
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ab_sR_IL6{liver}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+gp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}]}
+R_IL6_gp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}]}
+Ractive{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0002354', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0002354', 'resource': 'PATO'}, {'id': 'SBO:0000286', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000286', 'resource': 'Systems Biology Ontology'}]}
+STAT3{gut}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}]}
+pSTAT3{gut}
+{'descriptions': [{'id': 'PR:000002089', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000002089', 'resource': 'Protein Ontology'}, {'id': 'SBO:0000216', 'qualifier': 'has property', 'uri': 'http://identifiers.org/SBO:0000216', 'resource': 'Systems Biology Ontology'}]}
+geneProduct
+{'descriptions': [{'id': 'CCO:U0000003', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/CCO:U0000003', 'resource': 'Cell Cycle Ontology'}]}
+sR{gut}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}]}
+sgp130{gut}
+{'descriptions': [{'id': 'PR:000001868', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+sR_IL6_sgp130{gut}
+{'descriptions': [{'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PR:000001868', 'qualifier': 'has part', 'uri': 'http://identifiers.org/PR:000001868', 'resource': 'Protein Ontology'}, {'id': 'P05231', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab{gut}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab_sR{gut}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'has part', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}, {'id': 'P08887', 'qualifier': 'has part', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}]}
+Ab_sR_IL6{gut}
+{'descriptions': [{'id': 'P05231', 'qualifier': 'has property', 'uri': 'http://identifiers.org/uniprot/P05231', 'resource': 'UniProt Knowledgebase'}, {'id': 'P08887', 'qualifier': 'has property', 'uri': 'http://identifiers.org/uniprot/P08887', 'resource': 'UniProt Knowledgebase'}, {'id': 'PATO:0001537', 'qualifier': 'has property', 'uri': 'http://identifiers.org/PATO:0001537', 'resource': 'PATO'}, {'id': 'FMA:62871', 'qualifier': 'has property', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}
+Ab{peripheral}
+{'descriptions': [{'id': 'FMA:62871', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/FMA:62871', 'resource': 'FMA'}]}</p>
+<p>Model id 971:</p>
+<p>Susceptible
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Exposed
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': '0000597', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000597', 'resource': 'Infectious Disease Ontology'}]}
+Asymptomatic
+{'descriptions': [{'id': '0000569', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000569', 'resource': 'Infectious Disease Ontology'}, {'id': '0000511', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000511', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Susceptible_quarantined
+{'descriptions': [{'id': 'C71902', 'qualifier': 'is', 'uri': 'http://identifiers.org/ncit/C71902', 'resource': 'NCIt'}, {'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}]}
+Exposed_quarantined
+{'descriptions': [{'id': '0000514', 'qualifier': 'is', 'uri': 'http://identifiers.org/ido/0000514', 'resource': 'Infectious Disease Ontology'}, {'id': 'C71902', 'qualifier': 'is', 'uri': 'http://identifiers.org/ncit/C71902', 'resource': 'NCIt'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': '0000597', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000597', 'resource': 'Infectious Disease Ontology'}]}
+Hospitalised
+{'descriptions': [{'id': '0000511', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ido/0000511', 'resource': 'Infectious Disease Ontology'}, {'id': 'C171133', 'qualifier': 'is version of', 'uri': 'http://identifiers.org/ncit/C171133', 'resource': 'NCIt'}, {'id': 'C25179', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ncit/C25179', 'resource': 'NCIt'}]}
+Recovered
+{'descriptions': [{'id': '0000621', 'qualifier': 'has property', 'uri': 'http://identifiers.org/ido/0000621', 'resource': 'Infectious Disease Ontology'}]}</p>
+<p>Example question in json format:
+    {
+      "id": "annotation_set4_001",
+      "question": "get the annotation for the species IL6{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": "P05231"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    }</p>
+<p>Example question in json format:
+    {
+      "id": "annotation_set4_001",
+      "question": "get the annotation for the species IL6{liver} and pSTAT3{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": ["P05231"],
+        "pSTAT3{liver}": ["PR:000002089",SBO:0000216]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    }</p>
+<h2 id="parameter-scan-tool">Parameter scan tool</h2>
+<p>Create a questions for set4 in a similar fashion as are the questions in the set2 for the tool <code>parameter_scan</code>.
+This tool returns the parameter scan results for the model.</p>
+<p>Create 20 questions for each model id 27, 537 and 971 and add them to the set 5 in a similar fashion as are the questions in the set2 and set4. Make sure the questions are diverse and include different parameters and different number of parameters. Ask specifically for the parameter scan results. Expected values should be the parameter scan results in a csv file. Expected tools should be parameter_scan.</p>
+<p>Use the following combination to mix and match the questions with answers:</p>
+<p>EXAMPLE:
+<strong>Model 537</strong>
+Question 1: Run a param scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.</p>
+<p>name = 'IL6{gut}'
+output = 'CRP{serum}'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e+02
+stepsize_scan = (stop_scan-start_scan)/5.
+filename = './tables/scan_IL6_CRP_537.csv'</p>
+<p>Example in JSON format:</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;id&quot;: &quot;scan_IL6_CRP_537_001&quot;,
+  &quot;question&quot;: &quot;Run a param scan in model 537 to observe change in concentration of CRP in serum over time if initial value of the species IL6{gut} is changed from 2.101100e-08 to 2.101100e+02 with a step size of 42.02.&quot;,
+  &quot;complexity_score&quot;: 2,
+  &quot;user_background&quot;: &quot;modeller&quot;,
+  &quot;model_id&quot;: &quot;537&quot;,
+  &quot;question_type&quot;: &quot;parameter_scan&quot;,
+  &quot;arguments&quot;: {
+    &quot;species_names&quot;: [&quot;IL6{gut}&quot;],
+    &quot;species_output&quot;: &quot;CRP{serum}&quot;,
+    &quot;species_parameter_values&quot;: [2.101100e-08, 2.101100e+02],
+    &quot;stepsize_scan&quot;: 42.02,
+    &quot;time&quot;: 100,
+    &quot;intervals&quot;: 10,
+    &quot;filename&quot;: &quot;tables/scan_IL6_CRP_537.csv&quot;
+  },
+  &quot;expected_values&quot;: {
+    &quot;parameter_scan&quot;: &quot;tables/scan_IL6_CRP_537.csv&quot;
+  },
+  &quot;expected_tools&quot;: [
+    &quot;parameter_scan&quot;
+  ]
+}
+</code></pre></div>
+<p>Combination parameters for <strong>model 537</strong>:</p>
+<ul>
+<li>
+<p>sca1
+name = 'R'
+output = 'CRPExtracellular'
+start_scan = 0.0043
+stop_scan = 8.0043
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_R_CRPExtracellular_537.csv'</p>
+</li>
+<li>
+<p>scan2
+name = 'R'
+output = 'R_IL6'
+start_scan = 0.0043
+stop_scan = 8.0043
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_R_IL6_537.csv' </p>
+</li>
+<li>
+<p>scan3
+name = 'kdegIL6Gut'
+output = 'R_IL6'
+start_scan = 1e-3
+stop_scan = 10
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_kdegIL6Gut_R_537.csv'</p>
+</li>
+</ul>
+<p><strong>Model 971</strong></p>
+<ul>
+<li>
+<p>scan1
+name = 'Exposed'
+output = 'Recovered'
+start_scan = 1
+stop_scan = 10000
+stepsize_scan = (stop_scan-start_scan)/5.
+time = 100
+intervals = 10
+filename = './tables/scan_Exposed_Recovered_971.csv'</p>
+</li>
+<li>
+<p>scan2
+name = 'beta'
+output = 'Hospitalised'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e-05
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_beta_Hospitalised_971.csv'</p>
+</li>
+<li>
+<p>scan3
+name = 'beta'
+output = 'Infected'
+start_scan = 2.101100e-08
+stop_scan = 2.101100e-05
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_beta_Infected_971.csv'</p>
+</li>
+<li>
+<p>scan4
+name = 'sigma'
+output = 'Hospitalised'
+start_scan = 1.428570e-03
+stop_scan = 1.428570
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_sigma_Hospitalised_971.csv'</p>
+</li>
+<li>
+<p>scan5
+name = 'sigma'
+output = 'Infected'
+start_scan = 1.428570e-03
+stop_scan = 1.428570
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_sigma_Infected_971.csv'</p>
+</li>
+</ul>
+<p><strong>Model 27</strong></p>
+<ul>
+<li>
+<p>scan1
+name = 'k1cat'
+output = 'Mpp'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+print(stepsize_scan)
+filename = './tables/scan_k1cat_Mpp_27.csv'</p>
+</li>
+<li>
+<p>scan2
+name = 'k1cat'
+output = 'M'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k1cat_M_27.csv'</p>
+</li>
+<li>
+<p>scan3
+name = 'k2cat'
+output = 'Mpp'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k2cat_Mpp_27.csv'</p>
+</li>
+<li>
+<p>scan4
+name = 'k1cat'
+output = 'M'
+start_scan = 0.01
+stop_scan = 1
+stepsize_scan = (stop_scan-start_scan)/4.
+time = 100
+intervals = 10
+filename = './tables/scan_k1cat_M_27.csv'</p>
+</li>
+<li>
+<p>scan5
+name = 'MAPKK'
+output = 'Mpp'
+start_scan = 1
+stop_scan = 100
+stepsize_scan = (stop_scan-start_scan)/10.
+time = 100
+intervals = 10
+filename = './tables/scan_MAPKK_Mpp_27.csv'</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.top", "navigation.tabs", "navigation.instant", "navigation.expand", "navigation.sections", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "navigation.scrollable"], "search": "../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
