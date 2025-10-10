@@ -33,6 +33,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   && update-alternatives --install /usr/bin/python python /usr/bin/python${PYTHON_VERSION} 1
 
 FROM python-install AS uv-install
+ARG INSTALL_CUDA=true
 WORKDIR /app
 
 # Install UV package manager and dependencies
@@ -42,14 +43,19 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
   export UV_PROJECT_ENVIRONMENT="/opt/venv" && \
   uv sync --frozen --extra dev --no-install-project --python python${PYTHON_VERSION} && \
   . /opt/venv/bin/activate && \
-  uv pip install \
-  --extra-index-url=https://pypi.nvidia.com \
-  --index-strategy unsafe-best-match \
-  cudf-cu12 dask-cudf-cu12 && \
+  if [ "$INSTALL_CUDA" = "true" ]; then \
+    uv pip install \
+      --extra-index-url=https://pypi.nvidia.com \
+      --index-strategy unsafe-best-match \
+      cudf-cu12 dask-cudf-cu12; \
+  else \
+    echo "Skipping RAPIDS packages for CPU build"; \
+  fi && \
   uv cache clean
 
 FROM ${BASE_IMAGE} AS runtime
 ARG PYTHON_VERSION=3.12
+ARG INSTALL_CUDA=true
 LABEL maintainer="talk2knowledgegraphs"
 LABEL version="1.0.0"
 LABEL description="AI Agents for Pharma - Knowledge Graphs Application"
@@ -67,20 +73,24 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 \
   && update-alternatives --install /usr/bin/python python /usr/bin/python${PYTHON_VERSION} 1
 
-# Install CUDA runtime libraries required by cudf/cupy
-RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/3bf863cc.pub \
-  | gpg --dearmor -o /usr/share/keyrings/nvidia-cuda-keyring.gpg \
-  && echo "deb [signed-by=/usr/share/keyrings/nvidia-cuda-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /" \
-  > /etc/apt/sources.list.d/nvidia-cuda.list \
-  && apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  cuda-cudart-12-6 \
-  cuda-cudart-dev-12-6 \
-  cuda-nvrtc-12-6 \
-  cuda-nvrtc-dev-12-6 \
-  libcublas-12-6 \
-  libcusparse-12-6 \
-  && rm -rf /var/lib/apt/lists/*
+# Install CUDA runtime libraries required by cudf/cupy (optional)
+RUN if [ "$INSTALL_CUDA" = "true" ]; then \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/3bf863cc.pub \
+      | gpg --dearmor -o /usr/share/keyrings/nvidia-cuda-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/nvidia-cuda-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /" \
+      > /etc/apt/sources.list.d/nvidia-cuda.list && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      cuda-cudart-12-6 \
+      cuda-cudart-dev-12-6 \
+      cuda-nvrtc-12-6 \
+      cuda-nvrtc-dev-12-6 \
+      libcublas-12-6 \
+      libcusparse-12-6 \
+    && rm -rf /var/lib/apt/lists/*; \
+  else \
+    echo "Skipping CUDA installation"; \
+  fi
 
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64
 

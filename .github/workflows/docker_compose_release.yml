@@ -41,13 +41,46 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
-      - name: Check for compose changes (simplified for workflow_run)
+      - name: Check for compose changes
         id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
-          # For workflow_run, assume compose files may need updating after app changes
-          echo "compose_changed=true" >> $GITHUB_OUTPUT
-          echo "Compose files will be released after app changes"
+          set -euo pipefail
+
+          # Determine target commit
+          if [ -z "${HEAD_SHA}" ]; then
+            echo "HEAD_SHA not provided. Failing build detection." >&2
+            exit 1
+          fi
+
+          git checkout "${HEAD_SHA}"
+
+          # Identify base commit (previous commit if available)
+          if git rev-list --max-count=2 "${HEAD_SHA}" >/dev/null 2>&1; then
+            BASE_SHA=$(git rev-parse "${HEAD_SHA}^")
+            echo "Comparing compose changes between ${BASE_SHA} and ${HEAD_SHA}"
+            CHANGED_FILES=$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")
+          else
+            echo "No parent commit found; treating repository snapshot as initial state."
+            CHANGED_FILES=$(git ls-tree -r "${HEAD_SHA}" --name-only)
+          fi
+
+          echo "${CHANGED_FILES}" > /tmp/changed_files.txt
+
+          # Match against compose-related paths
+          if echo "${CHANGED_FILES}" | grep -E '^(aiagents4pharma/[^/]+/docker-compose/|aiagents4pharma/[^/]+/docker-compose\.ya?ml$)' >/dev/null 2>&1; then
+            echo "compose_changed=true" >> "$GITHUB_OUTPUT"
+            echo "Compose-related changes detected:"
+            cat /tmp/changed_files.txt | grep -E '^(aiagents4pharma/[^/]+/docker-compose/|aiagents4pharma/[^/]+/docker-compose\.ya?ml$)'
+          else
+            echo "compose_changed=false" >> "$GITHUB_OUTPUT"
+            echo "No compose-related changes found."
+          fi
 
       - name: Get version info
         id: version
@@ -279,11 +312,11 @@ jobs:
           NVIDIA_API_KEY=your_nvidia_api_key_here
 
           # Set environment variables for data loader
-          MILVUS_HOST=localhost
+          MILVUS_HOST=milvus-standalone
           MILVUS_PORT=19530
           MILVUS_USER=root
           MILVUS_PASSWORD=Milvus
-          MILVUS_DATABASE=your_database_name_here
+          MILVUS_DATABASE=t2kg_primekg
 
           # Specify the data directory for multimodal data to your own data directory
           # DATA_DIR=/your_absolute_path_to_your_data_dir/

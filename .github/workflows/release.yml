@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "aiagents4pharma/**"
+      - "app/**"
       - "pyproject.toml"
       - "uv.lock"
   workflow_dispatch:
