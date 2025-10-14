@@ -20,6 +20,7 @@ from ..tools.get_annotation import GetAnnotationTool
 from ..tools.get_modelinfo import GetModelInfoTool
 from ..tools.parameter_scan import ParameterScanTool
 from ..tools.query_article import QueryArticle
+from ..tools.save_model import SaveModelTool
 from ..tools.search_models import SearchModelsTool
 from ..tools.simulate_model import SimulateModelTool
 from ..tools.steady_state import SteadyStateTool
@@ -54,6 +55,7 @@ def get_app(uniq_id, llm_model: BaseChatModel):
             ParameterScanTool(),
             GetAnnotationTool(),
             QueryArticle(),
+            SaveModelTool(),
         ]
     )
 

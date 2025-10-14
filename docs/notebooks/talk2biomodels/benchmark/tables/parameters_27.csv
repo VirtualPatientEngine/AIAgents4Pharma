@@ -1,0 +1,10 @@
+name,type,unit,initial_value,display_name
+k1cat,fixed,,0.01,Values[k1cat]
+Km1,fixed,,50.0,Values[Km1]
+k2cat,fixed,,15.0,Values[k2cat]
+Km2,fixed,,500.0,Values[Km2]
+k3cat,fixed,,0.084,Values[k3cat]
+Km3,fixed,,22.0,Values[Km3]
+k4cat,fixed,,0.06,Values[k4cat]
+Km4,fixed,,18.0,Values[Km4]
+Km5,fixed,,78.0,Values[Km5]

@@ -1,0 +1,948 @@
+{
+  "get_annotation_benchmark_questions_set4": [
+    {
+      "id": "annotation_set4_001",
+      "question": "get the annotation for the species M in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_002",
+      "question": "what are the annotations for Mp in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_003",
+      "question": "get the annotation for the species Mpp in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mpp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_004",
+      "question": "what are the annotations for MAPKK in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_005",
+      "question": "get the annotation for the species MKP3 in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_006",
+      "question": "what are the annotations for M and MAPKK in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_007",
+      "question": "get the annotations for Mp and Mpp in model 27",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mp": "P26696",
+        "Mpp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_008",
+      "question": "what are the annotations for MAPKK and MKP3 in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "MAPKK": "Q05116",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_009",
+      "question": "get the annotations for M, Mp, and Mpp in model 27",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "Mp": "P26696",
+        "Mpp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_010",
+      "question": "what are the annotations for all species in model 27?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "Mp": "P26696",
+        "Mpp": "P26696",
+        "MAPKK": "Q05116",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_011",
+      "question": "get the annotation for the species M and MAPKK in model 27",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_012",
+      "question": "what are the annotations for Mp and MKP3 in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mp": "P26696",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_013",
+      "question": "get the annotation for the species Mpp and MAPKK in model 27",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mpp": "P26696",
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_014",
+      "question": "what are the annotations for M, Mp, and MAPKK in model 27?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "Mp": "P26696",
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_015",
+      "question": "get the annotations for Mpp, MAPKK, and MKP3 in model 27",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mpp": "P26696",
+        "MAPKK": "Q05116",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_016",
+      "question": "what are the annotations for M and MKP3 in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_017",
+      "question": "get the annotation for the species Mp and Mpp in model 27",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Mp": "P26696",
+        "Mpp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_018",
+      "question": "what are the annotations for MAPKK and Mpp in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "MAPKK": "Q05116",
+        "Mpp": "P26696"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_019",
+      "question": "get the annotations for M, Mp, Mpp, and MAPKK in model 27",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "Mp": "P26696",
+        "Mpp": "P26696",
+        "MAPKK": "Q05116"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_020",
+      "question": "what are the annotations for M, MAPKK, and MKP3 in model 27?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "M": "P26696",
+        "MAPKK": "Q05116",
+        "MKP3": "Q90W58"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_021",
+      "question": "get the annotation for the species IL6{serum} in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{serum}": "P05231"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_022",
+      "question": "what are the annotations for sgp130{serum} in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "sgp130{serum}": ["PR:000001868", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_023",
+      "question": "get the annotation for the species CRP{serum} in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "CRP{serum}": "P02741"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_024",
+      "question": "what are the annotations for sR{serum} in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "sR{serum}": ["P08887", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_025",
+      "question": "get the annotation for the species Ab{serum} in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Ab{serum}": ["FMA:62871", "CHEBI:52217"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_026",
+      "question": "what are the annotations for IL6{liver} and CRP{liver} in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": "P05231",
+        "CRP{liver}": "P02741"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_027",
+      "question": "get the annotations for sR{liver} and sgp130{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "sR{liver}": ["P08887", "PATO:0001537"],
+        "sgp130{liver}": ["PR:000001868", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_028",
+      "question": "what are the annotations for STAT3{liver} and pSTAT3{liver} in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "STAT3{liver}": "PR:000002089",
+        "pSTAT3{liver}": ["PR:000002089", "SBO:0000216"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_029",
+      "question": "get the annotations for IL6{gut}, sR{gut}, and sgp130{gut} in model 537",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{gut}": "P05231",
+        "sR{gut}": ["P08887", "PATO:0001537"],
+        "sgp130{gut}": ["PR:000001868", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_030",
+      "question": "what are the annotations for all serum species in model 537?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{serum}": "P05231",
+        "sgp130{serum}": ["PR:000001868", "PATO:0001537"],
+        "CRP{serum}": "P02741",
+        "sR{serum}": ["P08887", "PATO:0001537"],
+        "Ab{serum}": ["FMA:62871", "CHEBI:52217"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_031",
+      "question": "get the annotation for the species R in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "R": "P08887"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_032",
+      "question": "what are the annotations for R_IL6 and R_IL6_gp130{liver} in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "R_IL6": ["P05231", "P08887"],
+        "R_IL6_gp130{liver}": ["P08887", "P05231", "PR:000001868"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_033",
+      "question": "get the annotations for Ab{liver} and Ab{gut} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Ab{liver}": "FMA:62871",
+        "Ab{gut}": "FMA:62871"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_034",
+      "question": "what are the annotations for Ractive{liver} and Ractive{gut} in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Ractive{liver}": ["PR:000001868", "P05231", "P08887", "PATO:0002354", "SBO:0000286"],
+        "Ractive{gut}": ["P05231", "PR:000001868", "P08887", "PATO:0002354", "SBO:0000286"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_035",
+      "question": "get the annotations for all liver species in model 537",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{liver}": "P05231",
+        "CRP{liver}": "P02741",
+        "sR{liver}": ["P08887", "PATO:0001537"],
+        "sgp130{liver}": ["PR:000001868", "PATO:0001537"],
+        "STAT3{liver}": "PR:000002089",
+        "pSTAT3{liver}": ["PR:000002089", "SBO:0000216"],
+        "Ab{liver}": "FMA:62871"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_036",
+      "question": "what are the annotations for sR_IL6_sgp130{serum} in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "sR_IL6_sgp130{serum}": ["PR:000001868", "P05231", "P08887", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_037",
+      "question": "get the annotations for sR_IL6{serum} and sR_IL6{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "sR_IL6{serum}": ["P08887", "P05231", "PATO:0001537"],
+        "sR_IL6{liver}": ["P05231", "P08887", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_038",
+      "question": "what are the annotations for Ab_sR{serum} and Ab_sR{liver} in model 537?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Ab_sR{serum}": ["FMA:62871", "P08887", "PATO:0001537"],
+        "Ab_sR{liver}": ["FMA:62871", "P08887", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_039",
+      "question": "get the annotations for Ab_sR_IL6{serum} and Ab_sR_IL6{liver} in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Ab_sR_IL6{serum}": ["FMA:62871", "P05231", "P08887", "PATO:0001537"],
+        "Ab_sR_IL6{liver}": ["P08887", "FMA:62871", "P05231", "PATO:0001537"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_040",
+      "question": "what are the annotations for all gut species in model 537?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "IL6{gut}": "P05231",
+        "sR{gut}": ["P08887", "PATO:0001537"],
+        "sgp130{gut}": ["PR:000001868", "PATO:0001537"],
+        "STAT3{gut}": "PR:000002089",
+        "pSTAT3{gut}": ["PR:000002089", "SBO:0000216"],
+        "Ab{gut}": "FMA:62871"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_041",
+      "question": "get the annotation for the species Susceptible in model 971",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_042",
+      "question": "what are the annotations for Exposed in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Exposed": ["0000514", "C171133", "0000597"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_043",
+      "question": "get the annotation for the species Asymptomatic in model 971",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Asymptomatic": ["0000569", "0000511", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_044",
+      "question": "what are the annotations for Susceptible_quarantined in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_045",
+      "question": "get the annotation for the species Exposed_quarantined in model 971",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_046",
+      "question": "what are the annotations for Hospitalised and Recovered in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Hospitalised": ["0000511", "C171133", "C25179"],
+        "Recovered": "0000621"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_047",
+      "question": "get the annotations for Susceptible and Exposed in model 971",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Exposed": ["0000514", "C171133", "0000597"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_048",
+      "question": "what are the annotations for Asymptomatic and Hospitalised in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Asymptomatic": ["0000569", "0000511", "C171133"],
+        "Hospitalised": ["0000511", "C171133", "C25179"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_049",
+      "question": "get the annotations for Susceptible_quarantined and Exposed_quarantined in model 971",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"],
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_050",
+      "question": "what are the annotations for all species in model 971?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Exposed": ["0000514", "C171133", "0000597"],
+        "Asymptomatic": ["0000569", "0000511", "C171133"],
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"],
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"],
+        "Hospitalised": ["0000511", "C171133", "C25179"],
+        "Recovered": "0000621"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_051",
+      "question": "get the annotation for the species Susceptible and Asymptomatic in model 971",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Asymptomatic": ["0000569", "0000511", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_052",
+      "question": "what are the annotations for Exposed and Recovered in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Exposed": ["0000514", "C171133", "0000597"],
+        "Recovered": "0000621"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_053",
+      "question": "get the annotations for Susceptible, Exposed, and Asymptomatic in model 971",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Exposed": ["0000514", "C171133", "0000597"],
+        "Asymptomatic": ["0000569", "0000511", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_054",
+      "question": "what are the annotations for Hospitalised, Recovered, and Susceptible in model 971?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Hospitalised": ["0000511", "C171133", "C25179"],
+        "Recovered": "0000621",
+        "Susceptible": ["0000514", "C171133"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_055",
+      "question": "get the annotations for all quarantined species in model 971",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"],
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_056",
+      "question": "what are the annotations for Exposed_quarantined and Hospitalised in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"],
+        "Hospitalised": ["0000511", "C171133", "C25179"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_057",
+      "question": "get the annotations for Susceptible_quarantined, Exposed_quarantined, and Hospitalised in model 971",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"],
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"],
+        "Hospitalised": ["0000511", "C171133", "C25179"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_058",
+      "question": "what are the annotations for Asymptomatic, Hospitalised, and Recovered in model 971?",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Asymptomatic": ["0000569", "0000511", "C171133"],
+        "Hospitalised": ["0000511", "C171133", "C25179"],
+        "Recovered": "0000621"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_059",
+      "question": "get the annotations for Susceptible, Exposed, Asymptomatic, and Hospitalised in model 971",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Exposed": ["0000514", "C171133", "0000597"],
+        "Asymptomatic": ["0000569", "0000511", "C171133"],
+        "Hospitalised": ["0000511", "C171133", "C25179"]
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    },
+    {
+      "id": "annotation_set4_060",
+      "question": "what are the annotations for all disease states in model 971?",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "get_annotation",
+      "expected_values": {
+        "Susceptible": ["0000514", "C171133"],
+        "Exposed": ["0000514", "C171133", "0000597"],
+        "Asymptomatic": ["0000569", "0000511", "C171133"],
+        "Susceptible_quarantined": ["C71902", "0000514", "C171133"],
+        "Exposed_quarantined": ["0000514", "C71902", "C171133", "0000597"],
+        "Hospitalised": ["0000511", "C171133", "C25179"],
+        "Recovered": "0000621"
+      },
+      "expected_tools": [
+        "get_annotation"
+      ]
+    }
+  ],
+  "metadata": {
+    "total_questions": 60,
+    "complexity_distribution": {
+      "score_1": 17,
+      "score_2": 26,
+      "score_3": 12,
+      "score_4": 5
+    },
+    "user_backgrounds": {
+      "modeller": 60
+    },
+    "question_types": {
+      "get_annotation": 60
+    },
+    "model_distribution": {
+      "27": 20,
+      "537": 20,
+      "971": 20
+    },
+    "expected_tools": [
+      "get_annotation"
+    ]
+  }
+}
