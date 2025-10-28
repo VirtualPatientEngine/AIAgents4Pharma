@@ -1,12 +1,19 @@
+"""
+Multimodal Processor Module
+
+Handles PDF page conversion, compression, OCR extraction, and multimodal analysis.
+"""
+
 import io
 import os
 import time
 import json
 import base64
 import logging
+from typing import Any
+
 import requests
 import hydra
-from typing import Any, Dict
 from PIL import Image
 from pdf2image import convert_from_path
 
@@ -17,7 +24,7 @@ logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
 logger.setLevel(getattr(logging, log_level))
 
-# Load configuration and start logging
+
 def load_hydra_config() -> Any:
     """
     Load the configuration using Hydra and return the configuration for the multimodal processor.
@@ -27,10 +34,13 @@ def load_hydra_config() -> Any:
             config_name="config",
             overrides=["tools/multimodal_processor=default"],
         )
-        config = cfg.tools.multimodal_processor
+        mm_cfg = cfg.tools.multimodal_processor
         logger.debug("Loaded Multimodal Processor configuration.")
-        return config
-config = load_hydra_config()
+        return mm_cfg
+
+
+multimodal_cfg = load_hydra_config()
+
 # Utility Functions
 MAX_B64_SIZE = 180_000
 
@@ -43,7 +53,9 @@ def compress_image_to_target_size(image, max_bytes=MAX_B64_SIZE, min_quality=20,
     width, height = image.size
 
     while quality >= min_quality and width >= min_width:
-        resized_image = image.resize((width, int(height * width / image.width)), Image.LANCZOS)
+        resized_image = image.resize((width,
+                                    int(height * width / image.width)),
+                                    Image.Resampling.LANCZOS)
         buffer = io.BytesIO()
         resized_image.save(buffer, format="JPEG", quality=quality, optimize=True)
         b64_encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
@@ -57,90 +69,54 @@ def compress_image_to_target_size(image, max_bytes=MAX_B64_SIZE, min_quality=20,
 
     # Final check – if still too large, drop
     if len(b64_encoded) > max_bytes:
-        logger.warning(f"Compression failed: final size {len(b64_encoded)} > {max_bytes}. Returning empty string.")
+        logger.warning("Compression failed: size %d > %d.", len(b64_encoded), max_bytes)
         return "", False
 
     return b64_encoded, True
 
 
 def pdf_to_base64_compressed(pdf_path, max_b64_size=MAX_B64_SIZE, dpi=150):
+    """
+    Convert PDF pages to compressed Base64-encoded JPEG images.
+    Returns a list of page dictionaries with page number and Base64 data.
+    """
     images = convert_from_path(pdf_path, dpi=dpi)
     results = []
 
     for i, image in enumerate(images):
         page_num = i + 1
+        b64_string = ""  # Initialize before try block
         try:
             b64_string, under_limit = compress_image_to_target_size(image, max_bytes=max_b64_size)
             if not under_limit:
                 b64_string = ""  # enforce empty if oversized
-            logger.info(f"Page {page_num} | Under limit: {under_limit} | Size: {len(b64_string)} chars")
             results.append({"page": page_num, "base64": b64_string})
-        except Exception as e:
-            logger.error(f"Page {page_num} failed: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Page %d failed: %s", page_num, e)
             results.append({"page": page_num, "base64": ""})
-
     return results
-
-
-def crop_categorized_elements(categorized_data, base64_pages, max_bytes=MAX_B64_SIZE, min_quality=30, min_width=100):
-    page_b64_map = {p["page"]: p["base64"] for p in base64_pages}
-
-    def crop_regions(boxes):
-        cropped_b64, metadata = [], []
-        for b in boxes:
-            page_num, coords = b.get("page"), b["box"]
-            page_b64 = page_b64_map.get(page_num)
-            if not page_b64:
-                logger.warning(f"No image found for page {page_num}")
-                continue
-            try:
-                img_data = base64.b64decode(page_b64)
-                with Image.open(io.BytesIO(img_data)) as img:
-                    w, h = img.size
-                    crop = img.crop((
-                        int(coords["x_min"] * w), int(coords["y_min"] * h),
-                        int(coords["x_max"] * w), int(coords["y_max"] * h)
-                    )).convert("RGB")
-
-                    # Always compress to guaranteed safe size
-                    b64, ok = compress_image_to_target_size(crop, max_bytes=max_bytes,
-                                                            min_quality=min_quality, min_width=min_width)
-                    if ok:
-                        cropped_b64.append({"page": page_num, "b64": b64})
-                        metadata.append({
-                            "page": page_num, "box": coords,
-                            "type": b.get("type"), "page_index": b.get("page_index")
-                        })
-                    else:
-                        logger.warning(f"Region from page {page_num} could not be compressed under {max_bytes}. Skipped.")
-            except Exception as e:
-                logger.error(f"Error processing page {page_num}: {e}")
-        return cropped_b64, metadata
-
-    results = {}
-    for key in ["charts", "tables", "infographics"]:
-        logger.info(f"Cropping {key}...")
-        b64_list, meta_list = crop_regions(categorized_data.get(key, []))
-        results[key] = {"base64": b64_list, "metadata": meta_list}
-    return results
-
 
 def detect_page_elements(pdf_base64_list):
+    """
+    Detect visual elements (charts, tables, infographics) in PDF pages.
+    Sends Base64-encoded page images to the detection API and returns
+    structured detection results for each page.
+    """
     responses = []
-    page_elements_url = config.page_elements_url
-    headers = config.headers
-    
+    page_elements_url = multimodal_cfg.page_elements_url
+    headers = multimodal_cfg.headers
+
     for item in pdf_base64_list:
         page, img_b64 = item.get("page"), item.get("base64")
         print("Processing page:", page)
 
         if not img_b64:
-            logger.warning(f"Skipping page {page}: no base64 data.")
+            logger.warning("Skipping page %d: no base64 data.", page)
             responses.append(None)
             continue
 
         if len(img_b64) > MAX_B64_SIZE:
-            logger.warning(f"Skipping page {page}: image too large ({len(img_b64)} chars).")
+            logger.warning("Skipping page %d: image too large (%d chars).", page, len(img_b64))
             responses.append(None)
             continue
 
@@ -148,20 +124,25 @@ def detect_page_elements(pdf_base64_list):
 
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
         try:
-            r = requests.post(page_elements_url, headers=headers, json=payload)
+            r = requests.post(page_elements_url, headers=headers, json=payload, timeout=30)
             r.raise_for_status()
             res_json = r.json()
-            logger.info(f"Response for page {page}: {json.dumps(res_json)[:200]}...")
+            logger.info("Response for page %d: %s...", page, json.dumps(res_json)[:200])
             time.sleep(1.5)
             responses.append({"page": page, "data": res_json})
-        except Exception as e:
-            logger.error(f"Request error on page {page}: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Page %d failed: %s", page, e)
+
             responses.append(None)
 
     return responses
 
-
+# pylint: disable=too-many-locals
 def categorize_page_elements(responses):
+    """
+    Categorize detected page elements by type (chart, table, infographic).
+    Organizes bounding boxes and page indices for subsequent cropping.
+    """
     categories = {"chart": [], "table": [], "infographic": []}
     pages_by_type = {"chart": set(), "table": set(), "infographic": set()}
 
@@ -176,7 +157,7 @@ def categorize_page_elements(responses):
             page_index = page_data.get("index", -1)
             bounding_boxes = page_data.get("bounding_boxes", {})
 
-            for key in categories.keys():
+            for key in categories.items():
                 for box in bounding_boxes.get(key, []):
                     categories[key].append({
                         "page": page_num,
@@ -198,7 +179,13 @@ def categorize_page_elements(responses):
     }
 
 
-def crop_categorized_elements(categorized_data, base64_pages, max_bytes=180_000, min_quality=30, min_width=100):
+def crop_categorized_elements(
+        categorized_data, base64_pages, max_bytes=180_000, min_quality=30, min_width=100
+    ):
+    """
+    Crop regions of interest from Base64-encoded page images based on
+    categorized bounding boxes. Returns compressed Base64 crops and metadata.
+    """
     page_b64_map = {p["page"]: p["base64"] for p in base64_pages}
 
     def crop_regions(boxes):
@@ -207,18 +194,19 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=180_000,
             page_num, coords = b.get("page"), b["box"]
             page_b64 = page_b64_map.get(page_num)
             if not page_b64:
-                logger.warning(f"No image found for page {page_num}")
+                logger.warning("No image found for page %d", page_num)
                 continue
             try:
                 img_data = base64.b64decode(page_b64)
                 with Image.open(io.BytesIO(img_data)) as img:
                     w, h = img.size
                     crop = img.crop((int(coords["x_min"] * w), int(coords["y_min"] * h),
-                                     int(coords["x_max"] * w), int(coords["y_max"] * h))).convert("RGB")
+                            int(coords["x_max"] * w), int(coords["y_max"] * h))).convert("RGB")
                     width, height, quality = crop.size[0], crop.size[1], 85
                     while True:
                         buf = io.BytesIO()
-                        resized_crop = crop.resize((width, int(height * width / crop.width)), Image.LANCZOS)
+                        resized_crop = crop.resize((width, int(height * width / crop.width)),
+                                    Image.Resampling.LANCZOS)
                         resized_crop.save(buf, format="JPEG", quality=quality, optimize=True)
                         b64 = base64.b64encode(buf.getvalue()).decode()
                         if len(b64) <= max_bytes or width < min_width or quality < min_quality:
@@ -226,62 +214,89 @@ def crop_categorized_elements(categorized_data, base64_pages, max_bytes=180_000,
                         width, quality = int(width * 0.95), quality - 5
                     if len(b64) <= max_bytes:
                         cropped_b64.append({"page": page_num, "b64": b64})
-                        metadata.append({"page": page_num, "box": coords, "type": b.get("type"), "page_index": b.get("page_index")})
+                        metadata.append(
+                            {"page": page_num,
+                             "box": coords, 
+                             "type": b.get("type"), 
+                             "page_index": b.get("page_index")}
+                            )
                     else:
-                        logger.warning(f"Region from page {page_num} too large even after compression.")
-            except Exception as e:
-                logger.error(f"Error processing page {page_num}: {e}")
+                        logger.warning("Page %d too large even after compression.", page_num)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.error("Page %d failed: %s", page_num, e)
+
         return cropped_b64, metadata
 
     results = {}
     for key in ["charts", "tables", "infographics"]:
-        logger.info(f"Cropping {key}...")
+        logger.info("Cropping %s...", key)
         b64_list, meta_list = crop_regions(categorized_data.get(key, []))
         results[key] = {"base64": b64_list, "metadata": meta_list}
     return results
 
 
 def ocr_with_paddle(cropped_b64_list, metadata):
+    """
+    Perform OCR (Optical Character Recognition) on cropped Base64 images
+    using the PaddleOCR API. Returns extracted text data and metadata.
+    """
     logger.info("Running PaddleOCR...")
     ocr_results = []
-    headers = config.headers
+    headers = multimodal_cfg.headers
     for img_b64, meta in zip(cropped_b64_list, metadata):
         payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{img_b64}"}]}
-        paddle_ocr_url = config.paddle_ocr_url
+        paddle_ocr_url = multimodal_cfg.paddle_ocr_url
         try:
-            r = requests.post(paddle_ocr_url, headers=headers, json=payload)
+            r = requests.post(paddle_ocr_url, headers=headers, json=payload, timeout=30)
             r.raise_for_status()
-            ocr_results.append({"page": meta.get("page", -1), "type": meta.get("type", ""), "ocr": r.json(), "base64_image": img_b64})
-            logger.info(f"PaddleOCR processed {meta.get('type', '')} (page {meta.get('page', -1)})")
+            ocr_results.append(
+                {"page": meta.get("page", -1),
+                 "type": meta.get("type", ""),
+                 "ocr": r.json(),
+                 "base64_image": img_b64}
+                )
+            logger.info("PaddleOCR processed %s (page %d)",
+                        meta.get("type", ""), meta.get("page", -1))
             time.sleep(1.5)
-        except Exception as e:
-            logger.error(f"PaddleOCR failed (page {meta.get('page', -1)}): {e}")
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+            logger.error("PaddleOCR failed (page %d): %s", meta.get("page", -1), e)
             ocr_results.append(None)
     return ocr_results
 
 
 def analyze_with_nvidia(elements_list, api_url, element_type):
-    logger.info(f"Analyzing {element_type}...")
+    """
+    Analyze visual elements (charts or tables) using the NVIDIA API.
+    Sends Base64 images for semantic or data extraction analysis.
+    """
+    logger.info("Analyzing %s...", element_type)
     analyzed = []
-    headers = config.headers
+    headers = multimodal_cfg.headers
     for item in elements_list:
-        payload = {"input": [{"type": "image_url", "url": f"data:image/jpeg;base64,{item['b64']}"}]}
+        payload = {"input": [{"type": "image_url",
+                              "url": f"data:image/jpeg;base64,{item['b64']}"}]}
         try:
-            r = requests.post(api_url, headers=headers, json=payload)
+            r = requests.post(api_url, headers=headers, json=payload, timeout=30)
             r.raise_for_status()
-            analyzed.append({"page": item["page"], "b64": item["b64"], "analysis_result": r.json()})
-            logger.info(f"NVIDIA {element_type} processed (page {item['page']})")
+            analyzed.append({"page": item["page"],
+                             "b64": item["b64"],
+                             "analysis_result": r.json()})
+            logger.info("NVIDIA %s processed (page %d)", element_type, item["page"])
             time.sleep(2.0)
-        except Exception as e:
-            logger.error(f"NVIDIA {element_type} failed (page {item['page']}): {e}")
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+            logger.error("NVIDIA %s failed (page %d): %s", element_type, item["page"], e)
             analyzed.append(None)
     return analyzed
 
 
 def process_all(cropped_results):
+    """
+    Orchestrate the entire multimodal pipeline.
+    Runs NVIDIA and OCR analysis on cropped elements and returns combined results.
+    """
     final_results = {"charts": [], "tables": [], "infographics": []}
-    chart_url = config.chart_url
-    table_url = config.table_url
+    chart_url = multimodal_cfg.chart_url
+    table_url = multimodal_cfg.table_url
 
     # Process charts
     for item, meta in zip(
@@ -319,7 +334,7 @@ def collect_ocr_results(final_results):
     """Flatten final_results into a list of raw OCR results."""
     logger.info("Collecting OCR results...")
     ocr_entries = []
-    for category, items in final_results.items():
+    for items in final_results.items():
         for item in items:
             if item and "ocr" in item and item["ocr"]:
                 ocr_entries.append(item["ocr"])
@@ -335,8 +350,8 @@ def extract_text_lines(data):
     if isinstance(data, str):
         try:
             data = json.loads(data)
-        except json.JSONDecodeError:
-            raise ValueError("Input is a string but not valid JSON")
+        except json.JSONDecodeError as exc:
+            raise ValueError("Input is a string but not valid JSON") from exc
 
     if isinstance(data, dict):
         data = [data]
