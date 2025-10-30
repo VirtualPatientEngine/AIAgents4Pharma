@@ -18,4 +18,5 @@ __all__ = [
     "question_and_answer",
     "zotero_read",
     "zotero_write",
+    "multimodal_processor"
 ]

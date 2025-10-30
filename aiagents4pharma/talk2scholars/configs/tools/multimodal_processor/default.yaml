@@ -1,0 +1,13 @@
+page_elements_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-page-elements-v2"
+
+paddle_ocr_url: "https://ai.api.nvidia.com/v1/cv/baidu/paddleocr"
+
+chart_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-graphic-elements-v1"
+
+table_url: "https://ai.api.nvidia.com/v1/cv/nvidia/nemoretriever-table-structure-v1"
+
+api_key: ${oc.env:NVIDIA_API_KEY}
+
+headers:
+ Authorization: "Bearer ${oc.env:NVIDIA_API_KEY}"
+ Accept: "application/json"

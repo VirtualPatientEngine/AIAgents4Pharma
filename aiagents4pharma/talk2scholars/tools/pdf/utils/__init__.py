@@ -1,7 +1,6 @@
 """
 Utility modules for the PDF question_and_answer tool.
 """
-
 from . import (
     answer_formatter,
     batch_processor,
@@ -34,4 +33,5 @@ __all__ = [
     "tool_helper",
     "vector_normalization",
     "vector_store",
+    "multimodal_processor",
 ]
