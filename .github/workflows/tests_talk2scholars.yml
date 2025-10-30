@@ -45,12 +45,12 @@ jobs:
 
       - name: Run bandit security scan with JSON output for SonarCloud
         run: |
-          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2scholars -f json -o bandit-report.json || true
+          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2scholars -f json -o bandit-talk2scholars.json || true
         continue-on-error: true
 
       - name: Run pylint with JSON output for SonarCloud
         run: |
-          uv run pylint aiagents4pharma/talk2scholars --output-format=json --reports=no > pylint-report.json || true
+          uv run pylint aiagents4pharma/talk2scholars --output-format=json --reports=no > pylint-talk2scholars.json || true
         continue-on-error: true
 
       - name: Upload quality reports for SonarCloud
@@ -58,8 +58,8 @@ jobs:
         with:
           name: quality-reports-talk2scholars
           path: |
-            pylint-report.json
-            bandit-report.json
+            pylint-talk2scholars.json
+            bandit-talk2scholars.json
           retention-days: 1
 
   # Cross-platform testing matrix
@@ -95,7 +95,7 @@ jobs:
       - name: Generate coverage report
         run: |
           uv run coverage report -m
-          uv run coverage xml
+          uv run coverage xml -o coverage-talk2scholars.xml
 
       - name: Check coverage threshold
         shell: bash
@@ -110,7 +110,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          file: ./coverage-talk2scholars.xml
           flags: talk2scholars
           name: talk2scholars-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -122,7 +122,7 @@ jobs:
         with:
           name: test-reports-talk2scholars
           path: |
-            coverage.xml
-            pylint-report.json
-            bandit-report.json
+            coverage-talk2scholars.xml
+            pylint-talk2scholars.json
+            bandit-talk2scholars.json
           retention-days: 1
