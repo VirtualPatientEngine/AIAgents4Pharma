@@ -57,7 +57,7 @@ dependencies = [
   "pubchempy==1.0.5",
   "pydantic==2.11.9",
   "pygeneconverter==0.3",
-  "pylint==3.3.8",
+  "pylint==4.0.2",
   "pymilvus==2.6.2",
   "pypdf==6.1.1",
   "pytest==8.4.2",
