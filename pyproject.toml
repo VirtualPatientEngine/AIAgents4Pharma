@@ -79,7 +79,7 @@ dependencies = [
   "umap-learn==0.5.9.post2",
   "xlsxwriter==3.2.9",
   "python-magic==0.4.27",
-  "pyarrow==21.0.0",
+  "pyarrow==22.0.0",
   "datasets==4.1.1",
   "beautifulsoup4==4.14.2",
   "cloudscraper==1.2.71",
