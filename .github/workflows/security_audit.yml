@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -71,7 +71,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download reports
         uses: actions/download-artifact@v6
@@ -111,7 +111,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download all reports
         uses: actions/download-artifact@v6
