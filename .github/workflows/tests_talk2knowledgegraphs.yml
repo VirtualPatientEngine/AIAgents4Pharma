@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Set up Python
         run: uv python install 3.12
@@ -44,21 +44,21 @@ jobs:
 
       - name: Run bandit security scan with JSON output for SonarCloud
         run: |
-          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2knowledgegraphs -f json -o bandit-report.json || true
+          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2knowledgegraphs -f json -o bandit-talk2knowledgegraphs.json || true
         continue-on-error: true
 
       - name: Run pylint with JSON output for SonarCloud
         run: |
-          uv run pylint aiagents4pharma/talk2knowledgegraphs --output-format=json --reports=no > pylint-report.json || true
+          uv run pylint aiagents4pharma/talk2knowledgegraphs --output-format=json --reports=no > pylint-talk2knowledgegraphs.json || true
         continue-on-error: true
 
       - name: Upload quality reports for SonarCloud
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: quality-reports-talk2knowledgegraphs
           path: |
-            pylint-report.json
-            bandit-report.json
+            pylint-talk2knowledgegraphs.json
+            bandit-talk2knowledgegraphs.json
           retention-days: 1
 
   # Cross-platform testing matrix
@@ -79,7 +79,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
@@ -154,7 +154,7 @@ jobs:
       - name: Generate coverage report
         run: |
           uv run coverage report -m
-          uv run coverage xml
+          uv run coverage xml -o coverage-talk2knowledgegraphs.xml
 
       - name: Check coverage threshold
         shell: bash
@@ -169,7 +169,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          file: ./coverage-talk2knowledgegraphs.xml
           flags: talk2knowledgegraphs
           name: talk2knowledgegraphs-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -177,9 +177,9 @@ jobs:
 
       - name: Upload test reports for SonarCloud
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-reports-talk2knowledgegraphs
           path: |
-            coverage.xml
+            coverage-talk2knowledgegraphs.xml
           retention-days: 1

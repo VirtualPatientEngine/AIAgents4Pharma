@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Set up Python
         run: uv python install 3.12
@@ -46,21 +46,21 @@ jobs:
 
       - name: Run bandit security scan with JSON output for SonarCloud
         run: |
-          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2aiagents4pharma -f json -o bandit-report.json || true
+          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2aiagents4pharma -f json -o bandit-talk2aiagents4pharma.json || true
         continue-on-error: true
 
       - name: Run pylint with JSON output for SonarCloud
         run: |
-          uv run pylint aiagents4pharma/talk2aiagents4pharma --output-format=json --reports=no > pylint-report.json || true
+          uv run pylint aiagents4pharma/talk2aiagents4pharma --output-format=json --reports=no > pylint-talk2aiagents4pharma.json || true
         continue-on-error: true
 
       - name: Upload quality reports for SonarCloud
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: quality-reports-talk2aiagents4pharma
           path: |
-            pylint-report.json
-            bandit-report.json
+            pylint-talk2aiagents4pharma.json
+            bandit-talk2aiagents4pharma.json
           retention-days: 1
 
   # Cross-platform testing with Ollama
@@ -81,7 +81,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
@@ -156,7 +156,7 @@ jobs:
       - name: Generate coverage report
         run: |
           uv run coverage report -m
-          uv run coverage xml
+          uv run coverage xml -o coverage-talk2aiagents4pharma.xml
 
       - name: Check coverage threshold
         shell: bash
@@ -171,7 +171,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          file: ./coverage-talk2aiagents4pharma.xml
           flags: talk2aiagents4pharma
           name: talk2aiagents4pharma-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -179,9 +179,9 @@ jobs:
 
       - name: Upload test reports for SonarCloud
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-reports-talk2aiagents4pharma
           path: |
-            coverage.xml
+            coverage-talk2aiagents4pharma.xml
           retention-days: 1
