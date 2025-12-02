@@ -5,7 +5,6 @@ Talk2KnowledgeGraphs: A Streamlit app for the Talk2KnowledgeGraphs graph.
 """
 
 import os
-import sys
 
 import hydra
 import streamlit as st
@@ -13,7 +12,6 @@ from langchain_core.messages import ChatMessage, HumanMessage
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
 
-sys.path.append("./")
 from aiagents4pharma.talk2knowledgegraphs.agents.t2kg_agent import get_app
 
 # from talk2knowledgegraphs.agents.t2kg_agent import get_app
@@ -29,9 +27,9 @@ st.set_page_config(
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
     # Load Hydra configuration
-    with hydra.initialize(
+    with hydra.initialize_config_module(
         version_base=None,
-        config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
+        config_module="aiagents4pharma.talk2knowledgegraphs.configs",
     ):
         cfg = hydra.compose(
             config_name="config",

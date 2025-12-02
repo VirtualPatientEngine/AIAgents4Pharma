@@ -5,7 +5,6 @@ A Streamlit app for the Talk2AIAgents4Pharma graph.
 """
 
 import os
-import sys
 
 import hydra
 import streamlit as st
@@ -15,6 +14,8 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
+
+from aiagents4pharma.talk2aiagents4pharma.agents.main_agent import get_app
 
 st.set_page_config(
     page_title="Talk2AIAgents4Pharma",
@@ -29,16 +30,14 @@ st.set_page_config(
 # Environment variables will be checked after config is loaded
 
 # Import the agent
-sys.path.append("./")
-from aiagents4pharma.talk2aiagents4pharma.agents.main_agent import get_app
 
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
     # Load T2AA4P's main configuration
-    with hydra.initialize(
+    with hydra.initialize_config_module(
         version_base=None,
-        config_path="../../aiagents4pharma/talk2aiagents4pharma/configs",
+        config_module="aiagents4pharma.talk2aiagents4pharma.configs",
     ):
         cfg = hydra.compose(
             config_name="config",
@@ -50,9 +49,9 @@ else:
 
 # Load T2KG database config for knowledge graph access
 if "t2kg_config" not in st.session_state:
-    with hydra.initialize(
+    with hydra.initialize_config_module(
         version_base=None,
-        config_path="../../aiagents4pharma/talk2knowledgegraphs/configs",
+        config_module="aiagents4pharma.talk2knowledgegraphs.configs",
     ):
         t2kg_cfg = hydra.compose(
             config_name="config",

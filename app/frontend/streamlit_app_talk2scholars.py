@@ -7,8 +7,6 @@ Talk2Scholars: A Streamlit app for the Talk2Scholars graph.
 import hashlib
 import logging
 import os
-import random
-import sys
 import tempfile
 
 import hydra
@@ -17,14 +15,10 @@ from langchain_core.messages import AIMessage, ChatMessage, HumanMessage, System
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
 from langchain_ollama import OllamaEmbeddings
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 from utils import streamlit_utils
-
-sys.path.append("./")
-# import get_app from main_agent
-
 
 from aiagents4pharma.talk2scholars.agents.main_agent import get_app
 from aiagents4pharma.talk2scholars.tools.pdf.utils.generate_answer import (
@@ -49,9 +43,9 @@ logging.getLogger("httpx").setLevel(logging.ERROR)
 # Initialize configuration
 hydra.core.global_hydra.GlobalHydra.instance().clear()
 if "config" not in st.session_state:
-    with hydra.initialize(
+    with hydra.initialize_config_module(
         version_base=None,
-        config_path="../../aiagents4pharma/talk2scholars/configs",
+        config_module="aiagents4pharma.talk2scholars.configs",
     ):
         cfg = hydra.compose(
             config_name="config",
