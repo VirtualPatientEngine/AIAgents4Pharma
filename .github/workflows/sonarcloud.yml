@@ -27,7 +27,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Download test artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
