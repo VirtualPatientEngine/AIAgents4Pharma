@@ -78,7 +78,7 @@ Choose your agent below for detailed Docker instructions:
 git clone https://github.com/VirtualPatientEngine/AIAgents4Pharma && cd AIAgents4Pharma
 ```
 
-2. **Install dependencies:**
+1. **Install dependencies:**
 
 We use `uv` for fast and reliable dependency management. Install uv first following the [official installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
@@ -90,7 +90,7 @@ uv sync --extra dev --frozen
 
 > 💡 **Recommended**: Use `--frozen` flag to ensure exact reproducible builds using the pinned versions from `uv.lock`.
 
-3. **Initialize API Keys**
+1. **Initialize API Keys**
 
 ```env
 export OPENAI_API_KEY=....          # Required for all agents
@@ -101,7 +101,7 @@ export LANGCHAIN_TRACING_V2=true    # Optional for all agents
 export LANGCHAIN_API_KEY=...        # Optional for all agents
 ```
 
-4. **Launch the app:**
+1. **Launch the app:**
 
 > System Dependency: libmagic (for secure uploads)
 > For accurate file MIME-type detection used by our secure upload validation, install the libmagic system library. This is recommended across all providers (OpenAI, Azure OpenAI, NVIDIA) because it runs locally in the Streamlit apps.
@@ -166,6 +166,10 @@ If you skip the previous step, it will default to the name `default`.
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FVirtualPatientEngine%2FAIAgents4Pharma%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 
 ```sh
+# Install the package from PyPI
+uv add aiagents4pharma
+
+# Or using pip
 pip install aiagents4pharma
 ```
 
@@ -197,14 +201,14 @@ For contributors and developers, we have comprehensive documentation:
 git checkout -b feat/your-feature-name
 ```
 
-4. Set up your development environment:
+1. Set up your development environment:
 
 ```sh
 uv sync --extra dev --frozen  # Install development dependencies
 uv run pre-commit install    # Set up code quality hooks
 ```
 
-5. Make your changes and run quality checks:
+1. Make your changes and run quality checks:
 
 ```sh
 uv run ruff check --fix .  # Lint and fix code
@@ -212,18 +216,24 @@ uv run ruff format .  # Format code
 uv run pre-commit run --all-files  # Run all checks (linting, formatting, security)
 
 # Run submodule-specific checks (pylint configuration in pyproject.toml)
+uv run pylint aiagents4pharma/talk2biomodels/
+uv run coverage run --include="aiagents4pharma/talk2biomodels/*" -m pytest --cache-clear aiagents4pharma/talk2biomodels/tests/ && uv run coverage report
+
+uv run pylint aiagents4pharma/talk2knowledgegraphs/
+uv run coverage run --include="aiagents4pharma/talk2knowledgegraphs/*" -m pytest --cache-clear aiagents4pharma/talk2knowledgegraphs/tests/ && uv run coverage report
+
 uv run pylint aiagents4pharma/talk2scholars/
 uv run coverage run --include="aiagents4pharma/talk2scholars/*" -m pytest --cache-clear aiagents4pharma/talk2scholars/tests/ && uv run coverage report
 ```
 
-6. Commit and push your changes:
+1. Commit and push your changes:
 
 ```sh
 git commit -m "feat: add a brief description of your change"
 git push origin feat/your-feature-name
 ```
 
-7. Open a Pull Request.
+1. Open a Pull Request.
 
 #### Areas where you can help
 
