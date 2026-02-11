@@ -4,6 +4,7 @@ Test cases for tools/milvus_multimodal_subgraph_extraction.py
 
 import asyncio
 import importlib
+import inspect
 import math
 import types
 from types import SimpleNamespace
@@ -18,62 +19,82 @@ from ..tools.milvus_multimodal_subgraph_extraction import (
 )
 from ..utils.database.milvus_connection_manager import QueryParams
 
-# pylint: disable=too-many-lines
 
+class PublicMultimodalSubgraphExtractionTool(MultimodalSubgraphExtractionTool):
+    """Public wrappers around protected helpers for tests."""
 
-# Helper functions to call protected methods without triggering lint warnings
-def call_read_multimodal_files(tool, state):
-    """Helper to call _read_multimodal_files"""
-    method_name = "_read_multimodal_files"
-    return getattr(tool, method_name)(state)
+    def __init__(self, **kwargs):
+        """Initialize the tool and testing hooks."""
+        super().__init__(**kwargs)
+        object.__setattr__(self, "read_multimodal_files_hook", None)
+        object.__setattr__(self, "extract_single_subgraph_async_hook", None)
 
+    def _read_multimodal_files(self, state):
+        """Override to allow hook injection in tests."""
+        if self.read_multimodal_files_hook is not None:
+            return self.read_multimodal_files_hook(state)
+        return super()._read_multimodal_files(state)
 
-async def call_run_async(tool, tool_call_id, state, prompt, arg_data=None):
-    """Helper to call _run_async"""
-    method_name = "_run_async"
-    return await getattr(tool, method_name)(tool_call_id, state, prompt, arg_data)
+    def read_multimodal_files(self, state):
+        """Public wrapper for reading multimodal files."""
+        return self._read_multimodal_files(state)
 
+    async def run_async(self, tool_call_id, state, prompt, arg_data=None):
+        """Public wrapper for async run."""
+        return await super()._run_async(tool_call_id, state, prompt, arg_data)
 
-def call_run(tool, tool_call_id, state, prompt, arg_data=None):
-    """Helper to call _run"""
-    method_name = "_run"
-    return getattr(tool, method_name)(tool_call_id, state, prompt, arg_data)
+    def run_sync(self, tool_call_id, state, prompt, arg_data=None):
+        """Public wrapper for sync run."""
+        return super()._run(tool_call_id, state, prompt, arg_data)
 
+    async def prepare_query_modalities_async(self, prompt, state, cfg_db, connection_manager):
+        """Public wrapper for async query preparation."""
+        return await super()._prepare_query_modalities_async(
+            prompt, state, cfg_db, connection_manager
+        )
 
-async def call_prepare_query_modalities_async(tool, prompt, state, cfg_db, connection_manager):
-    """Helper to call _prepare_query_modalities_async"""
-    method_name = "_prepare_query_modalities_async"
-    return await getattr(tool, method_name)(prompt, state, cfg_db, connection_manager)
+    def query_milvus_collection(self, node_type, node_type_df, cfg_db):
+        """Public wrapper for Milvus collection query."""
+        return super()._query_milvus_collection(node_type, node_type_df, cfg_db)
 
+    def prepare_query_modalities(self, prompt, state, cfg_db):
+        """Public wrapper for sync query preparation."""
+        return super()._prepare_query_modalities(prompt, state, cfg_db)
 
-def call_query_milvus_collection(tool, node_type, node_type_df, cfg_db):
-    """Helper to call _query_milvus_collection"""
-    method_name = "_query_milvus_collection"
-    return getattr(tool, method_name)(node_type, node_type_df, cfg_db)
+    async def perform_subgraph_extraction_async(self, extraction_params):
+        """Public wrapper for async subgraph extraction."""
+        return await super()._perform_subgraph_extraction_async(extraction_params)
 
+    def perform_subgraph_extraction(self, state, cfg, cfg_db, query_df):
+        """Public wrapper for sync subgraph extraction."""
+        return super()._perform_subgraph_extraction(state, cfg, cfg_db, query_df)
 
-def call_prepare_query_modalities(tool, prompt, state, cfg_db):
-    """Helper to call _prepare_query_modalities"""
-    method_name = "_prepare_query_modalities"
-    return getattr(tool, method_name)(prompt, state, cfg_db)
+    def prepare_final_subgraph(self, state, subgraphs_df, cfg_db):
+        """Public wrapper for final subgraph preparation."""
+        return super()._prepare_final_subgraph(state, subgraphs_df, cfg_db)
 
+    async def _extract_single_subgraph_async(
+        self, pcst_instance, query_row, cfg_db, connection_manager
+    ):
+        """Override to allow hook injection for async single-subgraph extraction."""
+        if self.extract_single_subgraph_async_hook is not None:
+            result = self.extract_single_subgraph_async_hook(
+                pcst_instance, query_row, cfg_db, connection_manager
+            )
+            if inspect.isawaitable(result):
+                return await result
+            return result
+        return await super()._extract_single_subgraph_async(
+            pcst_instance, query_row, cfg_db, connection_manager
+        )
 
-async def call_perform_subgraph_extraction_async(tool, extraction_params):
-    """Helper to call _perform_subgraph_extraction_async"""
-    method_name = "_perform_subgraph_extraction_async"
-    return await getattr(tool, method_name)(extraction_params)
-
-
-def call_perform_subgraph_extraction(tool, state, cfg, cfg_db, query_df):
-    """Helper to call _perform_subgraph_extraction"""
-    method_name = "_perform_subgraph_extraction"
-    return getattr(tool, method_name)(state, cfg, cfg_db, query_df)
-
-
-def call_prepare_final_subgraph(tool, state, subgraphs_df, cfg_db):
-    """Helper to call _prepare_final_subgraph"""
-    method_name = "_prepare_final_subgraph"
-    return getattr(tool, method_name)(state, subgraphs_df, cfg_db)
+    async def extract_single_subgraph_async_public(
+        self, pcst_instance, query_row, cfg_db, connection_manager
+    ):
+        """Public wrapper for async single-subgraph extraction."""
+        return await self._extract_single_subgraph_async(
+            pcst_instance, query_row, cfg_db, connection_manager
+        )
 
 
 def _configure_hydra_for_dynamic_tests(monkeypatch, mod):
@@ -701,7 +722,7 @@ def test_read_multimodal_files_empty(request):
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     # ensure CPU path default ok
     loader.set(use_gpu=False, normalize_vectors=True, metric_type="COSINE")
@@ -732,7 +753,7 @@ def test_read_multimodal_files_empty(request):
     assert cfg_a_cls().marker2() is None
 
     # No multimodal file -> empty DataFrame-like (len == 0)
-    df = call_read_multimodal_files(tool, base_state_val)
+    df = tool.read_multimodal_files(base_state_val)
     assert len(df) == 0
 
 
@@ -743,7 +764,7 @@ def test_normalize_vector_toggle(request):
     request.getfixturevalue("fake_milvus_and_manager")
 
     loader_factory = request.getfixturevalue("fake_loader_factory")
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     # exercise embedder extra method for coverage
     base_state_val = request.getfixturevalue("base_state")
@@ -777,13 +798,12 @@ async def test_run_async_happy_path(request):
     state = dict(base_state_val)
     state["uploaded_files"] = [{"file_type": "multimodal", "file_path": "/fake.xlsx"}]
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=True, metric_type="COSINE")
 
     # Execute async run
-    cmd = await call_run_async(
-        tool,
+    cmd = await tool.run_async(
         tool_call_id="tc-1",
         state=state,
         prompt="find gbm genes",
@@ -827,12 +847,11 @@ async def test_dynamic_metric_selection_paths(request):
     # Preseed selections so _prepare_final_subgraph can color nodes
     state["selections"] = {"gene_protein": ["G:TP53"], "disease": ["D:GLIO"]}
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(metric_type="COSINE")
 
-    cmd = await call_run_async(
-        tool,
+    cmd = await tool.run_async(
         tool_call_id="tc-A",
         state=state,
         prompt="only prompt",
@@ -853,12 +872,11 @@ async def test_dynamic_metric_selection_paths(request):
     state = dict(base_state_val)
     state["selections"] = {"gene_protein": ["G:TP53"], "disease": ["D:GLIO"]}
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(metric_type="IP")
 
-    cmd = await call_run_async(
-        tool,
+    cmd = await tool.run_async(
         tool_call_id="tc-B",
         state=state,
         prompt="only prompt two",
@@ -889,7 +907,7 @@ def test_run_sync_wrapper(request):
 
     loader_factory = request.getfixturevalue("fake_loader_factory")
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=True)
 
@@ -898,8 +916,7 @@ def test_run_sync_wrapper(request):
     # Preseed selections because this test uses prompt-only flow
     state["selections"] = {"gene_protein": ["G:TP53"], "disease": ["D:GLIO"]}
 
-    cmd = call_run(
-        tool,
+    cmd = tool.run_sync(
         tool_call_id="tc-sync",
         state=state,
         prompt="sync run",
@@ -940,12 +957,11 @@ def test_connection_error_raises_runtimeerror(request):
     monkeypatch = request.getfixturevalue("monkeypatch")
     monkeypatch.setattr(mod, "MilvusConnectionManager", ExplodingManager, raising=True)
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
 
     with pytest.raises(RuntimeError) as ei:
         asyncio.get_event_loop().run_until_complete(
-            call_run_async(
-                tool,
+            tool.run_async(
                 tool_call_id="tc-err",
                 state=base_state_val,
                 prompt="will fail",
@@ -968,7 +984,7 @@ def test_prepare_query_modalities_async_with_excel_grouping(request):
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=False)
 
@@ -985,8 +1001,7 @@ def test_prepare_query_modalities_async_with_excel_grouping(request):
     mgr = mod.MilvusConnectionManager(mod.hydra.compose("config").utils.database.milvus)
 
     async def run():
-        qdf = await call_prepare_query_modalities_async(
-            tool,
+        qdf = await tool.prepare_query_modalities_async(
             prompt={"text": "query", "emb": [[0.1, 0.2, 0.3]]},
             state=state,
             cfg_db=mod.hydra.compose("config").utils.database.milvus,
@@ -1006,7 +1021,7 @@ def test__query_milvus_collection_sync_casts_and_builds_expr(request):
 
     request.getfixturevalue("fake_milvus_and_manager")
     loader_factory = request.getfixturevalue("fake_loader_factory")
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=False)  # doesn't matter for this test
 
@@ -1017,7 +1032,7 @@ def test__query_milvus_collection_sync_casts_and_builds_expr(request):
     cfg_db = SimpleNamespace(milvus_db=SimpleNamespace(database_name="primekg"))
 
     # Use a node_type containing '/' to exercise replace('/', '_')
-    out_df = call_query_milvus_collection(tool, "gene/protein", node_type_df, cfg_db)
+    out_df = tool.query_milvus_collection("gene/protein", node_type_df, cfg_db)
 
     # Must have all columns in q_columns + 'use_description'
     expected_cols = [
@@ -1054,7 +1069,7 @@ def test__prepare_query_modalities_sync_with_multimodal_grouping(request):
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=False)
 
@@ -1065,8 +1080,7 @@ def test__prepare_query_modalities_sync_with_multimodal_grouping(request):
             "q_node_name": ["TP53", "EGFR", "glioblastoma"],
         }
     )
-    monkeypatch = request.getfixturevalue("monkeypatch")
-    monkeypatch.setattr(tool, "_read_multimodal_files", lambda state: multimodal_df, raising=True)
+    object.__setattr__(tool, "read_multimodal_files_hook", lambda state: multimodal_df)
 
     # cfg_db minimal
     cfg_db = SimpleNamespace(milvus_db=SimpleNamespace(database_name="primekg"))
@@ -1075,7 +1089,7 @@ def test__prepare_query_modalities_sync_with_multimodal_grouping(request):
     prompt = {"text": "user text", "emb": [[0.1, 0.2, 0.3]]}
 
     # run sync helper (NOT the async one)
-    qdf = call_prepare_query_modalities(tool, prompt, base_state_val, cfg_db)
+    qdf = tool.prepare_query_modalities(prompt, base_state_val, cfg_db)
 
     # 1) It should have appended the prompt row with node_type='prompt' and use_description=True
     pdf = getattr(qdf, "to_pandas", lambda: qdf)()
@@ -1110,18 +1124,16 @@ def test__prepare_query_modalities_sync_prompt_only_branch(request):
     """run the prompt-only branch of _prepare_query_modalities"""
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader_factory.get_loader(tool).set(normalize_vectors=False)
 
     # Force empty multimodal_df → else: query_df = prompt_df
     empty_df = pd.DataFrame(columns=["q_node_type", "q_node_name"])
-    monkeypatch = request.getfixturevalue("monkeypatch")
-    monkeypatch.setattr(tool, "_read_multimodal_files", lambda state: empty_df, raising=True)
+    object.__setattr__(tool, "read_multimodal_files_hook", lambda state: empty_df)
 
     # Flat vector (common case), but function should handle either flat or nested
     expected_emb = [0.1, 0.2, 0.3]
-    qdf = call_prepare_query_modalities(
-        tool,
+    qdf = tool.prepare_query_modalities(
         {"text": "only prompt", "emb": expected_emb},
         base_state_val,
         SimpleNamespace(milvus_db=SimpleNamespace(database_name="primekg")),
@@ -1151,13 +1163,12 @@ async def test__prepare_query_modalities_async_single_task_branch(request):
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
 
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader_factory.get_loader(tool).set(normalize_vectors=False)
 
     # exactly one node type → len(tasks) == 1 → query_results = [await tasks[0]]
     single_group_df = pd.DataFrame({"q_node_type": ["gene_protein"], "q_node_name": ["TP53"]})
-    monkeypatch = request.getfixturevalue("monkeypatch")
-    monkeypatch.setattr(tool, "_read_multimodal_files", lambda state: single_group_df, raising=True)
+    object.__setattr__(tool, "read_multimodal_files_hook", lambda state: single_group_df)
 
     mod = importlib.import_module(
         "..tools.milvus_multimodal_subgraph_extraction", package=__package__
@@ -1166,7 +1177,7 @@ async def test__prepare_query_modalities_async_single_task_branch(request):
     manager = mod.MilvusConnectionManager(cfg_db)
 
     prompt = {"text": "p", "emb": [[0.1, 0.2, 0.3]]}
-    qdf = await call_prepare_query_modalities_async(tool, prompt, base_state_val, cfg_db, manager)
+    qdf = await tool.prepare_query_modalities_async(prompt, base_state_val, cfg_db, manager)
 
     pdf = getattr(qdf, "to_pandas", lambda: qdf)()
     # it should contain both the TP53 row (from Milvus) and the appended prompt row
@@ -1210,7 +1221,7 @@ def test__perform_subgraph_extraction_sync_unifies_nodes_edges(request):
     monkeypatch.setattr(mod, "MultimodalPCSTPruning", FakePCSTSync, raising=True)
 
     # Build a query_df with two rows (will yield two subgraphs)
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(normalize_vectors=False)
     # cover marker method
@@ -1242,8 +1253,7 @@ def test__perform_subgraph_extraction_sync_unifies_nodes_edges(request):
     )
 
     # Run extraction with minimal cfg and cfg_db, build pdf directly
-    pdf_obj = call_perform_subgraph_extraction(
-        tool,
+    pdf_obj = tool.perform_subgraph_extraction(
         dict(base_state_val),
         SimpleNamespace(
             cost_e=1.0,
@@ -1276,7 +1286,7 @@ def test__prepare_final_subgraph_defaults_black_when_no_colors(request):
     # Prepare a minimal subgraph DataFrame
     request.getfixturevalue("fake_milvus_and_manager")
     loader_factory = request.getfixturevalue("fake_loader_factory")
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader_factory.get_loader(tool).set(normalize_vectors=False)
 
     subgraphs_df = tool.loader.df.dataframe(
@@ -1291,7 +1301,7 @@ def test__prepare_final_subgraph_defaults_black_when_no_colors(request):
     )
     state = {"selections": {}}  # IMPORTANT: key exists but empty → triggers else: black
 
-    graph_dict = call_prepare_final_subgraph(tool, state, subgraphs_df, cfg_db)
+    graph_dict = tool.prepare_final_subgraph(state, subgraphs_df, cfg_db)
 
     # Inspect colors on returned nodes; all should be black
     nodes_list = graph_dict["nodes"][0]  # first (and only) graph's nodes list
@@ -1306,7 +1316,7 @@ async def test__perform_subgraph_extraction_async_no_vector_processing_branch(re
     request.getfixturevalue("fake_milvus_and_manager")
     loader_factory = request.getfixturevalue("fake_loader_factory")
     base_state_val = request.getfixturevalue("base_state")
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader_factory.get_loader(tool).set(normalize_vectors=False)
 
     # Make _extract_single_subgraph_async return a fixed subgraph so we avoid PCST internals
@@ -1315,8 +1325,7 @@ async def test__perform_subgraph_extraction_async_no_vector_processing_branch(re
         del pcst_instance, query_row, cfg_db, manager
         return {"nodes": np.array([10]), "edges": np.array([100])}
 
-    monkeypatch = request.getfixturevalue("monkeypatch")
-    monkeypatch.setattr(tool, "_extract_single_subgraph_async", _fake_extract, raising=True)
+    object.__setattr__(tool, "extract_single_subgraph_async_hook", _fake_extract)
 
     # Build a one-row query_df
     qdf = tool.loader.df.dataframe(
@@ -1352,8 +1361,7 @@ async def test__perform_subgraph_extraction_async_no_vector_processing_branch(re
     )
     manager = mod.MilvusConnectionManager(cfg_db)  # this uses your FakeManager
 
-    out = await call_perform_subgraph_extraction_async(
-        tool,
+    out = await tool.perform_subgraph_extraction_async(
         ExtractionParams(
             state=base_state_val,
             cfg=cfg,
@@ -1401,7 +1409,7 @@ def test_sync_uses_cfg_metric_when_no_vp(request):
     monkeypatch.setattr(mod, "MultimodalPCSTPruning", FakePCSTSync, raising=True)
 
     # Instantiate tool and ensure loader.metric_type is different from cfg.search_metric_type
-    tool = MultimodalSubgraphExtractionTool()
+    tool = PublicMultimodalSubgraphExtractionTool()
     loader = loader_factory.get_loader(tool)
     loader.set(metric_type="COSINE")  # should NOT be used in this test
 
@@ -1435,10 +1443,25 @@ def test_sync_uses_cfg_metric_when_no_vp(request):
     state = dict(base_state_val)
 
     # Run the sync extraction
-    _ = call_perform_subgraph_extraction(tool, state, cfg, cfg_db, query_df)
+    _ = tool.perform_subgraph_extraction(state, cfg, cfg_db, query_df)
 
     # Assert business logic picked cfg.search_metric_type, not loader.metric_type
     assert captured_metric_types, "PCST was not constructed"
     assert captured_metric_types[-1] == "IP"
     # cover marker method without affecting earlier assertion
     assert FakePCSTSync().marker() is None
+
+
+@pytest.mark.asyncio
+async def test_extract_single_subgraph_async_hook_sync():
+    """Cover the non-awaitable hook branch for async subgraph extraction."""
+    tool = PublicMultimodalSubgraphExtractionTool()
+    object.__setattr__(
+        tool,
+        "extract_single_subgraph_async_hook",
+        lambda *_args: {"nodes": [0], "edges": [0]},
+    )
+
+    result = await tool.extract_single_subgraph_async_public(None, None, None, None)
+
+    assert result == {"nodes": [0], "edges": [0]}
