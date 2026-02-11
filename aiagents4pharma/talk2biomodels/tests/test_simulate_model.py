@@ -2,19 +2,39 @@
 Test cases for Talk2Biomodels.
 """
 
+from unittest.mock import MagicMock
+
+import pytest
 from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
 
 from ..agents.t2b_agent import get_app
 
-LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+LLM_MODEL = MagicMock(name="llm_model")
+pytestmark = pytest.mark.unit_mock
 
 
-def test_simulate_model_tool():
+def test_simulate_model_tool(fake_app_factory, monkeypatch):
     """
     Test the simulate_model tool when simulating
     multiple models.
     """
+    simulated_data = [
+        {"source": 64, "data": "1,3-bisphosphoglycerate"},
+        {"source": "upload", "data": "mTORC2"},
+    ]
+    app = fake_app_factory(
+        [
+            {
+                "dic_simulated_data": simulated_data,
+                "model_as_string": ["sbml-data"],
+                "messages": [],
+            }
+        ]
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2biomodels.tests.test_simulate_model.get_app",
+        lambda *args, **kwargs: app,
+    )
     unique_id = 123
     app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}

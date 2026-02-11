@@ -2,18 +2,35 @@
 Test cases for Talk2Biomodels search models tool.
 """
 
+from unittest.mock import MagicMock
+
+import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
-from langchain_openai import ChatOpenAI
 
 from ..agents.t2b_agent import get_app
 
-LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+LLM_MODEL = MagicMock(name="llm_model")
+pytestmark = pytest.mark.unit_mock
 
 
-def test_search_models_tool():
+def test_search_models_tool(fake_app_factory, monkeypatch):
     """
     Test the search_models tool.
     """
+    messages = [
+        ToolMessage(
+            content="Search results",
+            name="search_models",
+            status="success",
+            artifact={"dic_data": [{"id": "BIOMD0000000537"}, {"id": "OTHER"}]},
+            tool_call_id="call-1",
+        )
+    ]
+    app = fake_app_factory([{"messages": messages}])
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2biomodels.tests.test_search_models.get_app",
+        lambda *args, **kwargs: app,
+    )
     unique_id = 12345
     app = get_app(unique_id, llm_model=LLM_MODEL)
     config = {"configurable": {"thread_id": unique_id}}

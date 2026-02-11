@@ -2,18 +2,34 @@
 Test cases for Talk2Biomodels.
 """
 
+from unittest.mock import MagicMock
+
+import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
-from langchain_openai import ChatOpenAI
 
 from ..agents.t2b_agent import get_app
 
+pytestmark = pytest.mark.unit_mock
 
-def test_ask_question_tool():
+
+def test_ask_question_tool(fake_app_factory, monkeypatch):
     """
     Test the ask_question tool without the simulation results.
     """
     unique_id = 12345
-    app = get_app(unique_id, llm_model=ChatOpenAI(model="gpt-4o-mini", temperature=0))
+    error_message = ToolMessage(
+        content="Simulation not run",
+        name="ask_question",
+        status="error",
+        artifact=None,
+        tool_call_id="call-1",
+    )
+    fake_app = fake_app_factory([{"messages": [error_message]}])
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2biomodels.tests.test_ask_question.get_app",
+        lambda *args, **kwargs: fake_app,
+    )
+    app = get_app(unique_id, llm_model=MagicMock(name="llm_model"))
     config = {"configurable": {"thread_id": unique_id}}
 
     ##########################################
