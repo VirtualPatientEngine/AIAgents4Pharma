@@ -1,85 +1,90 @@
 # GitHub Dependabot configuration for automated dependency updates
 version: 2
-updates:
-  # Python dependencies via uv
-  - package-ecosystem: "uv"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-    target-branch: "main"
-    assignees:
-      - "ansh-info"
-    commit-message:
-      prefix: "deps"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "python"
-    open-pull-requests-limit: 10
-    # Group minor and patch updates
-    groups:
-      minor-and-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+updates: []
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-    target-branch: "main"
-    assignees:
-      - "ansh-info"
-    commit-message:
-      prefix: "ci"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "github-actions"
-    open-pull-requests-limit: 5
-
-  # JavaScript/TypeScript (npm)
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-    target-branch: "main"
-    assignees:
-      - "ansh-info"
-    commit-message:
-      prefix: "deps"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "npm"
-      - "security"
-    open-pull-requests-limit: 10
-    # Update both package.json and lockfile as needed
-    versioning-strategy: "increase"
-
-  # Disabled for now: repo has no Dockerfiles or Kubernetes manifests
-  # in the root directory, causing Dependabot's Docker updater to fail
-  # with "No Dockerfiles nor Kubernetes YAML found". Re-enable when
-  # Dockerfiles are added, or point `directory` at paths that contain them.
-  # - package-ecosystem: "docker"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "monday"
-  #     time: "09:00"
-  #   target-branch: "main"
-  #   assignees:
-  #     - "ansh-info"
-  #   commit-message:
-  #     prefix: "docker"
-  #     include: "scope"
-  #   labels:
-  #     - "dependencies"
-  #     - "docker"
-  #   open-pull-requests-limit: 3
+# Disabled to stop automatic dependency update PRs before archiving the repo.
+# Previous configuration retained below for easy restoration if needed.
+#
+# updates:
+#   # Python dependencies via uv
+#   - package-ecosystem: "uv"
+#     directory: "/"
+#     schedule:
+#       interval: "monthly"
+#       time: "09:00"
+#     target-branch: "main"
+#     assignees:
+#       - "ansh-info"
+#     commit-message:
+#       prefix: "deps"
+#       include: "scope"
+#     labels:
+#       - "dependencies"
+#       - "python"
+#     open-pull-requests-limit: 10
+#     # Group minor and patch updates
+#     groups:
+#       minor-and-patch:
+#         patterns:
+#           - "*"
+#         update-types:
+#           - "minor"
+#           - "patch"
+#
+#   # GitHub Actions
+#   - package-ecosystem: "github-actions"
+#     directory: "/"
+#     schedule:
+#       interval: "monthly"
+#       time: "09:00"
+#     target-branch: "main"
+#     assignees:
+#       - "ansh-info"
+#     commit-message:
+#       prefix: "ci"
+#       include: "scope"
+#     labels:
+#       - "dependencies"
+#       - "github-actions"
+#     open-pull-requests-limit: 5
+#
+#   # JavaScript/TypeScript (npm)
+#   - package-ecosystem: "npm"
+#     directory: "/"
+#     schedule:
+#       interval: "monthly"
+#       time: "09:00"
+#     target-branch: "main"
+#     assignees:
+#       - "ansh-info"
+#     commit-message:
+#       prefix: "deps"
+#       include: "scope"
+#     labels:
+#       - "dependencies"
+#       - "npm"
+#       - "security"
+#     open-pull-requests-limit: 10
+#     # Update both package.json and lockfile as needed
+#     versioning-strategy: "increase"
+#
+#   # Disabled for now: repo has no Dockerfiles or Kubernetes manifests
+#   # in the root directory, causing Dependabot's Docker updater to fail
+#   # with "No Dockerfiles nor Kubernetes YAML found". Re-enable when
+#   # Dockerfiles are added, or point `directory` at paths that contain them.
+#   # - package-ecosystem: "docker"
+#   #   directory: "/"
+#   #   schedule:
+#   #     interval: "weekly"
+#   #     day: "monday"
+#   #     time: "09:00"
+#   #   target-branch: "main"
+#   #   assignees:
+#   #     - "ansh-info"
+#   #   commit-message:
+#   #     prefix: "docker"
+#   #     include: "scope"
+#   #   labels:
+#   #     - "dependencies"
+#   #     - "docker"
+#   #   open-pull-requests-limit: 3
