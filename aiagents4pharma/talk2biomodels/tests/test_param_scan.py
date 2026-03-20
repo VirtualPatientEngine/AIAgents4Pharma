@@ -104,9 +104,9 @@ def test_param_scan_tool(fake_app_factory, monkeypatch):
     assert any((df["status"] == "success") & (df["name"] == "get_modelinfo"))
 
 
-def test_param_scan_tool_no_argdata(monkeypatch):
+def test_param_scan_tool_with_argdata_defaults(monkeypatch):
     """
-    Ensure _run handles missing arg_data gracefully with defaults.
+    Ensure _run handles provided arg_data and applies default values for unset fields.
     """
     monkeypatch.setattr(
         "aiagents4pharma.talk2biomodels.tools.parameter_scan.load_biomodel",

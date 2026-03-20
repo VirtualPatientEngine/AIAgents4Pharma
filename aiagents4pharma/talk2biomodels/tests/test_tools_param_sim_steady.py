@@ -169,9 +169,9 @@ def test_steady_state_tool(monkeypatch):
     assert "dic_steady_state_data" in cmd.update
 
 
-def test_steady_state_tool_no_argdata(monkeypatch):
+def test_steady_state_tool_with_minimal_argdata(monkeypatch):
     """
-    Cover steady_state _run when arg_data is None.
+    Cover steady_state _run when arg_data is provided with optional fields unset.
     """
     monkeypatch.setattr(
         "aiagents4pharma.talk2biomodels.tools.steady_state.load_biomodel",
