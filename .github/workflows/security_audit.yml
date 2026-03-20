@@ -44,7 +44,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-audit-report
           path: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload safety report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: safety-report
           path: safety-report.json
@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Download reports
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: "*-report*"
           merge-multiple: true
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload vulnerability report as artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: consolidated-security-report
           path: |
@@ -114,7 +114,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Download all reports
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: "*-report*"
           merge-multiple: true
@@ -142,7 +142,7 @@ jobs:
           echo "**Note:** Code security is monitored in test workflows via bandit" >> security-summary.md
 
       - name: Upload security summary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-summary
           path: security-summary.md
