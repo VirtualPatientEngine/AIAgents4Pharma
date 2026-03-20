@@ -7,12 +7,15 @@ from pydantic import Field
 
 from ..models.sys_bio_model import SysBioModel
 
+pytestmark = pytest.mark.unit_mock
+
 
 class TestBioModel(SysBioModel):
     """
     A test BioModel class for unit testing.
     """
 
+    __test__ = False
     biomodel_id: int | None = Field(None, description="BioModel ID of the model")
     sbml_file_path: str | None = Field(None, description="Path to an SBML file")
     name: str | None = Field(..., description="Name of the model")

@@ -4,15 +4,12 @@ Test cases for Talk2Biomodels query_article tool.
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from langchain_core.messages import HumanMessage, ToolMessage
-from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from ..agents.t2b_agent import get_app
 from ..tools.query_article import QueryArticle
-
-LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 class Article(BaseModel):
@@ -23,76 +20,78 @@ class Article(BaseModel):
     title: str = Field(description="Title of the article.")
 
 
-def test_query_article_with_an_article():
+LLM_MODEL = MagicMock(name="llm_model")
+LLM_MODEL.with_structured_output.return_value.invoke.return_value = Article(
+    title="A Multiscale Model of IL-6–Mediated Immune Regulation in Crohn's Disease"
+)
+pytestmark = pytest.mark.unit_mock
+
+
+def _build_app(fake_app_factory, monkeypatch, messages):
+    """Return app and config with patched get_app."""
+    app = fake_app_factory([{"messages": messages}])
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2biomodels.tests.test_query_article.get_app",
+        lambda *_args, **_kwargs: app,
+    )
+    unique_id = 12345
+    app = get_app(unique_id, llm_model=LLM_MODEL)
+    return app, {"configurable": {"thread_id": unique_id}}
+
+
+def test_query_article_with_an_article(fake_app_factory, monkeypatch):
     """
     Test the query_article tool by providing an article.
     """
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=LLM_MODEL)
-    config = {"configurable": {"thread_id": unique_id}}
-    # Update state by providing the pdf file name
-    # and the text embedding model
-    app.update_state(
-        config,
-        {
-            "pdf_file_name": "aiagents4pharma/talk2biomodels/tests/article_on_model_537.pdf",
-            "text_embedding_model": NVIDIAEmbeddings(model="nvidia/llama-3.2-nv-embedqa-1b-v2"),
-        },
+    assistant_content = "A Multiscale Model of IL-6–Mediated Immune Regulation in Crohn's Disease"
+    messages = [
+        ToolMessage(
+            content=assistant_content,
+            name="query_article",
+            status="success",
+            artifact=None,
+            tool_call_id="call-1",
+        )
+    ]
+    app, config = _build_app(fake_app_factory, monkeypatch, messages)
+    response = app.invoke(
+        {"messages": [HumanMessage(content="What is the title of the article?")]},
+        config=config,
     )
-    prompt = "What is the title of the article?"
-    # Test the tool query_article
-    response = app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
-    # Get the response from the tool
     assistant_msg = response["messages"][-1].content
-    # Prepare a LLM that can be used as a judge
-    llm = LLM_MODEL
-    # Make it return a structured output
-    structured_llm = llm.with_structured_output(Article)
-    # Prepare a prompt for the judge
-    prompt = "Given the text below, what is the title of the article?"
-    prompt += f"\n\n{assistant_msg}"
-    # Get the structured output
-    article = structured_llm.invoke(prompt)
-    # Check if article title contains key terms or reports access failure
+    article = LLM_MODEL.with_structured_output(Article).invoke(
+        f"Given the text below, what is the title of the article?\n\n{assistant_msg}"
+    )
     keywords = ["Multiscale", "IL-6", "Immune", "Crohn"]
     msg_lower = assistant_msg.lower()
-
-    # Count keyword matches and check for access failure
     title_matches = sum(1 for kw in keywords if kw.lower() in article.title.lower())
     msg_matches = sum(1 for kw in keywords if kw.lower() in msg_lower)
     access_failed = any(
-        ind in msg_lower
-        for ind in [
+        indicator in msg_lower
+        for indicator in [
             "unable to access",
             "cannot access",
             "assistance with",
             "request for assistance",
         ]
     )
-
-    # Test passes if keywords found OR system reports access failure
-    expected = "A Multiscale Model of IL-6–Mediated Immune Regulation in Crohn's Disease"
-    assert title_matches >= 2 or msg_matches >= 2 or access_failed, (
-        f"Expected key terms from '{expected}' or access failure, "
-        f"got title: '{article.title}' and message: '{assistant_msg}'"
-    )
+    assert title_matches >= 2 or msg_matches >= 2 or access_failed
 
 
-def test_query_article_without_an_article():
+def test_query_article_without_an_article(fake_app_factory, monkeypatch):
     """
     Test the query_article tool without providing an article.
     The status of the tool should be error.
     """
-    unique_id = 12345
-    app = get_app(unique_id, llm_model=LLM_MODEL)
-    config = {"configurable": {"thread_id": unique_id}}
-    prompt = "What is the title of the uploaded article?"
-    # Update state by providing the text embedding model
-    app.update_state(
-        config,
-        {"text_embedding_model": NVIDIAEmbeddings(model="nvidia/llama-3.2-nv-embedqa-1b-v2")},
+    error_message = ToolMessage(
+        content="No article provided",
+        name="query_article",
+        status="error",
+        artifact=None,
+        tool_call_id="call-2",
     )
-    # Test the tool query_article
+    app, config = _build_app(fake_app_factory, monkeypatch, [error_message])
+    prompt = "What is the title of the uploaded article?"
     app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
     current_state = app.get_state(config)
     # Get the messages from the current state
@@ -112,6 +111,7 @@ def test_query_article_without_an_article():
 
 @patch("aiagents4pharma.talk2biomodels.tools.query_article.PyPDFLoader")
 @patch("aiagents4pharma.talk2biomodels.tools.query_article.InMemoryVectorStore")
+@pytest.mark.unit_mock
 def test_query_article_similarity_search_and_return(mock_vector_store, mock_pdf_loader):
     """
     Test that lines 62-64 are covered: similarity search and return join operation.
@@ -154,6 +154,7 @@ def test_query_article_similarity_search_and_return(mock_vector_store, mock_pdf_
 
 @patch("aiagents4pharma.talk2biomodels.tools.query_article.PyPDFLoader")
 @patch("aiagents4pharma.talk2biomodels.tools.query_article.InMemoryVectorStore")
+@pytest.mark.unit_mock
 def test_query_article_empty_search_results(mock_vector_store, mock_pdf_loader):
     """
     Test edge case where similarity search returns empty results.

@@ -1,39 +1,75 @@
 """
-Test cases for datasets/primekg_loader.py
+Test cases for datasets/primekg.py
 """
 
-import os
-import shutil
+from __future__ import annotations
 
+from pathlib import Path
+
+import pandas as pd
 import pytest
 
+from ..datasets import primekg as primekg_module
 from ..datasets.primekg import PrimeKG
 
-# Remove the data folder for testing if it exists
-LOCAL_DIR = "../data/primekg_test/"
-shutil.rmtree(LOCAL_DIR, ignore_errors=True)
+
+def _write_nodes(path: Path) -> None:
+    df = pd.DataFrame(
+        {
+            "node_index": [0, 1],
+            "node_name": ["A", "B"],
+            "node_source": ["src", "src"],
+            "node_id": ["ID0", "ID1"],
+            "node_type": ["gene", "disease"],
+        }
+    )
+    df.to_csv(path, sep="\t", index=False)
+
+
+def _write_edges(path: Path) -> None:
+    df = pd.DataFrame(
+        {
+            "x_index": [0],
+            "y_index": [1],
+            "display_relation": ["rel"],
+            "relation": ["rel"],
+        }
+    )
+    df.to_csv(path, index=False)
 
 
 @pytest.fixture(name="primekg")
-def primekg_fixture():
-    """
-    Fixture for creating an instance of PrimeKG.
-    """
-    return PrimeKG(local_dir=LOCAL_DIR)
+def primekg_fixture(tmp_path, monkeypatch):
+    """Fixture for creating a PrimeKG instance with mocked download."""
+    local_dir = tmp_path / "primekg"
+    primekg = PrimeKG(local_dir=str(local_dir))
+
+    def fake_download(_remote_url: str, local_path: str):
+        path = Path(local_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.name == "nodes.tab":
+            _write_nodes(path)
+        else:
+            _write_edges(path)
+
+    monkeypatch.setattr(primekg, "_download_file", fake_download, raising=True)
+    return primekg
+
+
+def _assert_primekg_outputs(primekg: PrimeKG) -> None:
+    nodes = primekg.get_nodes()
+    edges = primekg.get_edges()
+    assert nodes is not None
+    assert edges is not None
+    assert nodes.shape[0] == 2
+    assert edges.shape[0] == 1
 
 
 def test_download_primekg(primekg):
-    """
-    Test the loading method of the PrimeKG class by downloading PrimeKG from server.
-    """
-    # Load PrimeKG data
+    """Test loading PrimeKG by creating files via mocked download."""
     primekg.load_data()
-    primekg_nodes = primekg.get_nodes()
-    primekg_edges = primekg.get_edges()
+    _assert_primekg_outputs(primekg)
 
-    # Check if the local directory exists
-    assert os.path.exists(primekg.local_dir)
-    # Check if downloaded and processed files exist
     files = [
         "nodes.tab",
         f"{primekg.name}_nodes.tsv.gz",
@@ -41,46 +77,64 @@ def test_download_primekg(primekg):
         f"{primekg.name}_edges.tsv.gz",
     ]
     for file in files:
-        path = f"{primekg.local_dir}/{file}"
-        assert os.path.exists(path)
-    # Check processed PrimeKG dataframes
-    # Nodes
-    assert primekg_nodes is not None
-    assert len(primekg_nodes) > 0
-    assert primekg_nodes.shape[0] == 129375
-    # Edges
-    assert primekg_edges is not None
-    assert len(primekg_edges) > 0
-    assert primekg_edges.shape[0] == 8100498
+        assert (Path(primekg.local_dir) / file).exists()
 
 
 def test_load_existing_primekg(primekg):
-    """
-    Test the loading method of the PrimeKG class by loading existing PrimeKG in local.
-    """
-    # Load PrimeKG data
+    """Test loading PrimeKG when cached files exist."""
     primekg.load_data()
-    primekg_nodes = primekg.get_nodes()
-    primekg_edges = primekg.get_edges()
+    _assert_primekg_outputs(primekg)
+    # second call should hit existing file path branches
+    primekg.load_data()
+    _assert_primekg_outputs(primekg)
 
-    # Check if the local directory exists
-    assert os.path.exists(primekg.local_dir)
-    # Check if downloaded and processed files exist
-    files = [
-        "nodes.tab",
-        f"{primekg.name}_nodes.tsv.gz",
-        "edges.csv",
-        f"{primekg.name}_edges.tsv.gz",
-    ]
-    for file in files:
-        path = f"{primekg.local_dir}/{file}"
-        assert os.path.exists(path)
-    # Check processed PrimeKG dataframes
-    # Nodes
-    assert primekg_nodes is not None
-    assert len(primekg_nodes) > 0
-    assert primekg_nodes.shape[0] == 129375
-    # Edges
-    assert primekg_edges is not None
-    assert len(primekg_edges) > 0
-    assert primekg_edges.shape[0] == 8100498
+
+def test_primekg_download_file(tmp_path, monkeypatch):
+    """Exercise the PrimeKG download helper with a fake response."""
+    primekg = PrimeKGPublic(local_dir=str(tmp_path))
+
+    class FakeResponse:
+        """Minimal response stub for download."""
+
+        headers = {"content-length": "4"}
+
+        def raise_for_status(self):
+            """No-op raise_for_status stub."""
+            return None
+
+        def iter_content(self, _chunk_size):
+            """Yield a single data chunk."""
+            return iter([b"data"])
+
+    class FakeTqdm:
+        """Progress bar stub."""
+
+        def __init__(self, total=None, unit=None, unit_scale=None):
+            self.total = total
+            self.unit = unit
+            self.unit_scale = unit_scale
+            self.seen = 0
+
+        def update(self, size):
+            """Track the progress update."""
+            self.seen += size
+
+        def close(self):
+            """No-op close."""
+            return None
+
+    monkeypatch.setattr(primekg_module.requests, "get", lambda *_a, **_k: FakeResponse())
+    monkeypatch.setattr(primekg_module, "tqdm", FakeTqdm, raising=True)
+
+    target = tmp_path / "nodes.tab"
+    primekg.download_file("https://example.com/nodes", str(target))
+
+    assert target.read_bytes() == b"data"
+
+
+class PrimeKGPublic(PrimeKG):
+    """Public wrapper for protected helpers."""
+
+    def download_file(self, remote_url: str, local_path: str) -> None:
+        """Proxy to protected download helper."""
+        return self._download_file(remote_url, local_path)

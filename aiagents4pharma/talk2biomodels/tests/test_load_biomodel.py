@@ -6,6 +6,8 @@ import pytest
 
 from ..tools.load_biomodel import ModelData
 
+pytestmark = pytest.mark.unit_mock
+
 
 def test_model_data_valid_biomodel_id():
     """

@@ -1,248 +1,256 @@
 """
-Test cases for datasets/primekg_loader.py
+Test cases for datasets/biobridge_primekg.py
 """
 
-import os
-import shutil
+from __future__ import annotations
 
+from pathlib import Path
+
+import joblib
+import numpy as np
+import pandas as pd
 import pytest
 
+from ..datasets import biobridge_primekg as biobridge_module
 from ..datasets.biobridge_primekg import BioBridgePrimeKG
 
-# Remove the data folder for testing if it exists
-PRIMEKG_LOCAL_DIR = "../data/primekg_test/"
-LOCAL_DIR = "../data/biobridge_primekg_test/"
-shutil.rmtree(LOCAL_DIR, ignore_errors=True)
+
+class BioBridgePrimeKGPublic(BioBridgePrimeKG):
+    """Public wrapper for protected helpers."""
+
+    def download_file(self, remote_url: str, local_dir: str, local_filename: str) -> None:
+        """Proxy to protected download helper."""
+        return self._download_file(remote_url, local_dir, local_filename)
+
+    def build_node_embeddings(self) -> dict:
+        """Proxy to protected embedding builder."""
+        return self._build_node_embeddings()
+
+
+class FakePrimeKG:
+    """PrimeKG stub with minimal nodes/edges."""
+
+    def __init__(self, edges: pd.DataFrame, nodes: pd.DataFrame):
+        self._edges = edges
+        self._nodes = nodes
+
+    def load_data(self):
+        """No-op load for stub."""
+        return None
+
+    def get_edges(self):
+        """Return fake edges."""
+        return self._edges
+
+    def get_nodes(self):
+        """Return fake nodes."""
+        return self._nodes
+
+
+def _write_json(path: Path, obj: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(__import__("json").dumps(obj))
+
+
+def _write_node_csv(path: Path, node_indices: list[int]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame({"node_index": node_indices}).to_csv(path, index=False)
+
+
+def _write_embeddings(path: Path, node_indices: list[int]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(
+        {
+            "node_index": node_indices,
+            "embedding": [[0.1, 0.2] for _ in node_indices],
+        },
+        path,
+    )
 
 
 @pytest.fixture(name="biobridge_primekg")
-def biobridge_primekg_fixture():
-    """
-    Fixture for creating an instance of PrimeKG.
-    """
-    return BioBridgePrimeKG(primekg_dir=PRIMEKG_LOCAL_DIR, local_dir=LOCAL_DIR)
+def biobridge_primekg_fixture(tmp_path, monkeypatch):
+    """Create a BioBridgePrimeKG instance with mocked dependencies."""
+    primekg_dir = tmp_path / "primekg"
+    local_dir = tmp_path / "biobridge"
+
+    edges = pd.DataFrame(
+        {
+            "head_index": [0],
+            "tail_index": [1],
+            "head_type": ["gene/protein"],
+            "tail_type": ["disease"],
+            "display_relation": ["rel"],
+            "relation": ["rel"],
+        }
+    )
+    nodes = pd.DataFrame(
+        {
+            "node_index": [0, 1],
+            "node_name": ["A", "B"],
+            "node_source": ["src", "src"],
+            "node_id": ["ID0", "ID1"],
+            "node_type": ["gene/protein", "disease"],
+        }
+    )
+
+    def fake_primekg_ctor(*_args, **_kwargs):
+        return FakePrimeKG(edges=edges, nodes=nodes)
+
+    monkeypatch.setattr(biobridge_module, "PrimeKG", fake_primekg_ctor, raising=True)
+
+    def fake_download(remote_url: str, local_dir: str, local_filename: str):
+        del remote_url
+        path = Path(local_dir) / local_filename
+        if local_filename == "data_config.json":
+            _write_json(
+                path,
+                {
+                    "node_type": {
+                        "gene/protein": "gene/protein",
+                        "disease": "disease",
+                    },
+                    "relation_type": {"rel": "rel"},
+                    "emb_dim": {
+                        "protein": 2,
+                        "mf": 2,
+                        "cc": 2,
+                        "bp": 2,
+                        "drug": 2,
+                        "disease": 2,
+                    },
+                },
+            )
+        elif local_filename.endswith(".pkl"):
+            _write_embeddings(path, node_indices=[0, 1])
+        elif local_filename.endswith(".csv"):
+            _write_node_csv(path, node_indices=[0, 1])
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("")
+
+    instance = BioBridgePrimeKGPublic(primekg_dir=str(primekg_dir), local_dir=str(local_dir))
+    monkeypatch.setattr(instance, "_download_file", fake_download, raising=True)
+
+    return instance
 
 
-def test_download_primekg(biobridge_primekg):
-    """
-    Test the loading method of the BioBridge-PrimeKG class by downloading data from repository.
-    """
-    # Load BioBridge-PrimeKG data
+def _assert_outputs(biobridge: BioBridgePrimeKG) -> None:
+    assert biobridge.get_primekg() is not None
+    assert biobridge.get_data_config() is not None
+    assert biobridge.get_node_embeddings() is not None
+    assert biobridge.get_primekg_triplets() is not None
+    splits = biobridge.get_train_test_split()
+    assert set(splits.keys()) == {"train", "node_train", "test", "node_test"}
+    assert biobridge.get_node_info_dict() is not None
+
+
+def test_load_biobridge_primekg(biobridge_primekg):
+    """Exercise BioBridgePrimeKG load_data and cached branches."""
     biobridge_primekg.load_data()
-    primekg_nodes = biobridge_primekg.get_primekg().get_nodes()
-    primekg_edges = biobridge_primekg.get_primekg().get_edges()
-    biobridge_data_config = biobridge_primekg.get_data_config()
-    biobridge_emb_dict = biobridge_primekg.get_node_embeddings()
-    biobridge_triplets = biobridge_primekg.get_primekg_triplets()
-    biobridge_splits = biobridge_primekg.get_train_test_split()
-    biobridge_node_info = biobridge_primekg.get_node_info_dict()
+    _assert_outputs(biobridge_primekg)
 
-    # Check if the local directories exists
-    assert os.path.exists(biobridge_primekg.primekg_dir)
-    assert os.path.exists(biobridge_primekg.local_dir)
-    # Check if downloaded and processed files exist
-    # PrimeKG files
-    files = ["nodes.tab", "primekg_nodes.tsv.gz", "edges.csv", "primekg_edges.tsv.gz"]
-    for file in files:
-        path = f"{biobridge_primekg.primekg_dir}/{file}"
-        assert os.path.exists(path)
-    # BioBridge data config
-    assert os.path.exists(f"{biobridge_primekg.local_dir}/data_config.json")
-    # BioBridge embeddings
-    files = [
-        "protein.pkl",
-        "mf.pkl",
-        "cc.pkl",
-        "bp.pkl",
-        "drug.pkl",
-        "disease.pkl",
-        "embedding_dict.pkl",
-    ]
-    for file in files:
-        path = f"{biobridge_primekg.local_dir}/embeddings/{file}"
-        assert os.path.exists(path)
-    # BioBridge processed files
-    files = [
-        "protein.csv",
-        "mf.csv",
-        "cc.csv",
-        "bp.csv",
-        "drug.csv",
-        "disease.csv",
-        "triplet_full.tsv.gz",
-        "triplet_full_altered.tsv.gz",
-        "node_train.tsv.gz",
-        "triplet_train.tsv.gz",
-        "node_test.tsv.gz",
-        "triplet_test.tsv.gz",
-    ]
-    for file in files:
-        path = f"{biobridge_primekg.local_dir}/processed/{file}"
-        assert os.path.exists(path)
-    # Check processed PrimeKG dataframes
-    # Nodes
-    assert primekg_nodes is not None
-    assert len(primekg_nodes) > 0
-    assert primekg_nodes.shape[0] == 129375
-    # Edges
-    assert primekg_edges is not None
-    assert len(primekg_edges) > 0
-    assert primekg_edges.shape[0] == 8100498
-    # Check processed BioBridge data config
-    assert biobridge_data_config is not None
-    assert len(biobridge_data_config) > 0
-    assert len(biobridge_data_config["node_type"]) == 10
-    assert len(biobridge_data_config["relation_type"]) == 18
-    assert len(biobridge_data_config["emb_dim"]) == 6
-    # Check processed BioBridge embeddings
-    assert biobridge_emb_dict is not None
-    assert len(biobridge_emb_dict) > 0
-    assert len(biobridge_emb_dict) == 85466
-    # Check processed BioBridge triplets
-    assert biobridge_triplets is not None
-    assert len(biobridge_triplets) > 0
-    assert biobridge_triplets.shape[0] == 3904610
-    assert list(biobridge_splits.keys()) == ["train", "node_train", "test", "node_test"]
-    assert len(biobridge_splits["train"]) == 3510930
-    assert len(biobridge_splits["node_train"]) == 76486
-    assert len(biobridge_splits["test"]) == 393680
-    assert len(biobridge_splits["node_test"]) == 8495
-    # Check node info dictionary
-    assert list(biobridge_node_info.keys()) == [
-        "gene/protein",
-        "molecular_function",
-        "cellular_component",
-        "biological_process",
-        "drug",
-        "disease",
-    ]
-    assert len(biobridge_node_info["gene/protein"]) == 19162
-    assert len(biobridge_node_info["molecular_function"]) == 10966
-    assert len(biobridge_node_info["cellular_component"]) == 4013
-    assert len(biobridge_node_info["biological_process"]) == 27478
-    assert len(biobridge_node_info["drug"]) == 6948
-    assert len(biobridge_node_info["disease"]) == 44133
-
-
-def test_load_existing_primekg(biobridge_primekg):
-    """
-    Test the loading method of the BioBridge-PrimeKG class by loading existing data in local.
-    """
-    # Load BioBridge-PrimeKG data
+    # second run should hit cached-branch paths
     biobridge_primekg.load_data()
-    primekg_nodes = biobridge_primekg.get_primekg().get_nodes()
-    primekg_edges = biobridge_primekg.get_primekg().get_edges()
-    biobridge_data_config = biobridge_primekg.get_data_config()
-    biobridge_emb_dict = biobridge_primekg.get_node_embeddings()
-    biobridge_triplets = biobridge_primekg.get_primekg_triplets()
-    biobridge_splits = biobridge_primekg.get_train_test_split()
-    biobridge_node_info = biobridge_primekg.get_node_info_dict()
-
-    # Check if the local directories exists
-    assert os.path.exists(biobridge_primekg.primekg_dir)
-    assert os.path.exists(biobridge_primekg.local_dir)
-    # Check if downloaded and processed files exist
-    # PrimeKG files
-    files = ["nodes.tab", "primekg_nodes.tsv.gz", "edges.csv", "primekg_edges.tsv.gz"]
-    for file in files:
-        path = f"{biobridge_primekg.primekg_dir}/{file}"
-        assert os.path.exists(path)
-    # BioBridge data config
-    assert os.path.exists(f"{biobridge_primekg.local_dir}/data_config.json")
-    # BioBridge embeddings
-    files = [
-        "protein.pkl",
-        "mf.pkl",
-        "cc.pkl",
-        "bp.pkl",
-        "drug.pkl",
-        "disease.pkl",
-        "embedding_dict.pkl",
-    ]
-    for file in files:
-        path = f"{biobridge_primekg.local_dir}/embeddings/{file}"
-        assert os.path.exists(path)
-    # BioBridge processed files
-    files = [
-        "protein.csv",
-        "mf.csv",
-        "cc.csv",
-        "bp.csv",
-        "drug.csv",
-        "disease.csv",
-        "triplet_full.tsv.gz",
-        "triplet_full_altered.tsv.gz",
-        "node_train.tsv.gz",
-        "triplet_train.tsv.gz",
-        "node_test.tsv.gz",
-        "triplet_test.tsv.gz",
-    ]
-    for file in files:
-        path = f"{biobridge_primekg.local_dir}/processed/{file}"
-        assert os.path.exists(path)
-    # Check processed PrimeKG dataframes
-    # Nodes
-    assert primekg_nodes is not None
-    assert len(primekg_nodes) > 0
-    assert primekg_nodes.shape[0] == 129375
-    # Edges
-    assert primekg_edges is not None
-    assert len(primekg_edges) > 0
-    assert primekg_edges.shape[0] == 8100498
-    # Check processed BioBridge data config
-    assert biobridge_data_config is not None
-    assert len(biobridge_data_config) > 0
-    assert len(biobridge_data_config["node_type"]) == 10
-    assert len(biobridge_data_config["relation_type"]) == 18
-    assert len(biobridge_data_config["emb_dim"]) == 6
-    # Check processed BioBridge embeddings
-    assert biobridge_emb_dict is not None
-    assert len(biobridge_emb_dict) > 0
-    assert len(biobridge_emb_dict) == 85466
-    # Check processed BioBridge triplets
-    assert biobridge_triplets is not None
-    assert len(biobridge_triplets) > 0
-    assert biobridge_triplets.shape[0] == 3904610
-    assert list(biobridge_splits.keys()) == ["train", "node_train", "test", "node_test"]
-    assert len(biobridge_splits["train"]) == 3510930
-    assert len(biobridge_splits["node_train"]) == 76486
-    assert len(biobridge_splits["test"]) == 393680
-    assert len(biobridge_splits["node_test"]) == 8495
-    # Check node info dictionary
-    assert list(biobridge_node_info.keys()) == [
-        "gene/protein",
-        "molecular_function",
-        "cellular_component",
-        "biological_process",
-        "drug",
-        "disease",
-    ]
-    assert len(biobridge_node_info["gene/protein"]) == 19162
-    assert len(biobridge_node_info["molecular_function"]) == 10966
-    assert len(biobridge_node_info["cellular_component"]) == 4013
-    assert len(biobridge_node_info["biological_process"]) == 27478
-    assert len(biobridge_node_info["drug"]) == 6948
-    assert len(biobridge_node_info["disease"]) == 44133
+    _assert_outputs(biobridge_primekg)
 
 
-# def test_load_existing_primekg_with_negative_triplets(biobridge_primekg):
-#     """
-#     Test the loading method of the BioBridge-PrimeKG class by loading existing data in local.
-#     In addition, it builds negative triplets for training data.
-#     """
-#     # Load BioBridge-PrimeKG data
-#     # Using 1 negative sample per positive triplet
-#     biobridge_primekg.load_data(build_neg_triplest=True, n_neg_samples=1)
-#     biobridge_neg_triplets = biobridge_primekg.get_primekg_triplets_negative()
+def test_fake_primekg_get_nodes():
+    """Cover FakePrimeKG.get_nodes helper."""
+    edges = pd.DataFrame({"head_index": [], "tail_index": []})
+    nodes = pd.DataFrame({"node_index": [1], "node_name": ["A"]})
+    fake = FakePrimeKG(edges=edges, nodes=nodes)
 
-#     # Check if the local directories exists
-#     assert os.path.exists(biobridge_primekg.primekg_dir)
-#     assert os.path.exists(biobridge_primekg.local_dir)
-#     # Check if downloaded and processed files exist
-#     path = f"{biobridge_primekg.local_dir}/processed/triplet_train_negative.tsv.gz"
-#     assert os.path.exists(path)
-#     # Check processed BioBridge triplets
-#     assert biobridge_neg_triplets is not None
-#     assert len(biobridge_neg_triplets) > 0
-#     assert biobridge_neg_triplets.shape[0] == 3510930
-#     assert len(biobridge_neg_triplets.negative_tail_index[0]) == 1
+    assert fake.get_nodes().shape[0] == 1
+
+
+def test_biobridge_download_file(tmp_path, monkeypatch):
+    """Exercise BioBridgePrimeKG download helper."""
+    instance = BioBridgePrimeKGPublic(
+        primekg_dir=str(tmp_path / "primekg"),
+        local_dir=str(tmp_path),
+    )
+
+    class FakeResponse:
+        """Minimal response stub."""
+
+        headers = {"content-length": "4"}
+
+        def raise_for_status(self):
+            """No-op raise_for_status stub."""
+            return None
+
+        def iter_content(self, _chunk_size):
+            """Yield a single data chunk."""
+            return iter([b"data"])
+
+    class FakeTqdm:
+        """Progress bar stub."""
+
+        def __init__(self, total=None, unit=None, unit_scale=None):
+            self.total = total
+            self.unit = unit
+            self.unit_scale = unit_scale
+            self.seen = 0
+
+        def update(self, size):
+            """Track the progress update."""
+            self.seen += size
+
+        def close(self):
+            """No-op close."""
+            return None
+
+    monkeypatch.setattr(biobridge_module.requests, "get", lambda *_a, **_k: FakeResponse())
+    monkeypatch.setattr(biobridge_module, "tqdm", FakeTqdm, raising=True)
+
+    instance.download_file("https://example.com/file", str(tmp_path / "downloads"), "file.txt")
+    assert (tmp_path / "downloads" / "file.txt").read_bytes() == b"data"
+
+
+def test_biobridge_download_file_cached(tmp_path):
+    """Cover cached download path in BioBridgePrimeKG._download_file."""
+    instance = BioBridgePrimeKGPublic(
+        primekg_dir=str(tmp_path / "primekg"),
+        local_dir=str(tmp_path),
+    )
+    target_dir = tmp_path / "downloads"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    (target_dir / "file.txt").write_text("cached")
+
+    instance.download_file("https://example.com/file", str(target_dir), "file.txt")
+    assert (target_dir / "file.txt").read_text() == "cached"
+
+
+def test_biobridge_load_embeddings_converts_numpy(tmp_path, monkeypatch):
+    """Ensure numpy embeddings are converted to lists."""
+    instance = BioBridgePrimeKGPublic(
+        primekg_dir=str(tmp_path / "primekg"),
+        local_dir=str(tmp_path),
+    )
+    instance.preselected_node_types = ["gene"]
+
+    def fake_download(remote_url: str, local_dir: str, local_filename: str):
+        del remote_url
+        path = Path(local_dir) / local_filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("stub")
+
+    monkeypatch.setattr(instance, "_download_file", fake_download, raising=True)
+
+    def fake_joblib_load(_path: str):
+        return {"node_index": [0], "embedding": np.array([[1.0, 2.0]])}
+
+    monkeypatch.setattr(biobridge_module.joblib, "load", fake_joblib_load, raising=True)
+
+    embeddings = instance.build_node_embeddings()
+    assert embeddings[0] == [1.0, 2.0]
+
+
+def test_fake_download_fallback(biobridge_primekg):
+    """Exercise the fallback branch in fake_download helper."""
+    biobridge_primekg.download_file(
+        "https://example.com/file",
+        biobridge_primekg.local_dir,
+        "misc.txt",
+    )

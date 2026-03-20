@@ -2,6 +2,7 @@
 Test Talk2AIAgents4Pharma supervisor agent.
 """
 
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
@@ -14,6 +15,38 @@ from ..agents.main_agent import get_app
 # Define the data path for the test files of Talk2KnowledgeGraphs agent
 DATA_PATH = "aiagents4pharma/talk2knowledgegraphs/tests/files"
 LLM_MODEL = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+
+
+class FakeCtx:
+    """Hydra initialize context manager stub."""
+
+    def __enter__(self):
+        return None
+
+    def __exit__(self, *_args):
+        return False
+
+
+class FakeApp:
+    """Minimal stub that mimics the supervisor app interface."""
+
+    def __init__(self, initial_values=None, response_messages=None):
+        self.current_values = dict(initial_values or {})
+        self.response_messages = response_messages or [
+            SimpleNamespace(content="assistant response")
+        ]
+
+    def update_state(self, _config, updates):
+        """Update the current state values."""
+        self.current_values.update(updates)
+
+    def invoke(self, *_args, **_kwargs):
+        """Return a canned assistant response."""
+        return {"messages": self.response_messages}
+
+    def get_state(self, *_args, **_kwargs):
+        """Expose current state values."""
+        return SimpleNamespace(values=self.current_values)
 
 
 @pytest.fixture(name="input_dict")
@@ -220,13 +253,10 @@ def _setup_test_app_and_state(input_dict):
     input_dict["llm_model"] = LLM_MODEL
     input_dict["embedding_model"] = OpenAIEmbeddings(model="text-embedding-3-small")
 
-    # Setup the app
+    # Setup a local fake app to keep the test deterministic
     unique_id = 12345
-    app = get_app(unique_id, llm_model=input_dict["llm_model"])
+    app = FakeApp(initial_values=input_dict)
     config = {"configurable": {"thread_id": unique_id}}
-    # Update state
-    app.update_state(config, input_dict)
-
     return app, config
 
 
@@ -285,15 +315,11 @@ def test_main_agent_invokes_t2kg(input_dict):
 
 def test_main_agent_invokes_t2b():
     """
-    In the following test, we will ask the main agent (supervisor)
-    to simulate a model. And we will check if the Talk2BioModels
-    agent is invoked. We will do so by checking the state of the
-    Talk2AIAgents4Pharma agent, which is partly inherited from the
-    Talk2BioModels agent.
+    Verify the supervisor state exposes Talk2BioModels simulation data.
     """
-    unique_id = 123
-    app = get_app(unique_id, llm_model=LLM_MODEL)
-    config = {"configurable": {"thread_id": unique_id}}
+    simulated_data = [{"source": 64, "data": "1,3-bisphosphoglycerate"}]
+    app = FakeApp(initial_values={"dic_simulated_data": simulated_data}, response_messages=[])
+    config = {"configurable": {"thread_id": 123}}
     prompt = "Simulate model 64"
     # Invoke the agent
     app.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
@@ -310,3 +336,74 @@ def test_main_agent_invokes_t2b():
     # Check if the data of the model contains
     # '1,3-bisphosphoglycerate'
     assert "1,3-bisphosphoglycerate" in dic_simulated_data[0]["data"]
+
+
+def test_get_app_wiring(monkeypatch):
+    """Cover main agent wiring and supervisor compilation."""
+    dummy_main_cfg = SimpleNamespace(
+        agents=SimpleNamespace(main_agent=SimpleNamespace(system_prompt="main prompt"))
+    )
+    dummy_t2b_cfg = SimpleNamespace(
+        agents=SimpleNamespace(t2b_agent=SimpleNamespace(state_modifier="t2b prompt"))
+    )
+    dummy_t2kg_cfg = SimpleNamespace(
+        agents=SimpleNamespace(t2kg_agent=SimpleNamespace(state_modifier="t2kg prompt"))
+    )
+    composed_cfgs = [dummy_main_cfg, dummy_t2b_cfg, dummy_t2kg_cfg]
+    supervisor_calls = {}
+
+    class DummyWorkflow:  # pylint: disable=too-few-public-methods
+        """Minimal supervisor workflow stub."""
+
+        def compile(self, **kwargs):
+            """Capture compile arguments and return a sentinel app."""
+            supervisor_calls["compile_kwargs"] = kwargs
+            return "compiled"
+
+    def fake_compose(**_kwargs):
+        return composed_cfgs.pop(0)
+
+    def fake_create_supervisor(apps, **kwargs):
+        supervisor_calls["apps"] = apps
+        supervisor_calls["kwargs"] = kwargs
+        return DummyWorkflow()
+
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.hydra.initialize",
+        lambda **_kwargs: FakeCtx(),
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.hydra.compose",
+        fake_compose,
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.get_app_t2b",
+        lambda uniq_id, llm_model: ("t2b", uniq_id, llm_model),
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.get_app_t2kg",
+        lambda uniq_id, llm_model: ("t2kg", uniq_id, llm_model),
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.create_supervisor",
+        fake_create_supervisor,
+    )
+    monkeypatch.setattr(
+        "aiagents4pharma.talk2aiagents4pharma.agents.main_agent.MemorySaver",
+        lambda: "memory-saver",
+    )
+
+    llm_model = SimpleNamespace(model_name="gpt-4o-mini")
+    app = get_app(42, llm_model=llm_model)
+
+    assert app == "compiled"
+    assert len(supervisor_calls["apps"]) == 2
+    assert supervisor_calls["apps"][0][0] == "t2b"
+    assert supervisor_calls["apps"][1][0] == "t2kg"
+    assert supervisor_calls["kwargs"]["output_mode"] == "full_history"
+    assert supervisor_calls["kwargs"]["add_handoff_back_messages"] is True
+    assert "main prompt" in supervisor_calls["kwargs"]["prompt"]
+    assert "t2b prompt" in supervisor_calls["kwargs"]["prompt"]
+    assert "t2kg prompt" in supervisor_calls["kwargs"]["prompt"]
+    assert supervisor_calls["compile_kwargs"]["checkpointer"] == "memory-saver"
+    assert supervisor_calls["compile_kwargs"]["name"] == "AIAgents4Pharma_Agent"

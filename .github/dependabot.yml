@@ -1,7 +1,10 @@
 # GitHub Dependabot configuration for automated dependency updates
 version: 2
 updates:
-  # Python dependencies via uv
+  # Disabled to stop automatic dependency update PRs before archiving the repo.
+  # GitHub Docs: setting open-pull-requests-limit to 0 temporarily disables
+  # Dependabot version updates for the package ecosystem while keeping the
+  # configuration file valid.
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
@@ -16,7 +19,7 @@ updates:
     labels:
       - "dependencies"
       - "python"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     # Group minor and patch updates
     groups:
       minor-and-patch:
@@ -26,7 +29,6 @@ updates:
           - "minor"
           - "patch"
 
-  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -41,9 +43,8 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
 
-  # JavaScript/TypeScript (npm)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -59,14 +60,11 @@ updates:
       - "dependencies"
       - "npm"
       - "security"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     # Update both package.json and lockfile as needed
     versioning-strategy: "increase"
 
-  # Disabled for now: repo has no Dockerfiles or Kubernetes manifests
-  # in the root directory, causing Dependabot's Docker updater to fail
-  # with "No Dockerfiles nor Kubernetes YAML found". Re-enable when
-  # Dockerfiles are added, or point `directory` at paths that contain them.
+  # Previous optional docker config retained below for easy restoration if needed.
   # - package-ecosystem: "docker"
   #   directory: "/"
   #   schedule:
@@ -82,4 +80,4 @@ updates:
   #   labels:
   #     - "dependencies"
   #     - "docker"
-  #   open-pull-requests-limit: 3
+  #   open-pull-requests-limit: 0
