@@ -85,7 +85,7 @@ dependencies = [
   "cloudscraper==1.2.71",
   "azure-identity==1.25.0",
 ]
-version = "0.0.0"
+version = "1.48.1"
 
 [project.optional-dependencies]
 dev = [
@@ -96,7 +96,28 @@ dev = [
   "safety==3.6.2",
   "pre-commit==4.3.0",
   "twine==6.2.0",
+  "python-semantic-release>=10.5.3",
 ]
+
+[tool.semantic_release]
+tag_format = "v{version}"
+changelog_file = "CHANGELOG.md"
+version_toml = [
+  "pyproject.toml:project.version",
+]
+commit_parser = "conventional"
+commit_author = "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+commit_message = "chore(release): {version}"
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+
+[tool.semantic_release.commit_parser_options]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+parse_squash_commits = true
+ignore_merge_commits = true
 
 
 [tool.hatch.build.targets.wheel]

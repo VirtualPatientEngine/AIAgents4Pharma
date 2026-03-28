@@ -21,7 +21,6 @@ Our CI/CD pipeline uses **UV** for fast, reliable dependency management across a
 
 ### 🐳 Build & Deploy
 - [`docker_build.yml`](#docker-build)
-- [`docker_compose_release.yml`](#docker-compose-release)
 - [`release.yml`](#release)
 
 ### 📚 Documentation
@@ -135,25 +134,23 @@ ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 
 **Environment Variables:**
 ```yaml
-OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Required for test execution
+OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
+ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 ```
 
 **Process:**
 1. **Setup:** UV dependency installation with dev dependencies
-2. **Testing:** Full test suite with coverage generation
-3. **Analysis:** Pylint JSON output with standard disable flags
-4. **Upload:** SonarCloud analysis with all reports
+2. **Report generation:** Bandit and pylint JSON reports for each module
+3. **Testing:** Ubuntu test runs with per-module coverage XML generation
+4. **Upload:** One self-contained SonarCloud scan with all reports
 
 **Key Features:**
-- ✅ OPENAI_API_KEY environment for test compatibility
-- ✅ Pylint analysis with standard disable flags: `--disable=R0801,R0902,W0221,W0122`
-- ✅ Comprehensive code quality analysis
-- ✅ Streamlined security and quality reporting
-
-**Artifacts:**
-- Coverage XML
-- Pylint JSON report
-- 30-day retention period
+- ✅ No `workflow_run` dependency or artifact download cascade
+- ✅ Stable report generation in a single workflow
+- ✅ Excludes tracked non-source files like `.venv`, `.egg-info`, `.env`, and Dockerfiles
+- ✅ Sonar duplication analysis limited away from low-value boilerplate modules
 
 ---
 
@@ -172,17 +169,6 @@ OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Required for test execution
 - Health check implementations
 - Push to Docker Hub registry
 
-### Docker Compose Release
-
-**File:** `docker_compose_release.yml`
-
-**Purpose:** Release management for Docker Compose configurations
-
-**Features:**
-- Separate compose files for CPU and GPU deployments
-- Production-ready configurations
-- Version tagging and release automation
-
 ### Package Build
 
 **File:** `package_build.yml`
@@ -197,14 +183,12 @@ OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Required for test execution
 - Manual workflow dispatch
 
 **Features:**
-- **VCS Versioning:** Uses git tags via hatch-vcs for version management
 - **Quality Checks:** Ruff linting and Bandit security scanning
 - **Cross-Platform Testing:** Ubuntu, macOS 15, Windows Latest
 - **Package Validation:** Builds wheel/sdist and tests installation
 - **Dependency Resolution:** Fixed PyArrow compatibility issues with uv
 
 **Key Features:**
-- ✅ VCS git tag versioning with hatch-vcs
 - ✅ Compatible dependencies with `pyarrow>=14.0.0` and `datasets>=4.0.0`
 - ✅ Cross-platform virtual environment handling (Windows/Unix)
 - ✅ Uses latest available git tag for PR testing
@@ -213,21 +197,19 @@ OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Required for test execution
 
 **File:** `release.yml`
 
-**Purpose:** Automated release management with semantic versioning
+**Purpose:** Automated Python-first release management with semantic versioning
 
 **Triggers:**
-- Push to `main` branch with changes to:
-  - `aiagents4pharma/**`
-  - `pyproject.toml`
-  - `uv.lock`
+- Push to `main`
 - Manual workflow dispatch
 
 **Features:**
-- **Semantic Release:** Automatic version bumping based on commit messages
-- **Auto-Tagging:** Creates git tags automatically (feat:/fix:/BREAKING CHANGE:)
+- **Python Semantic Release:** `python-semantic-release` controls version bumps
+- **Single version source:** `pyproject.toml`
 - **Quality Gates:** Ruff linting and Bandit security before release
 - **PyPI Publishing:** Automated package distribution
-- **GitHub Releases:** Auto-generated with changelogs
+- **GitHub Releases:** Generated from semantic-release notes
+- **Compose bundles:** Attached as release assets without mutating release notes
 
 **Semantic Release Convention:**
 ```bash
@@ -237,10 +219,25 @@ BREAKING CHANGE:     → Major version bump (1.0.0 → 2.0.0)
 ```
 
 **Key Features:**
-- ✅ Semantic-release automation with conventional commits
+- ✅ Python semantic-release automation with conventional commits
 - ✅ Modern uv dependency management for fast builds
-- ✅ Triggers on main branch pushes for continuous deployment
-- ✅ Auto-creates tags and triggers publishing pipeline
+- ✅ Releases are cut from `main`
+- ✅ Auto-creates tags, publishes to PyPI, and uploads release assets
+
+### Docker Build
+
+**File:** `docker_build.yml`
+
+**Purpose:** Build and push Docker images for released tags
+
+**Triggers:**
+- Push tags matching `v*`
+- Manual workflow dispatch
+
+**Features:**
+- Tag-driven image builds
+- Separate CPU and GPU variants where configured
+- Docker Hub publishing for release versions and `latest` aliases
 
 ---
 
@@ -309,10 +306,11 @@ All workflows use UV for fast, reliable dependency management:
 - **VCS versioning** with hatch-vcs for automatic version management
 
 ### 5. **Semantic Release Automation**
-- **Automatic tagging** based on commit message conventions
-- **Version bumping** following semantic versioning rules
-- **Auto-publishing** to PyPI on main branch merges
+- **Automatic tagging** based on conventional commit messages
+- **Version bumping** from `pyproject.toml` using `python-semantic-release`
+- **Auto-publishing** to PyPI on `main`
 - **Changelog generation** and GitHub releases
+- **Compose bundles** attached as release assets without rewriting release notes
 
 ### 6. **Integration & Reporting**
 - SonarCloud integration for advanced analysis
@@ -329,7 +327,7 @@ ZOTERO_API_KEY          # Zotero integration (Talk2Scholars)
 ZOTERO_USER_ID          # Zotero user identification
 CODECOV_TOKEN           # Coverage reporting
 SONAR_TOKEN             # SonarCloud analysis
-PYPI_API_TOKEN          # PyPI publishing (semantic-release)
+PYPI_API_TOKEN          # PyPI publishing
 GITHUB_TOKEN            # GitHub API access (auto-provided)
 ```
 

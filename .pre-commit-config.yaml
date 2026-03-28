@@ -46,5 +46,6 @@ repos:
         name: pip-audit
         entry: uv run pip-audit
         language: system
+        stages: [manual]
         files: pyproject\.toml$
         pass_filenames: false

@@ -45,25 +45,6 @@ updates:
       - "github-actions"
     open-pull-requests-limit: 0
 
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-    target-branch: "main"
-    assignees:
-      - "ansh-info"
-    commit-message:
-      prefix: "deps"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "npm"
-      - "security"
-    open-pull-requests-limit: 0
-    # Update both package.json and lockfile as needed
-    versioning-strategy: "increase"
-
   # Previous optional docker config retained below for easy restoration if needed.
   # - package-ecosystem: "docker"
   #   directory: "/"
