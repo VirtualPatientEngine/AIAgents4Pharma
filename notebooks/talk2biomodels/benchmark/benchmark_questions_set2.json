@@ -1,0 +1,3706 @@
+{
+  "simulate_model_benchmark_questions": [
+    {
+      "id": "sim_set2_001",
+      "question": "simulate model 537 with CRP{serum} concentration 0.01 for 2016 hours with interval 2016 and tell me the final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've simulated model 537 with CRP{serum} concentration 0.01 for 2016 hours (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_002",
+      "question": "run simulation for model 537, CRP{serum} at 1000 nmol/L, 20 hours duration, interval 100 and get the final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Simulation completed. Model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100). The final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_003",
+      "question": "I need to simulate model 537 with CRP{serum} concentration 2.6 for 2016 hours using interval 4032 and get the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{serum} concentration 2.6 for 2016 hours (interval 4032). The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_004",
+      "question": "simulate 537 IL6{serum} 4356.29 conc 1000h interval 1000 and tell me final IL6{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, IL6{serum} 4356.29 nmol/L, 1000h interval 1000. The final IL6{serum} concentration is 0.0006 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "IL6{serum}": 0.000642
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_005",
+      "question": "Please simulate model 537 with CRP{liver} concentration 1583.26 for 2016 hours using interval 1000 and get the final CRP{liver} concentration",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{liver} concentration 1583.26 for 2016 hours (interval 1000). The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{liver}": 60.845411
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_006",
+      "question": "run sim 537 STAT3{gut} 6.11e-06 500h interval 500 and get final STAT3{gut} concentration",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "expected_answer": "Simulation completed. Model 537, STAT3{gut} 6.11e-06 nmol/L, 500h interval 500. The final STAT3{gut} concentration is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "STAT3{gut}": 0.889972
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_007",
+      "question": "I need to understand the inflammatory response dynamics. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000 and get the final STAT3{gut} concentration",
+      "complexity_score": 5,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze inflammatory response dynamics. The final STAT3{gut} concentration is 9.14 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "STAT3{gut}": 9.136212
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_008",
+      "question": "simulate model 537 CRP{serum} 0.01 2016h interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with CRP{serum} 0.01 nmol/L for 2016h (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_009",
+      "question": "can you run a simulation for model 537 with CRP{serum} at 1000 nmol/L for 20 hours? use interval 100 and tell me the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I've run the simulation for model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100). The final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_010",
+      "question": "Execute simulation for model 537, CRP{serum} concentration 2.6, duration 2016 hours, interval 4032 and get the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Simulation executed. Model 537, CRP{serum} 2.6 nmol/L, 2016h duration, interval 4032. The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_011",
+      "question": "I'm working on a systems biology project and need to simulate model 537 with IL6{serum} concentration 4356.29 for 1000 hours using interval 1000. This is crucial for understanding the inflammatory cascade dynamics. Tell me the final IL6{serum} concentration",
+      "complexity_score": 7,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the simulation of model 537 with IL6{serum} concentration 4356.29 for 1000 hours (interval 1000) for your systems biology project. The final IL6{serum} concentration is 0.0006 nmol/L. This data is crucial for understanding the inflammatory cascade dynamics.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "IL6{serum}": 0.000642
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_012",
+      "question": "simulate 537 CRP{liver} 1583.26 2016h interval 1000 and get final CRP{liver} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, CRP{liver} 1583.26 nmol/L, 2016h interval 1000. The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{liver}": 60.845411
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_013",
+      "question": "what is the final STAT3{gut} concentration with initial 6.11e-06 nmol/L after 500 hours in model 537? use interval 500",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "With STAT3{gut} initial concentration 6.11e-06 nmol/L after 500 hours in model 537 (interval 500), the final STAT3{gut} concentration is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "STAT3{gut}": 0.889972
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_014",
+      "question": "I need to understand the temporal evolution of STAT3{gut} during inflammatory processes. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000. This information is critical for my research on signal transduction mechanisms. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 8,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've simulated model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze the temporal evolution during inflammatory processes. The final STAT3{gut} concentration is 9.14 nmol/L. This information is critical for understanding the signal transduction mechanisms.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "STAT3{gut}": 9.136212
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_015",
+      "question": "run sim 537 CRP{serum} 0.01 2016h interval 2016 and get final CRP{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation completed. Model 537, CRP{serum} 0.01 nmol/L, 2016h interval 2016. The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_016",
+      "question": "can you help me simulate model 537? i need CRP{serum} at 1000 for 20 hours with interval 100 and tell me the final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I can help simulate model 537. With CRP{serum} at 1000 nmol/L for 20 hours (interval 100), the final CRP{serum} concentration is 226.44 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_017",
+      "question": "Execute 2016-hour simulation of model 537, CRP{serum} concentration 2.6, interval 4032, report the final CRP{serum} concentration at endpoint",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "expected_answer": "Simulation executed. Model 537, 2016-hour duration, CRP{serum} 2.6 nmol/L, interval 4032. The final CRP{serum} concentration at endpoint is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_018",
+      "question": "I'm conducting a comprehensive analysis of inflammatory biomarker dynamics and need to simulate model 537 with IL6{serum} concentration 4356.29 for 1000 hours using interval 1000. This data is essential for my clinical research on inflammatory disease progression. Tell me the final IL6{serum} concentration",
+      "complexity_score": 6,
+      "user_background": "immunologist",
+      "expected_answer": "I've completed the comprehensive simulation of model 537 with IL6{serum} concentration 4356.29 for 1000 hours (interval 1000) for your clinical research. The final IL6{serum} concentration is 0.0006 nmol/L. This data is essential for your inflammatory disease progression research.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "IL6{serum}": 0.000642
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_019",
+      "question": "simulate model 537 CRP{liver} 1583.26 2016h interval 1000 and tell me final CRP{liver} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with CRP{liver} 1583.26 nmol/L for 2016h (interval 1000). The final CRP{liver} concentration is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{liver}": 60.845411
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_020",
+      "question": "what is the final STAT3{gut} concentration after 500 hours of simulation using model 537 with initial concentration 6.11e-06? use interval 500",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "The final STAT3{gut} concentration after 500 hours of simulation using model 537 with initial concentration 6.11e-06 nmol/L (interval 500) is 0.89 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "STAT3{gut}": 0.889972
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_021",
+      "question": "I need to understand the temporal evolution of STAT3{gut} during inflammatory processes. Please simulate model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours using interval 2000. This information is critical for my research on signal transduction mechanisms and cellular responses. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 9,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the complex simulation of model 537 with STAT3{gut} concentration 6.11e-08 for 1500 hours (interval 2000) to analyze the temporal evolution during inflammatory processes. The final STAT3{gut} concentration is 9.14 nmol/L. This information is critical for understanding the signal transduction mechanisms and cellular responses in your research.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "STAT3{gut}": 9.136212
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_022",
+      "question": "pls run sim 537 CRP{serum} 0.01 2016h interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 2,
+      "user_background": "immunologist",
+      "expected_answer": "I've run the simulation of model 537 with CRP{serum} 0.01 nmol/L for 2016h (interval 2016). The final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_023",
+      "question": "I'm a PhD student and need to simulate model 537 with CRP{serum} at 1000 nmol/L for 20 hours using interval 100 to get data for my thesis. Tell me the final CRP{serum} concentration",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I've simulated model 537 with CRP{serum} at 1000 nmol/L for 20 hours (interval 100) for your thesis research. The final CRP{serum} concentration is 226.44 nmol/L. This should be useful for your thesis analysis.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_024",
+      "question": "simulate 537 CRP{serum} 2.6 2016h interval 4032 and get final CRP{serum} concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 537, CRP{serum} 2.6 nmol/L, 2016h interval 4032. The final CRP{serum} concentration is 221.06 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 4032,
+      "species": "CRP{serum}",
+      "initial_concentration": 2.6,
+      "expected_values": {
+        "CRP{serum}": 221.060568
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_025",
+      "question": "Could you please help me understand the inflammatory response by running a 1000-hour simulation of model 537 with IL6{serum} concentration 4356.29? I need the data for my study on inflammatory pathways using interval 1000. Tell me the final IL6{serum} concentration",
+      "complexity_score": 5,
+      "user_background": "immunologist",
+      "expected_answer": "I've run the 1000-hour simulation of model 537 with IL6{serum} concentration 4356.29 (interval 1000) to help with your study on inflammatory pathways. The final IL6{serum} concentration is 0.0006 nmol/L. This should provide valuable insights for your inflammatory pathways research.",
+      "model_id": "537",
+      "simulation_time": "1000 hours",
+      "interval": 1000,
+      "species": "IL6{serum}",
+      "initial_concentration": 4356.288965511659,
+      "expected_values": {
+        "IL6{serum}": 0.000642
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_026",
+      "question": "what is the final CRP{liver} concentration after 2016h in model 537 with 1583.26 initial? interval 1000",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "The final CRP{liver} concentration after 2016h in model 537 with 1583.26 nmol/L initial (interval 1000) is 60.85 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 1000,
+      "species": "CRP{liver}",
+      "initial_concentration": 1583.2584678161063,
+      "expected_values": {
+        "CRP{liver}": 60.845411
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_027",
+      "question": "I need to run a comprehensive simulation of the inflammatory cascade using model 537. Please simulate with STAT3{gut} concentration 6.11e-06 for 500 hours using interval 500. This is for my research on kinase activation patterns and cellular responses. Tell me the final STAT3{gut} concentration",
+      "complexity_score": 7,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the comprehensive simulation of model 537 with STAT3{gut} concentration 6.11e-06 for 500 hours (interval 500) for your research. The final STAT3{gut} concentration is 0.89 nmol/L. This data is valuable for your research on kinase activation patterns and cellular responses.",
+      "model_id": "537",
+      "simulation_time": "500 hours",
+      "interval": 500,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-06,
+      "expected_values": {
+        "STAT3{gut}": 0.889972
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_028",
+      "question": "simulate model 537 STAT3{gut} 6.11e-08 1500h interval 2000 and tell me final STAT3{gut} concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 537 simulated with STAT3{gut} 6.11e-08 nmol/L for 1500h (interval 2000). The final STAT3{gut} concentration is 9.14 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "1500 hours",
+      "interval": 2000,
+      "species": "STAT3{gut}",
+      "initial_concentration": 6.106360135082121e-08,
+      "expected_values": {
+        "STAT3{gut}": 9.136212
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_029",
+      "question": "can u help me with model 537? i need CRP{serum} 0.01 for 2016h with interval 2016 and tell me final CRP{serum} concentration",
+      "complexity_score": 3,
+      "user_background": "immunologist",
+      "expected_answer": "Sure! I can help with model 537. With CRP{serum} 0.01 nmol/L for 2016h (interval 2016), the final CRP{serum} concentration is 10.02 nmol/L.",
+      "model_id": "537",
+      "simulation_time": "2016 hours",
+      "interval": 2016,
+      "species": "CRP{serum}",
+      "initial_concentration": 0.01,
+      "expected_values": {
+        "CRP{serum}": 10.019164
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_030",
+      "question": "I'm working on a complex multi-scale modeling project involving inflammatory responses and need to simulate the CRP{serum} dynamics using model 537 with concentration 1000 for 20 hours using interval 100. This data is essential for understanding the temporal dynamics of inflammatory markers in our multi-scale biological model. Tell me the final CRP{serum} concentration",
+      "complexity_score": 8,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've completed the complex simulation of model 537 with CRP{serum} concentration 1000 nmol/L for 20 hours (interval 100) for your multi-scale modeling project. The final CRP{serum} concentration is 226.44 nmol/L. This data is essential for understanding the temporal dynamics of inflammatory markers in your multi-scale biological model.",
+      "model_id": "537",
+      "simulation_time": "20 hours",
+      "interval": 100,
+      "species": "CRP{serum}",
+      "initial_concentration": 1000,
+      "expected_values": {
+        "CRP{serum}": 226.440005
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_031",
+      "question": "simulate model 971 for 50 days with interval 100 and tell me the final Infected count",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've simulated model 971 for 50 days with interval 100. The final Infected count is 104,339.",
+      "model_id": "971",
+      "simulation_time": "50 days",
+      "interval": 100,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 104338.5
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_032",
+      "question": "run simulation for model 971, 100 days duration, interval 200, get final Infected count",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "Simulation completed. Model 971, 100 days duration, interval 200. The final Infected count is 71,434.",
+      "model_id": "971",
+      "simulation_time": "100 days",
+      "interval": 200,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 71433.53
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_033",
+      "question": "I need to simulate the COVID-19 epidemic using model 971 for 180 days with interval 400 to understand disease spread",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've simulated the COVID-19 epidemic using model 971 for 180 days with interval 400. The final Infected count is 40,317, which shows the disease spread pattern.",
+      "model_id": "971",
+      "simulation_time": "180 days",
+      "interval": 400,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 40316.62,
+        "Susceptible": 1055585,
+        "Recovered": 6955857,
+        "Hospitalised": 49019.75
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_034",
+      "question": "simulate 971 500d interval 1000 get Infected count",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model 971, 500d interval 1000. The final Infected count is 4,090.",
+      "model_id": "971",
+      "simulation_time": "500 days",
+      "interval": 1000,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 4090.069
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_035",
+      "question": "As a public health researcher, I need to understand the COVID-19 transmission dynamics. Please simulate model 971 for 20 days with interval 400 and provide the final Infected count for my epidemiological analysis.",
+      "complexity_score": 5,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've simulated model 971 for 20 days with interval 400 for your epidemiological analysis. The final Infected count is 120,668. This data should be valuable for understanding the COVID-19 transmission dynamics in your public health research.",
+      "model_id": "971",
+      "simulation_time": "20 days",
+      "interval": 400,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 120668.1
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_036",
+      "question": "what's the Infected count after 10 days in COVID model 971 with interval 10?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "The Infected count after 10 days in COVID model 971 with interval 10 is 3,414.",
+      "model_id": "971",
+      "simulation_time": "10 days",
+      "interval": 10,
+      "species": "Infected",
+      "expected_values": {
+        "Infected": 3413.654
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_037",
+      "question": "simulate model BIOMD0000000027 for 100 seconds with parameter k1cat value 0.1 and tell me the final M concentration",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've simulated model BIOMD0000000027 for 100 seconds with parameter k1cat value 0.1. The final M concentration is 154.98 nmol/L.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "100 seconds",
+      "parameter_name": "k1cat",
+      "parameter_value": 0.1,
+      "species": "M",
+      "expected_values": {
+        "Mpp": 317.356267,
+        "M": 154.982325,
+        "Mp": 27.661408
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_038",
+      "question": "run simulation for model BIOMD0000000027, 1000 seconds duration, parameter k1cat value 1, get final Mp concentration",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "Simulation completed. Model BIOMD0000000027, 1000 seconds duration, parameter k1cat value 1. The final Mp concentration is 5.36 nmol/L.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "1000 seconds",
+      "parameter_name": "k1cat",
+      "parameter_value": 1,
+      "species": "Mp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "M": 0.076041,
+        "Mp": 5.358948
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_039",
+      "question": "I need to simulate the MAPK signaling pathway using model BIOMD0000000027 for 180 seconds with parameter k1cat value 100 to understand phosphorylation dynamics",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've simulated the MAPK signaling pathway using model BIOMD0000000027 for 180 seconds with parameter k1cat value 100. The final Mpp concentration is 494.65 nmol/L, which shows the phosphorylation dynamics.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "180 seconds",
+      "parameter_name": "k1cat",
+      "parameter_value": 100,
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.647985,
+        "M": 0.000758,
+        "Mp": 5.351257
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_040",
+      "question": "simulate BIOMD0000000027 500s parameter k2cat value 10 get M concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Simulation complete. Model BIOMD0000000027, 500s parameter k2cat value 10. The final M concentration is 0.001 nmol/L.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "500 seconds",
+      "parameter_name": "k2cat",
+      "parameter_value": 10,
+      "species": "M",
+      "expected_values": {
+        "M": 0.00114
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_041",
+      "question": "As a systems biologist, I need to understand the MAPK cascade dynamics. Please simulate model BIOMD0000000027 for 20 seconds with parameter k2cat value 0.1 and provide the final Mp concentration for my signaling analysis.",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've simulated model BIOMD0000000027 for 20 seconds with parameter k2cat value 0.1 for your signaling analysis. The final Mp concentration is 457.35 nmol/L. This data should be valuable for understanding the MAPK cascade dynamics in your systems biology research.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "20 seconds",
+      "parameter_name": "k2cat",
+      "parameter_value": 0.1,
+      "species": "Mp",
+      "expected_values": {
+        "M": 0.103107
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "sim_set2_042",
+      "question": "what's the Mpp concentration after 10 seconds in MAPK model BIOMD0000000027 with parameter k2cat value 100?",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "The Mpp concentration after 10 seconds in MAPK model BIOMD0000000027 with parameter k2cat value 100 is 499.20 nmol/L.",
+      "model_id": "BIOMD0000000027",
+      "simulation_time": "10 seconds",
+      "parameter_name": "k2cat",
+      "parameter_value": 100,
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 499.195565
+      },
+      "expected_tools": [
+        "simulate_model",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_001",
+      "question": "how many models on crohn's disease are there in biomodels database?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I found 5 models related to Crohn's disease in the BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_002",
+      "question": "Search for models on precision medicine, and then list the names of the models.",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_003",
+      "question": "can u search biomodels for covid-19 models?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "expected_answer": "Sure! I found 43 models related to COVID-19 in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, SIR/SEIR models, and immune response models.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_004",
+      "question": "I need to find models related to gut health and microbiome interactions for my research on inflammatory bowel disease. Please search the BioModels database and tell me how many models are available.",
+      "complexity_score": 6,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 models related to gut health and microbiome interactions in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering mucosal immunity, gut microbiome interactions, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_005",
+      "question": "search biomodels crohn disease count",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Search completed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn disease",
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_006",
+      "question": "As a researcher studying precision medicine approaches, I need to understand what computational models are available in the BioModels database. Could you please search for precision medicine models and provide me with the count?",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 models related to precision medicine in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_007",
+      "question": "what's the number of covid models in biomodels?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "There are 43 COVID-19 related models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
+      "tool": "search_models",
+      "search_query": "covid",
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_008",
+      "question": "I'm working on a comprehensive analysis of gut microbiome models and need to know how many models are available in the BioModels database that focus on gut-related processes, including metabolism, immunity, and microbial interactions.",
+      "complexity_score": 7,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 models related to gut processes in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_009",
+      "question": "run search crohn's disease models biomodels",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Search executed. Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_010",
+      "question": "hey can you help me find precision medicine models in biomodels database?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Hey! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_011",
+      "question": "Execute search for COVID-19 models in BioModels database, report model count",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Search executed. Found 43 COVID-19 models in BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering transmission dynamics, public health interventions, and immune responses.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_012",
+      "question": "I need to understand the availability of gut-related models for my microbiome research. Please search the BioModels database for gut models and tell me how many are available.",
+      "complexity_score": 4,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity, and tissue-specific metabolic networks.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_013",
+      "question": "search biomodels crohn disease how many",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Found 5 models for Crohn's disease in BioModels database: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn disease",
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_014",
+      "question": "As a PhD student working on precision medicine applications, I need to identify available computational models in the BioModels database. Could you please search for precision medicine models and provide the count?",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_015",
+      "question": "what models exist for covid in biomodels?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "There are 43 COVID-19 models in the BioModels database. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more including various epidemiological models, transmission dynamics models, and models studying the impact of public health interventions.",
+      "tool": "search_models",
+      "search_query": "covid",
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_016",
+      "question": "I'm conducting a comprehensive review of gut microbiome modeling approaches and need to know the total number of gut-related models available in the BioModels database. This information is crucial for my systematic review on computational approaches to studying gut health.",
+      "complexity_score": 8,
+      "user_background": "immunologist",
+      "expected_answer": "I found 58 gut-related models in the BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more covering gut microbiome interactions, mucosal immunity during infections, tissue-specific genome-scale metabolic networks, and detailed models of specific gut microbial species including Lactobacillus, Acetobacter, and other beneficial bacteria.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_017",
+      "question": "pls search crohn's disease models biomodels count",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've searched for Crohn's disease models in BioModels. Found 5 models: Dwivedi2014 - Healthy Volunteer IL6 Model (BIOMD0000000534), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6 Antibody (BIOMD0000000535), Dwivedi2014 - Crohns IL6 Disease model - sgp130 activity (BIOMD0000000536), Dwivedi2014 - Crohns IL6 Disease model - Anti-IL6R Antibody (BIOMD0000000537), and Lo2016 - IBD Response to Anti-TNFa treatment (MODEL2505090001).",
+      "tool": "search_models",
+      "search_query": "crohn's disease",
+      "expected_count": 5,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_018",
+      "question": "can you help me find precision medicine models? i need the count for my research",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Sure! I found 7 precision medicine models in the BioModels database: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Zhao2020 - SUQC model of COVID-19 transmission dynamics in Wuhan, Hubei, and China (BIOMD0000000962), Montagud2022 - Prostate cancer Boolean model (MODEL2106070001), Bannerman2022 Whole Genome Metabolism - Mycobacterium leprae (strain Br4923)_1 (MODEL2203300001), Bannerman2022 Whole Genome Metabolism - M. abscessus (strain ATCC 19977 / DSM 44196) (MODEL2203300002), Gulhane2022 - Sphingolipid metabolism and PI3K-AKT axis in NSCLC (MODEL2402290001), and YangziChen2024 - Metabolic Machine Learning Predictor Model for Diagnosis of Gastric Cancer (MODEL2407230001).",
+      "tool": "search_models",
+      "search_query": "precision medicine",
+      "expected_count": 7,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_019",
+      "question": "I need to run a search for COVID-19 models in the BioModels database and get the total count for my epidemiological modeling project",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've searched the BioModels database for COVID-19 models. Found 43 models. Key models include: Giordano2020 - SIDARTHE model of COVID-19 spread in Italy (BIOMD0000000955), Bertozzi2020 - SIR model of COVID-19 spread in CA and NY (BIOMD0000000956), Roda2020 - SIR model of COVID-19 spread in Wuhan (BIOMD0000000957), Tang2020 - Estimation of transmission risk of COVID-19 and impact of public health interventions (BIOMD0000000971), and many more covering various aspects of the pandemic including transmission dynamics, public health interventions, and immune responses. This should provide a comprehensive resource for your epidemiological modeling project.",
+      "tool": "search_models",
+      "search_query": "covid-19",
+      "expected_count": 43,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "search_020",
+      "question": "search gut models biomodels how many",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Found 58 gut models in BioModels database. Key models include: Leber2015 - Mucosal immunity and gut microbiome interaction during C. difficile infection (BIOMD0000000583), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Colon (MODEL1509220003), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Ileum (MODEL1509220009), Mardinoglu2015 - Tissue-specific genome-scale metabolic network - Duodenum (MODEL1509220010), Ankrah2021 - Genome scale metabolic model of Drosophila gut microbe Lactobacillus plantarum (MODEL2002040006), and many more.",
+      "tool": "search_models",
+      "search_query": "gut",
+      "expected_count": 58,
+      "expected_tools": [
+        "search_models",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_001",
+      "question": "Bring biomodel 27 to a steady state, and then determine the Mpp concentration at the steady state",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought biomodel 27 to steady state. The Mpp concentration at steady state is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_concentration": 494.565011,
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_002",
+      "question": "run steady state analysis for model 27 and get M concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis completed for model 27. The M concentration at steady state is 0.076 nmol/L with a transition time of 1.012 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_concentration": 0.076041,
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_003",
+      "question": "I need to understand the steady state behavior of model 27. Please bring it to steady state and tell me the Mp concentration",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state. The Mp concentration at steady state is 5.36 nmol/L with a transition time of 0.669 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_concentration": 5.358948,
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_004",
+      "question": "what is the steady state concentration of Mpp in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state concentration of Mpp in model 27 is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_concentration": 494.565011,
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_005",
+      "question": "can you bring model 27 to steady state and tell me the M concentration?",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "expected_answer": "Sure! I've brought model 27 to steady state. The M concentration is 0.076 nmol/L with a transition time of 1.012 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_concentration": 0.076041,
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_006",
+      "question": "Execute steady state analysis for biomodel 27 and report the Mp concentration at equilibrium",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis executed for biomodel 27. The Mp concentration at equilibrium is 5.36 nmol/L with a transition time of 0.669 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_concentration": 5.358948,
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_007",
+      "question": "I'm working on a systems biology project and need to know the steady state concentration of Mpp in model 27. Please bring the model to steady state and provide the concentration",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your systems biology project. The Mpp concentration at steady state is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_concentration": 494.565011,
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_008",
+      "question": "steady state model 27 M concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Model 27 steady state M concentration is 0.076 nmol/L (transition time: 1.012 seconds).",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_009",
+      "question": "As a PhD student studying MAPK signaling, I need to determine the steady state concentrations in model 27. Please bring it to steady state and tell me the Mp concentration",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your MAPK signaling research. The Mp concentration at steady state is 5.36 nmol/L with a transition time of 0.669 seconds. This should be valuable for your PhD research.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_010",
+      "question": "what's the Mpp concentration at steady state for model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The Mpp concentration at steady state for model 27 is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_011",
+      "question": "I need to analyze the steady state behavior of model 27. Please bring it to steady state and provide the M concentration for my analysis",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your analysis. The M concentration at steady state is 0.076 nmol/L with a transition time of 1.012 seconds. This should be useful for your steady state behavior analysis.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_012",
+      "question": "run steady state on model 27 and get Mp conc",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Steady state completed for model 27. Mp concentration is 5.36 nmol/L (transition time: 0.669 seconds).",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_013",
+      "question": "I'm conducting a comprehensive study of MAPK cascade dynamics and need to know the steady state concentration of Mpp in model 27. This information is crucial for understanding the phosphorylation cascade. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your MAPK cascade dynamics study. The Mpp concentration at steady state is 494.57 nmol/L with a transition time of 62.278 seconds. This information is crucial for understanding the phosphorylation cascade in your comprehensive study.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_014",
+      "question": "bring biomodel 27 to steady state and determine M concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Biomodel 27 brought to steady state. The M concentration is 0.076 nmol/L with a transition time of 1.012 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_015",
+      "question": "hey can you help me get the steady state Mp concentration for model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Hey! I've brought model 27 to steady state. The Mp concentration is 5.36 nmol/L with a transition time of 0.669 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_016",
+      "question": "Execute steady state analysis for model 27 and report the Mpp concentration at equilibrium for my research project",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis executed for model 27. The Mpp concentration at equilibrium is 494.57 nmol/L with a transition time of 62.278 seconds. This should be valuable for your research project.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_017",
+      "question": "what is the steady state M concentration in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state M concentration in model 27 is 0.076 nmol/L with a transition time of 1.012 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_018",
+      "question": "I need to understand the equilibrium behavior of model 27. Please bring it to steady state and tell me the Mp concentration for my systems biology analysis",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your systems biology analysis. The Mp concentration at equilibrium is 5.36 nmol/L with a transition time of 0.669 seconds. This should help you understand the equilibrium behavior.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_019",
+      "question": "pls run steady state on model 27 and get Mpp concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've run steady state analysis on model 27. The Mpp concentration is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_020",
+      "question": "I'm working on a complex multi-scale modeling project involving MAPK signaling pathways and need to know the steady state concentration of M in model 27. This data is essential for my multi-scale biological model. Please bring the model to steady state",
+      "complexity_score": 7,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your multi-scale modeling project. The M concentration at steady state is 0.076 nmol/L with a transition time of 1.012 seconds. This data is essential for your multi-scale biological model involving MAPK signaling pathways.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "transition_time": 1.012,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_021",
+      "question": "steady state model 27 Mp conc",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Model 27 steady state Mp concentration is 5.36 nmol/L (transition time: 0.669 seconds).",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "transition_time": 0.669,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_022",
+      "question": "can you help me bring model 27 to steady state and tell me the Mpp concentration?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "expected_answer": "Sure! I've brought model 27 to steady state. The Mpp concentration is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "transition_time": 62.278,
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_023",
+      "question": "I need to analyze the steady state behavior of model 27 for my research. Please bring it to steady state and provide the M concentration",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your research. The M concentration at steady state is 0.076 nmol/L with a transition time of 1.012 seconds. This should be useful for your steady state behavior analysis.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_024",
+      "question": "what's the Mp concentration at steady state in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The Mp concentration at steady state in model 27 is 5.36 nmol/L with a transition time of 0.669 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_025",
+      "question": "I'm conducting a comprehensive analysis of MAPK signaling dynamics and need to know the steady state concentration of Mpp in model 27. This information is crucial for my signaling analysis. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your MAPK signaling dynamics analysis. The Mpp concentration at steady state is 494.57 nmol/L with a transition time of 62.278 seconds. This information is crucial for your signaling analysis.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_026",
+      "question": "run steady state analysis for biomodel 27 and get M concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis completed for biomodel 27. The M concentration is 0.076 nmol/L with a transition time of 1.012 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_027",
+      "question": "I need to understand the equilibrium behavior of model 27 for my PhD thesis. Please bring it to steady state and tell me the Mp concentration",
+      "complexity_score": 5,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your PhD thesis. The Mp concentration at equilibrium is 5.36 nmol/L with a transition time of 0.669 seconds. This should be valuable for your thesis research.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_028",
+      "question": "what is the steady state Mpp concentration for model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state Mpp concentration for model 27 is 494.57 nmol/L with a transition time of 62.278 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mpp",
+      "expected_values": {
+        "Mpp": 494.565011,
+        "transition_time": 62.278
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_029",
+      "question": "I'm working on a complex systems biology project and need to know the steady state concentration of M in model 27. This data is essential for my multi-scale modeling approach. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "computational_biologist",
+      "expected_answer": "I've brought model 27 to steady state for your systems biology project. The M concentration at steady state is 0.076 nmol/L with a transition time of 1.012 seconds. This data is essential for your multi-scale modeling approach.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "M",
+      "expected_values": {
+        "M": 0.076041,
+        "transition_time": 1.012
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_030",
+      "question": "bring model 27 to steady state and determine Mp concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 27 brought to steady state. The Mp concentration is 5.36 nmol/L with a transition time of 0.669 seconds.",
+      "model_id": "BIOMD0000000027",
+      "tool": "steady_state",
+      "species": "Mp",
+      "expected_values": {
+        "Mp": 5.358948,
+        "transition_time": 0.669
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_031",
+      "question": "Bring biomodel 971 to a steady state, and then determine the Susceptible concentration at the steady state",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought biomodel 971 to steady state. The Susceptible concentration at steady state is 1,055,585 #/ml with a transition time of 1.376e+27 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible",
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_032",
+      "question": "run steady state analysis for model 971 and get Exposed concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis completed for model 971. The Exposed concentration is -5.661e-22 #/ml with a transition time of 7.000 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed",
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_033",
+      "question": "I need to understand the steady state behavior of the COVID model 971. Please bring it to steady state and tell me the Infected concentration",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state. The Infected concentration at steady state is -1.541e-22 #/ml with a transition time of 2.160 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Infected",
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_034",
+      "question": "what is the steady state concentration of Asymptomatic in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state concentration of Asymptomatic in model 971 is -8.028e-23 #/ml with a transition time of 7.154 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Asymptomatic",
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_035",
+      "question": "can you bring model 971 to steady state and tell me the Susceptible_quarantined concentration?",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "expected_answer": "Sure! I've brought model 971 to steady state. The Susceptible_quarantined concentration is -1.074e-20 #/ml with a transition time of 14.000 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible_quarantined",
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_036",
+      "question": "Execute steady state analysis for biomodel 971 and report the Exposed_quarantined concentration at equilibrium",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis executed for biomodel 971. The Exposed_quarantined concentration at equilibrium is -1.222e-28 #/ml with a transition time of 7.943 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed_quarantined",
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_037",
+      "question": "I'm working on a COVID-19 modeling project and need to know the steady state concentration of Hospitalised in model 971. Please bring the model to steady state and provide the concentration",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your COVID-19 modeling project. The Hospitalised concentration at steady state is -1.873e-22 #/ml with a transition time of 8.602 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Hospitalised",
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_038",
+      "question": "steady state model 971 Recovered concentration",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Model 971 steady state Recovered concentration is 10,025,626 #/ml (transition time: 1.195e+29 days).",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Recovered",
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_039",
+      "question": "As a PhD student studying COVID-19 transmission dynamics, I need to determine the steady state concentrations in model 971. Please bring it to steady state and tell me the Susceptible concentration",
+      "complexity_score": 5,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your COVID-19 transmission dynamics research. The Susceptible concentration at steady state is 1,055,585 #/ml with a transition time of 1.376e+27 days. This should be valuable for your PhD research.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible",
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_040",
+      "question": "what's the Infected concentration at steady state for model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The Infected concentration at steady state for model 971 is -1.541e-22 #/ml with a transition time of 2.160 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Infected",
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_041",
+      "question": "I need to analyze the steady state behavior of model 971. Please bring it to steady state and provide the Exposed concentration for my analysis",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your analysis. The Exposed concentration at steady state is -5.661e-22 #/ml with a transition time of 7.000 days. This should be useful for your steady state behavior analysis.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed",
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_042",
+      "question": "run steady state on model 971 and get Asymptomatic conc",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Steady state completed for model 971. Asymptomatic concentration is -8.028e-23 #/ml (transition time: 7.154 days).",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Asymptomatic",
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_043",
+      "question": "I'm conducting a comprehensive study of COVID-19 epidemic dynamics and need to know the steady state concentration of Susceptible_quarantined in model 971. This information is crucial for understanding quarantine effectiveness. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your COVID-19 epidemic dynamics study. The Susceptible_quarantined concentration at steady state is -1.074e-20 #/ml with a transition time of 14.000 days. This information is crucial for understanding quarantine effectiveness in your comprehensive study.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible_quarantined",
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_044",
+      "question": "bring biomodel 971 to steady state and determine Exposed_quarantined concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Biomodel 971 brought to steady state. The Exposed_quarantined concentration is -1.222e-28 #/ml with a transition time of 7.943 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed_quarantined",
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_045",
+      "question": "hey can you help me get the steady state Hospitalised concentration for model 971?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "expected_answer": "Hey! I've brought model 971 to steady state. The Hospitalised concentration is -1.873e-22 #/ml with a transition time of 8.602 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Hospitalised",
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_046",
+      "question": "Execute steady state analysis for model 971 and report the Recovered concentration at equilibrium for my research project",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis executed for model 971. The Recovered concentration at equilibrium is 10,025,626 #/ml with a transition time of 1.195e+29 days. This should be valuable for your research project.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Recovered",
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_047",
+      "question": "what is the steady state Susceptible concentration in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state Susceptible concentration in model 971 is 1,055,585 #/ml with a transition time of 1.376e+27 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible",
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_048",
+      "question": "I need to understand the equilibrium behavior of model 971. Please bring it to steady state and tell me the Infected concentration for my epidemiological analysis",
+      "complexity_score": 5,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your epidemiological analysis. The Infected concentration at equilibrium is -1.541e-22 #/ml with a transition time of 2.160 days. This should help you understand the equilibrium behavior.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Infected",
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_049",
+      "question": "pls run steady state on model 971 and get Exposed concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "I've run steady state analysis on model 971. The Exposed concentration is -5.661e-22 #/ml with a transition time of 7.000 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed",
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_050",
+      "question": "I'm working on a complex multi-scale modeling project involving COVID-19 transmission dynamics and need to know the steady state concentration of Asymptomatic in model 971. This data is essential for my multi-scale biological model. Please bring the model to steady state",
+      "complexity_score": 7,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your multi-scale modeling project. The Asymptomatic concentration at steady state is -8.028e-23 #/ml with a transition time of 7.154 days. This data is essential for your multi-scale biological model involving COVID-19 transmission dynamics.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Asymptomatic",
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_051",
+      "question": "steady state model 971 Susceptible_quarantined conc",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "expected_answer": "Model 971 steady state Susceptible_quarantined concentration is -1.074e-20 #/ml (transition time: 14.000 days).",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible_quarantined",
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_052",
+      "question": "can you help me bring model 971 to steady state and tell me the Exposed_quarantined concentration?",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "expected_answer": "Sure! I've brought model 971 to steady state. The Exposed_quarantined concentration is -1.222e-28 #/ml with a transition time of 7.943 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed_quarantined",
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_053",
+      "question": "I need to analyze the steady state behavior of model 971 for my research. Please bring it to steady state and provide the Hospitalised concentration",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your research. The Hospitalised concentration at steady state is -1.873e-22 #/ml with a transition time of 8.602 days. This should be useful for your steady state behavior analysis.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Hospitalised",
+      "expected_values": {
+        "Hospitalised": -1.873e-22,
+        "transition_time": 8.602
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_054",
+      "question": "what's the Recovered concentration at steady state in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The Recovered concentration at steady state in model 971 is 10,025,626 #/ml with a transition time of 1.195e+29 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Recovered",
+      "expected_values": {
+        "Recovered": 10025626.335858,
+        "transition_time": 1.195e+29
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_055",
+      "question": "I'm conducting a comprehensive analysis of COVID-19 epidemic dynamics and need to know the steady state concentration of Susceptible in model 971. This information is crucial for my epidemic analysis. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your COVID-19 epidemic dynamics analysis. The Susceptible concentration at steady state is 1,055,585 #/ml with a transition time of 1.376e+27 days. This information is crucial for your epidemic analysis.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible",
+      "expected_values": {
+        "Susceptible": 1055585.406125,
+        "transition_time": 1.376e+27
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_056",
+      "question": "run steady state analysis for biomodel 971 and get Infected concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Steady state analysis completed for biomodel 971. The Infected concentration is -1.541e-22 #/ml with a transition time of 2.160 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Infected",
+      "expected_values": {
+        "Infected": -1.541e-22,
+        "transition_time": 2.16
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_057",
+      "question": "I need to understand the equilibrium behavior of model 971 for my PhD thesis. Please bring it to steady state and tell me the Exposed concentration",
+      "complexity_score": 5,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your PhD thesis. The Exposed concentration at equilibrium is -5.661e-22 #/ml with a transition time of 7.000 days. This should be valuable for your thesis research.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed",
+      "expected_values": {
+        "Exposed": -5.661e-22,
+        "transition_time": 7.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_058",
+      "question": "what is the steady state Asymptomatic concentration for model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "The steady state Asymptomatic concentration for model 971 is -8.028e-23 #/ml with a transition time of 7.154 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Asymptomatic",
+      "expected_values": {
+        "Asymptomatic": -8.028e-23,
+        "transition_time": 7.154
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_059",
+      "question": "I'm working on a complex systems biology project and need to know the steady state concentration of Susceptible_quarantined in model 971. This data is essential for my multi-scale modeling approach. Please bring the model to steady state",
+      "complexity_score": 6,
+      "user_background": "epidemiologist",
+      "expected_answer": "I've brought model 971 to steady state for your systems biology project. The Susceptible_quarantined concentration at steady state is -1.074e-20 #/ml with a transition time of 14.000 days. This data is essential for your multi-scale modeling approach.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Susceptible_quarantined",
+      "expected_values": {
+        "Susceptible_quarantined": -1.074e-20,
+        "transition_time": 14.0
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "steady_060",
+      "question": "bring model 971 to steady state and determine Exposed_quarantined concentration",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "expected_answer": "Model 971 brought to steady state. The Exposed_quarantined concentration is -1.222e-28 #/ml with a transition time of 7.943 days.",
+      "model_id": "971",
+      "tool": "steady_state",
+      "species": "Exposed_quarantined",
+      "expected_values": {
+        "Exposed_quarantined": -1.222e-28,
+        "transition_time": 7.943
+      },
+      "expected_tools": [
+        "steady_state",
+        "ask_question"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_001",
+      "question": "simulate the model 537 and plot the species IL6{serum}, CRP{serum}, sR{serum}, CRP{liver} and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, sR{serum}, CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_002",
+      "question": "run simulation for model 537 and create a plot showing CRP{serum} and IL6{serum} dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_003",
+      "question": "simulate model 537 and plot CRP{liver}, STAT3{gut}, and sR{serum} species",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}, STAT3{gut}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_004",
+      "question": "I need to visualize the inflammatory response. Please simulate model 537 and plot IL6{serum}, CRP{serum}, and STAT3{liver}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_005",
+      "question": "simulate model 537 and show me a plot of CRP{serum} concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_006",
+      "question": "run simulation for model 537 and plot all liver species: CRP{liver} and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_007",
+      "question": "simulate model 537 and create a visualization showing sR{serum} and STAT3{gut} dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "sR{serum}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_008",
+      "question": "I'm studying inflammatory markers. Please simulate model 537 and plot IL6{serum}, CRP{serum}, CRP{liver}, and STAT3{gut}",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, CRP{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_009",
+      "question": "simulate model 537 and plot the species STAT3{liver} and STAT3{gut}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_010",
+      "question": "run simulation for model 537 and show CRP{serum}, sR{serum}, and IL6{serum} in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, sR{serum}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_011",
+      "question": "simulate model 537 and plot CRP{liver} concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_012",
+      "question": "I need to analyze the gut-liver axis. Please simulate model 537 and plot STAT3{gut}, CRP{liver}, and IL6{serum}",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{gut}, CRP{liver}, IL6{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_013",
+      "question": "simulate model 537 and create a plot showing sR{serum} dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_014",
+      "question": "run simulation for model 537 and plot IL6{serum}, CRP{liver}, STAT3{liver}, and sR{serum}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{liver}, STAT3{liver}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_015",
+      "question": "simulate model 537 and show me a visualization of STAT3{gut} and CRP{serum}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{gut}, CRP{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_016",
+      "question": "I'm investigating inflammatory pathways. Please simulate model 537 and plot IL6{serum}, CRP{serum}, CRP{liver}, STAT3{liver}, and STAT3{gut}",
+      "complexity_score": 4,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, CRP{liver}, STAT3{liver}, STAT3{gut}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_017",
+      "question": "simulate model 537 and plot the species IL6{serum} and sR{serum}",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_018",
+      "question": "run simulation for model 537 and create a plot showing CRP{serum}, CRP{liver}, and STAT3{liver}",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "CRP{serum}, CRP{liver}, STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_019",
+      "question": "simulate model 537 and plot STAT3{liver} concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "STAT3{liver}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_020",
+      "question": "I need to visualize all serum markers. Please simulate model 537 and plot IL6{serum}, CRP{serum}, and sR{serum}",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "IL6{serum}, CRP{serum}, sR{serum}"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_021",
+      "question": "simulate the model 27 and plot the species Mpp, M, and Mp",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_022",
+      "question": "run simulation for model 27 and create a plot showing Mpp and M dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_023",
+      "question": "simulate model 27 and plot Mp concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_024",
+      "question": "I need to analyze the phosphorylation cascade. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_025",
+      "question": "simulate model 27 and show me a plot of Mpp concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_026",
+      "question": "run simulation for model 27 and plot M and Mp species",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_027",
+      "question": "simulate model 27 and create a visualization showing Mpp and Mp dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_028",
+      "question": "I'm studying MAPK signaling. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_029",
+      "question": "simulate model 27 and plot the species M concentration over time",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_030",
+      "question": "run simulation for model 27 and show Mpp and M in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_031",
+      "question": "simulate model 27 and plot Mp concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_032",
+      "question": "I need to visualize the phosphorylation states. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_033",
+      "question": "simulate model 27 and create a plot showing Mpp dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_034",
+      "question": "run simulation for model 27 and plot M, Mp, and Mpp species",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_035",
+      "question": "simulate model 27 and show me a visualization of M and Mp",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_036",
+      "question": "I'm analyzing kinase activity. Please simulate model 27 and plot Mpp, M, and Mp",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mpp, M, Mp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_037",
+      "question": "simulate model 27 and plot the species M and Mpp",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_038",
+      "question": "run simulation for model 27 and create a plot showing Mp and Mpp",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_039",
+      "question": "simulate model 27 and plot M concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_040",
+      "question": "I need to visualize all phosphorylation states. Please simulate model 27 and plot M, Mp, and Mpp",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "M, Mp, Mpp"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_041",
+      "question": "simulate the model 971 and plot the species Infected, Susceptible, Recovered, Hospitalised, and Exposed",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Susceptible, Recovered, Hospitalised, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_042",
+      "question": "run simulation for model 971 and create a plot showing Infected and Susceptible dynamics",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_043",
+      "question": "simulate model 971 and plot Recovered concentration over time",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_044",
+      "question": "I need to analyze the COVID-19 epidemic. Please simulate model 971 and plot Infected, Exposed, and Hospitalised",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Exposed, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_045",
+      "question": "simulate model 971 and show me a plot of Susceptible concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_046",
+      "question": "run simulation for model 971 and plot Exposed and Infected species",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed, Infected"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_047",
+      "question": "simulate model 971 and create a visualization showing Hospitalised and Recovered dynamics",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_048",
+      "question": "I'm studying disease transmission. Please simulate model 971 and plot Susceptible, Exposed, Infected, and Recovered",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_049",
+      "question": "simulate model 971 and plot the species Infected and Hospitalised",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_050",
+      "question": "run simulation for model 971 and show Susceptible, Infected, and Recovered in a plot",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_051",
+      "question": "simulate model 971 and plot Exposed concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_052",
+      "question": "I need to analyze healthcare capacity. Please simulate model 971 and plot Hospitalised, Infected, and Exposed",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised, Infected, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_053",
+      "question": "simulate model 971 and create a plot showing Infected dynamics",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_054",
+      "question": "run simulation for model 971 and plot Susceptible, Exposed, Infected, Hospitalised, and Recovered",
+      "complexity_score": 3,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_055",
+      "question": "simulate model 971 and show me a visualization of Recovered and Susceptible",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Recovered, Susceptible"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_056",
+      "question": "I'm investigating epidemic progression. Please simulate model 971 and plot Exposed, Infected, and Hospitalised",
+      "complexity_score": 3,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Exposed, Infected, Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_057",
+      "question": "simulate model 971 and plot the species Hospitalised concentration over time",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Hospitalised"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_058",
+      "question": "run simulation for model 971 and create a plot showing Infected and Recovered",
+      "complexity_score": 2,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Infected, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_059",
+      "question": "simulate model 971 and plot Susceptible and Exposed species",
+      "complexity_score": 2,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "custom_plotter_set2_060",
+      "question": "I need to visualize all epidemic compartments. Please simulate model 971 and plot Susceptible, Exposed, Infected, Hospitalised, and Recovered",
+      "complexity_score": 4,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "custom_plotter",
+      "expected_values": {
+        "species": "Susceptible, Exposed, Infected, Hospitalised, Recovered"
+      },
+      "expected_tools": [
+        "simulate_model",
+        "custom_plotter"
+      ]
+    },
+    {
+      "id": "get_modelinfo_set2_001",
+      "question": "what are the species do you have in the model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 8 species: Susceptible (Wuhan) - 11081000.0 #/ml, Exposed (Wuhan) - 105.1 #/ml, Infected (Wuhan) - 27.679 #/ml, Asymptomatic (Wuhan) - 53.539 #/ml, Susceptible_quarantined (Wuhan) - 739.0 #/ml, Exposed_quarantined (Wuhan) - 1.1642 #/ml, Hospitalised (Wuhan) - 1.0 #/ml, and Recovered (Wuhan) - 2.0 #/ml."
+    },
+    {
+      "id": "get_modelinfo_set2_002",
+      "question": "what is the time unit in the model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_003",
+      "question": "list all compartments in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_004",
+      "question": "what parameters are available in model 27?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_005",
+      "question": "I need to understand the model structure. Can you tell me what species are present in model 971?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 8 species: Susceptible (Wuhan) - 11081000.0 #/ml, Exposed (Wuhan) - 105.1 #/ml, Infected (Wuhan) - 27.679 #/ml, Asymptomatic (Wuhan) - 53.539 #/ml, Susceptible_quarantined (Wuhan) - 739.0 #/ml, Exposed_quarantined (Wuhan) - 1.1642 #/ml, Hospitalised (Wuhan) - 1.0 #/ml, and Recovered (Wuhan) - 2.0 #/ml."
+    },
+    {
+      "id": "get_modelinfo_set2_006",
+      "question": "what is the quantity unit for model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_007",
+      "question": "show me the compartment information for model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_008",
+      "question": "can you list all the parameters in model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 16 parameters: Values[c] (14.781), Values[beta] (2.1011e-08), Values[q] (1.8887e-07), Values[sigma] (0.142857), Values[lambda] (0.0714285), Values[rho] (0.86834), Values[delta_I] (0.13266), Values[delta_q] (0.1259), Values[gamma_I] (0.33029), Values[gamma_A] (0.13978), Values[gamma_H] (0.11624), Values[alpha] (1.7826e-05), Values[theta] (1.0), Values[c_lockdown] (14.781), Values[q_lockdown] (1.8887e-07), and Values[Infected] (81.218)."
+    },
+    {
+      "id": "get_modelinfo_set2_009",
+      "question": "what species are defined in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 5 species: M (uVol) - 500.0 nmol/l, Mp (uVol) - 0.0 nmol/l, Mpp (uVol) - 0.0 nmol/l, MAPKK (uVol) - 50.0 nmol/l, and MKP3 (uVol) - 100.0 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_010",
+      "question": "what is the length unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_011",
+      "question": "what compartments exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[uVol] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_012",
+      "question": "I'm working on a systems biology project and need to understand the model structure. What species are available in model 537?",
+      "complexity_score": 4,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_013",
+      "question": "what is the area unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_014",
+      "question": "list all parameters in model 537",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 53 parameters: Values[kRLOn] (0.384), Values[kRLOff] (1.92), Values[kgp130On] (20.52), Values[kgp130Off] (1.026), Values[kRAct] (155.0), Values[kRint] (1.96), Values[kRsynth] (0.0685), Values[kRintBasal] (0.1561), Values[ksynthIL6] (0.0063), Values[kdegIL6] (34.82), Values[kdegCRP] (0.36), Values[KmSTATDephos] (5.34), Values[VmSTATDephos] (0.62), Values[VmRDephos] (0.525), Values[KmRDephos] (155.3), Values[kcatSTATPhos] (145.0), Values[KmSTATPhos] (219.0), Values[KmProtSynth] (10.0), Values[VmProtSynth] (330.0), Values[kCRPSecretion] (0.5), Values[ksynthCRP] (0.42), Values[ksynthsR] (0.1), Values[kdegsR] (0.3), Values[ksynthsgp130] (3.9), Values[kdegsgp130] (1.0), Values[ksynthIL6Gut] (0.036), Values[kdegIL6Gut] (1.0), Values[kdistTissueToSerum] (0.8473), Values[kdistSerumToTissue] (1.2125), Values[kRShedding] (0.0054), Values[kintActiveR] (0.01), Values[kIL6RBind] (1000.0), Values[kIL6RUnbind] (2.5), Values[infusionTime] (1.0), Values[kAbSerumToLiver] (0.020833333333333332), Values[kAbLiverToSerum] (0.020833333333333332), Values[kAbSerumToGut] (0.010416666666666666), Values[kAbGutToSerum] (0.020833333333333332), Values[VSerum] (2.88), Values[VLiver] (2.88), Values[VGut] (1.44), Values[VPeriph] (0.576), Values[QSerumLiver] (0.06), Values[QSerumGut] (0.03), Values[QSerumPeriph] (0.001), Values[kAbSerumToPeriph] (0.00034722222222222224), Values[kAbPeriphToSerum] (0.0017361111111111112), Values[kdegAb] (0.0018), Values[Dose] (300.0), Values[DoseQ2W] (0.0), Values[Initial for CRP] (221.06367608557), Values[Initial for DoseQ2W] (0.0), and Values[Initial for Dose] (300.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_015",
+      "question": "what is the volume unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_016",
+      "question": "can you show me the compartment details for model 971?",
+      "complexity_score": 2,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[Wuhan] (1.0 ml)."
+    },
+    {
+      "id": "get_modelinfo_set2_017",
+      "question": "what species are present in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_018",
+      "question": "what is the time unit for model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_019",
+      "question": "I need to analyze the model parameters. Can you provide me with all parameters in model 27?",
+      "complexity_score": 3,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_020",
+      "question": "what compartments are defined in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_021",
+      "question": "what is the time unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_022",
+      "question": "what is the quantity unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_023",
+      "question": "what is the length unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_024",
+      "question": "what is the area unit in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_27.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_031",
+      "question": "what compartments are available in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[uVol] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_041",
+      "question": "list all species in model 27",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 5 species: M (uVol) - 500.0 nmol/l, Mp (uVol) - 0.0 nmol/l, Mpp (uVol) - 0.0 nmol/l, MAPKK (uVol) - 50.0 nmol/l, and MKP3 (uVol) - 100.0 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_051",
+      "question": "what parameters exist in model 27?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "27",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_27.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 9 parameters: Values[k1cat] (0.01), Values[Km1] (50.0), Values[k2cat] (15.0), Values[Km2] (500.0), Values[k3cat] (0.084), Values[Km3] (22.0), Values[k4cat] (0.06), Values[Km4] (18.0), and Values[Km5] (78.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_061",
+      "question": "what is the time unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_062",
+      "question": "what is the quantity unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_064",
+      "question": "what is the area unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_065",
+      "question": "what is the volume unit in model 537?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "537",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_537.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: h, quantity: nmol, length: m, area: m², volume: l."
+    },
+    {
+      "id": "get_modelinfo_set2_071",
+      "question": "what compartments are available in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 4 compartments: Compartments[serum] (1.0 l), Compartments[liver] (1.0 l), Compartments[gut] (1.0 l), and Compartments[peripheral] (1.0 l)."
+    },
+    {
+      "id": "get_modelinfo_set2_081",
+      "question": "list all species in model 537",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "species",
+      "expected_values": {
+        "species": "tables/species_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 44 species: IL6{serum} (serum) - 0.000435628896551166 nmol/l, sgp130{serum} (serum) - 3.9 nmol/l, sR_IL6_sgp130{serum} (serum) - 0.0874060669217432 nmol/l, CRP{serum} (serum) - 221.06367608557 nmol/l, sR{serum} (serum) - 4.25350679194445 nmol/l, sR_IL6{serum} (serum) - 0.00109424263781451 nmol/l, Ab{serum} (serum) - 2.38181965637876e-29 nmol/l, Ab_sR{serum} (serum) - 6.10439110812442e-26 nmol/l, Ab_sR_IL6{serum} (serum) - -7.413309014e-29 nmol/l, CRP Suppression (%) (serum) - -0.0 nmol/l, CRP (% of baseline) (serum) - 100.0 nmol/l, gp130{liver} (liver) - 0.388958921403941 nmol/l, R_IL6_gp130{liver} (liver) - 6.59935877686372e-05 nmol/l, sR_IL6{liver} (liver) - 0.000976164943878914 nmol/l, R (liver) - 0.438235811135574 nmol/l, IL6{liver} (liver) - 0.00072566581144648 nmol/l, R_IL6 (liver) - 1.60036523605187e-05 nmol/l, Ractive{liver} (liver) - 0.765416493681823 nmol/l, STAT3{liver} (liver) - 0.777537339578333 nmol/l, pSTAT3{liver} (liver) - 9.22246266042168 nmol/l, CRP{liver} (liver) - 158.32584678161064 nmol/l, sR{liver} (liver) - 6.08704712819469 nmol/l, CRPExtracellular (liver) - 409.775322370541 nmol/l, sgp130{liver} (liver) - 5.5896988923534 nmol/l, sR_IL6_sgp130{liver} (liver) - 0.116343661809953 nmol/l, Ab_sR{liver} (liver) - 8.616193096436e-26 nmol/l, Ab{liver} (liver) - 2.20020723250569e-29 nmol/l, Ab_R (liver) - 2.03371981683734e-27 nmol/l, Ab_sR_IL6{liver} (liver) - -3.077934746e-29 nmol/l, sR_IL6{gut} (gut) - 0.00130682388893128 nmol/l, gp130{gut} (gut) - 0.374962692933961 nmol/l, R_IL6_gp130{gut} (gut) - 8.44890497633549e-05 nmol/l, Ractive{gut} (gut) - 0.9802725095472459 nmol/l, STAT3{gut} (gut) - 0.610636013508212 nmol/l, pSTAT3{gut} (gut) - 9.38936398649179 nmol/l, geneProduct (gut) - 159.8035973588897 nmol/l, sR{gut} (gut) - 6.06410682471754 nmol/l, IL6{gut} (gut) - 0.0093481986616084 nmol/l, sgp130{gut} (gut) - 5.56973864471412 nmol/l, sR_IL6_sgp130{gut} (gut) - 0.136303909449242 nmol/l, Ab{gut} (gut) - 2.1587895876493e-29 nmol/l, Ab_sR{gut} (gut) - 2.62059686237767e-26 nmol/l, Ab_sR_IL6{gut} (gut) - -1.209166949e-28 nmol/l, and Ab{peripheral} (peripheral) - 1.67920947537896e-29 nmol/l."
+    },
+    {
+      "id": "get_modelinfo_set2_091",
+      "question": "what parameters exist in model 537?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "537",
+      "question_type": "parameters",
+      "expected_values": {
+        "parameters": "tables/parameters_537.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 53 parameters: Values[kRLOn] (0.384), Values[kRLOff] (1.92), Values[kgp130On] (20.52), Values[kgp130Off] (1.026), Values[kRAct] (155.0), Values[kRint] (1.96), Values[kRsynth] (0.0685), Values[kRintBasal] (0.1561), Values[ksynthIL6] (0.0063), Values[kdegIL6] (34.82), Values[kdegCRP] (0.36), Values[KmSTATDephos] (5.34), Values[VmSTATDephos] (0.62), Values[VmRDephos] (0.525), Values[KmRDephos] (155.3), Values[kcatSTATPhos] (145.0), Values[KmSTATPhos] (219.0), Values[KmProtSynth] (10.0), Values[VmProtSynth] (330.0), Values[kCRPSecretion] (0.5), Values[ksynthCRP] (0.42), Values[ksynthsR] (0.1), Values[kdegsR] (0.3), Values[ksynthsgp130] (3.9), Values[kdegsgp130] (1.0), Values[ksynthIL6Gut] (0.036), Values[kdegIL6Gut] (1.0), Values[kdistTissueToSerum] (0.8473), Values[kdistSerumToTissue] (1.2125), Values[kRShedding] (0.0054), Values[kintActiveR] (0.01), Values[kIL6RBind] (1000.0), Values[kIL6RUnbind] (2.5), Values[infusionTime] (1.0), Values[kAbSerumToLiver] (0.020833333333333332), Values[kAbLiverToSerum] (0.020833333333333332), Values[kAbSerumToGut] (0.010416666666666666), Values[kAbGutToSerum] (0.020833333333333332), Values[VSerum] (2.88), Values[VLiver] (2.88), Values[VGut] (1.44), Values[VPeriph] (0.576), Values[QSerumLiver] (0.06), Values[QSerumGut] (0.03), Values[QSerumPeriph] (0.001), Values[kAbSerumToPeriph] (0.00034722222222222224), Values[kAbPeriphToSerum] (0.0017361111111111112), Values[kdegAb] (0.0018), Values[Dose] (300.0), Values[DoseQ2W] (0.0), Values[Initial for CRP] (221.06367608557), Values[Initial for DoseQ2W] (0.0), and Values[Initial for Dose] (300.0)."
+    },
+    {
+      "id": "get_modelinfo_set2_101",
+      "question": "what is the time unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_102",
+      "question": "what is the quantity unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_103",
+      "question": "what is the length unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "epidemiologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_104",
+      "question": "what is the area unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_105",
+      "question": "what is the volume unit in model 971?",
+      "complexity_score": 1,
+      "user_background": "computational_biologist",
+      "model_id": "971",
+      "question_type": "units",
+      "expected_values": {
+        "units": "tables/units_971.pkl"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model uses the following units: time: d, quantity: #, length: m, area: m², volume: ml."
+    },
+    {
+      "id": "get_modelinfo_set2_111",
+      "question": "what compartments are available in model 971?",
+      "complexity_score": 1,
+      "user_background": "modeller",
+      "model_id": "971",
+      "question_type": "compartments",
+      "expected_values": {
+        "compartments": "tables/compartments_971.csv"
+      },
+      "expected_tools": [
+        "get_modelinfo"
+      ],
+      "expected_answer": "The model contains 1 compartment: Compartments[Wuhan] (1.0 ml)."
+    }
+  ],
+  "metadata": {
+    "total_questions": 222,
+    "complexity_distribution": {
+      "score_2": 75,
+      "score_3": 36,
+      "score_1": 64,
+      "score_4": 18,
+      "score_5": 12,
+      "score_7": 5,
+      "score_8": 3,
+      "score_6": 8,
+      "score_9": 1
+    },
+    "user_backgrounds": {
+      "modeller": 104,
+      "immunologist": 14,
+      "computational_biologist": 60,
+      "epidemiologist": 44
+    },
+    "question_types": {
+      "simulation": 122,
+      "custom_plotter": 60,
+      "species": 7,
+      "units": 19,
+      "compartments": 8,
+      "parameters": 6
+    },
+    "model_distribution": {
+      "537": 64,
+      "971": 68,
+      "27": 90
+    },
+    "expected_tools": [
+      "ask_question",
+      "custom_plotter",
+      "get_modelinfo",
+      "search_models",
+      "simulate_model",
+      "steady_state"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+name,compartment,type,unit,initial_concentration,display_name
+Susceptible,Wuhan,reactions,#/ml,11081000.0,Susceptible
+Exposed,Wuhan,reactions,#/ml,105.1,Exposed
+Infected,Wuhan,reactions,#/ml,27.679,Infected
+Asymptomatic,Wuhan,reactions,#/ml,53.539,Asymptomatic
+Susceptible_quarantined,Wuhan,reactions,#/ml,739.0,Susceptible_quarantined
+Exposed_quarantined,Wuhan,reactions,#/ml,1.1642,Exposed_quarantined
+Hospitalised,Wuhan,reactions,#/ml,1.0,Hospitalised
+Recovered,Wuhan,reactions,#/ml,2.0,Recovered

@@ -1,0 +1,6 @@
+display_name,compartment,unit,initial_concentration,steady_state_concentration,rate,steady_state_transition_time
+M,uVol,nmol/l,500.0,437.72998372103586,-5.1891845849182705e-17,978.0304637386524
+Mp,uVol,nmol/l,0.0,12.852481482904038,-4.670266126426443e-16,5.3137076014735225
+Mpp,uVol,nmol/l,0.0,49.41753479606013,4.1513476679346164e-16,25.070050759044044
+MAPKK,uVol,nmol/l,50.0,50.0,0.0,
+MKP3,uVol,nmol/l,100.0,100.0,0.0,
