@@ -44,9 +44,16 @@ Each real release can produce:
 
 ## Docker Releases
 
-Docker image builds are driven by release tags:
+Docker image builds are driven directly by the main release workflow after a successful semantic release.
 
-- workflow trigger: `push` on tags matching `v*`
+Release flow:
+
+1. `python-semantic-release` computes and creates the release tag
+2. Python package artifacts are built and published
+3. compose bundles are attached to the GitHub release
+4. Docker images are built and pushed in the same workflow using the released tag
+
+This avoids the GitHub Actions limitation where tags created by `GITHUB_TOKEN` do not reliably trigger downstream workflows.
 
 The Docker workflow builds and pushes:
 
@@ -56,6 +63,8 @@ The Docker workflow builds and pushes:
 - `talk2knowledgegraphs`
 
 CPU/GPU variants are preserved where configured by the workflow.
+
+The standalone `docker_build.yml` workflow remains available for manual or tag-based rebuilds, but normal releases no longer depend on it being triggered by a separate workflow event.
 
 ## Compose Bundles
 
