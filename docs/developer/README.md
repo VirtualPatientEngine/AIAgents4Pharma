@@ -316,8 +316,8 @@ The project includes comprehensive automated security scanning:
 # Weekly security audit (runs automatically)
 .github/workflows/security_audit.yml   # pip-audit + safety + bandit
 
-# SonarCloud analysis (artifact-based, runs after tests)
-.github/workflows/sonarcloud.yml       # Modern CI/CD with artifact reuse
+# SonarCloud analysis (self-contained quality gate workflow)
+.github/workflows/sonarcloud.yml       # Generates reports and uploads one stable scan
 
 # Manual security audit
 uv run pip-audit --desc

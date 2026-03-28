@@ -232,25 +232,25 @@ mkdocs serve
 *NOTE: Please refer to the "Unit Tests" subsection within the "Coding Practices" section for further details.*
 
 ## Keywords in commit messages
-We use [semantic-release](https://github.com/semantic-release/semantic-release) software to automate the process of versioning and releasing code on GitHub. It operates by analyzing commit messages to determine the type of changes made in the codebase. Following the Semantic Versioning convention, commonly known as SemVer, version numbers are structured as MAJOR.MINOR.PATCH. The MAJOR version is incremented for incompatible changes in the code, MINOR for feature additions, and PATCH for backward-compatible bug fixes. This automated approach ensures that version increments are consistent and meaningful, aiding developers and users in understanding the impact of updates.
+We use `python-semantic-release` to automate versioning and GitHub releases. It analyzes conventional commit messages and applies Semantic Versioning (`MAJOR.MINOR.PATCH`) based on the highest-impact change since the last tag.
 
 **Job: Bump up the release (MAJOR.MINOR.PATCH) based on the commit message**
 
-###  “feat:”
+### `feat:`
 will bump up the minor version (MINOR)
 
 ```
 git commit –m “feat: add a new feature”
 ```
 
-### “fix:”
+### `fix:`
 will bump up the patch version (PATCH)
 
 ```
 git commit –m “fix: fix bug”
 ```
 
-### “feat:” or “fix:” followed by “BREAKING CHANGE:”
+### `feat!:` / `fix!:` or `BREAKING CHANGE:`
 will bump up the major version (MAJOR)
 
 ```
@@ -259,18 +259,18 @@ BREAKING CHANGE: update several features”
 ```
 
 #### Notes:
-1. The first line of the commit message must begin with the keyword “feat” or “fix” and the last line with "BREAKING_CHANGE" to prompt a major version bump.
-2. Write the commit message on GitHub when approving the merge between the 'develop' branch (on VPE account) and the 'main' branch (on VPE account), this ensures that the 'release.yml' will run using GitHub Actions. For all other cases, this commit message will not trigger any actions."
-3. **The obligation of bumping up the major version lies with the reviewer.**
+1. Releases are cut from `main`.
+2. The merge or squash commit message on `main` must carry the intended conventional-commit prefix.
+3. Breaking changes should be marked explicitly with `!` or `BREAKING CHANGE:`.
 
-### “chore”
+### `chore:`
 triggers no action.
 
 ```
 git commit –m “chore: add new example in the folder
 ```
 
-*Please note it is mandatory to specify keywords when merging a pull request (e.g.: merging develop into main) on GitHub that results in a release or when pushing code to GitHub that will lead to a release. In most cases the release workflow activation is linked to the keywords mentioned. Leaf through the section on ‘How to open and close a Pull request on GitHub’ in the DevOps guide to know more.*
+*Please note it is mandatory to use conventional commit keywords in the final commit message that lands on `main` if you expect a semantic version bump.*
 
 ## Resources
 - Outline of working with GitHub for collaborative projects [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
