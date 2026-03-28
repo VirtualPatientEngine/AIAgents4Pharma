@@ -1,159 +1,67 @@
 name: Docker Build and Push
+
 on:
-  # Trigger after RELEASE workflow completes
-  workflow_run:
-    workflows: ["RELEASE"]
-    types:
-      - completed
-    branches:
-      - main
-  # Keep existing triggers for flexibility
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag to build, for example v1.48.2"
+        required: true
+        type: string
 
 jobs:
-  # Detect which modules have changed
-  changes:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      talk2biomodels: ${{ steps.set-module-outputs.outputs.talk2biomodels }}
-      talk2scholars: ${{ steps.set-module-outputs.outputs.talk2scholars }}
-      talk2aiagents4pharma: ${{ steps.set-module-outputs.outputs.talk2aiagents4pharma }}
-      talk2knowledgegraphs: ${{ steps.set-module-outputs.outputs.talk2knowledgegraphs }}
-      app: ${{ steps.set-module-outputs.outputs.app }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: talk2aiagents4pharma
+            dockerfile: aiagents4pharma/talk2aiagents4pharma/Dockerfile
+            suffix: ""
+            latest_tag: latest
+            install_cuda: "true"
+          - image: talk2aiagents4pharma
+            dockerfile: aiagents4pharma/talk2aiagents4pharma/Dockerfile
+            suffix: "-cpu"
+            latest_tag: latest-cpu
+            install_cuda: "false"
+          - image: talk2biomodels
+            dockerfile: aiagents4pharma/talk2biomodels/Dockerfile
+            suffix: ""
+            latest_tag: latest
+            install_cuda: "false"
+          - image: talk2scholars
+            dockerfile: aiagents4pharma/talk2scholars/Dockerfile
+            suffix: ""
+            latest_tag: latest
+            install_cuda: "false"
+          - image: talk2knowledgegraphs
+            dockerfile: aiagents4pharma/talk2knowledgegraphs/Dockerfile
+            suffix: ""
+            latest_tag: latest
+            install_cuda: "true"
+          - image: talk2knowledgegraphs
+            dockerfile: aiagents4pharma/talk2knowledgegraphs/Dockerfile
+            suffix: "-cpu"
+            latest_tag: latest-cpu
+            install_cuda: "false"
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
-          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
-      - name: Set module outputs
-        id: set-module-outputs
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Resolve version
+        id: version
         run: |
-          set -euo pipefail
-
-          if [ "$EVENT_NAME" != "workflow_run" ]; then
-            echo "talk2aiagents4pharma=true" >> "$GITHUB_OUTPUT"
-            echo "talk2knowledgegraphs=true" >> "$GITHUB_OUTPUT"
-            echo "talk2biomodels=true" >> "$GITHUB_OUTPUT"
-            echo "talk2scholars=true" >> "$GITHUB_OUTPUT"
-            echo "app=true" >> "$GITHUB_OUTPUT"
-            echo "Non-release trigger detected; forcing rebuild of all components"
-            exit 0
-          fi
-
-          git checkout "$HEAD_SHA"
-
-          if git rev-list --max-count=2 "$HEAD_SHA" >/dev/null 2>&1; then
-            BASE_SHA=$(git rev-parse "$HEAD_SHA^")
-            echo "Comparing changes between $BASE_SHA and $HEAD_SHA"
-            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
           else
-            echo "No previous commit found; treating all files as changed"
-            CHANGED_FILES=$(git ls-tree -r "$HEAD_SHA" --name-only)
+            VERSION="${{ github.ref_name }}"
           fi
-
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "talk2aiagents4pharma=false" >> "$GITHUB_OUTPUT"
-            echo "talk2knowledgegraphs=false" >> "$GITHUB_OUTPUT"
-            echo "talk2biomodels=false" >> "$GITHUB_OUTPUT"
-            echo "talk2scholars=false" >> "$GITHUB_OUTPUT"
-            echo "app=false" >> "$GITHUB_OUTPUT"
-            echo "No changes detected since previous commit."
-            exit 0
-          fi
-
-          # Helper to check if any changed file matches patterns
-          has_match() {
-            local pattern="$1"
-            echo "$CHANGED_FILES" | grep -E "^${pattern}" >/dev/null 2>&1
-          }
-
-          T2AA4P=false
-          T2KG=false
-          T2B=false
-          T2S=false
-          APP=false
-
-          if has_match "aiagents4pharma/talk2aiagents4pharma/"; then
-            T2AA4P=true
-          fi
-          if has_match "aiagents4pharma/talk2knowledgegraphs/"; then
-            T2KG=true
-            T2AA4P=true
-          fi
-          if has_match "aiagents4pharma/talk2biomodels/"; then
-            T2B=true
-            T2AA4P=true
-          fi
-          if has_match "aiagents4pharma/talk2scholars/"; then
-            T2S=true
-          fi
-          if has_match "app/"; then
-            APP=true
-            T2AA4P=true
-            T2KG=true
-            T2B=true
-            T2S=true
-          fi
-          if echo "$CHANGED_FILES" | grep -E "^pyproject\.toml$" >/dev/null 2>&1; then
-            APP=true
-            T2AA4P=true
-            T2KG=true
-            T2B=true
-            T2S=true
-          fi
-          if echo "$CHANGED_FILES" | grep -E "^uv\.lock$" >/dev/null 2>&1; then
-            APP=true
-            T2AA4P=true
-            T2KG=true
-            T2B=true
-            T2S=true
-          fi
-
-          echo "talk2aiagents4pharma=$T2AA4P" >> "$GITHUB_OUTPUT"
-          echo "talk2knowledgegraphs=$T2KG" >> "$GITHUB_OUTPUT"
-          echo "talk2biomodels=$T2B" >> "$GITHUB_OUTPUT"
-          echo "talk2scholars=$T2S" >> "$GITHUB_OUTPUT"
-          echo "app=$APP" >> "$GITHUB_OUTPUT"
-  # Generate version for the build
-  version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      # Get the latest version from git tags
-
-      - name: Get latest version tag
-        id: get_version
-        run: |
-          # Get the latest tag from git
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
-
-          # Always use the latest tag directly (no dev builds)
-          VERSION=$LATEST_TAG
-
-          echo "Using version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-  # Separate job for talk2aiagents4pharma
-  build-talk2aiagents4pharma:
-    needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2aiagents4pharma == 'true' || needs.changes.outputs.talk2biomodels == 'true' || needs.changes.outputs.talk2knowledgegraphs == 'true' || needs.changes.outputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Free up disk space
         run: |
@@ -169,143 +77,14 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push GPU Image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          file: aiagents4pharma/talk2aiagents4pharma/Dockerfile
+          file: ${{ matrix.dockerfile }}
           push: true
-          tags: |
-            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}
-            vpatientengine/talk2aiagents4pharma:latest
-            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}-gpu
-            vpatientengine/talk2aiagents4pharma:latest-gpu
           platforms: linux/amd64
+          tags: |
+            vpatientengine/${{ matrix.image }}:${{ steps.version.outputs.version }}${{ matrix.suffix }}
+            vpatientengine/${{ matrix.image }}:${{ matrix.latest_tag }}
           build-args: |
-            INSTALL_CUDA=true
-
-      - name: Build and Push CPU Image
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2aiagents4pharma/Dockerfile
-          push: true
-          tags: |
-            vpatientengine/talk2aiagents4pharma:${{ needs.version.outputs.version }}-cpu
-            vpatientengine/talk2aiagents4pharma:latest-cpu
-          platforms: linux/amd64
-          build-args: |
-            INSTALL_CUDA=false
-
-  # Separate job for talk2biomodels
-  build-talk2biomodels:
-    needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2biomodels == 'true' || needs.changes.outputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - name: Free up disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
-          sudo apt-get clean || true
-          sudo apt-get autoremove -y || true
-          sudo docker system prune -af || true
-          sudo docker builder prune -af || true
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2biomodels/Dockerfile
-          push: true
-          tags: |
-            vpatientengine/talk2biomodels:${{ needs.version.outputs.version }}
-            vpatientengine/talk2biomodels:latest
-          platforms: linux/amd64
-
-  # Separate job for talk2scholars
-  build-talk2scholars:
-    needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2scholars == 'true' || needs.changes.outputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - name: Free up disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
-          sudo apt-get clean || true
-          sudo apt-get autoremove -y || true
-          sudo docker system prune -af || true
-          sudo docker builder prune -af || true
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2scholars/Dockerfile
-          push: true
-          tags: |
-            vpatientengine/talk2scholars:${{ needs.version.outputs.version }}
-            vpatientengine/talk2scholars:latest
-          platforms: linux/amd64
-
-  # Separate job for talk2knowledgegraphs
-  build-talk2knowledgegraphs:
-    needs: [changes, version]
-    if: ${{ needs.changes.outputs.talk2knowledgegraphs == 'true' || needs.changes.outputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - name: Free up disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
-          sudo apt-get clean || true
-          sudo apt-get autoremove -y || true
-          sudo docker system prune -af || true
-          sudo docker builder prune -af || true
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push GPU Image
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
-          push: true
-          tags: |
-            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}
-            vpatientengine/talk2knowledgegraphs:latest
-            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}-gpu
-            vpatientengine/talk2knowledgegraphs:latest-gpu
-          platforms: linux/amd64
-          build-args: |
-            INSTALL_CUDA=true
-
-      - name: Build and Push CPU Image
-        uses: docker/build-push-action@v6
-        with:
-          file: aiagents4pharma/talk2knowledgegraphs/Dockerfile
-          push: true
-          tags: |
-            vpatientengine/talk2knowledgegraphs:${{ needs.version.outputs.version }}-cpu
-            vpatientengine/talk2knowledgegraphs:latest-cpu
-          platforms: linux/amd64
-          build-args: |
-            INSTALL_CUDA=false
+            INSTALL_CUDA=${{ matrix.install_cuda }}
