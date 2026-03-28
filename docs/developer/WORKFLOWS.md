@@ -160,7 +160,7 @@ ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 
 **File:** `docker_build.yml`
 
-**Purpose:** Build and push Docker images for all agents
+**Purpose:** Build and push Docker images for manual rebuilds or direct tag-triggered runs
 
 **Features:**
 - Multi-stage builds for optimized image sizes
@@ -210,6 +210,7 @@ ZOTERO_USER_ID: ${{ secrets.ZOTERO_USER_ID }}
 - **PyPI Publishing:** Automated package distribution
 - **GitHub Releases:** Generated from semantic-release notes
 - **Compose bundles:** Attached as release assets without mutating release notes
+- **Docker publishing:** Builds and pushes release-tagged images in the same workflow after a successful release
 
 **Semantic Release Convention:**
 ```bash
@@ -222,20 +223,20 @@ BREAKING CHANGE:     → Major version bump (1.0.0 → 2.0.0)
 - ✅ Python semantic-release automation with conventional commits
 - ✅ Modern uv dependency management for fast builds
 - ✅ Releases are cut from `main`
-- ✅ Auto-creates tags, publishes to PyPI, and uploads release assets
+- ✅ Auto-creates tags, publishes to PyPI, uploads release assets, and publishes Docker images
 
 ### Docker Build
 
 **File:** `docker_build.yml`
 
-**Purpose:** Build and push Docker images for released tags
+**Purpose:** Fallback/manual Docker image publishing workflow
 
 **Triggers:**
 - Push tags matching `v*`
 - Manual workflow dispatch
 
 **Features:**
-- Tag-driven image builds
+- Manual or externally triggered image builds
 - Separate CPU and GPU variants where configured
 - Docker Hub publishing for release versions and `latest` aliases
 
