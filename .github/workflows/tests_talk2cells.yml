@@ -41,25 +41,6 @@ jobs:
       - name: Run bandit security scan
         run: uv run bandit -c pyproject.toml -r aiagents4pharma/talk2cells
 
-      - name: Run bandit security scan with JSON output for SonarCloud
-        run: |
-          uv run bandit -c pyproject.toml -r aiagents4pharma/talk2cells -f json -o bandit-talk2cells.json || true
-        continue-on-error: true
-
-      - name: Run pylint with JSON output for SonarCloud
-        run: |
-          uv run pylint aiagents4pharma/talk2cells --output-format=json --reports=no > pylint-talk2cells.json || true
-        continue-on-error: true
-
-      - name: Upload quality reports for SonarCloud
-        uses: actions/upload-artifact@v7
-        with:
-          name: quality-reports-talk2cells
-          path: |
-            pylint-talk2cells.json
-            bandit-talk2cells.json
-          retention-days: 1
-
   # Cross-platform testing matrix
   test-matrix:
     name: Tests
@@ -113,12 +94,3 @@ jobs:
           name: talk2cells-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
-
-      - name: Upload test reports for SonarCloud
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-reports-talk2cells
-          path: |
-            coverage-talk2cells.xml
-          retention-days: 1
